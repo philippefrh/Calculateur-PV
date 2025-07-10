@@ -376,7 +376,7 @@ function App() {
         <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
           Debug: {currentStep}
         </div>
-        <PersonalInfoForm formData={formData} setFormData={setFormData} onNext={handleNext} />
+        <PersonalInfoForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />
       </div>
     );
   }
