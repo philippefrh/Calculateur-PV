@@ -269,8 +269,20 @@ body {
   padding: 40px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
   text-align: center;
-  font-size: 1.5rem;
+  max-width: 600px;
+  width: 100%;
+}
+
+.calculation-screen h2 {
+  font-size: 1.8rem;
   color: #2c5530;
+  margin-bottom: 20px;
+}
+
+.calculation-screen p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 30px;
 }
 
 /* Responsive */
