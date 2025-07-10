@@ -350,7 +350,7 @@ function App() {
   };
 
   const handlePrevious = () => {
-    const steps = ['personal', 'technical', 'heating', 'consumption'];
+    const steps = ['start', 'personal', 'technical', 'heating', 'consumption'];
     const currentIndex = steps.indexOf(currentStep);
     if (currentIndex > 0) {
       setCurrentStep(steps[currentIndex - 1]);
