@@ -22,46 +22,54 @@ const AutonomyLogo = () => (
 );
 
 // Écran de démarrage
-const StartScreen = ({ onStart }) => (
-  <div className="start-screen">
-    <div className="company-header">
-      <h1 className="company-title">FRH ENVIRONNEMENT</h1>
-      <p className="company-subtitle">Énergie Solaire - Professionnel</p>
+const StartScreen = ({ onStart }) => {
+  
+  const handleClick = () => {
+    console.log("Button clicked!");
+    onStart();
+  };
+  
+  return (
+    <div className="start-screen">
+      <div className="company-header">
+        <h1 className="company-title">FRH ENVIRONNEMENT</h1>
+        <p className="company-subtitle">Énergie Solaire - Professionnel</p>
+      </div>
+      
+      <AutonomyLogo />
+      
+      <div className="certifications">
+        <div className="cert-badge">RGE QualiPV 2025</div>
+        <div className="cert-badge">RGE QualiPac 2025</div>
+        <div className="cert-badge">FFB Adhérent</div>
+        <div className="cert-badge">Partenaire AGIR PLUS EDF</div>
+      </div>
+      
+      <button className="start-button" onClick={handleClick}>
+        Commencer l'Étude Solaire
+      </button>
+      
+      <div className="benefits">
+        <div className="benefit-item">
+          <span className="benefit-icon">✓</span>
+          <span>Réalisez jusqu'à 70% d'économies sur vos factures d'électricité</span>
+        </div>
+        <div className="benefit-item">
+          <span className="benefit-icon">✓</span>
+          <span>Un accompagnement de A à Z pour votre projet solaire</span>
+        </div>
+        <div className="benefit-item">
+          <span className="benefit-icon">✓</span>
+          <span>Panneaux garantis 25 ans et garanties de production</span>
+        </div>
+        <div className="benefit-item">
+          <span className="benefit-icon">✓</span>
+          <span>Installation fiable et performante par nos installateurs certifiés RGE</span>
+        </div>
+      </div>
     </div>
-    
-    <AutonomyLogo />
-    
-    <div className="certifications">
-      <div className="cert-badge">RGE QualiPV 2025</div>
-      <div className="cert-badge">RGE QualiPac 2025</div>
-      <div className="cert-badge">FFB Adhérent</div>
-      <div className="cert-badge">Partenaire AGIR PLUS EDF</div>
-    </div>
-    
-    <button className="start-button" onClick={onStart}>
-      Commencer l'Étude Solaire
-    </button>
-    
-    <div className="benefits">
-      <div className="benefit-item">
-        <span className="benefit-icon">✓</span>
-        <span>Réalisez jusqu'à 70% d'économies sur vos factures d'électricité</span>
-      </div>
-      <div className="benefit-item">
-        <span className="benefit-icon">✓</span>
-        <span>Un accompagnement de A à Z pour votre projet solaire</span>
-      </div>
-      <div className="benefit-item">
-        <span className="benefit-icon">✓</span>
-        <span>Panneaux garantis 25 ans et garanties de production</span>
-      </div>
-      <div className="benefit-item">
-        <span className="benefit-icon">✓</span>
-        <span>Installation fiable et performante par nos installateurs certifiés RGE</span>
-      </div>
-    </div>
-  </div>
-);
+  );
+};
 
 // Formulaire étape 1 - Informations personnelles
 const PersonalInfoForm = ({ formData, setFormData, onNext }) => {
