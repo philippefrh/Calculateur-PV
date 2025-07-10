@@ -321,8 +321,9 @@ function App() {
   });
 
   const handleStart = () => {
-    console.log('Starting form...');
+    console.log('Starting form...', new Date());
     setCurrentStep('personal');
+    console.log('Current step set to:', 'personal');
   };
 
   const handleNext = () => {
@@ -340,6 +341,8 @@ function App() {
       setCurrentStep(steps[currentIndex - 1]);
     }
   };
+
+  console.log('Current step in render:', currentStep);
 
   const renderStep = () => {
     switch (currentStep) {
@@ -362,6 +365,9 @@ function App() {
 
   return (
     <div className="App">
+      <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
+        Debug: {currentStep}
+      </div>
       {renderStep()}
     </div>
   );
