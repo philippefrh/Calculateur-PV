@@ -321,6 +321,7 @@ function App() {
   });
 
   const handleStart = () => {
+    console.log('Starting form...');
     setCurrentStep('personal');
   };
 
