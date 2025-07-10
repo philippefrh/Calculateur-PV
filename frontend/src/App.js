@@ -420,7 +420,13 @@ function App() {
         <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
           Debug: {currentStep}
         </div>
-        <div className="calculation-screen">Calcul en cours...</div>
+        <div className="calculation-screen">
+          <h2>Calcul en cours...</h2>
+          <p>Veuillez patienter pendant que nous analysons vos données</p>
+          <div className="form-buttons">
+            <button type="button" onClick={handlePrevious} className="prev-button">Précédent</button>
+          </div>
+        </div>
       </div>
     );
   }
