@@ -72,7 +72,7 @@ const StartScreen = ({ onStart }) => {
 };
 
 // Formulaire étape 1 - Informations personnelles
-const PersonalInfoForm = ({ formData, setFormData, onNext }) => {
+const PersonalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.firstName && formData.lastName && formData.address) {
@@ -112,7 +112,10 @@ const PersonalInfoForm = ({ formData, setFormData, onNext }) => {
             required
           />
         </div>
-        <button type="submit" className="next-button">Suivant</button>
+        <div className="form-buttons">
+          <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
+          <button type="submit" className="next-button">Suivant</button>
+        </div>
       </form>
     </div>
   );
