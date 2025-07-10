@@ -328,10 +328,14 @@ function App() {
     annualEdfPayment: ''
   });
 
+  useEffect(() => {
+    console.log('App useEffect - Current step:', currentStep);
+  }, [currentStep]);
+
   const handleStart = () => {
-    console.log('Starting form...', new Date());
+    console.log('handleStart called at:', new Date().toISOString());
     setCurrentStep('personal');
-    console.log('Current step set to:', 'personal');
+    console.log('State should be changed to: personal');
   };
 
   const handleNext = () => {
@@ -350,33 +354,81 @@ function App() {
     }
   };
 
-  console.log('Current step in render:', currentStep);
+  console.log('Rendering App with currentStep:', currentStep);
 
-  const renderStep = () => {
-    switch (currentStep) {
-      case 'start':
-        return <StartScreen onStart={handleStart} />;
-      case 'personal':
-        return <PersonalInfoForm formData={formData} setFormData={setFormData} onNext={handleNext} />;
-      case 'technical':
-        return <TechnicalInfoForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />;
-      case 'heating':
-        return <HeatingSystemForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />;
-      case 'consumption':
-        return <ConsumptionForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />;
-      case 'calculation':
-        return <div className="calculation-screen">Calcul en cours...</div>;
-      default:
-        return <StartScreen onStart={handleStart} />;
-    }
-  };
+  if (currentStep === 'start') {
+    return (
+      <div className="App">
+        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
+          Debug: {currentStep}
+        </div>
+        <StartScreen onStart={handleStart} />
+      </div>
+    );
+  }
 
+  if (currentStep === 'personal') {
+    return (
+      <div className="App">
+        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
+          Debug: {currentStep}
+        </div>
+        <PersonalInfoForm formData={formData} setFormData={setFormData} onNext={handleNext} />
+      </div>
+    );
+  }
+
+  if (currentStep === 'technical') {
+    return (
+      <div className="App">
+        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
+          Debug: {currentStep}
+        </div>
+        <TechnicalInfoForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />
+      </div>
+    );
+  }
+
+  if (currentStep === 'heating') {
+    return (
+      <div className="App">
+        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
+          Debug: {currentStep}
+        </div>
+        <HeatingSystemForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />
+      </div>
+    );
+  }
+
+  if (currentStep === 'consumption') {
+    return (
+      <div className="App">
+        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
+          Debug: {currentStep}
+        </div>
+        <ConsumptionForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />
+      </div>
+    );
+  }
+
+  if (currentStep === 'calculation') {
+    return (
+      <div className="App">
+        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
+          Debug: {currentStep}
+        </div>
+        <div className="calculation-screen">Calcul en cours...</div>
+      </div>
+    );
+  }
+
+  // Fallback
   return (
     <div className="App">
       <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
-        Debug: {currentStep}
+        Debug: {currentStep} (fallback)
       </div>
-      {renderStep()}
+      <StartScreen onStart={handleStart} />
     </div>
   );
 }
