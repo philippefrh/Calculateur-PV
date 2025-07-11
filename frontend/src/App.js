@@ -924,6 +924,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
   const [calculationResults, setCalculationResults] = useState(null);
   const [isCalculating, setIsCalculating] = useState(true);
   const [currentAnimation, setCurrentAnimation] = useState(0);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   // Phases d'explication pendant les 4 minutes avec animations
   const phases = [
@@ -933,7 +934,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
       duration: 60,
       tips: [
         "💡 Nous utilisons les coordonnées GPS exactes",
-        "🌞 Calcul de l'irradiation solaire spécifique à votre région",
+        "🌞 Calcul de l'irradiation solaire spécifique à votre région", 
         "📊 Données météorologiques sur 15 ans"
       ]
     },
@@ -970,6 +971,8 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
   ];
 
   useEffect(() => {
+    const speed = isDemoMode ? 10 : 1000; // 10ms en mode démo, 1000ms normal
+    
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
@@ -980,10 +983,10 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
         }
         return prev - 1;
       });
-    }, 1000);
+    }, speed);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [isDemoMode]);
 
   useEffect(() => {
     // Changement de phase selon le temps écoulé
@@ -1053,6 +1056,10 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
 
   const progressPercentage = ((240 - countdown) / 240) * 100;
 
+  const toggleDemoMode = () => {
+    setIsDemoMode(!isDemoMode);
+  };
+
   if (!isCalculating && calculationResults) {
     return (
       <div className="calculation-screen success">
@@ -1085,6 +1092,15 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
       <div className="calculation-header">
         <h2>🚀 Calcul de votre solution solaire en cours</h2>
         <p>Analyse PVGIS Commission Européenne - Données officielles</p>
+        
+        {/* Mode démo pour les démonstrations */}
+        <button 
+          className="demo-toggle"
+          onClick={toggleDemoMode}
+          title="Mode démo : accélère le calcul pour les démonstrations"
+        >
+          {isDemoMode ? '⚡ Mode Démo ON' : '🐌 Mode Normal'}
+        </button>
       </div>
       
       <div className="countdown-section">
@@ -1176,6 +1192,9 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
         <div className="note-content">
           <h4>🏛️ Données source PVGIS Commission Européenne</h4>
           <p>Ce temps nous permet d'expliquer le fonctionnement de votre future installation et de calculer précisément votre potentiel solaire selon les données météorologiques officielles européennes.</p>
+          {isDemoMode && (
+            <p style={{color: '#ff6b35', fontWeight: 'bold'}}>⚡ Mode démo activé - Calcul accéléré pour la démonstration</p>
+          )}
         </div>
       </div>
 
