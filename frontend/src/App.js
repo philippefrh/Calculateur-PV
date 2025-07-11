@@ -21,7 +21,7 @@ const AutonomyLogo = () => (
   </div>
 );
 
-// Écran de démarrage
+// Écran de démarrage amélioré
 const StartScreen = ({ onStart }) => {
   
   const handleClick = () => {
@@ -34,19 +34,30 @@ const StartScreen = ({ onStart }) => {
       <div className="company-header">
         <h1 className="company-title">FRH ENVIRONNEMENT</h1>
         <p className="company-subtitle">Énergie Solaire - Professionnel</p>
+        <div className="company-stats">
+          <div className="stat-item">
+            <span className="stat-number">+ de 5000</span>
+            <span className="stat-label">Installations réalisées</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">86%</span>
+            <span className="stat-label">de clients nous recommandent</span>
+          </div>
+        </div>
       </div>
       
       <AutonomyLogo />
       
       <div className="certifications">
-        <div className="cert-badge">RGE QualiPV 2025</div>
-        <div className="cert-badge">RGE QualiPac 2025</div>
-        <div className="cert-badge">FFB Adhérent</div>
-        <div className="cert-badge">Partenaire AGIR PLUS EDF</div>
+        <div className="cert-badge rge">🏆 RGE QualiPV 2025</div>
+        <div className="cert-badge rge">🏆 RGE QualiPac 2025</div>
+        <div className="cert-badge ffb">🏢 FFB Adhérent</div>
+        <div className="cert-badge edf">⚡ Partenaire AGIR PLUS EDF</div>
+        <div className="cert-badge decennale">🛡️ Garantie Décennale 10 ans</div>
       </div>
       
       <button className="start-button" onClick={handleClick}>
-        Commencer l'Étude Solaire
+        🌞 Commencer l'Étude Solaire Gratuite
       </button>
       
       <div className="benefits">
@@ -66,164 +77,280 @@ const StartScreen = ({ onStart }) => {
           <span className="benefit-icon">✓</span>
           <span>Installation fiable et performante par nos installateurs certifiés RGE</span>
         </div>
+        <div className="benefit-item">
+          <span className="benefit-icon">✓</span>
+          <span>Profitez des dispositifs d'aides et de subventions</span>
+        </div>
+      </div>
+
+      <div className="contact-info">
+        <p><strong>🏢 FRH Environnement</strong> - 196 Avenue Jean Lolive 93500 Pantin</p>
+        <p><strong>📞</strong> 09 85 60 50 51 | <strong>✉️</strong> contact@francerenovhabitat.com</p>
       </div>
     </div>
   );
 };
 
-// Formulaire étape 1 - Informations personnelles
+// Formulaire étape 1 - Informations personnelles amélioré
 const PersonalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.firstName.trim()) newErrors.firstName = "Le prénom est obligatoire";
+    if (!formData.lastName.trim()) newErrors.lastName = "Le nom est obligatoire";
+    if (!formData.address.trim()) newErrors.address = "L'adresse est obligatoire";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.firstName && formData.lastName && formData.address) {
+    if (validateForm()) {
       onNext();
     }
   };
 
   return (
     <div className="form-container">
-      <h2>Informations Personnelles</h2>
+      <div className="form-header">
+        <h2>📋 Étape 1/4 - Informations Personnelles</h2>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{width: '25%'}}></div>
+        </div>
+      </div>
+      
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Prénom *</label>
+          <label>👤 Prénom *</label>
           <input
             type="text"
             value={formData.firstName}
             onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+            placeholder="Votre prénom"
+            className={errors.firstName ? 'error' : ''}
             required
           />
+          {errors.firstName && <span className="error-message">{errors.firstName}</span>}
         </div>
+        
         <div className="form-group">
-          <label>Nom *</label>
+          <label>👤 Nom *</label>
           <input
             type="text"
             value={formData.lastName}
             onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+            placeholder="Votre nom de famille"
+            className={errors.lastName ? 'error' : ''}
             required
           />
+          {errors.lastName && <span className="error-message">{errors.lastName}</span>}
         </div>
+        
         <div className="form-group">
-          <label>Adresse exacte de votre maison *</label>
+          <label>🏠 Adresse exacte de votre domicile *</label>
           <input
             type="text"
             value={formData.address}
             onChange={(e) => setFormData({...formData, address: e.target.value})}
-            placeholder="Adresse complète avec code postal et ville"
+            placeholder="10 Avenue des Champs-Élysées, 75008 Paris"
+            className={errors.address ? 'error' : ''}
             required
           />
+          {errors.address && <span className="error-message">{errors.address}</span>}
+          <small>💡 Cette adresse sera utilisée pour calculer précisément votre potentiel solaire</small>
         </div>
+        
         <div className="form-buttons">
-          <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
-          <button type="submit" className="next-button">Suivant</button>
+          <button type="button" onClick={onPrevious} className="prev-button">⬅️ Précédent</button>
+          <button type="submit" className="next-button">Suivant ➡️</button>
         </div>
       </form>
     </div>
   );
 };
 
-// Formulaire étape 2 - Informations techniques
+// Formulaire étape 2 - Informations techniques amélioré
 const TechnicalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.roofSurface || formData.roofSurface < 10) newErrors.roofSurface = "Surface minimum : 10 m²";
+    if (!formData.roofOrientation) newErrors.roofOrientation = "Orientation obligatoire";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.roofSurface && formData.roofOrientation) {
+    if (validateForm()) {
       onNext();
     }
   };
 
+  const getOrientationAdvice = (orientation) => {
+    const advice = {
+      "Sud": "🌟 Excellente orientation ! Production optimale",
+      "Sud-Est": "👍 Très bonne orientation, production matinale",
+      "Sud-Ouest": "👍 Très bonne orientation, production tardive", 
+      "Est": "⚠️ Orientation correcte, production matinale",
+      "Ouest": "⚠️ Orientation correcte, production tardive"
+    };
+    return advice[orientation] || "";
+  };
+
   return (
     <div className="form-container">
-      <h2>Informations Techniques</h2>
+      <div className="form-header">
+        <h2>🏠 Étape 2/4 - Informations Techniques</h2>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{width: '50%'}}></div>
+        </div>
+      </div>
+      
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Surface de votre toiture la mieux orientée (m²) *</label>
+          <label>📐 Surface de votre toiture la mieux orientée (m²) *</label>
           <input
             type="number"
             value={formData.roofSurface}
             onChange={(e) => setFormData({...formData, roofSurface: e.target.value})}
+            placeholder="ex: 50"
             min="10"
             max="200"
+            className={errors.roofSurface ? 'error' : ''}
             required
           />
+          {errors.roofSurface && <span className="error-message">{errors.roofSurface}</span>}
+          <small>💡 Chaque panneau fait 2,1 m² - Surface minimum 10 m² (≈ 5 panneaux)</small>
         </div>
+        
         <div className="form-group">
-          <label>Orientation de votre toiture *</label>
+          <label>🧭 Orientation de votre toiture *</label>
           <select
             value={formData.roofOrientation}
             onChange={(e) => setFormData({...formData, roofOrientation: e.target.value})}
+            className={errors.roofOrientation ? 'error' : ''}
             required
           >
             <option value="">Sélectionnez une orientation</option>
-            <option value="Sud">Sud</option>
-            <option value="Sud-Est">Sud-Est</option>
-            <option value="Sud-Ouest">Sud-Ouest</option>
-            <option value="Est">Est</option>
-            <option value="Ouest">Ouest</option>
+            <option value="Sud">🌞 Sud (Optimal)</option>
+            <option value="Sud-Est">🌅 Sud-Est (Très bon)</option>
+            <option value="Sud-Ouest">🌇 Sud-Ouest (Très bon)</option>
+            <option value="Est">⬅️ Est (Correct)</option>
+            <option value="Ouest">➡️ Ouest (Correct)</option>
           </select>
+          {errors.roofOrientation && <span className="error-message">{errors.roofOrientation}</span>}
+          {formData.roofOrientation && (
+            <div className="orientation-advice">{getOrientationAdvice(formData.roofOrientation)}</div>
+          )}
         </div>
+        
         <div className="form-group">
-          <label>Y a-t-il des velux sur votre toiture ?</label>
+          <label>🪟 Nombre de velux sur votre toiture</label>
           <input
             type="number"
             value={formData.veluxCount}
             onChange={(e) => setFormData({...formData, veluxCount: e.target.value})}
             min="0"
             max="10"
-            placeholder="Nombre de velux (0 si aucun)"
+            placeholder="0 si aucun"
           />
+          <small>💡 Les velux peuvent limiter l'espace disponible pour les panneaux</small>
         </div>
+        
         <div className="form-buttons">
-          <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
-          <button type="submit" className="next-button">Suivant</button>
+          <button type="button" onClick={onPrevious} className="prev-button">⬅️ Précédent</button>
+          <button type="submit" className="next-button">Suivant ➡️</button>
         </div>
       </form>
     </div>
   );
 };
 
-// Formulaire étape 3 - Système de chauffage
+// Formulaire étape 3 - Système de chauffage amélioré
 const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.heatingSystem) newErrors.heatingSystem = "Système de chauffage obligatoire";
+    if (!formData.waterHeatingSystem) newErrors.waterHeatingSystem = "Système d'eau chaude obligatoire";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.heatingSystem && formData.waterHeatingSystem) {
+    if (validateForm()) {
       onNext();
     }
   };
 
+  const getHeatingAdvice = (heating) => {
+    if (heating.includes("électrique")) {
+      return "⚡ Parfait pour le solaire ! Vous consommez beaucoup d'électricité";
+    }
+    if (heating.includes("Pompe à chaleur")) {
+      return "🔥 Excellente synergie avec le solaire !";
+    }
+    return "🏠 Installation solaire rentable malgré le chauffage non-électrique";
+  };
+
   return (
     <div className="form-container">
-      <h2>Système de Chauffage et Eau Chaude</h2>
+      <div className="form-header">
+        <h2>🏠 Étape 3/4 - Chauffage et Eau Chaude</h2>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{width: '75%'}}></div>
+        </div>
+      </div>
+      
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Système de chauffage actuel *</label>
+          <label>🔥 Système de chauffage actuel *</label>
           <select
             value={formData.heatingSystem}
             onChange={(e) => setFormData({...formData, heatingSystem: e.target.value})}
+            className={errors.heatingSystem ? 'error' : ''}
             required
           >
             <option value="">Sélectionnez votre système</option>
-            <option value="Radiateurs électriques">Radiateurs électriques</option>
-            <option value="Chauffage électrique avec plancher chauffant">Chauffage électrique avec plancher chauffant</option>
-            <option value="Chaudière Gaz">Chaudière Gaz</option>
-            <option value="Chaudière Fuel">Chaudière Fuel</option>
-            <option value="Pompe à chaleur Air-Air réversible">Pompe à chaleur Air-Air réversible (chauffage et climatisation)</option>
-            <option value="Pompe à chaleur Air-Eau">Pompe à chaleur Air-Eau</option>
+            <option value="Radiateurs électriques">⚡ Radiateurs électriques</option>
+            <option value="Chauffage électrique avec plancher chauffant">⚡ Plancher chauffant électrique</option>
+            <option value="Chaudière Gaz">🔥 Chaudière Gaz</option>
+            <option value="Chaudière Fuel">🛢️ Chaudière Fuel</option>
+            <option value="Pompe à chaleur Air-Air réversible">❄️🔥 Pompe à chaleur Air-Air (réversible)</option>
+            <option value="Pompe à chaleur Air-Eau">💧🔥 Pompe à chaleur Air-Eau</option>
           </select>
+          {errors.heatingSystem && <span className="error-message">{errors.heatingSystem}</span>}
+          {formData.heatingSystem && (
+            <div className="heating-advice">{getHeatingAdvice(formData.heatingSystem)}</div>
+          )}
         </div>
+        
         <div className="form-group">
-          <label>Système d'eau chaude sanitaire *</label>
+          <label>💧 Système d'eau chaude sanitaire *</label>
           <select
             value={formData.waterHeatingSystem}
             onChange={(e) => setFormData({...formData, waterHeatingSystem: e.target.value})}
+            className={errors.waterHeatingSystem ? 'error' : ''}
             required
           >
             <option value="">Sélectionnez votre système</option>
-            <option value="Ballon électrique standard">Ballon électrique standard</option>
-            <option value="Ballon thermodynamique">Ballon thermodynamique</option>
+            <option value="Ballon électrique standard">⚡ Ballon électrique standard</option>
+            <option value="Ballon thermodynamique">🔄 Ballon thermodynamique</option>
           </select>
+          {errors.waterHeatingSystem && <span className="error-message">{errors.waterHeatingSystem}</span>}
         </div>
+        
         {formData.waterHeatingSystem && (
           <div className="form-group">
-            <label>Capacité du ballon (litres)</label>
+            <label>📏 Capacité du ballon (litres)</label>
             <input
               type="number"
               value={formData.waterHeatingCapacity}
@@ -232,22 +359,39 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
               min="50"
               max="500"
             />
+            <small>💡 Information optionnelle - Capacité standard : 150-300L</small>
           </div>
         )}
+        
         <div className="form-buttons">
-          <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
-          <button type="submit" className="next-button">Suivant</button>
+          <button type="button" onClick={onPrevious} className="prev-button">⬅️ Précédent</button>
+          <button type="submit" className="next-button">Suivant ➡️</button>
         </div>
       </form>
     </div>
   );
 };
 
-// Formulaire étape 4 - Consommation
+// Formulaire étape 4 - Consommation amélioré
 const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.annualConsumption || formData.annualConsumption < 1000) {
+      newErrors.annualConsumption = "Consommation minimum : 1000 kWh/an";
+    }
+    if (!formData.monthlyEdfPayment || formData.monthlyEdfPayment < 30) {
+      newErrors.monthlyEdfPayment = "Montant minimum : 30 €/mois";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.annualConsumption && formData.monthlyEdfPayment) {
+    if (validateForm()) {
       onNext();
     }
   };
@@ -257,24 +401,44 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
     return monthly * 11; // 11 mois comme spécifié
   };
 
+  const getConsumptionAdvice = (consumption) => {
+    if (consumption < 3000) return "🟢 Consommation faible - Kit 3-4 kW recommandé";
+    if (consumption < 6000) return "🟡 Consommation moyenne - Kit 5-6 kW recommandé";
+    if (consumption < 9000) return "🟠 Consommation élevée - Kit 7-8 kW recommandé";
+    return "🔴 Consommation très élevée - Kit 9 kW+ recommandé";
+  };
+
   return (
     <div className="form-container">
-      <h2>Consommation Électrique</h2>
+      <div className="form-header">
+        <h2>⚡ Étape 4/4 - Consommation Électrique</h2>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{width: '100%'}}></div>
+        </div>
+      </div>
+      
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Consommation annuelle en kWh *</label>
+          <label>📊 Consommation annuelle en kWh *</label>
           <input
             type="number"
             value={formData.annualConsumption}
             onChange={(e) => setFormData({...formData, annualConsumption: e.target.value})}
-            placeholder="ex: 4850"
+            placeholder="ex: 6500"
             min="1000"
             max="20000"
+            className={errors.annualConsumption ? 'error' : ''}
             required
           />
+          {errors.annualConsumption && <span className="error-message">{errors.annualConsumption}</span>}
+          {formData.annualConsumption && (
+            <div className="consumption-advice">{getConsumptionAdvice(formData.annualConsumption)}</div>
+          )}
+          <small>💡 Trouvez cette info sur votre facture EDF ou votre espace client</small>
         </div>
+        
         <div className="form-group">
-          <label>Mensualité prélevée chaque mois par EDF (€) *</label>
+          <label>💳 Mensualité prélevée par EDF (€) *</label>
           <input
             type="number"
             value={formData.monthlyEdfPayment}
@@ -286,27 +450,40 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
                 annualEdfPayment: calculateAnnualTotal(monthly)
               });
             }}
-            placeholder="ex: 150"
+            placeholder="ex: 180"
             min="30"
             max="500"
+            className={errors.monthlyEdfPayment ? 'error' : ''}
             required
           />
+          {errors.monthlyEdfPayment && <span className="error-message">{errors.monthlyEdfPayment}</span>}
+          <small>💡 Montant prélevé chaque mois sur votre compte</small>
         </div>
+        
         {formData.monthlyEdfPayment && (
           <div className="form-group">
-            <label>Total payé à l'année (€)</label>
+            <label>💰 Total payé à l'année (€)</label>
             <input
               type="number"
               value={formData.annualEdfPayment}
               readOnly
               className="readonly-field"
             />
-            <small>Calculé automatiquement : {formData.monthlyEdfPayment} € × 11 mois</small>
+            <small>Calculé automatiquement : {formData.monthlyEdfPayment} € × 11 mois = {formData.annualEdfPayment} €/an</small>
           </div>
         )}
+        
+        <div className="consumption-summary">
+          <h4>📋 Résumé de votre profil :</h4>
+          <p><strong>🏠</strong> {formData.firstName} {formData.lastName}</p>
+          <p><strong>📍</strong> {formData.address}</p>
+          <p><strong>📐</strong> {formData.roofSurface} m² - {formData.roofOrientation}</p>
+          <p><strong>⚡</strong> {formData.annualConsumption} kWh/an</p>
+        </div>
+        
         <div className="form-buttons">
-          <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
-          <button type="submit" className="next-button">Commencer le Calcul</button>
+          <button type="button" onClick={onPrevious} className="prev-button">⬅️ Précédent</button>
+          <button type="submit" className="next-button">🚀 Commencer le Calcul PVGIS</button>
         </div>
       </form>
     </div>
