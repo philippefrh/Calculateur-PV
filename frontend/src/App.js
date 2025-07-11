@@ -243,72 +243,177 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
   );
 };
 
-// Formulaire étape 4 - Consommation
-const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.annualConsumption && formData.monthlyEdfPayment) {
-      onNext();
+// Écran de calcul avec countdown 4 minutes
+const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
+  const [countdown, setCountdown] = useState(240); // 4 minutes = 240 secondes
+  const [currentPhase, setCurrentPhase] = useState(0);
+  const [calculationResults, setCalculationResults] = useState(null);
+  const [isCalculating, setIsCalculating] = useState(true);
+
+  // Phases d'explication pendant les 4 minutes
+  const phases = [
+    {
+      title: "Géolocalisation de votre adresse",
+      description: "Nous localisons précisément votre domicile pour obtenir les données d'ensoleillement...",
+      duration: 30
+    },
+    {
+      title: "Consultation PVGIS Commission Européenne",
+      description: "Récupération des données officielles d'ensoleillement et de production solaire...",
+      duration: 60
+    },
+    {
+      title: "Calcul de la production optimale",
+      description: "Analyse de votre consommation et optimisation du kit solaire...",
+      duration: 60
+    },
+    {
+      title: "Calculs financiers et d'amortissement",
+      description: "Calcul des économies, du financement et du retour sur investissement...",
+      duration: 90
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsCalculating(false);
+          performCalculation();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    // Changement de phase selon le temps écoulé
+    const elapsed = 240 - countdown;
+    let currentPhaseIndex = 0;
+    let totalDuration = 0;
+    
+    for (let i = 0; i < phases.length; i++) {
+      totalDuration += phases[i].duration;
+      if (elapsed < totalDuration) {
+        currentPhaseIndex = i;
+        break;
+      }
+    }
+    
+    setCurrentPhase(currentPhaseIndex);
+  }, [countdown]);
+
+  const performCalculation = async () => {
+    try {
+      // D'abord créer le client
+      const clientResponse = await axios.post(`${API}/clients`, {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        address: formData.address,
+        roof_surface: parseFloat(formData.roofSurface),
+        roof_orientation: formData.roofOrientation,
+        velux_count: parseInt(formData.veluxCount) || 0,
+        heating_system: formData.heatingSystem,
+        water_heating_system: formData.waterHeatingSystem,
+        water_heating_capacity: parseInt(formData.waterHeatingCapacity) || null,
+        annual_consumption_kwh: parseFloat(formData.annualConsumption),
+        monthly_edf_payment: parseFloat(formData.monthlyEdfPayment),
+        annual_edf_payment: parseFloat(formData.annualEdfPayment)
+      });
+
+      const clientId = clientResponse.data.id;
+
+      // Ensuite faire le calcul
+      const calculationResponse = await axios.post(`${API}/calculate/${clientId}`);
+      
+      setCalculationResults(calculationResponse.data);
+      onComplete(calculationResponse.data);
+
+    } catch (error) {
+      console.error('Erreur lors du calcul:', error);
+      alert('Erreur lors du calcul. Veuillez réessayer.');
     }
   };
 
-  // Calcul automatique du total annuel
-  const calculateAnnualTotal = (monthly) => {
-    return monthly * 11; // 11 mois comme spécifié
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const progressPercentage = ((240 - countdown) / 240) * 100;
+
+  if (!isCalculating && calculationResults) {
+    return <ResultsScreen results={calculationResults} onPrevious={onPrevious} />;
+  }
+
   return (
-    <div className="form-container">
-      <h2>Consommation Électrique</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Consommation annuelle en kWh *</label>
-          <input
-            type="number"
-            value={formData.annualConsumption}
-            onChange={(e) => setFormData({...formData, annualConsumption: e.target.value})}
-            placeholder="ex: 4850"
-            min="1000"
-            max="20000"
-            required
+    <div className="calculation-screen">
+      <h2>Calcul en cours de votre solution solaire</h2>
+      
+      <div className="countdown-circle">
+        <svg width="200" height="200" className="countdown-svg">
+          <circle
+            cx="100"
+            cy="100"
+            r="90"
+            stroke="#e0e0e0"
+            strokeWidth="10"
+            fill="none"
           />
-        </div>
-        <div className="form-group">
-          <label>Mensualité prélevée chaque mois par EDF (€) *</label>
-          <input
-            type="number"
-            value={formData.monthlyEdfPayment}
-            onChange={(e) => {
-              const monthly = e.target.value;
-              setFormData({
-                ...formData, 
-                monthlyEdfPayment: monthly,
-                annualEdfPayment: calculateAnnualTotal(monthly)
-              });
-            }}
-            placeholder="ex: 150"
-            min="30"
-            max="500"
-            required
+          <circle
+            cx="100"
+            cy="100"
+            r="90"
+            stroke="#ff6b35"
+            strokeWidth="10"
+            fill="none"
+            strokeDasharray={`${progressPercentage * 5.65} 565`}
+            strokeLinecap="round"
+            className="progress-circle"
           />
+        </svg>
+        <div className="countdown-text">
+          <div className="countdown-number">{formatTime(countdown)}</div>
+          <div className="countdown-label">minutes</div>
         </div>
-        {formData.monthlyEdfPayment && (
-          <div className="form-group">
-            <label>Total payé à l'année (€)</label>
-            <input
-              type="number"
-              value={formData.annualEdfPayment}
-              readOnly
-              className="readonly-field"
-            />
-            <small>Calculé automatiquement : {formData.monthlyEdfPayment} € × 11 mois</small>
-          </div>
-        )}
-        <div className="form-buttons">
-          <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
-          <button type="submit" className="next-button">Commencer le Calcul</button>
+      </div>
+
+      <div className="calculation-phase">
+        <h3>{phases[currentPhase]?.title}</h3>
+        <p>{phases[currentPhase]?.description}</p>
+      </div>
+
+      <div className="calculation-info">
+        <div className="info-item">
+          <strong>Client :</strong> {formData.firstName} {formData.lastName}
         </div>
-      </form>
+        <div className="info-item">
+          <strong>Adresse :</strong> {formData.address}
+        </div>
+        <div className="info-item">
+          <strong>Surface toiture :</strong> {formData.roofSurface} m²
+        </div>
+        <div className="info-item">
+          <strong>Orientation :</strong> {formData.roofOrientation}
+        </div>
+        <div className="info-item">
+          <strong>Consommation :</strong> {formData.annualConsumption} kWh/an
+        </div>
+      </div>
+
+      <div className="calculation-note">
+        <p><strong>Données source PVGIS Commission Européenne</strong></p>
+        <p>Ce temps nous permet d'expliquer le fonctionnement de votre future installation</p>
+      </div>
+
+      <div className="form-buttons">
+        <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
+      </div>
     </div>
   );
 };
