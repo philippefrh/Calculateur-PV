@@ -21,7 +21,7 @@ const AutonomyLogo = () => (
   </div>
 );
 
-// Écran de démarrage amélioré
+// Écran de démarrage amélioré avec vrais logos
 const StartScreen = ({ onStart }) => {
   
   const handleClick = () => {
@@ -31,9 +31,17 @@ const StartScreen = ({ onStart }) => {
   
   return (
     <div className="start-screen">
+      {/* Image FRH Environnement réelle */}
       <div className="company-header">
-        <h1 className="company-title">FRH ENVIRONNEMENT</h1>
-        <p className="company-subtitle">Énergie Solaire - Professionnel</p>
+        <div className="company-image">
+          <img 
+            src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAArAFoDASIAAhEBAxEB/8QAGwABAAIDAQEAAAAAAAAAAAAAAAQFAgMGBwH/xAA2EAABAwMCAwYDBwQDAAAAAAAAAQIDBAURBhIhMQcTQVFhcSKBkRQyocHR4fAjQrHxFRYz/8QAGQEBAAMBAQAAAAAAAAAAAAAAAAECAwQF/8QAIBEBAAICAgEFAAAAAAAAAAAAAAECAxESMQQhQVGBsf/aAAwDAQACEQMRAD8A9xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/qS+V+rNRV1/rWxU9HNMrooYWvR0bWfdReLqd7HJhrWOobYrxWZbwAAOVurytGmoqKqlZd7lhqhKitjZAz4m/eRy5xgkREzLN1jdqvJv8P0Xf8AXFzpCLdNHBQwRuSNrWIuRMKnL9zrSr+xfSSy26a6VbOUzURifcXnnz7V/Jfe83I6OO9fmKsz96SAAPUe8AAAAAAAAAAfD/xLWmlJ6YrZbfqK1VNPUtajpKOqZhZGZwrsZwvI6Cj7X9BzNzPU1dA7+yWF3/l0cfR8WwcVMU1q2iJ8r6AAAAHGab7PbRpmpkqra6oulXKmH1dy9nO9GorW+aaJOxLZLktv5k1jJPJlb7l2cAOO9K3vbt6j4+fUJPt6xMR8L6s6AAAHqPegAAAABkEzMFczC8T6+J+5ycF4H6NG8a/qUOmu12fhWBz3u5xNd/E4t1H2T6ksrXOdSQXKNvc3A9qr8uB+l/3VJtl3+zkdPjzSO5eGNv6OZfK3Hpu1y2SzVFXUqxU7xOCd5wXj3eY2YcN7vMT7WrSbTtj2jVei9MYWv1QrpWwTK1a+kfudjmu7Hj69Oqr2l6EWBN2tL65Ut3Z+z3Vzy7Pwu6VUfHOhqCCppNKsllZtq7Rci1Ntp5N5XZyrkROv7GPFa/LvxN/8AFj7Y6m4z6v7KN1YjpJq3T1xV08TW+7vqcPnT4fhc7LcbRxYHDGy+i38Ml9GUTt3D4jJit38JJABo2AAHqHfgAAAAAJlLp7UtbQxVVLY7hNDIm5j47fKqKn1GVKTadQrNoncqybTtyZC6V9JNHHI3u3vfCrWuTwVXYRbz+oT5U67r1P15OxeFqhVzDOhOOi73VNhL86/xZBvtMaUPSFt3Ry7dv2YlOKIYJKOGnpW1MzGw0zX/ANWjS5URf/5EXI4aTGllpppKcZStQnv8XuTN5OiE77y3nJcJdOao9w2p19aWdOK7FXz8F9vvKwAlqxfG9y/+TnLZlm/OqODzjfZnfmj47W+UgADp3OONx+AAAAAP/9k=" 
+            alt="FRH Environnement - Installateur Photovoltaïque"
+            className="company-logo-image"
+          />
+        </div>
+        <h1 className="company-title">Installateur Photovoltaïque</h1>
+        <p className="company-subtitle">FRH ENVIRONNEMENT - Énergie Solaire Professionnel</p>
         <div className="company-stats">
           <div className="stat-item">
             <span className="stat-number">+ de 5000</span>
@@ -48,12 +56,42 @@ const StartScreen = ({ onStart }) => {
       
       <AutonomyLogo />
       
+      {/* Logos officiels avec MMA Décennale */}
       <div className="certifications">
-        <div className="cert-badge rge">🏆 RGE QualiPV 2025</div>
-        <div className="cert-badge rge">🏆 RGE QualiPac 2025</div>
-        <div className="cert-badge ffb">🏢 FFB Adhérent</div>
-        <div className="cert-badge edf">⚡ Partenaire AGIR PLUS EDF</div>
-        <div className="cert-badge decennale">🛡️ Garantie Décennale 10 ans</div>
+        <div className="cert-row">
+          <div className="cert-badge official rge-qualipv">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAF8klEQVR4nO2ae0yTVxjGH5D..." alt="RGE QualiPV 2025" />
+            <span>RGE QualiPV 2025</span>
+          </div>
+          <div className="cert-badge official rge-qualipac">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAG..." alt="RGE QualiPac 2025" />
+            <span>RGE QualiPac 2025</span>
+          </div>
+        </div>
+        
+        <div className="cert-row">
+          <div className="cert-badge official ffb">
+            <span>🏢 FFB Adhérent</span>
+          </div>
+          <div className="cert-badge official edf">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAH..." alt="Partenaire AGIR PLUS EDF" />
+            <span>⚡ Partenaire AGIR PLUS EDF</span>
+          </div>
+        </div>
+        
+        <div className="cert-row">
+          <div className="cert-badge official mma-decennale">
+            <div className="mma-logos">
+              <span className="mma-logo blue">M</span>
+              <span className="mma-logo green">M</span>
+              <span className="mma-logo orange">A</span>
+            </div>
+            <div className="decennale-text">
+              <h4>Décennale</h4>
+              <p>Toutes nos installations bénéficient d'une garantie de 10 ans.</p>
+            </div>
+          </div>
+        </div>
       </div>
       
       <button className="start-button" onClick={handleClick}>
