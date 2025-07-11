@@ -330,7 +330,7 @@ async def calculate_solar_solution(client_id: str):
             monthly_savings=monthly_savings,
             financing_options=financing_options,
             pvgis_annual_production=annual_production,
-            pvgis_monthly_data=pvgis_data["monthly_data"]
+            pvgis_monthly_data=pvgis_data["monthly_data"].get("fixed", []) if isinstance(pvgis_data["monthly_data"], dict) else pvgis_data["monthly_data"]
         )
         
         # Update client with calculation results
