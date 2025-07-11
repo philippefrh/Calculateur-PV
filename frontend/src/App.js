@@ -764,7 +764,7 @@ Cordialement`);
                   <strong>Suivi:</strong> Application mobile temps réel
                 </div>
                 <div className="tech-item">
-                  <strong>Installation:</strong> Intégration toiture étanche
+                  <strong>Installation:</strong> En surimposition toiture
                 </div>
               </div>
             </div>
