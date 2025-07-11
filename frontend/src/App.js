@@ -561,33 +561,55 @@ const ResultsScreen = ({ results, onPrevious }) => {
     </div>
   );
 };
+// Écran de calcul avec countdown 4 minutes - Version Premium
 const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
   const [countdown, setCountdown] = useState(240); // 4 minutes = 240 secondes
   const [currentPhase, setCurrentPhase] = useState(0);
   const [calculationResults, setCalculationResults] = useState(null);
   const [isCalculating, setIsCalculating] = useState(true);
+  const [currentAnimation, setCurrentAnimation] = useState(0);
 
-  // Phases d'explication pendant les 4 minutes
+  // Phases d'explication pendant les 4 minutes avec animations
   const phases = [
     {
-      title: "Géolocalisation de votre adresse",
-      description: "Nous localisons précisément votre domicile pour obtenir les données d'ensoleillement...",
-      duration: 30
+      title: "🌍 Géolocalisation de votre adresse",
+      description: "Nous localisons précisément votre domicile pour obtenir les données d'ensoleillement de la Commission Européenne PVGIS...",
+      duration: 60,
+      tips: [
+        "💡 Nous utilisons les coordonnées GPS exactes",
+        "🌞 Calcul de l'irradiation solaire spécifique à votre région",
+        "📊 Données météorologiques sur 15 ans"
+      ]
     },
     {
-      title: "Consultation PVGIS Commission Européenne",
-      description: "Récupération des données officielles d'ensoleillement et de production solaire...",
-      duration: 60
+      title: "🔬 Consultation PVGIS Commission Européenne",
+      description: "Récupération des données officielles d'ensoleillement et calcul de la production solaire optimale...",
+      duration: 60,
+      tips: [
+        "🏛️ Base de données officielle européenne",
+        "⚡ Calcul selon l'orientation " + formData.roofOrientation,
+        "📈 Production mensuelle détaillée"
+      ]
     },
     {
-      title: "Calcul de la production optimale",
-      description: "Analyse de votre consommation et optimisation du kit solaire...",
-      duration: 60
+      title: "🔧 Optimisation de votre installation",
+      description: "Analyse de votre consommation (" + formData.annualConsumption + " kWh/an) et sélection du kit optimal...",
+      duration: 60,
+      tips: [
+        "🏠 Surface disponible: " + formData.roofSurface + " m²",
+        "⚡ Système: " + formData.heatingSystem,
+        "🎯 Recherche du meilleur rapport autonomie/investissement"
+      ]
     },
     {
-      title: "Calculs financiers et d'amortissement",
-      description: "Calcul des économies, du financement et du retour sur investissement...",
-      duration: 90
+      title: "💰 Calculs financiers et d'amortissement",
+      description: "Calcul des économies, du financement optimal et du retour sur investissement...",
+      duration: 59,
+      tips: [
+        "💳 Mensualité actuelle: " + formData.monthlyEdfPayment + " €/mois",
+        "🏦 Simulation sur 6 à 15 ans",
+        "🎁 Calcul des aides (Prime + TVA)"
+      ]
     }
   ];
 
@@ -624,8 +646,19 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
     setCurrentPhase(currentPhaseIndex);
   }, [countdown]);
 
+  useEffect(() => {
+    // Animation des tips
+    const animTimer = setInterval(() => {
+      setCurrentAnimation(prev => (prev + 1) % 3);
+    }, 2000);
+
+    return () => clearInterval(animTimer);
+  }, []);
+
   const performCalculation = async () => {
     try {
+      setCurrentPhase(phases.length); // Phase finale
+      
       // D'abord créer le client
       const clientResponse = await axios.post(`${API}/clients`, {
         first_name: formData.firstName,
@@ -644,15 +677,15 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
 
       const clientId = clientResponse.data.id;
 
-      // Ensuite faire le calcul
+      // Ensuite faire le calcul PVGIS
       const calculationResponse = await axios.post(`${API}/calculate/${clientId}`);
       
       setCalculationResults(calculationResponse.data);
-      onComplete(calculationResponse.data);
+      setTimeout(() => onComplete(calculationResponse.data), 2000);
 
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
-      alert('Erreur lors du calcul. Veuillez réessayer.');
+      alert('Erreur lors du calcul. Veuillez vérifier votre adresse et réessayer.');
     }
   };
 
@@ -665,71 +698,133 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
   const progressPercentage = ((240 - countdown) / 240) * 100;
 
   if (!isCalculating && calculationResults) {
-    return <ResultsScreen results={calculationResults} onPrevious={onPrevious} />;
+    return (
+      <div className="calculation-screen success">
+        <div className="success-animation">
+          <div className="success-circle">✅</div>
+          <h2>🎉 Calcul terminé avec succès !</h2>
+          <p>Votre solution solaire personnalisée est prête</p>
+          
+          <div className="quick-results">
+            <div className="quick-result-item">
+              <span className="quick-number">{calculationResults.kit_power} kW</span>
+              <span className="quick-label">Kit recommandé</span>
+            </div>
+            <div className="quick-result-item">
+              <span className="quick-number">{Math.round(calculationResults.autonomy_percentage)}%</span>
+              <span className="quick-label">Autonomie</span>
+            </div>
+            <div className="quick-result-item">
+              <span className="quick-number">{Math.round(calculationResults.estimated_savings)} €</span>
+              <span className="quick-label">Économies/an</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="calculation-screen">
-      <h2>Calcul en cours de votre solution solaire</h2>
+      <div className="calculation-header">
+        <h2>🚀 Calcul de votre solution solaire en cours</h2>
+        <p>Analyse PVGIS Commission Européenne - Données officielles</p>
+      </div>
       
-      <div className="countdown-circle">
-        <svg width="200" height="200" className="countdown-svg">
-          <circle
-            cx="100"
-            cy="100"
-            r="90"
-            stroke="#e0e0e0"
-            strokeWidth="10"
-            fill="none"
-          />
-          <circle
-            cx="100"
-            cy="100"
-            r="90"
-            stroke="#ff6b35"
-            strokeWidth="10"
-            fill="none"
-            strokeDasharray={`${progressPercentage * 5.65} 565`}
-            strokeLinecap="round"
-            className="progress-circle"
-          />
-        </svg>
-        <div className="countdown-text">
-          <div className="countdown-number">{formatTime(countdown)}</div>
-          <div className="countdown-label">minutes</div>
+      <div className="countdown-section">
+        <div className="countdown-circle">
+          <svg width="200" height="200" className="countdown-svg">
+            <circle
+              cx="100"
+              cy="100"
+              r="90"
+              stroke="#e0e0e0"
+              strokeWidth="8"
+              fill="none"
+            />
+            <circle
+              cx="100"
+              cy="100"
+              r="90"
+              stroke="url(#gradient)"
+              strokeWidth="8"
+              fill="none"
+              strokeDasharray={`${progressPercentage * 5.65} 565`}
+              strokeLinecap="round"
+              className="progress-circle"
+            />
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#ff6b35" />
+                <stop offset="100%" stopColor="#4caf50" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div className="countdown-text">
+            <div className="countdown-number">{formatTime(countdown)}</div>
+            <div className="countdown-label">restantes</div>
+            <div className="countdown-progress">{Math.round(progressPercentage)}%</div>
+          </div>
         </div>
       </div>
 
       <div className="calculation-phase">
         <h3>{phases[currentPhase]?.title}</h3>
         <p>{phases[currentPhase]?.description}</p>
+        
+        <div className="phase-tips">
+          {phases[currentPhase]?.tips.map((tip, index) => (
+            <div 
+              key={index} 
+              className={`tip-item ${index === currentAnimation ? 'active' : ''}`}
+            >
+              {tip}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="calculation-info">
-        <div className="info-item">
-          <strong>Client :</strong> {formData.firstName} {formData.lastName}
-        </div>
-        <div className="info-item">
-          <strong>Adresse :</strong> {formData.address}
-        </div>
-        <div className="info-item">
-          <strong>Surface toiture :</strong> {formData.roofSurface} m²
-        </div>
-        <div className="info-item">
-          <strong>Orientation :</strong> {formData.roofOrientation}
-        </div>
-        <div className="info-item">
-          <strong>Consommation :</strong> {formData.annualConsumption} kWh/an
+        <div className="info-section">
+          <h4>📋 Récapitulatif de votre demande</h4>
+          <div className="info-grid">
+            <div className="info-item">
+              <span className="info-label">👤 Client :</span>
+              <span className="info-value">{formData.firstName} {formData.lastName}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">📍 Adresse :</span>
+              <span className="info-value">{formData.address}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">🏠 Surface :</span>
+              <span className="info-value">{formData.roofSurface} m²</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">🧭 Orientation :</span>
+              <span className="info-value">{formData.roofOrientation}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">⚡ Consommation :</span>
+              <span className="info-value">{formData.annualConsumption} kWh/an</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">💳 Facture EDF :</span>
+              <span className="info-value">{formData.monthlyEdfPayment} €/mois</span>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="calculation-note">
-        <p><strong>Données source PVGIS Commission Européenne</strong></p>
-        <p>Ce temps nous permet d'expliquer le fonctionnement de votre future installation</p>
+        <div className="note-content">
+          <h4>🏛️ Données source PVGIS Commission Européenne</h4>
+          <p>Ce temps nous permet d'expliquer le fonctionnement de votre future installation et de calculer précisément votre potentiel solaire selon les données météorologiques officielles européennes.</p>
+        </div>
       </div>
 
       <div className="form-buttons">
-        <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
+        <button type="button" onClick={onPrevious} className="prev-button">⬅️ Précédent</button>
       </div>
     </div>
   );
