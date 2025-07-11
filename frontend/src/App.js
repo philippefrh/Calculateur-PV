@@ -490,73 +490,429 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
   );
 };
 
-// Écran de résultats
+// Écran de résultats - Version Premium avec génération PDF
 const ResultsScreen = ({ results, onPrevious }) => {
-  const generatePDF = () => {
-    // TODO: Implémenter la génération PDF
-    alert('Génération PDF - À implémenter');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [showFinancing, setShowFinancing] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  const generatePDF = async () => {
+    try {
+      setIsGeneratingPDF(true);
+      
+      // Afficher un message de génération
+      const notification = document.createElement('div');
+      notification.className = 'pdf-notification';
+      notification.innerHTML = '📄 Génération du rapport PDF en cours...';
+      document.body.appendChild(notification);
+      
+      // Appel à l'API pour générer le PDF
+      const response = await fetch(`${API}/generate-pdf/${results.client_id}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/pdf',
+        },
+      });
+      
+      if (response.ok) {
+        // Créer un blob et télécharger le fichier
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Nom du fichier avec date
+        const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        link.download = `etude_solaire_FRH_${today}.pdf`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        // Message de succès
+        notification.innerHTML = '✅ Rapport PDF téléchargé avec succès !';
+        notification.style.backgroundColor = '#4caf50';
+        
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 3000);
+      } else {
+        throw new Error('Erreur lors de la génération du PDF');
+      }
+    } catch (error) {
+      console.error('Erreur PDF:', error);
+      alert(`❌ Erreur lors de la génération du PDF: ${error.message}\n\nVeuillez réessayer ou contacter le support.`);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  const getAutonomyColor = (percentage) => {
+    if (percentage >= 80) return '#4caf50';
+    if (percentage >= 60) return '#ff9800';
+    return '#f44336';
+  };
+
+  const getOptimalFinancing = () => {
+    if (!results.financing_options) return null;
+    return results.financing_options.find(option => 
+      option.difference_vs_savings >= -20 && option.difference_vs_savings <= 20
+    ) || results.financing_options[results.financing_options.length - 1];
+  };
+
+  const optimalFinancing = getOptimalFinancing();
+
+  const sendToExpert = () => {
+    const subject = encodeURIComponent(`Demande de rendez-vous - Étude solaire ${results.kit_power}kW`);
+    const body = encodeURIComponent(`Bonjour,
+
+Suite à mon étude solaire personnalisée, je souhaiterais prendre rendez-vous pour finaliser mon projet d'installation.
+
+Résumé de mon étude :
+- Kit recommandé : ${results.kit_power}kW (${results.panel_count} panneaux)
+- Production estimée : ${Math.round(results.estimated_production)} kWh/an
+- Autonomie : ${Math.round(results.autonomy_percentage)}%
+- Économies : ${Math.round(results.estimated_savings)} €/an
+- Investissement : ${results.kit_price?.toLocaleString()} € TTC
+
+Je suis disponible pour un rendez-vous dans les prochains jours.
+
+Cordialement`);
+    
+    window.open(`mailto:contact@francerenovhabitat.com?subject=${subject}&body=${body}`);
   };
 
   return (
     <div className="results-screen">
-      <h2>✅ Votre Solution Solaire Personnalisée</h2>
-      
-      <div className="results-grid">
-        <div className="result-card primary">
-          <h3>Kit Recommandé</h3>
-          <div className="big-number">{results.kit_power} kW</div>
-          <p>{results.panel_count} panneaux de 500W</p>
-          <p className="price">{results.kit_price?.toLocaleString()} € TTC</p>
+      <div className="results-header">
+        <h2>🎉 Votre Solution Solaire Personnalisée</h2>
+        <p>Étude réalisée avec les données officielles PVGIS Commission Européenne</p>
+        
+        <div className="success-badges">
+          <div className="badge-item">
+            <span className="badge-icon">🏆</span>
+            <span>RGE QualiPV</span>
+          </div>
+          <div className="badge-item">
+            <span className="badge-icon">🛡️</span>
+            <span>Garantie 10 ans</span>
+          </div>
+          <div className="badge-item">
+            <span className="badge-icon">⚡</span>
+            <span>PVGIS Officiel</span>
+          </div>
         </div>
-
-        <div className="result-card">
-          <h3>Production Annuelle</h3>
-          <div className="big-number">{Math.round(results.estimated_production)} kWh</div>
-          <p>Données source PVGIS Commission Européenne</p>
-          <p>Orientation: {results.orientation}</p>
-        </div>
-
-        <div className="result-card">
-          <h3>Autonomie</h3>
-          <div className="big-number">{Math.round(results.autonomy_percentage)}%</div>
-          <p>Autoconsommation estimée</p>
-        </div>
-
-        <div className="result-card success">
-          <h3>Économies Annuelles</h3>
-          <div className="big-number">{Math.round(results.estimated_savings)} €</div>
-          <p>Soit {Math.round(results.monthly_savings)} €/mois</p>
+        
+        <div className="results-tabs">
+          <button 
+            className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            📊 Vue d'ensemble
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'technical' ? 'active' : ''}`}
+            onClick={() => setActiveTab('technical')}
+          >
+            🔧 Détails techniques
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'financial' ? 'active' : ''}`}
+            onClick={() => setActiveTab('financial')}
+          >
+            💰 Analyse financière
+          </button>
         </div>
       </div>
+      
+      {activeTab === 'overview' && (
+        <div className="tab-content">
+          <div className="results-grid">
+            <div className="result-card primary">
+              <div className="card-icon">⚡</div>
+              <h3>Kit Solaire Optimal</h3>
+              <div className="big-number">{results.kit_power} kW</div>
+              <p>{results.panel_count} panneaux de 500W</p>
+              <p className="price">{results.kit_price?.toLocaleString()} € TTC</p>
+              <div className="card-footer">
+                <small>Surface nécessaire: {results.panel_count * 2.1} m²</small>
+              </div>
+            </div>
 
-      <div className="financing-section">
-        <h3>💰 Financement et Aides</h3>
-        <div className="financing-grid">
-          <div className="financing-card">
-            <h4>Aides Disponibles</h4>
-            <p>Prime autoconsommation: <strong>{results.autoconsumption_aid} €</strong></p>
-            {results.tva_refund > 0 && (
-              <p>TVA remboursée: <strong>{Math.round(results.tva_refund)} €</strong></p>
-            )}
-            <p className="total-aids">Total aides: <strong>{Math.round(results.total_aids)} €</strong></p>
+            <div className="result-card success">
+              <div className="card-icon">🔋</div>
+              <h3>Autonomie Énergétique</h3>
+              <div className="big-number" style={{color: getAutonomyColor(results.autonomy_percentage)}}>
+                {Math.round(results.autonomy_percentage)}%
+              </div>
+              <p>Autoconsommation optimisée</p>
+              <div className="autonomy-bar">
+                <div 
+                  className="autonomy-fill" 
+                  style={{
+                    width: `${results.autonomy_percentage}%`,
+                    backgroundColor: getAutonomyColor(results.autonomy_percentage)
+                  }}
+                ></div>
+              </div>
+            </div>
+
+            <div className="result-card production">
+              <div className="card-icon">☀️</div>
+              <h3>Production Annuelle</h3>
+              <div className="big-number">{Math.round(results.estimated_production)} kWh</div>
+              <p>Données PVGIS officielles</p>
+              <p>Orientation: {results.orientation}</p>
+              <div className="card-footer">
+                <small>Soit {Math.round(results.estimated_production/365)} kWh/jour</small>
+              </div>
+            </div>
+
+            <div className="result-card savings">
+              <div className="card-icon">💰</div>
+              <h3>Économies Garanties</h3>
+              <div className="big-number">{Math.round(results.estimated_savings)} €</div>
+              <p>Soit {Math.round(results.monthly_savings)} €/mois</p>
+              <div className="savings-breakdown">
+                <small>Autoconsommation: {Math.round(results.autoconsumption_kwh)} kWh</small>
+                <small>Surplus vendu: {Math.round(results.surplus_kwh)} kWh</small>
+              </div>
+            </div>
           </div>
-          
-          <div className="financing-card">
-            <h4>Financement Optimal</h4>
-            {results.financing_options && results.financing_options.length > 0 && (
-              <div>
-                <p>Durée recommandée: <strong>{results.financing_options[0].duration_years} ans</strong></p>
-                <p>Mensualité: <strong>{Math.round(results.financing_options[0].monthly_payment)} €</strong></p>
-                <p>Économie mensuelle: <strong>{Math.round(results.monthly_savings)} €</strong></p>
+
+          <div className="impact-section">
+            <h3>🌱 Impact Environnemental</h3>
+            <div className="impact-grid">
+              <div className="impact-card">
+                <h4>🌳 CO₂ évité</h4>
+                <p className="impact-value">{Math.round(results.estimated_production * 0.0571)} kg/an</p>
+                <small>Équivalent à {Math.round(results.estimated_production * 0.0571 / 25)} arbres plantés</small>
+              </div>
+              <div className="impact-card">
+                <h4>🏠 Plus-value immobilière</h4>
+                <p className="impact-value">Classe A/B</p>
+                <small>Augmentation significative de la valeur du bien</small>
+              </div>
+              <div className="impact-card">
+                <h4>⚡ Indépendance</h4>
+                <p className="impact-value">{Math.round(results.autonomy_percentage)}% autonome</p>
+                <small>Protection contre la hausse des tarifs</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'technical' && (
+        <div className="tab-content">
+          <div className="technical-details">
+            <div className="tech-section">
+              <h3>🔧 Spécifications techniques</h3>
+              <div className="tech-grid">
+                <div className="tech-item">
+                  <strong>Panneaux:</strong> {results.panel_count} × 500W monocristallin
+                </div>
+                <div className="tech-item">
+                  <strong>Onduleur:</strong> Hoymiles haute performance (99,8%)
+                </div>
+                <div className="tech-item">
+                  <strong>Garanties:</strong> 25 ans production + 10 ans décennale
+                </div>
+                <div className="tech-item">
+                  <strong>Système:</strong> Anti-surtension intégré + arrêt rapide
+                </div>
+                <div className="tech-item">
+                  <strong>Suivi:</strong> Application mobile temps réel
+                </div>
+                <div className="tech-item">
+                  <strong>Installation:</strong> Intégration toiture étanche
+                </div>
+              </div>
+            </div>
+
+            <div className="monthly-production">
+              <h3>📊 Production mensuelle détaillée</h3>
+              <div className="monthly-chart">
+                {results.pvgis_monthly_data?.map((month) => (
+                  <div key={month.month} className="month-bar">
+                    <div 
+                      className="bar" 
+                      style={{height: `${(month.E_m / Math.max(...results.pvgis_monthly_data.map(m => m.E_m))) * 100}%`}}
+                    ></div>
+                    <span className="month-label">{['J','F','M','A','M','J','J','A','S','O','N','D'][month.month-1]}</span>
+                    <span className="month-value">{Math.round(month.E_m)} kWh</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="coordinates-info">
+              <h3>🌍 Données géographiques</h3>
+              <p><strong>Coordonnées:</strong> {results.coordinates?.lat.toFixed(4)}°N, {results.coordinates?.lon.toFixed(4)}°E</p>
+              <p><strong>Source:</strong> {results.pvgis_source}</p>
+              <p><strong>Irradiation globale:</strong> ~{Math.round(results.estimated_production / results.kit_power)} kWh/kWc/an</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'financial' && (
+        <div className="tab-content">
+          <div className="financing-section">
+            <h3>💰 Analyse financière complète</h3>
+            
+            <div className="financial-summary">
+              <div className="financial-item">
+                <span className="financial-label">💳 Investissement:</span>
+                <span className="financial-value">{results.kit_price?.toLocaleString()} € TTC</span>
+              </div>
+              <div className="financial-item">
+                <span className="financial-label">🎁 Aides totales:</span>
+                <span className="financial-value success">-{Math.round(results.total_aids)} €</span>
+              </div>
+              <div className="financial-item">
+                <span className="financial-label">💸 Reste à financer:</span>
+                <span className="financial-value">{(results.kit_price - results.total_aids).toLocaleString()} €</span>
+              </div>
+              <div className="financial-item">
+                <span className="financial-label">⏱️ Retour sur investissement:</span>
+                <span className="financial-value">{Math.round((results.kit_price - results.total_aids) / results.estimated_savings)} ans</span>
+              </div>
+            </div>
+
+            <div className="aids-breakdown">
+              <h4>🎁 Détail des aides disponibles</h4>
+              <div className="aid-item">
+                <span>Prime autoconsommation EDF (versée à M+6):</span>
+                <span className="aid-amount">{results.autoconsumption_aid} €</span>
+              </div>
+              {results.tva_refund > 0 && (
+                <div className="aid-item">
+                  <span>TVA remboursée 20% (versée à M+12):</span>
+                  <span className="aid-amount">{Math.round(results.tva_refund)} €</span>
+                </div>
+              )}
+              <div className="aid-item total-aid">
+                <span><strong>Total des aides récupérables:</strong></span>
+                <span className="aid-amount"><strong>{Math.round(results.total_aids)} €</strong></span>
+              </div>
+            </div>
+
+            {optimalFinancing && (
+              <div className="optimal-financing">
+                <h4>🏦 Financement optimal recommandé</h4>
+                <div className="financing-card highlighted">
+                  <div className="financing-header">
+                    <h5>⭐ Financement sur {optimalFinancing.duration_years} ans</h5>
+                    <span className="recommended-badge">Recommandé</span>
+                  </div>
+                  <div className="financing-details">
+                    <div className="financing-row">
+                      <span>Mensualité crédit:</span>
+                      <span className="amount">{Math.round(optimalFinancing.monthly_payment)} €/mois</span>
+                    </div>
+                    <div className="financing-row">
+                      <span>Économie EDF:</span>
+                      <span className="amount success">{Math.round(results.monthly_savings)} €/mois</span>
+                    </div>
+                    <div className="financing-row">
+                      <span>Reste à charge:</span>
+                      <span className={`amount ${optimalFinancing.difference_vs_savings < 0 ? 'success' : 'warning'}`}>
+                        {optimalFinancing.difference_vs_savings > 0 ? '+' : ''}{Math.round(optimalFinancing.difference_vs_savings)} €/mois
+                      </span>
+                    </div>
+                  </div>
+                  <div className="financing-benefits">
+                    <p>✅ 6 premiers mois GRATUITS (0€ pendant l'installation)</p>
+                    <p>✅ Remboursement anticipé possible sans pénalités</p>
+                    <p>✅ Taux fixe 4,96% TAEG sur toute la durée</p>
+                    <p>✅ Possibilité de déduire les aides du capital</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <button 
+              className="show-all-financing-btn"
+              onClick={() => setShowFinancing(!showFinancing)}
+            >
+              {showFinancing ? '📊 Masquer' : '📊 Voir toutes les options'} de financement
+            </button>
+
+            {showFinancing && (
+              <div className="all-financing-options">
+                <h4>📊 Toutes les options de financement disponibles</h4>
+                <div className="financing-table">
+                  <div className="table-header">
+                    <span>Durée</span>
+                    <span>Mensualité</span>
+                    <span>Coût total</span>
+                    <span>Différence vs économies</span>
+                  </div>
+                  {results.financing_options?.map((option, index) => (
+                    <div key={index} className="table-row">
+                      <span>{option.duration_years} ans</span>
+                      <span>{Math.round(option.monthly_payment)} €</span>
+                      <span>{Math.round(option.total_cost).toLocaleString()} €</span>
+                      <span className={Math.abs(option.difference_vs_savings) < 20 ? 'success' : 'warning'}>
+                        {option.difference_vs_savings > 0 ? '+' : ''}{Math.round(option.difference_vs_savings)} €/mois
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="form-buttons">
-        <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
-        <button type="button" onClick={generatePDF} className="pdf-button">📄 Générer le Rapport PDF</button>
+      <div className="results-footer">
+        <div className="action-buttons">
+          <button type="button" onClick={onPrevious} className="prev-button">⬅️ Modifier les données</button>
+          <button 
+            type="button" 
+            onClick={generatePDF} 
+            className={`pdf-button ${isGeneratingPDF ? 'generating' : ''}`}
+            disabled={isGeneratingPDF}
+          >
+            {isGeneratingPDF ? '⏳ Génération...' : '📄 Télécharger le Rapport PDF Complet'}
+          </button>
+          <button type="button" onClick={sendToExpert} className="expert-button">
+            👨‍💼 Prendre RDV avec un Expert
+          </button>
+        </div>
+        
+        <div className="contact-cta">
+          <h4>🤝 Prochaines étapes de votre projet</h4>
+          <p>Nos experts sont à votre disposition pour finaliser votre installation solaire</p>
+          <div className="contact-grid">
+            <div className="contact-method">
+              <h5>📞 Par téléphone</h5>
+              <a href="tel:0985605051" className="contact-btn primary">09 85 60 50 51</a>
+              <small>Lun-Ven 8h30-18h30</small>
+            </div>
+            <div className="contact-method">
+              <h5>✉️ Par email</h5>
+              <a href="mailto:contact@francerenovhabitat.com" className="contact-btn secondary">contact@francerenovhabitat.com</a>
+              <small>Réponse sous 24h</small>
+            </div>
+            <div className="contact-method">
+              <h5>📍 Agence</h5>
+              <p className="address">196 Avenue Jean Lolive<br/>93500 Pantin</p>
+            </div>
+          </div>
+          
+          <div className="guarantee-section">
+            <h5>🛡️ Nos garanties</h5>
+            <div className="guarantees">
+              <span>✅ Devis gratuit et sans engagement</span>
+              <span>✅ Installation par équipes RGE certifiées</span>
+              <span>✅ Garantie décennale incluse</span>
+              <span>✅ Suivi de production à vie</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
