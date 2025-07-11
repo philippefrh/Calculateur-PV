@@ -262,27 +262,215 @@ body {
   box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }
 
-/* Écran de calcul */
+/* Écran de calcul avec countdown */
 .calculation-screen {
   background: white;
   border-radius: 20px;
   padding: 40px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
   text-align: center;
-  max-width: 600px;
+  max-width: 800px;
   width: 100%;
 }
 
 .calculation-screen h2 {
   font-size: 1.8rem;
   color: #2c5530;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
-.calculation-screen p {
-  font-size: 1.2rem;
+.countdown-circle {
+  position: relative;
+  display: inline-block;
+  margin: 20px 0;
+}
+
+.countdown-svg {
+  transform: rotate(-90deg);
+}
+
+.progress-circle {
+  transition: stroke-dasharray 1s ease;
+}
+
+.countdown-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.countdown-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ff6b35;
+}
+
+.countdown-label {
+  font-size: 1rem;
   color: #666;
+}
+
+.calculation-phase {
+  margin: 30px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.calculation-phase h3 {
+  color: #2c5530;
+  margin-bottom: 10px;
+}
+
+.calculation-info {
+  text-align: left;
+  margin: 30px 0;
+  padding: 20px;
+  background: #f0f8ff;
+  border-radius: 10px;
+}
+
+.info-item {
+  margin: 10px 0;
+  padding: 5px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.calculation-note {
+  margin: 20px 0;
+  padding: 15px;
+  background: #e8f5e8;
+  border-radius: 10px;
+  color: #2c5530;
+}
+
+/* Écran de résultats */
+.results-screen {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  max-width: 1000px;
+  width: 100%;
+}
+
+.results-screen h2 {
+  font-size: 2.2rem;
+  color: #2c5530;
   margin-bottom: 30px;
+  text-align: center;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.result-card {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  border: 2px solid #e0e0e0;
+  transition: transform 0.3s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-5px);
+}
+
+.result-card.primary {
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  border-color: #357abd;
+}
+
+.result-card.success {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  border-color: #45a049;
+}
+
+.result-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: inherit;
+}
+
+.big-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.price {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #ff6b35;
+}
+
+.result-card.primary .price {
+  color: #ffd700;
+}
+
+.financing-section {
+  margin: 40px 0;
+  padding: 30px;
+  background: #f0f8ff;
+  border-radius: 15px;
+}
+
+.financing-section h3 {
+  color: #2c5530;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.financing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.financing-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  border: 2px solid #e0e0e0;
+}
+
+.financing-card h4 {
+  color: #2c5530;
+  margin-bottom: 15px;
+}
+
+.total-aids {
+  font-weight: bold;
+  color: #4caf50;
+  margin-top: 10px;
+}
+
+.pdf-button {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 15px;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 12px rgba(76,175,80,0.3);
+}
+
+.pdf-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(76,175,80,0.4);
 }
 
 /* Responsive */
