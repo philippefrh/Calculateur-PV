@@ -243,7 +243,147 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
   );
 };
 
-// Écran de calcul avec countdown 4 minutes
+// Formulaire étape 4 - Consommation
+const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData.annualConsumption && formData.monthlyEdfPayment) {
+      onNext();
+    }
+  };
+
+  // Calcul automatique du total annuel
+  const calculateAnnualTotal = (monthly) => {
+    return monthly * 11; // 11 mois comme spécifié
+  };
+
+  return (
+    <div className="form-container">
+      <h2>Consommation Électrique</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Consommation annuelle en kWh *</label>
+          <input
+            type="number"
+            value={formData.annualConsumption}
+            onChange={(e) => setFormData({...formData, annualConsumption: e.target.value})}
+            placeholder="ex: 4850"
+            min="1000"
+            max="20000"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Mensualité prélevée chaque mois par EDF (€) *</label>
+          <input
+            type="number"
+            value={formData.monthlyEdfPayment}
+            onChange={(e) => {
+              const monthly = e.target.value;
+              setFormData({
+                ...formData, 
+                monthlyEdfPayment: monthly,
+                annualEdfPayment: calculateAnnualTotal(monthly)
+              });
+            }}
+            placeholder="ex: 150"
+            min="30"
+            max="500"
+            required
+          />
+        </div>
+        {formData.monthlyEdfPayment && (
+          <div className="form-group">
+            <label>Total payé à l'année (€)</label>
+            <input
+              type="number"
+              value={formData.annualEdfPayment}
+              readOnly
+              className="readonly-field"
+            />
+            <small>Calculé automatiquement : {formData.monthlyEdfPayment} € × 11 mois</small>
+          </div>
+        )}
+        <div className="form-buttons">
+          <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
+          <button type="submit" className="next-button">Commencer le Calcul</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+// Écran de résultats
+const ResultsScreen = ({ results, onPrevious }) => {
+  const generatePDF = () => {
+    // TODO: Implémenter la génération PDF
+    alert('Génération PDF - À implémenter');
+  };
+
+  return (
+    <div className="results-screen">
+      <h2>✅ Votre Solution Solaire Personnalisée</h2>
+      
+      <div className="results-grid">
+        <div className="result-card primary">
+          <h3>Kit Recommandé</h3>
+          <div className="big-number">{results.kit_power} kW</div>
+          <p>{results.panel_count} panneaux de 500W</p>
+          <p className="price">{results.kit_price?.toLocaleString()} € TTC</p>
+        </div>
+
+        <div className="result-card">
+          <h3>Production Annuelle</h3>
+          <div className="big-number">{Math.round(results.estimated_production)} kWh</div>
+          <p>Données source PVGIS Commission Européenne</p>
+          <p>Orientation: {results.orientation}</p>
+        </div>
+
+        <div className="result-card">
+          <h3>Autonomie</h3>
+          <div className="big-number">{Math.round(results.autonomy_percentage)}%</div>
+          <p>Autoconsommation estimée</p>
+        </div>
+
+        <div className="result-card success">
+          <h3>Économies Annuelles</h3>
+          <div className="big-number">{Math.round(results.estimated_savings)} €</div>
+          <p>Soit {Math.round(results.monthly_savings)} €/mois</p>
+        </div>
+      </div>
+
+      <div className="financing-section">
+        <h3>💰 Financement et Aides</h3>
+        <div className="financing-grid">
+          <div className="financing-card">
+            <h4>Aides Disponibles</h4>
+            <p>Prime autoconsommation: <strong>{results.autoconsumption_aid} €</strong></p>
+            {results.tva_refund > 0 && (
+              <p>TVA remboursée: <strong>{Math.round(results.tva_refund)} €</strong></p>
+            )}
+            <p className="total-aids">Total aides: <strong>{Math.round(results.total_aids)} €</strong></p>
+          </div>
+          
+          <div className="financing-card">
+            <h4>Financement Optimal</h4>
+            {results.financing_options && results.financing_options.length > 0 && (
+              <div>
+                <p>Durée recommandée: <strong>{results.financing_options[0].duration_years} ans</strong></p>
+                <p>Mensualité: <strong>{Math.round(results.financing_options[0].monthly_payment)} €</strong></p>
+                <p>Économie mensuelle: <strong>{Math.round(results.monthly_savings)} €</strong></p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="form-buttons">
+        <button type="button" onClick={onPrevious} className="prev-button">Précédent</button>
+        <button type="button" onClick={generatePDF} className="pdf-button">📄 Générer le Rapport PDF</button>
+      </div>
+    </div>
+  );
+};
 const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
   const [countdown, setCountdown] = useState(240); // 4 minutes = 240 secondes
   const [currentPhase, setCurrentPhase] = useState(0);
