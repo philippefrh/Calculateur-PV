@@ -379,9 +379,380 @@ async def calculate_solar_solution(client_id: str):
         logging.error(f"Calculation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.get("/solar-kits")
-async def get_solar_kits():
-    return SOLAR_KITS
+def generate_monthly_chart(monthly_data: List[dict]) -> str:
+    """Generate monthly production chart and return as base64"""
+    try:
+        # Create figure
+        fig, ax = plt.subplots(figsize=(12, 6))
+        
+        # Extract data
+        months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
+        production = [month.get('E_m', 0) for month in monthly_data]
+        
+        # Create bars with gradient colors
+        bars = ax.bar(months, production, 
+                     color=['#ff6b35' if i < 6 else '#4caf50' for i in range(len(months))],
+                     alpha=0.8, edgecolor='white', linewidth=1)
+        
+        # Styling
+        ax.set_title('Production Mensuelle Estimée (kWh)', fontsize=16, fontweight='bold', pad=20)
+        ax.set_ylabel('Production (kWh)', fontsize=12, fontweight='bold')
+        ax.set_xlabel('Mois', fontsize=12, fontweight='bold')
+        ax.grid(True, alpha=0.3, axis='y')
+        ax.set_facecolor('#f8f9fa')
+        
+        # Add value labels on bars
+        for bar, value in zip(bars, production):
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height + 10,
+                   f'{int(value)}', ha='center', va='bottom', fontweight='bold')
+        
+        plt.tight_layout()
+        
+        # Save to base64
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format='png', dpi=150, bbox_inches='tight', 
+                   facecolor='white', edgecolor='none')
+        buffer.seek(0)
+        
+        chart_base64 = base64.b64encode(buffer.getvalue()).decode()
+        plt.close()
+        
+        return chart_base64
+        
+    except Exception as e:
+        logging.error(f"Error generating monthly chart: {e}")
+        return ""
+
+def generate_autonomy_pie_chart(autonomy_percentage: float) -> str:
+    """Generate autonomy pie chart and return as base64"""
+    try:
+        fig, ax = plt.subplots(figsize=(8, 8))
+        
+        # Data for pie chart
+        autonomous = autonomy_percentage
+        grid = 100 - autonomy_percentage
+        
+        sizes = [autonomous, grid]
+        labels = [f'Autoconsommation\n{autonomous:.1f}%', f'Réseau EDF\n{grid:.1f}%']
+        colors = ['#4caf50', '#ff6b35']
+        explode = (0.05, 0)  # Explode autonomous part
+        
+        # Create pie chart
+        wedges, texts, autotexts = ax.pie(sizes, explode=explode, labels=labels, colors=colors,
+                                         autopct='%1.1f%%', shadow=True, startangle=90,
+                                         textprops={'fontsize': 12, 'fontweight': 'bold'})
+        
+        ax.set_title('Répartition de votre Consommation Électrique', 
+                    fontsize=16, fontweight='bold', pad=20)
+        
+        plt.tight_layout()
+        
+        # Save to base64
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format='png', dpi=150, bbox_inches='tight',
+                   facecolor='white', edgecolor='none')
+        buffer.seek(0)
+        
+        chart_base64 = base64.b64encode(buffer.getvalue()).decode()
+        plt.close()
+        
+        return chart_base64
+        
+    except Exception as e:
+        logging.error(f"Error generating autonomy chart: {e}")
+        return ""
+
+async def generate_solar_report_pdf(client_id: str, calculation_data: dict) -> bytes:
+    """Generate comprehensive solar installation PDF report"""
+    try:
+        # Get client data
+        client = await db.clients.find_one({"id": client_id})
+        if not client:
+            raise HTTPException(status_code=404, detail="Client not found")
+        
+        # Create PDF buffer
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4, 
+                              rightMargin=50, leftMargin=50, 
+                              topMargin=50, bottomMargin=50)
+        
+        # Get styles
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            spaceAfter=30,
+            textColor=colors.HexColor('#2c5530'),
+            alignment=1  # Center
+        )
+        
+        heading_style = ParagraphStyle(
+            'CustomHeading',
+            parent=styles['Heading2'],
+            fontSize=16,
+            spaceBefore=20,
+            spaceAfter=12,
+            textColor=colors.HexColor('#ff6b35'),
+            leftIndent=0
+        )
+        
+        # Story (content) list
+        story = []
+        
+        # Title and header
+        story.append(Paragraph("ÉTUDE SOLAIRE PERSONNALISÉE", title_style))
+        story.append(Paragraph(f"<b>FRH ENVIRONNEMENT</b> - Énergie Solaire Professionnel", styles['Normal']))
+        story.append(Spacer(1, 20))
+        
+        # Client information
+        story.append(Paragraph("INFORMATIONS CLIENT", heading_style))
+        client_info = [
+            ['Nom complet:', f"{client['first_name']} {client['last_name']}"],
+            ['Adresse:', client['address']],
+            ['Surface toiture:', f"{client['roof_surface']} m²"],
+            ['Orientation:', client['roof_orientation']],
+            ['Système chauffage:', client['heating_system']],
+            ['Consommation annuelle:', f"{client['annual_consumption_kwh']} kWh"],
+            ['Facture EDF actuelle:', f"{client['monthly_edf_payment']} € / mois"],
+            ['Date de l\'étude:', datetime.now().strftime('%d/%m/%Y')]
+        ]
+        
+        client_table = Table(client_info, colWidths=[4*cm, 10*cm])
+        client_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f8f9fa')),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e0e0e0')),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 8),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ]))
+        
+        story.append(client_table)
+        story.append(Spacer(1, 20))
+        
+        # Solution recommendations
+        story.append(Paragraph("SOLUTION RECOMMANDÉE", heading_style))
+        solution_info = [
+            ['Kit solaire optimal:', f"{calculation_data['kit_power']} kW ({calculation_data['panel_count']} panneaux)"],
+            ['Investissement:', f"{calculation_data.get('kit_price', 0):,} € TTC"],
+            ['Production annuelle estimée:', f"{calculation_data['estimated_production']:.0f} kWh"],
+            ['Autonomie énergétique:', f"{calculation_data['autonomy_percentage']:.1f} %"],
+            ['Économies annuelles:', f"{calculation_data['estimated_savings']:.0f} €"],
+            ['Économies mensuelles:', f"{calculation_data['monthly_savings']:.0f} €"],
+            ['Source données:', calculation_data.get('pvgis_source', 'PVGIS Commission Européenne')]
+        ]
+        
+        solution_table = Table(solution_info, colWidths=[6*cm, 8*cm])
+        solution_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#e8f5e8')),
+            ('BACKGROUND', (1, 4), (1, 5), colors.HexColor('#d4edda')),  # Highlight savings
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#4caf50')),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 8),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ]))
+        
+        story.append(solution_table)
+        story.append(Spacer(1, 30))
+        
+        # Financial analysis
+        story.append(Paragraph("ANALYSE FINANCIÈRE", heading_style))
+        
+        # Aids and financing
+        aids_info = [
+            ['Prime autoconsommation EDF:', f"{calculation_data.get('autoconsumption_aid', 0)} €"],
+            ['TVA remboursée (20%):', f"{calculation_data.get('tva_refund', 0):.0f} €"],
+            ['Total des aides:', f"{calculation_data.get('total_aids', 0):.0f} €"],
+            ['Reste à financer:', f"{calculation_data.get('kit_price', 0) - calculation_data.get('total_aids', 0):,.0f} €"]
+        ]
+        
+        aids_table = Table(aids_info, colWidths=[8*cm, 6*cm])
+        aids_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#fff3e0')),
+            ('BACKGROUND', (1, 2), (1, 2), colors.HexColor('#4caf50')),  # Highlight total aids
+            ('TEXTCOLOR', (1, 2), (1, 2), colors.white),
+            ('FONTNAME', (1, 2), (1, 2), 'Helvetica-Bold'),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#ff9800')),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 8),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ]))
+        
+        story.append(aids_table)
+        story.append(Spacer(1, 20))
+        
+        # Financing options
+        if calculation_data.get('financing_options'):
+            story.append(Paragraph("OPTIONS DE FINANCEMENT", heading_style))
+            finance_data = [['Durée', 'Mensualité', 'Coût total', 'Économie mensuelle', 'Différence']]
+            
+            for option in calculation_data['financing_options'][:5]:  # Show first 5 options
+                difference = option['difference_vs_savings']
+                diff_text = f"+{difference:.0f} €" if difference > 0 else f"{difference:.0f} €"
+                finance_data.append([
+                    f"{option['duration_years']} ans",
+                    f"{option['monthly_payment']:.0f} €",
+                    f"{option['total_cost']:,.0f} €",
+                    f"{calculation_data['monthly_savings']:.0f} €",
+                    diff_text
+                ])
+            
+            finance_table = Table(finance_data, colWidths=[2.5*cm, 2.5*cm, 3*cm, 3*cm, 3*cm])
+            finance_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2196f3')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 9),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 8),
+                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e0e0e0')),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 4),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 4),
+                ('TOPPADDING', (0, 0), (-1, -1), 4),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ]))
+            
+            story.append(finance_table)
+            story.append(Spacer(1, 20))
+        
+        # Add page break
+        story.append(Spacer(1, 50))
+        
+        # Monthly production if available
+        if calculation_data.get('pvgis_monthly_data'):
+            story.append(Paragraph("PRODUCTION MENSUELLE DÉTAILLÉE", heading_style))
+            
+            monthly_chart_b64 = generate_monthly_chart(calculation_data['pvgis_monthly_data'])
+            if monthly_chart_b64:
+                # Create image from base64
+                chart_buffer = io.BytesIO(base64.b64decode(monthly_chart_b64))
+                chart_image = Image(chart_buffer, width=12*cm, height=6*cm)
+                story.append(chart_image)
+                story.append(Spacer(1, 20))
+        
+        # Autonomy chart
+        autonomy_chart_b64 = generate_autonomy_pie_chart(calculation_data['autonomy_percentage'])
+        if autonomy_chart_b64:
+            story.append(Paragraph("RÉPARTITION DE VOTRE CONSOMMATION", heading_style))
+            autonomy_buffer = io.BytesIO(base64.b64decode(autonomy_chart_b64))
+            autonomy_image = Image(autonomy_buffer, width=8*cm, height=6*cm)
+            story.append(autonomy_image)
+            story.append(Spacer(1, 20))
+        
+        # Technical specifications
+        story.append(Paragraph("SPÉCIFICATIONS TECHNIQUES", heading_style))
+        tech_specs = [
+            ['Panneaux photovoltaïques:', f'{calculation_data["panel_count"]} × 500W monocristallin'],
+            ['Puissance totale:', f'{calculation_data["kit_power"]} kWc'],
+            ['Surface nécessaire:', f'{calculation_data["panel_count"] * 2.1:.1f} m²'],
+            ['Onduleur:', 'Hoymiles haute performance (99,8% efficacité)'],
+            ['Garantie panneaux:', '25 ans sur la production'],
+            ['Garantie installation:', '10 ans décennale'],
+            ['Système de montage:', 'Intégration toiture avec étanchéité'],
+            ['Suivi production:', 'Application mobile temps réel']
+        ]
+        
+        tech_table = Table(tech_specs, colWidths=[6*cm, 8*cm])
+        tech_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f0f8ff')),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#2196f3')),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 8),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ]))
+        
+        story.append(tech_table)
+        story.append(Spacer(1, 30))
+        
+        # Footer with contact info
+        story.append(Paragraph("COORDONNÉES ET CONTACT", heading_style))
+        footer_text = """
+        <b>FRH ENVIRONNEMENT</b><br/>
+        196 Avenue Jean Lolive, 93500 Pantin<br/>
+        Téléphone: 09 85 60 50 51<br/>
+        Email: contact@francerenovhabitat.com<br/><br/>
+        
+        <b>Certifications:</b><br/>
+        • RGE QualiPV 2025 (Photovoltaïque)<br/>
+        • RGE QualiPac 2025 (Pompes à chaleur)<br/>
+        • Membre FFB (Fédération Française du Bâtiment)<br/>
+        • Partenaire Agir Plus EDF<br/>
+        • Garantie décennale MMA<br/><br/>
+        
+        <i>Ce devis est valable 30 jours. Les données de production sont basées sur les statistiques officielles PVGIS de la Commission Européenne.</i>
+        """
+        
+        story.append(Paragraph(footer_text, styles['Normal']))
+        
+        # Build PDF
+        doc.build(story)
+        buffer.seek(0)
+        
+        return buffer.getvalue()
+        
+    except Exception as e:
+        logging.error(f"Error generating PDF: {e}")
+        raise HTTPException(status_code=500, detail=f"Error generating PDF: {str(e)}")
+
+@api_router.get("/generate-pdf/{client_id}")
+async def generate_pdf_report(client_id: str):
+    """Generate and download PDF report for client"""
+    try:
+        # Get client
+        client = await db.clients.find_one({"id": client_id})
+        if not client:
+            raise HTTPException(status_code=404, detail="Client not found")
+        
+        # Get calculation data - recalculate if needed
+        calculation_response = await calculate_solar_solution(client_id)
+        
+        # Generate PDF
+        pdf_bytes = await generate_solar_report_pdf(client_id, calculation_response)
+        
+        # Return PDF as response
+        filename = f"etude_solaire_{client['first_name']}_{client['last_name']}_{datetime.now().strftime('%Y%m%d')}.pdf"
+        
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+        
+    except Exception as e:
+        logging.error(f"PDF generation error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/test-pvgis/{lat}/{lon}")
 async def test_pvgis(lat: float, lon: float, orientation: str = "Sud", power: int = 6):
