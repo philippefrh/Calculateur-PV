@@ -830,10 +830,11 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
   );
 };
 
-// Composant principal
+// Composant principal - Version Premium
 function App() {
   const [currentStep, setCurrentStep] = useState('start');
   const [calculationResults, setCalculationResults] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -863,7 +864,11 @@ function App() {
     const steps = ['personal', 'technical', 'heating', 'consumption', 'calculation'];
     const currentIndex = steps.indexOf(currentStep);
     if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1]);
+      setIsLoading(true);
+      setTimeout(() => {
+        setCurrentStep(steps[currentIndex + 1]);
+        setIsLoading(false);
+      }, 300);
     }
   };
 
@@ -871,23 +876,57 @@ function App() {
     const steps = ['start', 'personal', 'technical', 'heating', 'consumption', 'calculation'];
     const currentIndex = steps.indexOf(currentStep);
     if (currentIndex > 0) {
-      setCurrentStep(steps[currentIndex - 1]);
+      setIsLoading(true);
+      setTimeout(() => {
+        setCurrentStep(steps[currentIndex - 1]);
+        setIsLoading(false);
+      }, 300);
     }
   };
 
   const handleCalculationComplete = (results) => {
     setCalculationResults(results);
-    setCurrentStep('results');
+    setTimeout(() => {
+      setCurrentStep('results');
+    }, 1000);
+  };
+
+  const handleNewCalculation = () => {
+    setCurrentStep('start');
+    setCalculationResults(null);
+    setFormData({
+      firstName: '',
+      lastName: '',
+      address: '',
+      roofSurface: '',
+      roofOrientation: '',
+      veluxCount: 0,
+      heatingSystem: '',
+      waterHeatingSystem: '',
+      waterHeatingCapacity: '',
+      annualConsumption: '',
+      monthlyEdfPayment: '',
+      annualEdfPayment: ''
+    });
   };
 
   console.log('Rendering App with currentStep:', currentStep);
 
+  // Loading screen
+  if (isLoading) {
+    return (
+      <div className="App">
+        <div className="loading-screen">
+          <div className="loading-spinner"></div>
+          <p>Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (currentStep === 'start') {
     return (
       <div className="App">
-        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
-          Debug: {currentStep}
-        </div>
         <StartScreen onStart={handleStart} />
       </div>
     );
@@ -896,10 +935,12 @@ function App() {
   if (currentStep === 'personal') {
     return (
       <div className="App">
-        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
-          Debug: {currentStep}
-        </div>
-        <PersonalInfoForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />
+        <PersonalInfoForm 
+          formData={formData} 
+          setFormData={setFormData} 
+          onNext={handleNext} 
+          onPrevious={handlePrevious} 
+        />
       </div>
     );
   }
@@ -907,10 +948,12 @@ function App() {
   if (currentStep === 'technical') {
     return (
       <div className="App">
-        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
-          Debug: {currentStep}
-        </div>
-        <TechnicalInfoForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />
+        <TechnicalInfoForm 
+          formData={formData} 
+          setFormData={setFormData} 
+          onNext={handleNext} 
+          onPrevious={handlePrevious} 
+        />
       </div>
     );
   }
@@ -918,10 +961,12 @@ function App() {
   if (currentStep === 'heating') {
     return (
       <div className="App">
-        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
-          Debug: {currentStep}
-        </div>
-        <HeatingSystemForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />
+        <HeatingSystemForm 
+          formData={formData} 
+          setFormData={setFormData} 
+          onNext={handleNext} 
+          onPrevious={handlePrevious} 
+        />
       </div>
     );
   }
@@ -929,10 +974,12 @@ function App() {
   if (currentStep === 'consumption') {
     return (
       <div className="App">
-        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
-          Debug: {currentStep}
-        </div>
-        <ConsumptionForm formData={formData} setFormData={setFormData} onNext={handleNext} onPrevious={handlePrevious} />
+        <ConsumptionForm 
+          formData={formData} 
+          setFormData={setFormData} 
+          onNext={handleNext} 
+          onPrevious={handlePrevious} 
+        />
       </div>
     );
   }
@@ -940,9 +987,6 @@ function App() {
   if (currentStep === 'calculation') {
     return (
       <div className="App">
-        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
-          Debug: {currentStep}
-        </div>
         <CalculationScreen 
           formData={formData} 
           onComplete={handleCalculationComplete}
@@ -955,12 +999,10 @@ function App() {
   if (currentStep === 'results') {
     return (
       <div className="App">
-        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
-          Debug: {currentStep}
-        </div>
         <ResultsScreen 
           results={calculationResults}
           onPrevious={handlePrevious}
+          onNewCalculation={handleNewCalculation}
         />
       </div>
     );
@@ -969,10 +1011,13 @@ function App() {
   // Fallback
   return (
     <div className="App">
-      <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
-        Debug: {currentStep} (fallback)
+      <div className="error-screen">
+        <h2>⚠️ Erreur de navigation</h2>
+        <p>Une erreur s'est produite. Retour à l'accueil...</p>
+        <button onClick={handleNewCalculation} className="error-button">
+          🏠 Retour à l'accueil
+        </button>
       </div>
-      <StartScreen onStart={handleStart} />
     </div>
   );
 }
