@@ -681,7 +681,7 @@ Cordialement`);
             <div className="result-card success">
               <div className="card-icon">🔋</div>
               <h3>Autonomie Énergétique</h3>
-              <div className="big-number" style={{color: getAutonomyColor(results.autonomy_percentage)}}>
+              <div className="big-number" style={{color: 'white'}}>
                 {Math.round(results.autonomy_percentage)}%
               </div>
               <p>Autoconsommation optimisée</p>
