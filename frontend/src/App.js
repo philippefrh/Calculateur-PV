@@ -956,33 +956,52 @@ Cordialement`);
         </div>
         
         <div className="contact-cta">
-          <h4>🤝 Prochaines étapes de votre projet</h4>
-          <p>Nos experts sont à votre disposition pour finaliser votre installation solaire</p>
-          <div className="contact-grid">
-            <div className="contact-method">
-              <h5>📞 Par téléphone</h5>
-              <a href="tel:0985605051" className="contact-btn primary">09 85 60 50 51</a>
-              <small>Lun-Ven 8h30-18h30</small>
+          <h4>📋 Création du dossier - Pièces à fournir</h4>
+          <p>Pour finaliser votre installation solaire, nous aurons besoin des documents suivants :</p>
+          
+          <div className="documents-list">
+            <div className="document-category">
+              <h5>💡 Énergie & Consommation</h5>
+              <ul>
+                <li>• Votre dernière facture d'énergie (de moins de 3 mois)</li>
+                <li>• EDF - Total Energie - Engie etc...</li>
+                <li>• Factures box internet, téléphone portable, eau</li>
+              </ul>
             </div>
-            <div className="contact-method">
-              <h5>✉️ Par email</h5>
-              <a href="mailto:contact@francerenovhabitat.com" className="contact-btn secondary">contact@francerenovhabitat.com</a>
-              <small>Réponse sous 24h</small>
+
+            <div className="document-category">
+              <h5>🆔 Identité & Situation</h5>
+              <ul>
+                <li>• Justificatif d'identité (CNI recto verso, Passeport, Carte de séjour)</li>
+                <li>• Votre dernier avis d'imposition (les 4 volets)</li>
+                <li>• Taxe foncière (les 2 volets)</li>
+              </ul>
             </div>
-            <div className="contact-method">
-              <h5>📍 Agence</h5>
-              <p className="address">196 Avenue Jean Lolive<br/>93500 Pantin</p>
+
+            <div className="document-category">
+              <h5>💰 Revenus & Finances</h5>
+              <ul>
+                <li>• Vos 2 dernières fiches de paye</li>
+                <li>• Un RIB</li>
+              </ul>
+            </div>
+
+            <div className="document-category">
+              <h5>🏠 Propriété</h5>
+              <ul>
+                <li>• Votre acte notarié (2 premières feuilles seulement)</li>
+                <li>• Requis si propriétaire de moins d'un an</li>
+              </ul>
             </div>
           </div>
           
-          <div className="guarantee-section">
-            <h5>🛡️ Nos garanties</h5>
-            <div className="guarantees">
-              <span>✅ Devis gratuit et sans engagement</span>
-              <span>✅ Installation par équipes RGE certifiées</span>
-              <span>✅ Garantie décennale incluse</span>
-              <span>✅ Suivi de production à vie</span>
-            </div>
+          <div className="next-steps-note">
+            <p><strong>📞 Nos experts vous contacteront</strong> dans les 24h pour :</p>
+            <ul>
+              <li>✓ Valider votre étude personnalisée</li>
+              <li>✓ Planifier la visite technique</li>
+              <li>✓ Finaliser votre dossier de financement</li>
+            </ul>
           </div>
         </div>
       </div>
