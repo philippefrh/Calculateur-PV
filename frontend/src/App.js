@@ -839,13 +839,19 @@ Cordialement`);
 
             {optimalFinancing && (
               <div className="optimal-financing">
-                <h4>🏦 Financement optimal recommandé</h4>
+                <h4>🏦 Options de financement recommandées</h4>
+                
+                {/* Financement sans aides déduites */}
                 <div className="financing-card highlighted">
                   <div className="financing-header">
-                    <h5>⭐ Financement sur {optimalFinancing.duration_years} ans</h5>
-                    <span className="recommended-badge">Recommandé</span>
+                    <h5>⭐ Financement standard sur {optimalFinancing.duration_years} ans</h5>
+                    <span className="financing-type">Sans aides déduites</span>
                   </div>
                   <div className="financing-details">
+                    <div className="financing-row">
+                      <span>Investissement total:</span>
+                      <span className="amount">{results.kit_price?.toLocaleString()} € TTC</span>
+                    </div>
                     <div className="financing-row">
                       <span>Mensualité crédit:</span>
                       <span className="amount">{Math.round(optimalFinancing.monthly_payment)} €/mois</span>
@@ -861,11 +867,39 @@ Cordialement`);
                       </span>
                     </div>
                   </div>
+                </div>
+
+                {/* Financement avec aides déduites */}
+                <div className="financing-card highlighted-green">
+                  <div className="financing-header">
+                    <h5>💰 Financement optimisé sur {optimalFinancing.duration_years} ans</h5>
+                    <span className="recommended-badge green">Avec aides déduites</span>
+                  </div>
+                  <div className="financing-details">
+                    <div className="financing-row">
+                      <span>Investissement après aides:</span>
+                      <span className="amount">{(results.kit_price - results.total_aids).toLocaleString()} € TTC</span>
+                    </div>
+                    <div className="financing-row">
+                      <span>Mensualité crédit réduite:</span>
+                      <span className="amount success">{Math.round((results.kit_price - results.total_aids) / optimalFinancing.duration_months)} €/mois</span>
+                    </div>
+                    <div className="financing-row">
+                      <span>Économie EDF:</span>
+                      <span className="amount success">{Math.round(results.monthly_savings)} €/mois</span>
+                    </div>
+                    <div className="financing-row">
+                      <span>Reste à charge optimisé:</span>
+                      <span className="amount success">
+                        {Math.round((results.kit_price - results.total_aids) / optimalFinancing.duration_months - results.monthly_savings)} €/mois
+                      </span>
+                    </div>
+                  </div>
                   <div className="financing-benefits">
                     <p>✅ 6 premiers mois GRATUITS (0€ pendant l'installation)</p>
-                    <p>✅ Remboursement anticipé possible sans pénalités</p>
+                    <p>✅ Aides récupérées: {Math.round(results.total_aids)} € (Prime + TVA)</p>
                     <p>✅ Taux fixe 4,96% TAEG sur toute la durée</p>
-                    <p>✅ Possibilité de déduire les aides du capital</p>
+                    <p>✅ Économie mensuelle supérieure au crédit !</p>
                   </div>
                 </div>
               </div>
