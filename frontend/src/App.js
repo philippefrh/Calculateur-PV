@@ -561,6 +561,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
 // Composant principal
 function App() {
   const [currentStep, setCurrentStep] = useState('start');
+  const [calculationResults, setCalculationResults] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -595,11 +596,16 @@ function App() {
   };
 
   const handlePrevious = () => {
-    const steps = ['start', 'personal', 'technical', 'heating', 'consumption'];
+    const steps = ['start', 'personal', 'technical', 'heating', 'consumption', 'calculation'];
     const currentIndex = steps.indexOf(currentStep);
     if (currentIndex > 0) {
       setCurrentStep(steps[currentIndex - 1]);
     }
+  };
+
+  const handleCalculationComplete = (results) => {
+    setCalculationResults(results);
+    setCurrentStep('results');
   };
 
   console.log('Rendering App with currentStep:', currentStep);
@@ -665,13 +671,25 @@ function App() {
         <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
           Debug: {currentStep}
         </div>
-        <div className="calculation-screen">
-          <h2>Calcul en cours...</h2>
-          <p>Veuillez patienter pendant que nous analysons vos données</p>
-          <div className="form-buttons">
-            <button type="button" onClick={handlePrevious} className="prev-button">Précédent</button>
-          </div>
+        <CalculationScreen 
+          formData={formData} 
+          onComplete={handleCalculationComplete}
+          onPrevious={handlePrevious}
+        />
+      </div>
+    );
+  }
+
+  if (currentStep === 'results') {
+    return (
+      <div className="App">
+        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'black', color: 'white', padding: '5px', zIndex: 1000}}>
+          Debug: {currentStep}
         </div>
+        <ResultsScreen 
+          results={calculationResults}
+          onPrevious={handlePrevious}
+        />
       </div>
     );
   }
