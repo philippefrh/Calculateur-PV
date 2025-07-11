@@ -1337,3 +1337,74 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(255,107,53,0.4);
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .App {
+    padding: 10px;
+  }
+  
+  .start-screen,
+  .form-container,
+  .calculation-screen,
+  .results-screen {
+    padding: 30px 20px;
+  }
+  
+  .company-title {
+    font-size: 2rem;
+  }
+  
+  .certifications {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-buttons,
+  .contact-buttons {
+    flex-direction: column;
+  }
+  
+  .autonomy-section {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results-tabs {
+    flex-direction: column;
+  }
+
+  .monthly-chart {
+    height: 150px;
+  }
+
+  .quick-results {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .financial-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .financing-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .table-row {
+    padding: 10px;
+  }
+}
