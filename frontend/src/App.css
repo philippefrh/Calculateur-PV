@@ -1272,73 +1272,68 @@ body {
   box-shadow: 0 12px 24px rgba(76,175,80,0.4);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .App {
-    padding: 10px;
-  }
-  
-  .start-screen,
-  .form-container,
-  .calculation-screen,
-  .results-screen {
-    padding: 30px 20px;
-  }
-  
-  .company-title {
-    font-size: 2rem;
-  }
-  
-  .certifications {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .form-buttons,
-  .contact-buttons {
-    flex-direction: column;
-  }
-  
-  .autonomy-section {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
+/* Loading et Error screens */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: #2c5530;
+}
 
-  .results-grid {
-    grid-template-columns: 1fr;
-  }
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid #e0e0e0;
+  border-top: 4px solid #ff6b35;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
 
-  .results-tabs {
-    flex-direction: column;
-  }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
-  .monthly-chart {
-    height: 150px;
-  }
+.error-screen {
+  background: white;
+  border-radius: 25px;
+  padding: 50px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  animation: slideIn 0.5s ease-out;
+}
 
-  .quick-results {
-    flex-direction: column;
-    gap: 20px;
-  }
+.error-screen h2 {
+  color: #f44336;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
 
-  .financial-summary {
-    grid-template-columns: 1fr;
-  }
+.error-screen p {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 1.2rem;
+}
 
-  .financing-header {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
+.error-button {
+  background: linear-gradient(135deg, #ff6b35, #ff8c42);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 12px rgba(255,107,53,0.3);
+}
 
-  .table-header,
-  .table-row {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .table-row {
-    padding: 10px;
-  }
+.error-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(255,107,53,0.4);
 }
