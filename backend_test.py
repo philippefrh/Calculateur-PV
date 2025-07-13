@@ -446,6 +446,105 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("All Financing with Aids (3.25% TAEG)", False, f"Error: {str(e)}")
     
+    def test_autoconsumption_surplus_distribution(self):
+        """Test the new 95% autoconsumption / 5% surplus distribution and economic impact"""
+        if not self.client_id:
+            self.log_test("Autoconsumption/Surplus Distribution", False, "No client ID available from previous test")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.client_id}")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check if required fields exist
+                required_fields = ["autoconsumption_kwh", "surplus_kwh", "estimated_production", "monthly_savings"]
+                missing_fields = [field for field in required_fields if field not in calculation]
+                if missing_fields:
+                    self.log_test("Autoconsumption/Surplus Distribution", False, f"Missing fields: {missing_fields}", calculation)
+                    return
+                
+                # Extract values
+                autoconsumption_kwh = calculation.get("autoconsumption_kwh", 0)
+                surplus_kwh = calculation.get("surplus_kwh", 0)
+                estimated_production = calculation.get("estimated_production", 0)
+                monthly_savings = calculation.get("monthly_savings", 0)
+                
+                issues = []
+                
+                # Test 1: Verify 95% autoconsumption
+                expected_autoconsumption = estimated_production * 0.95
+                if abs(autoconsumption_kwh - expected_autoconsumption) > 1:  # Allow 1 kWh tolerance
+                    issues.append(f"Autoconsumption {autoconsumption_kwh:.1f} kWh != 95% of production {expected_autoconsumption:.1f} kWh")
+                
+                # Test 2: Verify 5% surplus
+                expected_surplus = estimated_production * 0.05
+                if abs(surplus_kwh - expected_surplus) > 1:  # Allow 1 kWh tolerance
+                    issues.append(f"Surplus {surplus_kwh:.1f} kWh != 5% of production {expected_surplus:.1f} kWh")
+                
+                # Test 3: Verify total adds up to production
+                total_distribution = autoconsumption_kwh + surplus_kwh
+                if abs(total_distribution - estimated_production) > 1:  # Allow 1 kWh tolerance
+                    issues.append(f"Total distribution {total_distribution:.1f} kWh != production {estimated_production:.1f} kWh")
+                
+                # Test 4: Calculate economic impact comparison
+                # Constants from backend
+                EDF_RATE_PER_KWH = 0.2516  # €/kWh
+                SURPLUS_SALE_RATE = 0.076  # €/kWh for surplus sold to EDF
+                
+                # New method (95%/5%): (production × 0.95 × 0.2516) + (production × 0.05 × 0.076)
+                new_method_savings = (estimated_production * 0.95 * EDF_RATE_PER_KWH) + (estimated_production * 0.05 * SURPLUS_SALE_RATE)
+                
+                # Old method (70%/30%): (production × 0.7 × 0.2516) + (production × 0.3 × 0.076)
+                old_method_savings = (estimated_production * 0.7 * EDF_RATE_PER_KWH) + (estimated_production * 0.3 * SURPLUS_SALE_RATE)
+                
+                # Verify actual calculation matches new method
+                calculated_annual_savings = monthly_savings * 12
+                if abs(calculated_annual_savings - new_method_savings) > 10:  # Allow 10€ tolerance
+                    issues.append(f"Calculated annual savings {calculated_annual_savings:.2f}€ != new method {new_method_savings:.2f}€")
+                
+                # Test 5: Verify significant increase in savings
+                savings_increase = new_method_savings - old_method_savings
+                savings_increase_percentage = (savings_increase / old_method_savings) * 100
+                
+                if savings_increase <= 0:
+                    issues.append(f"New method should increase savings, but increase is {savings_increase:.2f}€")
+                elif savings_increase_percentage < 10:  # Should be significant increase
+                    issues.append(f"Savings increase {savings_increase_percentage:.1f}% seems too small (expected >10%)")
+                
+                # Test 6: Check if monthly savings are closer to financing payments
+                financing_with_aids = calculation.get("financing_with_aids", {})
+                if financing_with_aids:
+                    monthly_payment_with_aids = financing_with_aids.get("monthly_payment", 0)
+                    payment_savings_ratio = monthly_payment_with_aids / monthly_savings if monthly_savings > 0 else float('inf')
+                    
+                    # With 95% autoconsumption, the ratio should be closer to 1 (better balance)
+                    if payment_savings_ratio > 2.0:  # If payment is more than 2x savings, balance is poor
+                        issues.append(f"Monthly payment {monthly_payment_with_aids:.2f}€ vs savings {monthly_savings:.2f}€ ratio {payment_savings_ratio:.2f} still too high")
+                
+                if issues:
+                    self.log_test("Autoconsumption/Surplus Distribution (95%/5%)", False, f"Distribution issues: {'; '.join(issues)}", calculation)
+                else:
+                    # Calculate percentages for verification
+                    autoconsumption_percentage = (autoconsumption_kwh / estimated_production) * 100 if estimated_production > 0 else 0
+                    surplus_percentage = (surplus_kwh / estimated_production) * 100 if estimated_production > 0 else 0
+                    
+                    self.log_test("Autoconsumption/Surplus Distribution (95%/5%)", True, 
+                                f"✅ NEW 95%/5% DISTRIBUTION WORKING: {autoconsumption_kwh:.0f} kWh autoconsumption ({autoconsumption_percentage:.1f}%), {surplus_kwh:.0f} kWh surplus ({surplus_percentage:.1f}%). Monthly savings increased from {old_method_savings/12:.2f}€ to {monthly_savings:.2f}€ (+{savings_increase/12:.2f}€/month, +{savings_increase_percentage:.1f}%). Better balance with financing.", 
+                                {
+                                    "autoconsumption_kwh": autoconsumption_kwh,
+                                    "surplus_kwh": surplus_kwh,
+                                    "estimated_production": estimated_production,
+                                    "monthly_savings_new": monthly_savings,
+                                    "monthly_savings_old": old_method_savings/12,
+                                    "monthly_increase": savings_increase/12,
+                                    "percentage_increase": savings_increase_percentage
+                                })
+            else:
+                self.log_test("Autoconsumption/Surplus Distribution (95%/5%)", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Autoconsumption/Surplus Distribution (95%/5%)", False, f"Error: {str(e)}")
+
     def test_error_cases(self):
         """Test error handling"""
         # Test invalid address
