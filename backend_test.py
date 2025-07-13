@@ -261,7 +261,7 @@ class SolarCalculatorTester:
             self.log_test("Solar Calculation", False, f"Error: {str(e)}")
     
     def test_financing_with_aids_calculation(self):
-        """Test the new financing with aids calculation functionality"""
+        """Test the new financing with aids calculation functionality with 3.25% TAEG"""
         if not self.client_id:
             self.log_test("Financing with Aids", False, "No client ID available from previous test")
             return
@@ -320,27 +320,131 @@ class SolarCalculatorTester:
                 if abs(total_interests - expected_total_interests) > 1:  # Allow 1€ tolerance
                     issues.append(f"Total interests {total_interests}€ != total_cost {total_cost}€ - financed_amount {financed_amount}€ = {expected_total_interests:.2f}€")
                 
-                # Check that monthly payment is reasonable (should be around 130-150€ with interests)
-                if monthly_payment < 120 or monthly_payment > 200:
-                    issues.append(f"Monthly payment {monthly_payment}€ seems unrealistic (expected 120-200€ range)")
+                # NEW: Test for 3.25% TAEG rate - Expected monthly payment should be around 125€ for 20880€ over 15 years
+                # Calculate expected payment with 3.25% TAEG
+                taeg = 0.0325
+                monthly_rate = taeg / 12
+                months = 180
+                if financed_amount > 0:
+                    expected_payment_325 = financed_amount * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
+                    
+                    # Check if actual payment matches 3.25% calculation (within 2€ tolerance)
+                    if abs(monthly_payment - expected_payment_325) > 2:
+                        issues.append(f"Monthly payment {monthly_payment:.2f}€ doesn't match 3.25% TAEG calculation {expected_payment_325:.2f}€ (difference: {abs(monthly_payment - expected_payment_325):.2f}€)")
+                    
+                    # For 20880€ example, check if payment is around 125€ (not 135€ from old 4.96% rate)
+                    if abs(financed_amount - 20880) < 1000:  # If amount is close to 20880€
+                        if monthly_payment > 130:  # Should be lower than old 4.96% rate (~135€)
+                            issues.append(f"Monthly payment {monthly_payment:.2f}€ seems too high for 3.25% rate (expected ~125€ for 20880€, old 4.96% rate was ~135€)")
+                        elif monthly_payment < 120:  # But not too low
+                            issues.append(f"Monthly payment {monthly_payment:.2f}€ seems too low for 3.25% rate (expected ~125€ for 20880€)")
                 
-                # Check that interests are positive and reasonable (4.96% TAEG over 15 years)
+                # Check that interests are positive and reasonable for 3.25% TAEG over 15 years
                 if total_interests <= 0:
                     issues.append(f"Total interests {total_interests}€ should be positive")
-                elif total_interests < financed_amount * 0.3:  # Should be at least 30% of financed amount over 15 years
-                    issues.append(f"Total interests {total_interests}€ seem too low for 15-year loan at 4.96% TAEG")
+                elif financed_amount > 0:
+                    # For 3.25% over 15 years, total interests should be around 20-25% of financed amount
+                    interest_ratio = total_interests / financed_amount
+                    if interest_ratio < 0.15 or interest_ratio > 0.35:
+                        issues.append(f"Total interests ratio {interest_ratio:.1%} seems incorrect for 3.25% TAEG over 15 years (expected 15-35%)")
                 
                 if issues:
-                    self.log_test("Financing with Aids", False, f"Financing calculation issues: {'; '.join(issues)}", financing_with_aids)
+                    self.log_test("Financing with Aids (3.25% TAEG)", False, f"Financing calculation issues: {'; '.join(issues)}", financing_with_aids)
                 else:
-                    interest_rate_effective = (total_interests / financed_amount) * 100
-                    self.log_test("Financing with Aids", True, 
-                                f"✅ Financing with aids working correctly: {financed_amount}€ financed, {monthly_payment:.2f}€/month (vs {simple_division:.2f}€ simple division), {total_interests:.2f}€ total interests ({interest_rate_effective:.1f}% effective rate over 15 years)", 
+                    interest_rate_effective = (total_interests / financed_amount) * 100 if financed_amount > 0 else 0
+                    self.log_test("Financing with Aids (3.25% TAEG)", True, 
+                                f"✅ NEW 3.25% TAEG RATE WORKING: {financed_amount}€ financed, {monthly_payment:.2f}€/month (vs {simple_division:.2f}€ simple division), {total_interests:.2f}€ total interests ({interest_rate_effective:.1f}% effective rate over 15 years) - REDUCED from old 4.96% rate", 
                                 financing_with_aids)
             else:
-                self.log_test("Financing with Aids", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_test("Financing with Aids (3.25% TAEG)", False, f"HTTP {response.status_code}: {response.text}")
         except Exception as e:
-            self.log_test("Financing with Aids", False, f"Error: {str(e)}")
+            self.log_test("Financing with Aids (3.25% TAEG)", False, f"Error: {str(e)}")
+    
+    def test_all_financing_with_aids_calculation(self):
+        """Test the all_financing_with_aids field with 3.25% TAEG for all durations"""
+        if not self.client_id:
+            self.log_test("All Financing with Aids", False, "No client ID available from previous test")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.client_id}")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check if all_financing_with_aids field exists
+                if "all_financing_with_aids" not in calculation:
+                    self.log_test("All Financing with Aids", False, "Missing 'all_financing_with_aids' field in response", calculation)
+                    return
+                
+                all_financing_with_aids = calculation["all_financing_with_aids"]
+                
+                if not isinstance(all_financing_with_aids, list):
+                    self.log_test("All Financing with Aids", False, f"all_financing_with_aids should be a list, got {type(all_financing_with_aids)}", all_financing_with_aids)
+                    return
+                
+                # Should have 10 options (6-15 years)
+                if len(all_financing_with_aids) != 10:
+                    self.log_test("All Financing with Aids", False, f"Expected 10 financing options (6-15 years), got {len(all_financing_with_aids)}", all_financing_with_aids)
+                    return
+                
+                kit_price = calculation.get("kit_price", 0)
+                total_aids = calculation.get("total_aids", 0)
+                financed_amount = kit_price - total_aids
+                
+                issues = []
+                taeg = 0.0325  # Expected 3.25% TAEG
+                monthly_rate = taeg / 12
+                
+                # Test each financing option
+                for i, option in enumerate(all_financing_with_aids):
+                    duration_years = option.get("duration_years", 0)
+                    monthly_payment = option.get("monthly_payment", 0)
+                    
+                    # Check duration is correct (6 + i years)
+                    expected_duration = 6 + i
+                    if duration_years != expected_duration:
+                        issues.append(f"Option {i}: duration {duration_years} != expected {expected_duration}")
+                        continue
+                    
+                    # Calculate expected payment for this duration with 3.25% TAEG
+                    months = duration_years * 12
+                    if financed_amount > 0 and monthly_rate > 0:
+                        expected_payment = financed_amount * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
+                        
+                        # Check if actual payment matches 3.25% calculation (within 2€ tolerance)
+                        if abs(monthly_payment - expected_payment) > 2:
+                            issues.append(f"Option {duration_years}y: payment {monthly_payment:.2f}€ != 3.25% TAEG calculation {expected_payment:.2f}€")
+                
+                # Check that payments decrease with longer duration (basic sanity check)
+                for i in range(len(all_financing_with_aids) - 1):
+                    current_payment = all_financing_with_aids[i]["monthly_payment"]
+                    next_payment = all_financing_with_aids[i + 1]["monthly_payment"]
+                    if current_payment <= next_payment:
+                        issues.append(f"Monthly payments should decrease with longer duration: {current_payment}€ (year {6+i}) >= {next_payment}€ (year {6+i+1})")
+                
+                # Check specific values for common durations
+                option_15y = next((opt for opt in all_financing_with_aids if opt["duration_years"] == 15), None)
+                if option_15y and abs(financed_amount - 20880) < 1000:  # If amount is close to 20880€
+                    payment_15y = option_15y["monthly_payment"]
+                    if payment_15y > 130:  # Should be lower than old 4.96% rate
+                        issues.append(f"15-year payment {payment_15y:.2f}€ seems too high for 3.25% rate (expected ~125€ for 20880€)")
+                    elif payment_15y < 120:
+                        issues.append(f"15-year payment {payment_15y:.2f}€ seems too low for 3.25% rate")
+                
+                if issues:
+                    self.log_test("All Financing with Aids (3.25% TAEG)", False, f"Issues found: {'; '.join(issues)}", all_financing_with_aids)
+                else:
+                    # Show range of payments
+                    payments = [opt["monthly_payment"] for opt in all_financing_with_aids]
+                    min_payment = min(payments)
+                    max_payment = max(payments)
+                    self.log_test("All Financing with Aids (3.25% TAEG)", True, 
+                                f"✅ ALL FINANCING OPTIONS WITH 3.25% TAEG WORKING: 10 options (6-15 years), payments range {max_payment:.2f}€ (6y) to {min_payment:.2f}€ (15y) - REDUCED from old 4.96% rate", 
+                                all_financing_with_aids)
+            else:
+                self.log_test("All Financing with Aids (3.25% TAEG)", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("All Financing with Aids (3.25% TAEG)", False, f"Error: {str(e)}")
     
     def test_error_cases(self):
         """Test error handling"""
