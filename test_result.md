@@ -128,6 +128,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ All solar kits (3-9kW) available with correct pricing. 6kW kit: 22900€, 12 panels"
+      - working: true
+        agent: "testing"
+        comment: "✅ SOLAR KITS ENDPOINT ADDED AND WORKING - Added missing /solar-kits endpoint that returns SOLAR_KITS data structure. All 7 kit sizes (3-9kW) available with correct pricing and panel counts. Test now passes successfully."
 
   - task: "PVGIS Direct Test Endpoint"
     implemented: true
