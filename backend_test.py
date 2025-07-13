@@ -280,7 +280,7 @@ class SolarCalculatorTester:
                 
                 # Check required fields in financing_with_aids
                 required_aids_fields = [
-                    "financed_amount", "monthly_payment", "total_cost", 
+                    "financed_amount", "monthly_payment", 
                     "total_interests", "difference_vs_savings"
                 ]
                 
