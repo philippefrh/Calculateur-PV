@@ -60,27 +60,29 @@ const StartScreen = ({ onStart }) => {
       <div className="certifications">
         <div className="cert-row">
           <div className="cert-badge official rge-qualipv">
-            <img src="https://www.qualit-enr.org/wp-content/uploads/2024/12/logo-QualiPV-2025-RGE_sc.png" alt="RGE QualiPV 2025" />
+            <img src="https://www.qualit-enr.org/wp-content/uploads/2024/12/logo-QualiPV-2025-RGE_sc.png" alt="RGE QualiPV 2025" className="rge-logo-small" />
             <span>RGE QualiPV 2025</span>
           </div>
           <div className="cert-badge official rge-qualipac">
-            <img src="https://www.qualit-enr.org/wp-content/uploads/2024/12/logo-QualiPAC-2025-RGE_sc.png" alt="RGE QualiPac 2025" />
+            <img src="https://www.qualit-enr.org/wp-content/uploads/2024/12/logo-QualiPAC-2025-RGE_sc.png" alt="RGE QualiPac 2025" className="rge-logo-small" />
             <span>RGE QualiPac 2025</span>
           </div>
         </div>
         
         <div className="cert-row">
           <div className="cert-badge official ffb">
-            <span>🏢 FFB Adhérent</span>
+            <img src="https://www.ffbatiment.fr/-/media/Project/FFB/shared/Logos/logo-federation-francaise-du-batiment.png?h=196&iar=0&w=240&rev=f33feb1bc41b4da682356e6820f4cf36&hash=89C478B0995E262614796430902176D4" alt="FFB Adhérent" className="ffb-logo" />
+            <span>FFB Adhérent</span>
           </div>
           <div className="cert-badge official edf">
+            <img src="https://www.dometis.re/wp-content/uploads/2025/05/agir-plus.png" alt="Partenaire AGIR PLUS EDF" className="agir-plus-logo" />
             <span>⚡ Partenaire AGIR PLUS EDF</span>
           </div>
         </div>
         
         <div className="cert-row">
-          <div className="cert-badge official mma-decennale">
-            <img src="https://www.mma.fr/files/live/sites/mmafr/files/divers/logo_mma.png" alt="MMA Assurance Décennale" />
+          <div className="cert-badge official mma-decennale centered">
+            <img src="https://www.mma.fr/files/live/sites/mmafr/files/divers/logo_mma.png" alt="MMA Assurance Décennale" className="mma-logo-centered" />
             <div className="decennale-text">
               <h4>Décennale</h4>
               <p>Toutes nos installations bénéficient d'une garantie de 10 ans.</p>
