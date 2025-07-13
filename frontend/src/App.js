@@ -1260,13 +1260,75 @@ function App() {
     );
   }
 
-  // Pour l'instant, les autres composants ne sont pas encore créés
-  // Nous les ajouterons dans les prochaines étapes
+  if (currentStep === 'technical') {
+    return (
+      <div className="App">
+        <TechnicalInfoForm 
+          formData={formData} 
+          setFormData={setFormData} 
+          onNext={handleNext} 
+          onPrevious={handlePrevious} 
+        />
+      </div>
+    );
+  }
+
+  if (currentStep === 'heating') {
+    return (
+      <div className="App">
+        <HeatingSystemForm 
+          formData={formData} 
+          setFormData={setFormData} 
+          onNext={handleNext} 
+          onPrevious={handlePrevious} 
+        />
+      </div>
+    );
+  }
+
+  if (currentStep === 'consumption') {
+    return (
+      <div className="App">
+        <ConsumptionForm 
+          formData={formData} 
+          setFormData={setFormData} 
+          onNext={handleNext} 
+          onPrevious={handlePrevious} 
+        />
+      </div>
+    );
+  }
+
+  if (currentStep === 'calculation') {
+    return (
+      <div className="App">
+        <CalculationScreen 
+          formData={formData} 
+          onComplete={handleCalculationComplete}
+          onPrevious={handlePrevious}
+        />
+      </div>
+    );
+  }
+
+  if (currentStep === 'results') {
+    return (
+      <div className="App">
+        <ResultsScreen 
+          results={calculationResults}
+          onPrevious={handlePrevious}
+          onNewCalculation={handleNewCalculation}
+        />
+      </div>
+    );
+  }
+
+  // Fallback
   return (
     <div className="App">
       <div className="error-screen">
-        <h2>⚠️ Composant en cours de développement</h2>
-        <p>Étape actuelle : {currentStep}</p>
+        <h2>⚠️ Erreur de navigation</h2>
+        <p>Une erreur s'est produite. Retour à l'accueil...</p>
         <button onClick={handleNewCalculation} className="error-button">
           🏠 Retour à l'accueil
         </button>
