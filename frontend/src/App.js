@@ -919,19 +919,38 @@ Cordialement`);
                   <div className="table-header">
                     <span>Durée</span>
                     <span>Mensualité</span>
-                    <span>Coût total</span>
                     <span>Différence vs économies</span>
                   </div>
                   {results.financing_options?.map((option, index) => (
                     <div key={index} className="table-row">
                       <span>{option.duration_years} ans</span>
                       <span>{Math.round(option.monthly_payment)} €</span>
-                      <span>{Math.round(option.total_cost).toLocaleString()} €</span>
                       <span className={Math.abs(option.difference_vs_savings) < 20 ? 'success' : 'warning'}>
                         {option.difference_vs_savings > 0 ? '+' : ''}{Math.round(option.difference_vs_savings)} €/mois
                       </span>
                     </div>
                   ))}
+                </div>
+
+                {/* Nouveau tableau avec aides déduites */}
+                <div className="all-financing-options" style={{marginTop: '30px'}}>
+                  <h4>💰 Toutes les options de financement disponibles avec aides déduites</h4>
+                  <div className="financing-table">
+                    <div className="table-header">
+                      <span>Durée</span>
+                      <span>Mensualité</span>
+                      <span>Différence vs économies</span>
+                    </div>
+                    {results.all_financing_with_aids?.map((option, index) => (
+                      <div key={index} className="table-row">
+                        <span>{option.duration_years} ans</span>
+                        <span>{Math.round(option.monthly_payment)} €</span>
+                        <span className={Math.abs(option.difference_vs_savings) < 20 ? 'success' : 'warning'}>
+                          {option.difference_vs_savings > 0 ? '+' : ''}{Math.round(option.difference_vs_savings)} €/mois
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
