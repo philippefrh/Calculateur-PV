@@ -209,6 +209,207 @@ const PersonalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
   );
 };
 
+// Formulaire étape 2 - Informations techniques amélioré
+const TechnicalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.roofSurface || formData.roofSurface < 10) newErrors.roofSurface = "Surface minimum : 10 m²";
+    if (!formData.roofOrientation) newErrors.roofOrientation = "Orientation obligatoire";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      onNext();
+    }
+  };
+
+  const getOrientationAdvice = (orientation) => {
+    const advice = {
+      "Sud": "🌟 Excellente orientation ! Production optimale",
+      "Sud-Est": "👍 Très bonne orientation, production matinale",
+      "Sud-Ouest": "👍 Très bonne orientation, production tardive", 
+      "Est": "⚠️ Orientation correcte, production matinale",
+      "Ouest": "⚠️ Orientation correcte, production tardive"
+    };
+    return advice[orientation] || "";
+  };
+
+  return (
+    <div className="form-container">
+      <div className="form-header">
+        <h2>🏠 Étape 2/4 - Informations Techniques</h2>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{width: '50%'}}></div>
+        </div>
+      </div>
+      
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>📐 Surface de votre toiture la mieux orientée (m²) *</label>
+          <input
+            type="number"
+            value={formData.roofSurface}
+            onChange={(e) => setFormData({...formData, roofSurface: e.target.value})}
+            placeholder="ex: 50"
+            min="10"
+            max="200"
+            className={errors.roofSurface ? 'error' : ''}
+            required
+          />
+          {errors.roofSurface && <span className="error-message">{errors.roofSurface}</span>}
+          <small>💡 Chaque panneau fait 2,1 m² - Surface minimum 10 m² (≈ 5 panneaux)</small>
+        </div>
+        
+        <div className="form-group">
+          <label>🧭 Orientation de votre toiture *</label>
+          <select
+            value={formData.roofOrientation}
+            onChange={(e) => setFormData({...formData, roofOrientation: e.target.value})}
+            className={errors.roofOrientation ? 'error' : ''}
+            required
+          >
+            <option value="">Sélectionnez une orientation</option>
+            <option value="Sud">🌞 Sud (Optimal)</option>
+            <option value="Sud-Est">🌅 Sud-Est (Très bon)</option>
+            <option value="Sud-Ouest">🌇 Sud-Ouest (Très bon)</option>
+            <option value="Est">⬅️ Est (Correct)</option>
+            <option value="Ouest">➡️ Ouest (Correct)</option>
+          </select>
+          {errors.roofOrientation && <span className="error-message">{errors.roofOrientation}</span>}
+          {formData.roofOrientation && (
+            <div className="orientation-advice">{getOrientationAdvice(formData.roofOrientation)}</div>
+          )}
+        </div>
+        
+        <div className="form-group">
+          <label>🪟 Nombre de velux sur votre toiture</label>
+          <input
+            type="number"
+            value={formData.veluxCount}
+            onChange={(e) => setFormData({...formData, veluxCount: e.target.value})}
+            min="0"
+            max="10"
+            placeholder="0 si aucun"
+          />
+          <small>💡 Les velux peuvent limiter l'espace disponible pour les panneaux</small>
+        </div>
+        
+        <div className="form-buttons">
+          <button type="button" onClick={onPrevious} className="prev-button">⬅️ Précédent</button>
+          <button type="submit" className="next-button">Suivant ➡️</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+// Formulaire étape 3 - Système de chauffage amélioré
+const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.heatingSystem) newErrors.heatingSystem = "Système de chauffage obligatoire";
+    if (!formData.waterHeatingSystem) newErrors.waterHeatingSystem = "Système d'eau chaude obligatoire";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      onNext();
+    }
+  };
+
+  const getHeatingAdvice = (heating) => {
+    if (heating.includes("électrique")) {
+      return "⚡ Parfait pour le solaire ! Vous consommez beaucoup d'électricité";
+    }
+    if (heating.includes("Pompe à chaleur")) {
+      return "🔥 Excellente synergie avec le solaire !";
+    }
+    return "🏠 Installation solaire rentable malgré le chauffage non-électrique";
+  };
+
+  return (
+    <div className="form-container">
+      <div className="form-header">
+        <h2>🏠 Étape 3/4 - Chauffage et Eau Chaude</h2>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{width: '75%'}}></div>
+        </div>
+      </div>
+      
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>🔥 Système de chauffage actuel *</label>
+          <select
+            value={formData.heatingSystem}
+            onChange={(e) => setFormData({...formData, heatingSystem: e.target.value})}
+            className={errors.heatingSystem ? 'error' : ''}
+            required
+          >
+            <option value="">Sélectionnez votre système</option>
+            <option value="Radiateurs électriques">⚡ Radiateurs électriques</option>
+            <option value="Chauffage électrique avec plancher chauffant">⚡ Plancher chauffant électrique</option>
+            <option value="Chaudière Gaz">🔥 Chaudière Gaz</option>
+            <option value="Chaudière Fuel">🛢️ Chaudière Fuel</option>
+            <option value="Pompe à chaleur Air-Air réversible">❄️🔥 Pompe à chaleur Air-Air (réversible)</option>
+            <option value="Pompe à chaleur Air-Eau">💧🔥 Pompe à chaleur Air-Eau</option>
+          </select>
+          {errors.heatingSystem && <span className="error-message">{errors.heatingSystem}</span>}
+          {formData.heatingSystem && (
+            <div className="heating-advice">{getHeatingAdvice(formData.heatingSystem)}</div>
+          )}
+        </div>
+        
+        <div className="form-group">
+          <label>💧 Système d'eau chaude sanitaire *</label>
+          <select
+            value={formData.waterHeatingSystem}
+            onChange={(e) => setFormData({...formData, waterHeatingSystem: e.target.value})}
+            className={errors.waterHeatingSystem ? 'error' : ''}
+            required
+          >
+            <option value="">Sélectionnez votre système</option>
+            <option value="Ballon électrique standard">⚡ Ballon électrique standard</option>
+            <option value="Ballon thermodynamique">🔄 Ballon thermodynamique</option>
+          </select>
+          {errors.waterHeatingSystem && <span className="error-message">{errors.waterHeatingSystem}</span>}
+        </div>
+        
+        {formData.waterHeatingSystem && (
+          <div className="form-group">
+            <label>📏 Capacité du ballon (litres)</label>
+            <input
+              type="number"
+              value={formData.waterHeatingCapacity}
+              onChange={(e) => setFormData({...formData, waterHeatingCapacity: e.target.value})}
+              placeholder="ex: 200"
+              min="50"
+              max="500"
+            />
+            <small>💡 Information optionnelle - Capacité standard : 150-300L</small>
+          </div>
+        )}
+        
+        <div className="form-buttons">
+          <button type="button" onClick={onPrevious} className="prev-button">⬅️ Précédent</button>
+          <button type="submit" className="next-button">Suivant ➡️</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
 // Composant principal - Version Premium
 function App() {
   const [currentStep, setCurrentStep] = useState('start');
