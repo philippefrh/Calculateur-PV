@@ -21,7 +21,7 @@ const AutonomyLogo = () => (
   </div>
 );
 
-// Écran de démarrage amélioré avec vrais logos (Point 11)
+// Écran de démarrage amélioré avec vrais logos
 const StartScreen = ({ onStart }) => {
   
   const handleClick = () => {
@@ -31,7 +31,7 @@ const StartScreen = ({ onStart }) => {
   
   return (
     <div className="start-screen">
-      {/* Point 11 - Image FRH Environnement VRAIE */}
+      {/* Image FRH Environnement réelle */}
       <div className="company-header">
         <div className="company-image">
           <img 
@@ -56,7 +56,7 @@ const StartScreen = ({ onStart }) => {
       
       <AutonomyLogo />
       
-      {/* Point 11 - Logos officiels avec VRAIS logos */}
+      {/* Logos officiels avec MMA Décennale */}
       <div className="certifications">
         <div className="cert-row">
           <div className="cert-badge official rge-qualipv">
