@@ -260,6 +260,88 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Solar Calculation", False, f"Error: {str(e)}")
     
+    def test_financing_with_aids_calculation(self):
+        """Test the new financing with aids calculation functionality"""
+        if not self.client_id:
+            self.log_test("Financing with Aids", False, "No client ID available from previous test")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.client_id}")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check if financing_with_aids field exists
+                if "financing_with_aids" not in calculation:
+                    self.log_test("Financing with Aids", False, "Missing 'financing_with_aids' field in response", calculation)
+                    return
+                
+                financing_with_aids = calculation["financing_with_aids"]
+                
+                # Check required fields in financing_with_aids
+                required_aids_fields = [
+                    "financed_amount", "monthly_payment", "total_cost", 
+                    "total_interests", "difference_vs_savings"
+                ]
+                
+                missing_aids_fields = [field for field in required_aids_fields if field not in financing_with_aids]
+                if missing_aids_fields:
+                    self.log_test("Financing with Aids", False, f"Missing fields in financing_with_aids: {missing_aids_fields}", financing_with_aids)
+                    return
+                
+                # Extract values for validation
+                financed_amount = financing_with_aids.get("financed_amount", 0)
+                monthly_payment = financing_with_aids.get("monthly_payment", 0)
+                total_cost = financing_with_aids.get("total_cost", 0)
+                total_interests = financing_with_aids.get("total_interests", 0)
+                kit_price = calculation.get("kit_price", 0)
+                total_aids = calculation.get("total_aids", 0)
+                monthly_savings = calculation.get("monthly_savings", 0)
+                
+                issues = []
+                
+                # Validate financed amount = kit_price - total_aids
+                expected_financed_amount = kit_price - total_aids
+                if abs(financed_amount - expected_financed_amount) > 1:  # Allow 1€ tolerance
+                    issues.append(f"Financed amount {financed_amount}€ != kit_price {kit_price}€ - total_aids {total_aids}€ = {expected_financed_amount}€")
+                
+                # Validate that monthly payment is MORE than simple division (116€ for 20880€/180 months)
+                simple_division = financed_amount / 180  # 15 years = 180 months
+                if monthly_payment <= simple_division:
+                    issues.append(f"Monthly payment {monthly_payment}€ should be > simple division {simple_division:.2f}€ (interests not included)")
+                
+                # Validate total cost = monthly_payment * 180 months
+                expected_total_cost = monthly_payment * 180
+                if abs(total_cost - expected_total_cost) > 1:  # Allow 1€ tolerance
+                    issues.append(f"Total cost {total_cost}€ != monthly_payment {monthly_payment}€ × 180 = {expected_total_cost:.2f}€")
+                
+                # Validate total interests = total_cost - financed_amount
+                expected_total_interests = total_cost - financed_amount
+                if abs(total_interests - expected_total_interests) > 1:  # Allow 1€ tolerance
+                    issues.append(f"Total interests {total_interests}€ != total_cost {total_cost}€ - financed_amount {financed_amount}€ = {expected_total_interests:.2f}€")
+                
+                # Check that monthly payment is reasonable (should be around 130-150€ with interests)
+                if monthly_payment < 120 or monthly_payment > 200:
+                    issues.append(f"Monthly payment {monthly_payment}€ seems unrealistic (expected 120-200€ range)")
+                
+                # Check that interests are positive and reasonable (4.96% TAEG over 15 years)
+                if total_interests <= 0:
+                    issues.append(f"Total interests {total_interests}€ should be positive")
+                elif total_interests < financed_amount * 0.3:  # Should be at least 30% of financed amount over 15 years
+                    issues.append(f"Total interests {total_interests}€ seem too low for 15-year loan at 4.96% TAEG")
+                
+                if issues:
+                    self.log_test("Financing with Aids", False, f"Financing calculation issues: {'; '.join(issues)}", financing_with_aids)
+                else:
+                    interest_rate_effective = (total_interests / financed_amount) * 100
+                    self.log_test("Financing with Aids", True, 
+                                f"✅ Financing with aids working correctly: {financed_amount}€ financed, {monthly_payment:.2f}€/month (vs {simple_division:.2f}€ simple division), {total_interests:.2f}€ total interests ({interest_rate_effective:.1f}% effective rate over 15 years)", 
+                                financing_with_aids)
+            else:
+                self.log_test("Financing with Aids", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Financing with Aids", False, f"Error: {str(e)}")
+    
     def test_error_cases(self):
         """Test error handling"""
         # Test invalid address
