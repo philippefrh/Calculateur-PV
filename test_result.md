@@ -255,7 +255,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "All Financing Options with Aids (6-15 years) - Successfully tested and working"
+    - "Autoconsumption/Surplus Distribution (95%/5%) - Successfully tested and working"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -271,3 +271,5 @@ agent_communication:
     message: "✅ NEW all_financing_with_aids FIELD FULLY TESTED AND WORKING - Created comprehensive test for the new functionality. The all_financing_with_aids field contains 10 financing options (6-15 years) with aids deducted. Each option includes duration_years, monthly_payment (with 4.96% TAEG interest), and difference_vs_savings. Monthly payments correctly decrease with longer duration (311.43€ for 6y to 152.69€ for 15y). All calculations include proper banking interest rates. Comparison shows aids financing saves 43.70€/month (22.3%) vs normal financing. User can now see two complete financing tables as requested."
   - agent: "testing"
     message: "✅ 3.25% TAEG RATE CHANGE SUCCESSFULLY TESTED AND CONFIRMED - The interest rate modification from 4.96% to 3.25% TAEG is working perfectly in both financing_with_aids and all_financing_with_aids fields. Test results: For 17840€ financed amount over 15 years: NEW 3.25% rate = 125.36€/month vs OLD 4.96% rate = 140.71€/month. Monthly savings: 15.35€ (10.9% reduction). All 10 financing options (6-15 years) correctly use 3.25% TAEG. Mathematical calculations verified. The reduced rate provides more advantageous financing as requested."
+  - agent: "testing"
+    message: "✅ AUTOCONSUMPTION/SURPLUS DISTRIBUTION (95%/5%) SUCCESSFULLY TESTED - The modified calculation from 70% autoconsumption / 30% surplus to 95% autoconsumption / 5% surplus is working perfectly. Test results: 6529 kWh autoconsumption (95.0%), 344 kWh surplus (5.0%) from 6873 kWh total production. Monthly savings increased significantly from 113.93€ (old method) to 139.07€ (new method), representing +25.14€/month (+22.1% improvement). Economic impact verified: New method (production × 0.95 × 0.2516) + (production × 0.05 × 0.076) provides much better balance with financing payments (125.36€/month with aids). The new distribution makes solar installations significantly more economically attractive as requested."
