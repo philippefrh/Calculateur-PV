@@ -1024,7 +1024,7 @@ Cordialement`);
 };
 
 // Pages explicatives pendant le calcul PVGIS
-const EducationalPages = ({ currentPhase, countdown }) => {
+const EducationalPages = ({ currentPhase, countdown, formData }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   // Images d'installations réelles FRH Environnement
