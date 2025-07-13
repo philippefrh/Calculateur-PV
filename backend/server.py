@@ -279,7 +279,6 @@ def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_s
         "duration_months": months,
         "financed_amount": round(financed_amount, 2),
         "monthly_payment": round(monthly_payment_with_interests, 2),
-        "total_cost": round(monthly_payment_with_interests * months, 2),
         "total_interests": round((monthly_payment_with_interests * months) - financed_amount, 2),
         "difference_vs_savings": round(monthly_payment_with_interests - monthly_savings, 2)
     }
