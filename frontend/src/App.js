@@ -74,18 +74,13 @@ const StartScreen = ({ onStart }) => {
             <span>🏢 FFB Adhérent</span>
           </div>
           <div className="cert-badge official edf">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAH..." alt="Partenaire AGIR PLUS EDF" />
             <span>⚡ Partenaire AGIR PLUS EDF</span>
           </div>
         </div>
         
         <div className="cert-row">
           <div className="cert-badge official mma-decennale">
-            <div className="mma-logos">
-              <span className="mma-logo blue">M</span>
-              <span className="mma-logo green">M</span>
-              <span className="mma-logo orange">A</span>
-            </div>
+            <img src="https://www.mma.fr/files/live/sites/mmafr/files/divers/logo_mma.png" alt="MMA Assurance Décennale" />
             <div className="decennale-text">
               <h4>Décennale</h4>
               <p>Toutes nos installations bénéficient d'une garantie de 10 ans.</p>
