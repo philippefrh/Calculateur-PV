@@ -319,6 +319,11 @@ def calculate_all_financing_with_aids(kit_price: float, total_aids: float, month
 async def root():
     return {"message": "Solar Calculator API with PVGIS Integration"}
 
+@api_router.get("/solar-kits")
+async def get_solar_kits():
+    """Get available solar kits with pricing"""
+    return SOLAR_KITS
+
 @api_router.post("/clients", response_model=ClientInfo)
 async def create_client(client_data: ClientInfoCreate):
     try:
