@@ -398,6 +398,10 @@ class SolarCalculatorTester:
         self.test_get_client_by_id()
         self.test_solar_calculation()
         
+        # Priority 3 - New financing with aids test
+        print("\n📋 PRIORITY 3 - Financing with Aids Calculation")
+        self.test_financing_with_aids_calculation()
+        
         # Error handling tests
         print("\n📋 ERROR HANDLING TESTS")
         self.test_error_cases()
