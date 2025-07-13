@@ -37,7 +37,7 @@ const StartScreen = ({ onStart }) => {
           <img 
             src="https://cdn-dhoin.nitrocdn.com/EuBhgITwlcEgvZudhGdVBYWQskHAaTgE/assets/images/optimized/rev-a144ac5/france-renovhabitat.fr/contenu/2021/uploads/2021/05/FRH2-logo-HORIZONTALE.png" 
             alt="FRH Environnement - Installateur Photovoltaïque"
-            className="company-logo-image"
+            className="company-logo-image centered"
           />
         </div>
         <h1 className="company-title">Installateur Photovoltaïque</h1>
