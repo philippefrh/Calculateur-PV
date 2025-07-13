@@ -1240,19 +1240,11 @@ const EducationalPages = ({ currentPhase, countdown, formData }) => {
           <div className="monitoring-devices">
             <div className="device-card">
               <div className="device-image">
-                <div className="phone-mockup">
-                  <div className="phone-screen">
-                    <div className="app-header">Production Solaire</div>
-                    <div className="production-display">
-                      <div className="current-power">3.1kW</div>
-                      <div className="daily-production">22.94 kWh</div>
-                    </div>
-                    <div className="app-stats">
-                      <div className="stat">Aujourd'hui: 7.86 kWh</div>
-                      <div className="stat">Ce mois: 234 kWh</div>
-                    </div>
-                  </div>
-                </div>
+                <img 
+                  src="https://images.unsplash.com/photo-1653022056328-913942485324"
+                  alt="Application mobile de monitoring solaire"
+                  className="monitoring-screenshot"
+                />
               </div>
               <h4>📱 Application mobile</h4>
               <p>Surveillez votre installation depuis n'importe où</p>
@@ -1260,15 +1252,11 @@ const EducationalPages = ({ currentPhase, countdown, formData }) => {
 
             <div className="device-card">
               <div className="device-image">
-                <div className="dashboard-mockup">
-                  <div className="dashboard-header">MyEnlighten Dashboard</div>
-                  <div className="dashboard-content">
-                    <div className="metric">24.22 kWh produits</div>
-                    <div className="metric">16.66 kWh consommés</div>
-                    <div className="metric">7.50 kWh exportés</div>
-                  </div>
-                  <div className="dashboard-chart"></div>
-                </div>
+                <img 
+                  src="https://images.unsplash.com/photo-1662601311150-c20f76b7cb20"
+                  alt="Interface web de monitoring"
+                  className="monitoring-screenshot"
+                />
               </div>
               <h4>💻 Interface web</h4>
               <p>Analyses détaillées et historiques complets</p>
