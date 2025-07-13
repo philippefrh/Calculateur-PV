@@ -206,6 +206,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ NEW all_financing_with_aids FIELD WORKING PERFECTLY - Contains financing options for all durations 6-15 years with aids deducted. Each option includes duration_years, monthly_payment (with 4.96% TAEG interest), and difference_vs_savings. Monthly payments correctly decrease with longer duration (311.43€ for 6y to 152.69€ for 15y). All calculations include proper banking interest rates. Saves 43.70€/month (22.3%) vs normal financing."
+      - working: true
+        agent: "testing"
+        comment: "✅ NEW 3.25% TAEG RATE CONFIRMED WORKING - Updated interest rate from 4.96% to 3.25% TAEG successfully implemented in all financing options. Test results: 10 options (6-15 years), payments range from 273.06€ (6y) to 125.36€ (15y) with 3.25% TAEG. All calculations mathematically correct. Significant reduction from old 4.96% rate as requested."
 
   - task: "Error Handling for Invalid Inputs"
     implemented: true
