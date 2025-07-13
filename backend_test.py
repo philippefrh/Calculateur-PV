@@ -545,6 +545,149 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Autoconsumption/Surplus Distribution (95%/5%)", False, f"Error: {str(e)}")
 
+    def test_pdf_generation_financing_tables(self):
+        """Test PDF generation with focus on financing tables structure"""
+        if not self.client_id:
+            self.log_test("PDF Generation - Financing Tables", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # First get the calculation data to verify structure
+            calc_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}")
+            if calc_response.status_code != 200:
+                self.log_test("PDF Generation - Financing Tables", False, f"Failed to get calculation data: {calc_response.status_code}")
+                return
+            
+            calculation = calc_response.json()
+            
+            # Test PDF generation endpoint
+            pdf_response = self.session.get(f"{self.base_url}/generate-pdf/{self.client_id}")
+            if pdf_response.status_code != 200:
+                self.log_test("PDF Generation - Financing Tables", False, f"PDF generation failed: HTTP {pdf_response.status_code}: {pdf_response.text}")
+                return
+            
+            # Check if response is actually a PDF
+            if not pdf_response.headers.get('content-type', '').startswith('application/pdf'):
+                self.log_test("PDF Generation - Financing Tables", False, f"Response is not a PDF. Content-Type: {pdf_response.headers.get('content-type')}")
+                return
+            
+            # Check PDF size (should be reasonable)
+            pdf_size = len(pdf_response.content)
+            if pdf_size < 10000:  # Less than 10KB seems too small
+                self.log_test("PDF Generation - Financing Tables", False, f"PDF size {pdf_size} bytes seems too small")
+                return
+            elif pdf_size > 5000000:  # More than 5MB seems too large
+                self.log_test("PDF Generation - Financing Tables", False, f"PDF size {pdf_size} bytes seems too large")
+                return
+            
+            # Verify calculation data has required financing structures
+            issues = []
+            
+            # Check financing_options (normal financing with 4.96% TAEG)
+            financing_options = calculation.get("financing_options", [])
+            if not financing_options:
+                issues.append("Missing financing_options field")
+            elif len(financing_options) != 10:
+                issues.append(f"financing_options should have 10 options (6-15 years), got {len(financing_options)}")
+            else:
+                # Check structure - should NOT have 'total_cost' field (removed as per request)
+                first_option = financing_options[0]
+                if 'total_cost' in first_option:
+                    issues.append("financing_options should NOT contain 'total_cost' column (removed as per request)")
+                
+                # Check required fields (4 columns as per request)
+                required_fields = ['duration_years', 'monthly_payment', 'difference_vs_savings']
+                missing_fields = [field for field in required_fields if field not in first_option]
+                if missing_fields:
+                    issues.append(f"financing_options missing fields: {missing_fields}")
+                
+                # Verify all 10 durations (6-15 years)
+                durations = [opt['duration_years'] for opt in financing_options]
+                expected_durations = list(range(6, 16))
+                if durations != expected_durations:
+                    issues.append(f"financing_options durations {durations} != expected {expected_durations}")
+            
+            # Check all_financing_with_aids (financing with aids with 3.25% TAEG)
+            all_financing_with_aids = calculation.get("all_financing_with_aids", [])
+            if not all_financing_with_aids:
+                issues.append("Missing all_financing_with_aids field")
+            elif len(all_financing_with_aids) != 10:
+                issues.append(f"all_financing_with_aids should have 10 options (6-15 years), got {len(all_financing_with_aids)}")
+            else:
+                # Check structure - should NOT have 'total_cost' field (removed as per request)
+                first_aids_option = all_financing_with_aids[0]
+                if 'total_cost' in first_aids_option:
+                    issues.append("all_financing_with_aids should NOT contain 'total_cost' column (removed as per request)")
+                
+                # Check required fields (4 columns as per request)
+                required_aids_fields = ['duration_years', 'monthly_payment', 'difference_vs_savings']
+                missing_aids_fields = [field for field in required_aids_fields if field not in first_aids_option]
+                if missing_aids_fields:
+                    issues.append(f"all_financing_with_aids missing fields: {missing_aids_fields}")
+                
+                # Verify all 10 durations (6-15 years)
+                aids_durations = [opt['duration_years'] for opt in all_financing_with_aids]
+                expected_durations = list(range(6, 16))
+                if aids_durations != expected_durations:
+                    issues.append(f"all_financing_with_aids durations {aids_durations} != expected {expected_durations}")
+            
+            # Verify that aids financing has lower monthly payments (3.25% vs 4.96% TAEG)
+            if financing_options and all_financing_with_aids:
+                # Compare 15-year options
+                normal_15y = next((opt for opt in financing_options if opt['duration_years'] == 15), None)
+                aids_15y = next((opt for opt in all_financing_with_aids if opt['duration_years'] == 15), None)
+                
+                if normal_15y and aids_15y:
+                    normal_payment = normal_15y['monthly_payment']
+                    aids_payment = aids_15y['monthly_payment']
+                    
+                    if aids_payment >= normal_payment:
+                        issues.append(f"Aids financing payment {aids_payment}€ should be lower than normal financing {normal_payment}€ (3.25% vs 4.96% TAEG)")
+                    else:
+                        savings_per_month = normal_payment - aids_payment
+                        savings_percentage = (savings_per_month / normal_payment) * 100
+                        if savings_percentage < 5:  # Should save at least 5%
+                            issues.append(f"Aids financing savings {savings_percentage:.1f}% seems too small (expected >5%)")
+            
+            # Check filename format
+            content_disposition = pdf_response.headers.get('content-disposition', '')
+            if 'filename=' not in content_disposition:
+                issues.append("PDF response missing filename in Content-Disposition header")
+            elif 'etude_solaire_' not in content_disposition:
+                issues.append("PDF filename should contain 'etude_solaire_'")
+            
+            if issues:
+                self.log_test("PDF Generation - Financing Tables", False, f"PDF structure issues: {'; '.join(issues)}", {
+                    "pdf_size": pdf_size,
+                    "financing_options_count": len(financing_options),
+                    "all_financing_with_aids_count": len(all_financing_with_aids),
+                    "content_disposition": content_disposition
+                })
+            else:
+                # Calculate comparison data for success message
+                normal_15y = next((opt for opt in financing_options if opt['duration_years'] == 15), None)
+                aids_15y = next((opt for opt in all_financing_with_aids if opt['duration_years'] == 15), None)
+                
+                comparison_msg = ""
+                if normal_15y and aids_15y:
+                    normal_payment = normal_15y['monthly_payment']
+                    aids_payment = aids_15y['monthly_payment']
+                    savings_per_month = normal_payment - aids_payment
+                    comparison_msg = f" 15-year comparison: {normal_payment:.2f}€ (4.96% TAEG) vs {aids_payment:.2f}€ (3.25% TAEG) = {savings_per_month:.2f}€/month savings."
+                
+                self.log_test("PDF Generation - Financing Tables", True, 
+                            f"✅ PDF generated successfully ({pdf_size:,} bytes). Two financing tables: 'OPTIONS DE FINANCEMENT' (4.96% TAEG, 10 rows, 4 columns without total cost) and 'OPTIONS DE FINANCEMENT AVEC AIDES DÉDUITES' (3.25% TAEG, 10 rows, 4 columns without total cost).{comparison_msg}", 
+                            {
+                                "pdf_size": pdf_size,
+                                "financing_options_count": len(financing_options),
+                                "all_financing_with_aids_count": len(all_financing_with_aids),
+                                "normal_15y_payment": normal_15y['monthly_payment'] if normal_15y else None,
+                                "aids_15y_payment": aids_15y['monthly_payment'] if aids_15y else None
+                            })
+                
+        except Exception as e:
+            self.log_test("PDF Generation - Financing Tables", False, f"Error: {str(e)}")
+
     def test_error_cases(self):
         """Test error handling"""
         # Test invalid address
