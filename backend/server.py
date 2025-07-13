@@ -678,20 +678,19 @@ async def generate_solar_report_pdf(client_id: str, calculation_data: dict) -> b
         # Financing options
         if calculation_data.get('financing_options'):
             story.append(Paragraph("OPTIONS DE FINANCEMENT", heading_style))
-            finance_data = [['Durée', 'Mensualité', 'Coût total', 'Économie mensuelle', 'Différence']]
+            finance_data = [['Durée', 'Mensualité', 'Économie mensuelle', 'Différence']]
             
-            for option in calculation_data['financing_options'][:5]:  # Show first 5 options
+            for option in calculation_data['financing_options']:  # Show all options (6-15 years)
                 difference = option['difference_vs_savings']
                 diff_text = f"+{difference:.0f} €" if difference > 0 else f"{difference:.0f} €"
                 finance_data.append([
                     f"{option['duration_years']} ans",
                     f"{option['monthly_payment']:.0f} €",
-                    f"{option['total_cost']:,.0f} €",
                     f"{calculation_data['monthly_savings']:.0f} €",
                     diff_text
                 ])
             
-            finance_table = Table(finance_data, colWidths=[2.5*cm, 2.5*cm, 3*cm, 3*cm, 3*cm])
+            finance_table = Table(finance_data, colWidths=[3*cm, 3*cm, 4*cm, 4*cm])
             finance_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2196f3')),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
@@ -709,6 +708,41 @@ async def generate_solar_report_pdf(client_id: str, calculation_data: dict) -> b
             ]))
             
             story.append(finance_table)
+            story.append(Spacer(1, 20))
+        
+        # Financing options with aids deducted
+        if calculation_data.get('all_financing_with_aids'):
+            story.append(Paragraph("OPTIONS DE FINANCEMENT AVEC AIDES DÉDUITES", heading_style))
+            finance_aids_data = [['Durée', 'Mensualité', 'Économie mensuelle', 'Différence']]
+            
+            for option in calculation_data['all_financing_with_aids']:  # Show all options (6-15 years)
+                difference = option['difference_vs_savings']
+                diff_text = f"+{difference:.0f} €" if difference > 0 else f"{difference:.0f} €"
+                finance_aids_data.append([
+                    f"{option['duration_years']} ans",
+                    f"{option['monthly_payment']:.0f} €",
+                    f"{calculation_data['monthly_savings']:.0f} €",
+                    diff_text
+                ])
+            
+            finance_aids_table = Table(finance_aids_data, colWidths=[3*cm, 3*cm, 4*cm, 4*cm])
+            finance_aids_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4caf50')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 9),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 8),
+                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e0e0e0')),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 4),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 4),
+                ('TOPPADDING', (0, 0), (-1, -1), 4),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ]))
+            
+            story.append(finance_aids_table)
             story.append(Spacer(1, 20))
         
         # Add page break
