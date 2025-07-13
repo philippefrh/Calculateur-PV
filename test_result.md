@@ -210,6 +210,18 @@ backend:
         agent: "testing"
         comment: "✅ NEW 3.25% TAEG RATE CONFIRMED WORKING - Updated interest rate from 4.96% to 3.25% TAEG successfully implemented in all financing options. Test results: 10 options (6-15 years), payments range from 273.06€ (6y) to 125.36€ (15y) with 3.25% TAEG. All calculations mathematically correct. Significant reduction from old 4.96% rate as requested."
 
+  - task: "Autoconsumption/Surplus Distribution (95%/5%)"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ NEW 95%/5% AUTOCONSUMPTION/SURPLUS DISTRIBUTION SUCCESSFULLY TESTED - The modified calculation is working perfectly. Test results: 6529 kWh autoconsumption (95.0% of 6873 kWh production), 344 kWh surplus (5.0%). Monthly savings increased significantly from 113.93€ (old 70/30 method) to 139.07€ (new 95/5 method), representing a +25.14€/month increase (+22.1% improvement). Economic impact verified: Old method (70% × 0.2516 + 30% × 0.076) vs New method (95% × 0.2516 + 5% × 0.076). The new distribution provides much better balance with financing payments (125.36€/month with aids), making solar installations more economically attractive."
+
   - task: "Error Handling for Invalid Inputs"
     implemented: true
     working: false
