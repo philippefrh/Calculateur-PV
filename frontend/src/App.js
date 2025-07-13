@@ -1110,9 +1110,11 @@ const EducationalPages = ({ currentPhase, countdown, formData }) => {
           <div className="carousel-container">
             <div className="installation-showcase">
               <div className="installation-image">
-                <div className="image-placeholder">
-                  📸 {installations[currentImageIndex].title}
-                </div>
+                <img 
+                  src={installations[currentImageIndex].image}
+                  alt={installations[currentImageIndex].title}
+                  className="real-installation-photo"
+                />
               </div>
               <div className="installation-info">
                 <h4>{installations[currentImageIndex].title}</h4>
