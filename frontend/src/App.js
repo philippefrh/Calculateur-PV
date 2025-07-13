@@ -56,15 +56,15 @@ const StartScreen = ({ onStart }) => {
       
       <AutonomyLogo />
       
-      {/* Logos officiels avec MMA Décennale */}
+      {/* Logos officiels des certifications */}
       <div className="certifications">
         <div className="cert-row">
           <div className="cert-badge official rge-qualipv">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAF8klEQVR4nO2ae0yTVxjGH5D..." alt="RGE QualiPV 2025" />
+            <img src="https://www.qualit-enr.org/wp-content/uploads/2024/12/logo-QualiPV-2025-RGE_sc.png" alt="RGE QualiPV 2025" />
             <span>RGE QualiPV 2025</span>
           </div>
           <div className="cert-badge official rge-qualipac">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAG..." alt="RGE QualiPac 2025" />
+            <img src="https://www.qualit-enr.org/wp-content/uploads/2024/12/logo-QualiPAC-2025-RGE_sc.png" alt="RGE QualiPac 2025" />
             <span>RGE QualiPac 2025</span>
           </div>
         </div>
