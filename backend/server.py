@@ -364,6 +364,10 @@ async def calculate_solar_solution(client_id: str):
         # Calculate aids
         autoconsumption_aid_total = best_kit * AUTOCONSUMPTION_AID  # 80€/kW
         tva_refund = kit_info['price'] * TVA_RATE if best_kit > 3 else 0  # No TVA refund for 3kW
+        total_aids = autoconsumption_aid_total + tva_refund
+        
+        # Calculate financing options with aids deducted
+        financing_with_aids = calculate_financing_with_aids(kit_info['price'], total_aids, monthly_savings)
         
         calculation = SolarCalculation(
             client_id=client_id,
@@ -397,7 +401,8 @@ async def calculate_solar_solution(client_id: str):
             "surplus_kwh": surplus_kwh,
             "autoconsumption_aid": autoconsumption_aid_total,
             "tva_refund": tva_refund,
-            "total_aids": autoconsumption_aid_total + tva_refund,
+            "total_aids": total_aids,
+            "financing_with_aids": financing_with_aids,
             "pvgis_source": "Données source PVGIS Commission Européenne",
             "orientation": orientation,
             "coordinates": {"lat": lat, "lon": lon}
