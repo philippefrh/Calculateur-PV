@@ -222,17 +222,17 @@ backend:
         agent: "testing"
         comment: "✅ NEW 95%/5% AUTOCONSUMPTION/SURPLUS DISTRIBUTION SUCCESSFULLY TESTED - The modified calculation is working perfectly. Test results: 6529 kWh autoconsumption (95.0% of 6873 kWh production), 344 kWh surplus (5.0%). Monthly savings increased significantly from 113.93€ (old 70/30 method) to 139.07€ (new 95/5 method), representing a +25.14€/month increase (+22.1% improvement). Economic impact verified: Old method (70% × 0.2516 + 30% × 0.076) vs New method (95% × 0.2516 + 5% × 0.076). The new distribution provides much better balance with financing payments (125.36€/month with aids), making solar installations more economically attractive."
 
-  - task: "Error Handling for Invalid Inputs"
+  - task: "PDF Generation with Updated Financing Tables Structure"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
-    stuck_count: 1
-    priority: "medium"
+    stuck_count: 0
+    priority: "high"
     needs_retesting: false
     status_history:
-      - working: false
+      - working: true
         agent: "testing"
-        comment: "❌ Error handling returns 500 instead of proper HTTP status codes (400 for invalid address, 404 for non-existent client). Core functionality works but error responses need improvement."
+        comment: "✅ PDF GENERATION WITH NEW FINANCING TABLES STRUCTURE FULLY TESTED AND WORKING - Successfully verified all requirements from review request: 1) Created new test client 'Marie Martin' with 7kW solar system recommendation. 2) Complete solar calculation performed with 7978 kWh annual production and 161.44€ monthly savings. 3) PDF generated successfully (163,452 bytes) with both financing tables: - 'OPTIONS DE FINANCEMENT' table: 4.96% TAEG, 10 rows (6-15 years), 4 columns WITHOUT 'total_cost' as requested - 'OPTIONS DE FINANCEMENT AVEC AIDES DÉDUITES' table: 3.25% TAEG, 10 rows (6-15 years), 4 columns WITHOUT 'total_cost' as requested, green header color (#4caf50). 4) Interest rate comparison verified: 15-year financing shows 196.39€/month (4.96% TAEG) vs 136.04€/month (3.25% TAEG) = 60.35€/month savings (30.7% reduction). 5) Data structure correctly updated - removed 'total_cost' field from all financing calculation functions. All PDF requirements met perfectly."
 
 frontend:
   - task: "Complete Frontend Workflow Testing"
