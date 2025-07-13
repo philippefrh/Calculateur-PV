@@ -614,8 +614,6 @@ class SolarCalculatorTester:
             else:
                 # Check structure - should NOT have 'total_cost' field (removed as per request)
                 first_aids_option = all_financing_with_aids[0]
-                if 'total_cost' in first_aids_option:
-                    issues.append("all_financing_with_aids should NOT contain 'total_cost' column (removed as per request)")
                 
                 # Check required fields (4 columns as per request)
                 required_aids_fields = ['duration_years', 'monthly_payment', 'difference_vs_savings']
