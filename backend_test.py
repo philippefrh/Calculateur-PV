@@ -753,6 +753,10 @@ class SolarCalculatorTester:
         self.test_financing_with_aids_calculation()
         self.test_all_financing_with_aids_calculation()
         
+        # Priority 5 - PDF Generation with Financing Tables
+        print("\n📋 PRIORITY 5 - PDF Generation with Financing Tables")
+        self.test_pdf_generation_financing_tables()
+        
         # Error handling tests
         print("\n📋 ERROR HANDLING TESTS")
         self.test_error_cases()
