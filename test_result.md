@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Teste le logiciel solaire complet avec intégration PVGIS que nous venons de développer"
+user_problem_statement: "Je viens de modifier la génération du rapport PDF pour les options de financement. J'ai fait les changements suivants : 1. Dans le tableau 'OPTIONS DE FINANCEMENT' : - Supprimé la colonne 'Coût total' - Conservé toutes les durées de 6 à 15 ans (pas seulement les 5 premières) - Taux d'intérêt : 4,96% TAEG (normal, sans aides) 2. Ajouté un nouveau tableau 'OPTIONS DE FINANCEMENT AVEC AIDES DÉDUITES' : - Même structure que le premier mais sans coût total - Toutes les durées de 6 à 15 ans - Taux d'intérêt : 3,25% TAEG (réduit avec aides) - Couleur d'en-tête verte (#4caf50) pour le distinguer. Veuillez tester spécifiquement : 1. Créer un nouveau client de test 2. Faire un calcul solaire complet 3. Générer le PDF et vérifier qu'il contient bien : - Le tableau 'OPTIONS DE FINANCEMENT' avec 4 colonnes (sans coût total) - Le tableau 'OPTIONS DE FINANCEMENT AVEC AIDES DÉDUITES' avec 4 colonnes - Les deux tableaux doivent avoir 10 lignes chacun (6-15 ans) - Les mensualités du second tableau doivent être inférieures (taux 3,25% vs 4,96%)"
 
 backend:
   - task: "API Root Endpoint"
