@@ -1022,6 +1022,362 @@ Cordialement`);
     </div>
   );
 };
+
+// Pages explicatives pendant le calcul PVGIS
+const EducationalPages = ({ currentPhase, countdown }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Images d'installations réelles FRH Environnement
+  const installations = [
+    {
+      id: 1,
+      title: "Installation sur toiture méditerranéenne",
+      description: "Installation 6kW sur tuiles rouges - Région PACA",
+      features: ["12 panneaux 500W", "Orientation Sud", "Production: 8200 kWh/an"]
+    },
+    {
+      id: 2,
+      title: "Installation résidentielle moderne",
+      description: "Installation 9kW avec système de monitoring",
+      features: ["18 panneaux haute performance", "Onduleur micro", "Suivi temps réel"]
+    },
+    {
+      id: 3,
+      title: "Installation sur ardoise",
+      description: "Installation 6kW sur toiture traditionnelle",
+      features: ["Fixations renforcées", "Étanchéité parfaite", "Garantie 20 ans"]
+    }
+  ];
+
+  const monitoringFeatures = [
+    {
+      title: "📱 Application mobile dédiée",
+      description: "Suivez votre production en temps réel depuis votre smartphone",
+      icon: "📱"
+    },
+    {
+      title: "📊 Interface web complète", 
+      description: "Tableau de bord détaillé avec historiques et analyses",
+      icon: "💻"
+    },
+    {
+      title: "📈 Rapports automatiques",
+      description: "Recevez vos bilans mensuels et annuels par email", 
+      icon: "📧"
+    }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex(prev => (prev + 1) % installations.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (currentPhase === 0) {
+    return (
+      <div className="educational-page">
+        <div className="page-header">
+          <h3>🏠 Nos installations réelles FRH Environnement</h3>
+          <p>Découvrez nos réalisations sur différents types de toitures</p>
+        </div>
+        
+        <div className="installations-carousel">
+          <div className="carousel-container">
+            <div className="installation-showcase">
+              <div className="installation-image">
+                <div className="image-placeholder">
+                  📸 {installations[currentImageIndex].title}
+                </div>
+              </div>
+              <div className="installation-info">
+                <h4>{installations[currentImageIndex].title}</h4>
+                <p>{installations[currentImageIndex].description}</p>
+                <div className="features-list">
+                  {installations[currentImageIndex].features.map((feature, index) => (
+                    <div key={index} className="feature-item">✅ {feature}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="carousel-indicators">
+            {installations.map((_, index) => (
+              <div 
+                key={index} 
+                className={`indicator ${index === currentImageIndex ? 'active' : ''}`}
+                onClick={() => setCurrentImageIndex(index)}
+              />
+            ))}
+          </div>
+        </div>
+        
+        <div className="installation-types">
+          <div className="type-card">
+            <h4>🏛️ Tous types de toitures</h4>
+            <ul>
+              <li>Tuiles traditionnelles</li>
+              <li>Ardoise naturelle</li>
+              <li>Tôle bac acier</li>
+              <li>Toiture plate</li>
+            </ul>
+          </div>
+          <div className="type-card">
+            <h4>🔧 Installation professionnelle</h4>
+            <ul>
+              <li>Équipe certifiée RGE</li>
+              <li>Matériel premium</li>
+              <li>Garantie 20 ans</li>
+              <li>SAV dédié</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPhase === 1) {
+    return (
+      <div className="educational-page">
+        <div className="page-header">
+          <h3>⚡ Comment fonctionnent vos panneaux solaires ?</h3>
+          <p>Comprendre la technologie photovoltaïque en 3 étapes simples</p>
+        </div>
+        
+        <div className="solar-explanation">
+          <div className="explanation-step">
+            <div className="step-number">1</div>
+            <div className="step-content">
+              <h4>☀️ Captation de la lumière</h4>
+              <p>Les cellules photovoltaïques transforment la lumière du soleil en électricité continue</p>
+              <div className="step-details">
+                <span>• Technologie silicium monocristallin</span>
+                <span>• Rendement jusqu'à 22%</span>
+                <span>• Fonctionne même par temps nuageux</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="explanation-step">
+            <div className="step-number">2</div>
+            <div className="step-content">
+              <h4>🔄 Conversion en courant alternatif</h4>
+              <p>L'onduleur transforme le courant continu en courant alternatif compatible avec votre maison</p>
+              <div className="step-details">
+                <span>• Onduleur intelligent inclus</span>
+                <span>• Optimisation automatique</span>
+                <span>• Monitoring intégré</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="explanation-step">
+            <div className="step-number">3</div>
+            <div className="step-content">
+              <h4>🏠 Utilisation dans votre foyer</h4>
+              <p>L'électricité produite alimente directement vos appareils, le surplus est revendu à EDF</p>
+              <div className="step-details">
+                <span>• Autoconsommation prioritaire</span>
+                <span>• Revente automatique du surplus</span>
+                <span>• Économies immédiates</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="production-simulation">
+          <h4>📊 Exemple de production journalière</h4>
+          <div className="daily-curve">
+            <div className="curve-container">
+              <div className="production-curve"></div>
+              <div className="time-markers">
+                <span>6h</span><span>9h</span><span>12h</span><span>15h</span><span>18h</span><span>21h</span>
+              </div>
+            </div>
+            <p>Production maximale entre 11h et 15h - Vos panneaux produisent de l'électricité du lever au coucher du soleil</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPhase === 2) {
+    return (
+      <div className="educational-page">
+        <div className="page-header">
+          <h3>📱 Suivez votre production en temps réel</h3>
+          <p>Interface de monitoring professionnel incluse avec votre installation</p>
+        </div>
+        
+        <div className="monitoring-showcase">
+          <div className="monitoring-devices">
+            <div className="device-card">
+              <div className="device-image">
+                <div className="phone-mockup">
+                  <div className="phone-screen">
+                    <div className="app-header">Production Solaire</div>
+                    <div className="production-display">
+                      <div className="current-power">3.1kW</div>
+                      <div className="daily-production">22.94 kWh</div>
+                    </div>
+                    <div className="app-stats">
+                      <div className="stat">Aujourd'hui: 7.86 kWh</div>
+                      <div className="stat">Ce mois: 234 kWh</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h4>📱 Application mobile</h4>
+              <p>Surveillez votre installation depuis n'importe où</p>
+            </div>
+
+            <div className="device-card">
+              <div className="device-image">
+                <div className="dashboard-mockup">
+                  <div className="dashboard-header">MyEnlighten Dashboard</div>
+                  <div className="dashboard-content">
+                    <div className="metric">24.22 kWh produits</div>
+                    <div className="metric">16.66 kWh consommés</div>
+                    <div className="metric">7.50 kWh exportés</div>
+                  </div>
+                  <div className="dashboard-chart"></div>
+                </div>
+              </div>
+              <h4>💻 Interface web</h4>
+              <p>Analyses détaillées et historiques complets</p>
+            </div>
+          </div>
+
+          <div className="monitoring-features">
+            {monitoringFeatures.map((feature, index) => (
+              <div key={index} className="feature-card">
+                <div className="feature-icon">{feature.icon}</div>
+                <div className="feature-content">
+                  <h4>{feature.title}</h4>
+                  <p>{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="monitoring-benefits">
+          <h4>🎯 Avantages du monitoring</h4>
+          <div className="benefits-grid">
+            <div className="benefit-item">
+              <span className="benefit-icon">📈</span>
+              <span>Optimisez votre consommation</span>
+            </div>
+            <div className="benefit-item">
+              <span className="benefit-icon">⚠️</span>
+              <span>Détection automatique des pannes</span>
+            </div>
+            <div className="benefit-item">
+              <span className="benefit-icon">💰</span>
+              <span>Maximisez vos économies</span>
+            </div>
+            <div className="benefit-item">
+              <span className="benefit-icon">📊</span>
+              <span>Bilans de performance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPhase === 3) {
+    return (
+      <div className="educational-page">
+        <div className="page-header">
+          <h3>💰 Votre investissement rentable</h3>
+          <p>Comprendre la rentabilité de votre installation solaire</p>
+        </div>
+        
+        <div className="investment-explanation">
+          <div className="investment-step">
+            <h4>📉 Réduction immédiate de votre facture</h4>
+            <div className="cost-comparison">
+              <div className="before-after">
+                <div className="before">
+                  <h5>Avant</h5>
+                  <div className="bill-amount">{formData.monthlyEdfPayment}€/mois</div>
+                  <p>Facture EDF complète</p>
+                </div>
+                <div className="arrow">→</div>
+                <div className="after">
+                  <h5>Après</h5>
+                  <div className="bill-amount estimate">~{Math.round(formData.monthlyEdfPayment * 0.3)}€/mois</div>
+                  <p>Facture EDF réduite</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="investment-step">
+            <h4>🏦 Financement adapté à votre budget</h4>
+            <div className="financing-options">
+              <div className="financing-card">
+                <h5>Sans aides déduites</h5>
+                <div className="monthly-payment">~{Math.round(formData.monthlyEdfPayment * 1.2)}€/mois</div>
+                <p>Sur 15 ans - Taux 4,96%</p>
+              </div>
+              <div className="financing-card recommended">
+                <h5>Avec aides déduites ⭐</h5>
+                <div className="monthly-payment">~{Math.round(formData.monthlyEdfPayment * 0.8)}€/mois</div>
+                <p>Sur 15 ans - Taux 3,25%</p>
+                <div className="recommendation">Recommandé</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="investment-step">
+            <h4>🎁 Aides financières intégrées</h4>
+            <div className="aids-breakdown">
+              <div className="aid-item">
+                <span className="aid-icon">⚡</span>
+                <span className="aid-name">Prime autoconsommation EDF</span>
+                <span className="aid-amount">80€/kWc installé</span>
+              </div>
+              <div className="aid-item">
+                <span className="aid-icon">💰</span>
+                <span className="aid-name">TVA remboursée (20%)</span>
+                <span className="aid-amount">Pour installation > 3kW</span>
+              </div>
+              <div className="aid-item total">
+                <span className="aid-icon">🎯</span>
+                <span className="aid-name">Total aides estimées</span>
+                <span className="aid-amount">~4000-6000€</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="roi-timeline">
+          <h4>⏰ Retour sur investissement</h4>
+          <div className="timeline">
+            <div className="timeline-point">
+              <div className="year">Année 1-6</div>
+              <div className="status">Remboursement crédit</div>
+            </div>
+            <div className="timeline-point">
+              <div className="year">Année 7-25</div>
+              <div className="status benefit">Bénéfices purs</div>
+            </div>
+            <div className="timeline-point">
+              <div className="year">25 ans</div>
+              <div className="status total">Gain total: ~25 000€</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
 // Écran de calcul avec countdown 4 minutes - Version Premium
 const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
   const [countdown, setCountdown] = useState(240); // 4 minutes = 240 secondes
