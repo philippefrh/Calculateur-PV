@@ -188,6 +188,21 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ NEW FINANCING WITH AIDS CALCULATION WORKING PERFECTLY - Fixed issue where financing was calculated with simple division (116€/month). Now correctly calculates with 4.96% TAEG interest rate: 17840€ financed amount (22900€ kit - 5060€ aids), 140.71€/month payment (vs 99.11€ simple division), 25327€ total cost, 7487€ total interests over 15 years. Monthly payment now properly includes banking interests as requested."
+      - working: true
+        agent: "testing"
+        comment: "✅ CONFIRMED WORKING - Retested financing with aids calculation. 17840€ financed, 140.71€/month with 4.96% TAEG interest (vs 99.11€ simple division), 7487€ total interests over 15 years. All calculations correct."
+
+  - task: "All Financing Options with Aids (6-15 years)"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ NEW all_financing_with_aids FIELD WORKING PERFECTLY - Contains financing options for all durations 6-15 years with aids deducted. Each option includes duration_years, monthly_payment (with 4.96% TAEG interest), and difference_vs_savings. Monthly payments correctly decrease with longer duration (311.43€ for 6y to 152.69€ for 15y). All calculations include proper banking interest rates. Saves 43.70€/month (22.3%) vs normal financing."
 
   - task: "Error Handling for Invalid Inputs"
     implemented: true
