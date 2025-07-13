@@ -502,9 +502,10 @@ class SolarCalculatorTester:
         self.test_get_client_by_id()
         self.test_solar_calculation()
         
-        # Priority 3 - New financing with aids test
-        print("\n📋 PRIORITY 3 - Financing with Aids Calculation")
+        # Priority 3 - New financing with aids tests (3.25% TAEG)
+        print("\n📋 PRIORITY 3 - Financing with Aids Calculation (3.25% TAEG)")
         self.test_financing_with_aids_calculation()
+        self.test_all_financing_with_aids_calculation()
         
         # Error handling tests
         print("\n📋 ERROR HANDLING TESTS")
