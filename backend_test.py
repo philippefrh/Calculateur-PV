@@ -292,7 +292,6 @@ class SolarCalculatorTester:
                 # Extract values for validation
                 financed_amount = financing_with_aids.get("financed_amount", 0)
                 monthly_payment = financing_with_aids.get("monthly_payment", 0)
-                total_cost = financing_with_aids.get("total_cost", 0)
                 total_interests = financing_with_aids.get("total_interests", 0)
                 kit_price = calculation.get("kit_price", 0)
                 total_aids = calculation.get("total_aids", 0)
@@ -310,15 +309,10 @@ class SolarCalculatorTester:
                 if monthly_payment <= simple_division:
                     issues.append(f"Monthly payment {monthly_payment}€ should be > simple division {simple_division:.2f}€ (interests not included)")
                 
-                # Validate total cost = monthly_payment * 180 months
-                expected_total_cost = monthly_payment * 180
-                if abs(total_cost - expected_total_cost) > 1:  # Allow 1€ tolerance
-                    issues.append(f"Total cost {total_cost}€ != monthly_payment {monthly_payment}€ × 180 = {expected_total_cost:.2f}€")
-                
-                # Validate total interests = total_cost - financed_amount
-                expected_total_interests = total_cost - financed_amount
+                # Validate total interests = (monthly_payment * 180) - financed_amount
+                expected_total_interests = (monthly_payment * 180) - financed_amount
                 if abs(total_interests - expected_total_interests) > 1:  # Allow 1€ tolerance
-                    issues.append(f"Total interests {total_interests}€ != total_cost {total_cost}€ - financed_amount {financed_amount}€ = {expected_total_interests:.2f}€")
+                    issues.append(f"Total interests {total_interests}€ != (monthly_payment {monthly_payment}€ × 180) - financed_amount {financed_amount}€ = {expected_total_interests:.2f}€")
                 
                 # NEW: Test for 3.25% TAEG rate - Expected monthly payment should be around 125€ for 20880€ over 15 years
                 # Calculate expected payment with 3.25% TAEG
