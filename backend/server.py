@@ -248,7 +248,6 @@ def calculate_financing_options(kit_price: float, monthly_savings: float) -> Lis
             "duration_years": years,
             "duration_months": months,
             "monthly_payment": round(monthly_payment, 2),
-            "total_cost": round(monthly_payment * months, 2),
             "savings_ratio": round(savings_ratio, 2),
             "difference_vs_savings": round(monthly_payment - monthly_savings, 2)
         })
