@@ -401,6 +401,9 @@ async def calculate_solar_solution(client_id: str):
         # Calculate financing options with aids deducted
         financing_with_aids = calculate_financing_with_aids(kit_info['price'], total_aids, monthly_savings)
         
+        # Calculate all financing options with aids deducted for all durations
+        all_financing_with_aids = calculate_all_financing_with_aids(kit_info['price'], total_aids, monthly_savings)
+        
         calculation = SolarCalculation(
             client_id=client_id,
             kit_power=best_kit,
