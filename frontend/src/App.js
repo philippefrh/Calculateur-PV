@@ -1343,7 +1343,7 @@ const EducationalPages = ({ currentPhase, countdown }) => {
               <div className="aid-item">
                 <span className="aid-icon">💰</span>
                 <span className="aid-name">TVA remboursée (20%)</span>
-                <span className="aid-amount">Pour installation > 3kW</span>
+                <span className="aid-amount">Pour installation &gt; 3kW</span>
               </div>
               <div className="aid-item total">
                 <span className="aid-icon">🎯</span>
