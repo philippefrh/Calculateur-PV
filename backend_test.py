@@ -601,8 +601,12 @@ class SolarCalculatorTester:
         self.test_get_client_by_id()
         self.test_solar_calculation()
         
-        # Priority 3 - New financing with aids tests (3.25% TAEG)
-        print("\n📋 PRIORITY 3 - Financing with Aids Calculation (3.25% TAEG)")
+        # Priority 3 - NEW: Test autoconsumption/surplus distribution changes
+        print("\n📋 PRIORITY 3 - NEW Autoconsumption/Surplus Distribution (95%/5%)")
+        self.test_autoconsumption_surplus_distribution()
+        
+        # Priority 4 - Financing with aids tests (3.25% TAEG)
+        print("\n📋 PRIORITY 4 - Financing with Aids Calculation (3.25% TAEG)")
         self.test_financing_with_aids_calculation()
         self.test_all_financing_with_aids_calculation()
         
