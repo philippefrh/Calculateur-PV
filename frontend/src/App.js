@@ -1602,19 +1602,12 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
       </div>
 
       <div className="calculation-phase">
-        <h3>{phases[currentPhase]?.title}</h3>
-        <p>{phases[currentPhase]?.description}</p>
-        
-        <div className="phase-tips">
-          {phases[currentPhase]?.tips.map((tip, index) => (
-            <div 
-              key={index} 
-              className={`tip-item ${index === currentAnimation ? 'active' : ''}`}
-            >
-              {tip}
-            </div>
-          ))}
-        </div>
+        {/* Intégration des pages éducatives avec vraies photos */}
+        <EducationalPages 
+          currentPhase={currentPhase} 
+          countdown={countdown} 
+          formData={formData}
+        />
       </div>
 
       <div className="calculation-info">
