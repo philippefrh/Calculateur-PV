@@ -258,7 +258,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Autoconsumption/Surplus Distribution (95%/5%) - Successfully tested and working"
+    - "PDF Generation with Updated Financing Tables Structure - Successfully tested and working"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
