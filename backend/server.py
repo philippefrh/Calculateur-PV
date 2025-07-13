@@ -255,6 +255,36 @@ def calculate_financing_options(kit_price: float, monthly_savings: float) -> Lis
     
     return options
 
+def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float) -> Dict:
+    """
+    Calculate financing options with aids deducted - WITH INTERESTS
+    """
+    taeg = 0.0496  # 4.96% TAEG
+    monthly_rate = taeg / 12
+    
+    # Amount to finance after aids
+    financed_amount = kit_price - total_aids
+    
+    # Calculate for 15 years (180 months) as shown in the screenshot
+    years = 15
+    months = years * 12
+    
+    if monthly_rate > 0:
+        # Standard loan calculation WITH INTERESTS
+        monthly_payment_with_interests = financed_amount * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
+    else:
+        monthly_payment_with_interests = financed_amount / months
+    
+    return {
+        "duration_years": years,
+        "duration_months": months,
+        "financed_amount": round(financed_amount, 2),
+        "monthly_payment": round(monthly_payment_with_interests, 2),
+        "total_cost": round(monthly_payment_with_interests * months, 2),
+        "total_interests": round((monthly_payment_with_interests * months) - financed_amount, 2),
+        "difference_vs_savings": round(monthly_payment_with_interests - monthly_savings, 2)
+    }
+
 # Routes
 @api_router.get("/")
 async def root():
