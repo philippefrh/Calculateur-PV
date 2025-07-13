@@ -872,17 +872,17 @@ Cordialement`);
                 {/* Financement avec aides déduites */}
                 <div className="financing-card highlighted-green">
                   <div className="financing-header">
-                    <h5>💰 Financement optimisé sur {optimalFinancing.duration_years} ans</h5>
+                    <h5>💰 Financement optimisé sur {results.financing_with_aids?.duration_years} ans</h5>
                     <span className="recommended-badge green">Avec aides déduites</span>
                   </div>
                   <div className="financing-details">
                     <div className="financing-row">
                       <span>Investissement après aides:</span>
-                      <span className="amount">{(results.kit_price - results.total_aids).toLocaleString()} € TTC</span>
+                      <span className="amount">{results.financing_with_aids?.financed_amount?.toLocaleString()} € TTC</span>
                     </div>
                     <div className="financing-row">
                       <span>Mensualité crédit réduite:</span>
-                      <span className="amount success">{Math.round((results.kit_price - results.total_aids) / optimalFinancing.duration_months)} €/mois</span>
+                      <span className="amount success">{Math.round(results.financing_with_aids?.monthly_payment)} €/mois</span>
                     </div>
                     <div className="financing-row">
                       <span>Économie EDF:</span>
@@ -891,7 +891,7 @@ Cordialement`);
                     <div className="financing-row">
                       <span>Reste à charge optimisé:</span>
                       <span className="amount success">
-                        {Math.round((results.kit_price - results.total_aids) / optimalFinancing.duration_months - results.monthly_savings)} €/mois
+                        {Math.round(results.financing_with_aids?.difference_vs_savings)} €/mois
                       </span>
                     </div>
                   </div>
@@ -899,7 +899,7 @@ Cordialement`);
                     <p>✅ 6 premiers mois GRATUITS (0€ pendant l'installation)</p>
                     <p>✅ Aides récupérées: {Math.round(results.total_aids)} € (Prime + TVA)</p>
                     <p>✅ Taux fixe 4,96% TAEG sur toute la durée</p>
-                    <p>✅ Économie mensuelle supérieure au crédit !</p>
+                    <p>✅ Coût total crédit: {results.financing_with_aids?.total_cost?.toLocaleString()} € (intérêts inclus: {results.financing_with_aids?.total_interests?.toLocaleString()} €)</p>
                   </div>
                 </div>
               </div>
