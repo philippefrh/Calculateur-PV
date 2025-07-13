@@ -191,6 +191,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ CONFIRMED WORKING - Retested financing with aids calculation. 17840€ financed, 140.71€/month with 4.96% TAEG interest (vs 99.11€ simple division), 7487€ total interests over 15 years. All calculations correct."
+      - working: true
+        agent: "testing"
+        comment: "✅ NEW 3.25% TAEG RATE CONFIRMED WORKING - Updated interest rate from 4.96% to 3.25% TAEG successfully implemented. Test results: 17840€ financed amount, 125.36€/month payment (vs 140.71€ with old 4.96% rate), 4724€ total interests over 15 years. Monthly savings: 15.35€ (10.9% reduction). Rate change working as requested."
 
   - task: "All Financing Options with Aids (6-15 years)"
     implemented: true
