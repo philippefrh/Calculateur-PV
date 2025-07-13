@@ -222,7 +222,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Complete frontend workflow testing completed successfully"
+    - "Financing with Aids Calculation - Successfully tested and working"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
