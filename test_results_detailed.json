@@ -3,52 +3,23 @@
     "test": "API Root",
     "success": true,
     "details": "API accessible, message: Solar Calculator API with PVGIS Integration",
-    "timestamp": "2025-07-11 09:52:22",
+    "timestamp": "2025-07-13 14:00:04",
     "response_data": {
       "message": "Solar Calculator API with PVGIS Integration"
     }
   },
   {
     "test": "Solar Kits",
-    "success": true,
-    "details": "All kits available. 6kW kit: 22900\u20ac, 12 panels",
-    "timestamp": "2025-07-11 09:52:22",
-    "response_data": {
-      "3": {
-        "price": 14900,
-        "panels": 6
-      },
-      "4": {
-        "price": 20900,
-        "panels": 8
-      },
-      "5": {
-        "price": 21900,
-        "panels": 10
-      },
-      "6": {
-        "price": 22900,
-        "panels": 12
-      },
-      "7": {
-        "price": 24900,
-        "panels": 14
-      },
-      "8": {
-        "price": 26900,
-        "panels": 16
-      },
-      "9": {
-        "price": 29900,
-        "panels": 18
-      }
-    }
+    "success": false,
+    "details": "HTTP 404: {\"detail\":\"Not Found\"}",
+    "timestamp": "2025-07-13 14:00:11",
+    "response_data": null
   },
   {
     "test": "PVGIS Direct",
     "success": true,
     "details": "PVGIS working. Annual production: 6805.93 kWh for 6kW in Paris",
-    "timestamp": "2025-07-11 09:52:23",
+    "timestamp": "2025-07-13 14:00:11",
     "response_data": {
       "coordinates": {
         "lat": 48.8566,
@@ -495,10 +466,10 @@
   {
     "test": "Create Client",
     "success": true,
-    "details": "Client created successfully. ID: 4dcbc2ab-4f4c-4e96-b5ac-f05ddf10d37e, Coords: 48.8680, 2.3154",
-    "timestamp": "2025-07-11 09:52:23",
+    "details": "Client created successfully. ID: 06100f25-0d73-45af-888f-fa2e6b5038fe, Coords: 48.8680, 2.3154",
+    "timestamp": "2025-07-13 14:00:24",
     "response_data": {
-      "id": "4dcbc2ab-4f4c-4e96-b5ac-f05ddf10d37e",
+      "id": "06100f25-0d73-45af-888f-fa2e6b5038fe",
       "first_name": "Jean",
       "last_name": "Dupont",
       "address": "10 Avenue des Champs-\u00c9lys\u00e9es, 75008 Paris",
@@ -517,143 +488,143 @@
       "estimated_production": null,
       "estimated_savings": null,
       "pvgis_data": null,
-      "created_at": "2025-07-11T09:52:23.827354"
+      "created_at": "2025-07-13T14:00:24.094370"
     }
   },
   {
     "test": "Get Clients",
     "success": true,
-    "details": "Retrieved 4 clients, test client found",
-    "timestamp": "2025-07-11 09:52:23",
+    "details": "Retrieved 3 clients, test client found",
+    "timestamp": "2025-07-13 14:00:24",
     "response_data": [
       {
-        "id": "dea4c7f6-4c01-4917-b02a-fce4ad3d2c18",
-        "first_name": "Jean",
-        "last_name": "Dupont",
-        "address": "10 Avenue des Champs \u00c9lys\u00e9es, 75008 Paris",
-        "roof_surface": 50.0,
+        "id": "91a78bea-3ecb-4659-a60a-35c73f78b283",
+        "first_name": "Pascal",
+        "last_name": "Lopez",
+        "address": "2 RUELLE DU LIEVRE 68290 MASEVAUX NIEDERBRUCK",
+        "roof_surface": 52.0,
         "roof_orientation": "Sud",
-        "velux_count": 2,
-        "heating_system": "Radiateurs \u00e9lectriques",
-        "water_heating_system": "Ballon \u00e9lectrique standard",
-        "water_heating_capacity": 200,
-        "annual_consumption_kwh": 6500.0,
-        "monthly_edf_payment": 180.0,
-        "annual_edf_payment": 1980.0,
-        "latitude": 48.86801,
-        "longitude": 2.3153905,
-        "recommended_kit_power": 6,
-        "estimated_production": 6872.71,
-        "estimated_savings": 1367.1194732,
+        "velux_count": 0,
+        "heating_system": "Pompe \u00e0 chaleur Air-Air r\u00e9versible",
+        "water_heating_system": "Ballon thermodynamique",
+        "water_heating_capacity": 270,
+        "annual_consumption_kwh": 8255.0,
+        "monthly_edf_payment": 285.0,
+        "annual_edf_payment": 3135.0,
+        "latitude": 47.7736686,
+        "longitude": 6.9967579,
+        "recommended_kit_power": 8,
+        "estimated_production": 9526.15,
+        "estimated_savings": 1894.9417579999997,
         "pvgis_data": {
-          "annual_production": 6872.71,
+          "annual_production": 9526.15,
           "monthly_data": {
             "fixed": [
               {
                 "month": 1,
-                "E_d": 8.84,
-                "E_m": 273.91,
-                "H(i)_d": 1.72,
-                "H(i)_m": 53.23,
-                "SD_m": 41.87
+                "E_d": 12.28,
+                "E_m": 380.67,
+                "H(i)_d": 1.79,
+                "H(i)_m": 55.42,
+                "SD_m": 92.71
               },
               {
                 "month": 2,
-                "E_d": 13.61,
-                "E_m": 380.99,
-                "H(i)_d": 2.67,
-                "H(i)_m": 74.71,
-                "SD_m": 92.84
+                "E_d": 18.69,
+                "E_m": 523.21,
+                "H(i)_d": 2.77,
+                "H(i)_m": 77.45,
+                "SD_m": 147.93
               },
               {
                 "month": 3,
-                "E_d": 19.54,
-                "E_m": 605.62,
-                "H(i)_d": 3.93,
-                "H(i)_m": 121.85,
-                "SD_m": 93.76
+                "E_d": 27.41,
+                "E_m": 849.59,
+                "H(i)_d": 4.15,
+                "H(i)_m": 128.8,
+                "SD_m": 171.99
               },
               {
                 "month": 4,
-                "E_d": 25.63,
-                "E_m": 768.88,
+                "E_d": 33.77,
+                "E_m": 1013.03,
                 "H(i)_d": 5.33,
-                "H(i)_m": 159.77,
-                "SD_m": 113.47
+                "H(i)_m": 159.84,
+                "SD_m": 191.92
               },
               {
                 "month": 5,
-                "E_d": 24.89,
-                "E_m": 771.46,
-                "H(i)_d": 5.23,
-                "H(i)_m": 162.02,
-                "SD_m": 118.79
+                "E_d": 33.59,
+                "E_m": 1041.34,
+                "H(i)_d": 5.37,
+                "H(i)_m": 166.35,
+                "SD_m": 135.15
               },
               {
                 "month": 6,
-                "E_d": 25.92,
-                "E_m": 777.56,
-                "H(i)_d": 5.56,
-                "H(i)_m": 166.93,
-                "SD_m": 97.96
+                "E_d": 36.9,
+                "E_m": 1106.91,
+                "H(i)_d": 6.04,
+                "H(i)_m": 181.29,
+                "SD_m": 104.2
               },
               {
                 "month": 7,
-                "E_d": 26.05,
-                "E_m": 807.53,
-                "H(i)_d": 5.68,
-                "H(i)_m": 176.21,
-                "SD_m": 85.67
+                "E_d": 36.63,
+                "E_m": 1135.47,
+                "H(i)_d": 6.07,
+                "H(i)_m": 188.22,
+                "SD_m": 120.72
               },
               {
                 "month": 8,
-                "E_d": 24.36,
-                "E_m": 755.22,
-                "H(i)_d": 5.26,
-                "H(i)_m": 163.13,
-                "SD_m": 62.78
+                "E_d": 34.57,
+                "E_m": 1071.7,
+                "H(i)_d": 5.69,
+                "H(i)_m": 176.38,
+                "SD_m": 84.29
               },
               {
                 "month": 9,
-                "E_d": 22.27,
-                "E_m": 668.02,
-                "H(i)_d": 4.7,
-                "H(i)_m": 141.03,
-                "SD_m": 51.59
+                "E_d": 31.42,
+                "E_m": 942.59,
+                "H(i)_d": 5.0,
+                "H(i)_m": 150.15,
+                "SD_m": 63.01
               },
               {
                 "month": 10,
-                "E_d": 15.45,
-                "E_m": 479.06,
-                "H(i)_d": 3.15,
-                "H(i)_m": 97.75,
-                "SD_m": 57.78
+                "E_d": 22.24,
+                "E_m": 689.38,
+                "H(i)_d": 3.42,
+                "H(i)_m": 105.93,
+                "SD_m": 113.28
               },
               {
                 "month": 11,
-                "E_d": 10.64,
-                "E_m": 319.14,
-                "H(i)_d": 2.1,
-                "H(i)_m": 63.12,
-                "SD_m": 57.42
+                "E_d": 13.86,
+                "E_m": 415.86,
+                "H(i)_d": 2.08,
+                "H(i)_m": 62.43,
+                "SD_m": 76.2
               },
               {
                 "month": 12,
-                "E_d": 8.56,
-                "E_m": 265.32,
-                "H(i)_d": 1.68,
-                "H(i)_m": 51.94,
-                "SD_m": 61.44
+                "E_d": 11.5,
+                "E_m": 356.38,
+                "H(i)_d": 1.7,
+                "H(i)_m": 52.68,
+                "SD_m": 132.89
               }
             ]
           },
-          "specific_production": 1145.4516666666666,
+          "specific_production": 1190.76875,
           "raw_pvgis_data": {
             "inputs": {
               "location": {
-                "latitude": 48.86801,
-                "longitude": 2.3153905,
-                "elevation": 36.0
+                "latitude": 47.7736686,
+                "longitude": 6.9967579,
+                "elevation": 409.0
               },
               "meteo_data": {
                 "radiation_db": "PVGIS-SARAH2",
@@ -678,7 +649,7 @@
               },
               "pv_module": {
                 "technology": "c-Si",
-                "peak_power": 6.0,
+                "peak_power": 8.0,
                 "system_loss": 14.0
               },
               "economic_data": {
@@ -692,116 +663,116 @@
                 "fixed": [
                   {
                     "month": 1,
-                    "E_d": 8.84,
-                    "E_m": 273.91,
-                    "H(i)_d": 1.72,
-                    "H(i)_m": 53.23,
-                    "SD_m": 41.87
+                    "E_d": 12.28,
+                    "E_m": 380.67,
+                    "H(i)_d": 1.79,
+                    "H(i)_m": 55.42,
+                    "SD_m": 92.71
                   },
                   {
                     "month": 2,
-                    "E_d": 13.61,
-                    "E_m": 380.99,
-                    "H(i)_d": 2.67,
-                    "H(i)_m": 74.71,
-                    "SD_m": 92.84
+                    "E_d": 18.69,
+                    "E_m": 523.21,
+                    "H(i)_d": 2.77,
+                    "H(i)_m": 77.45,
+                    "SD_m": 147.93
                   },
                   {
                     "month": 3,
-                    "E_d": 19.54,
-                    "E_m": 605.62,
-                    "H(i)_d": 3.93,
-                    "H(i)_m": 121.85,
-                    "SD_m": 93.76
+                    "E_d": 27.41,
+                    "E_m": 849.59,
+                    "H(i)_d": 4.15,
+                    "H(i)_m": 128.8,
+                    "SD_m": 171.99
                   },
                   {
                     "month": 4,
-                    "E_d": 25.63,
-                    "E_m": 768.88,
+                    "E_d": 33.77,
+                    "E_m": 1013.03,
                     "H(i)_d": 5.33,
-                    "H(i)_m": 159.77,
-                    "SD_m": 113.47
+                    "H(i)_m": 159.84,
+                    "SD_m": 191.92
                   },
                   {
                     "month": 5,
-                    "E_d": 24.89,
-                    "E_m": 771.46,
-                    "H(i)_d": 5.23,
-                    "H(i)_m": 162.02,
-                    "SD_m": 118.79
+                    "E_d": 33.59,
+                    "E_m": 1041.34,
+                    "H(i)_d": 5.37,
+                    "H(i)_m": 166.35,
+                    "SD_m": 135.15
                   },
                   {
                     "month": 6,
-                    "E_d": 25.92,
-                    "E_m": 777.56,
-                    "H(i)_d": 5.56,
-                    "H(i)_m": 166.93,
-                    "SD_m": 97.96
+                    "E_d": 36.9,
+                    "E_m": 1106.91,
+                    "H(i)_d": 6.04,
+                    "H(i)_m": 181.29,
+                    "SD_m": 104.2
                   },
                   {
                     "month": 7,
-                    "E_d": 26.05,
-                    "E_m": 807.53,
-                    "H(i)_d": 5.68,
-                    "H(i)_m": 176.21,
-                    "SD_m": 85.67
+                    "E_d": 36.63,
+                    "E_m": 1135.47,
+                    "H(i)_d": 6.07,
+                    "H(i)_m": 188.22,
+                    "SD_m": 120.72
                   },
                   {
                     "month": 8,
-                    "E_d": 24.36,
-                    "E_m": 755.22,
-                    "H(i)_d": 5.26,
-                    "H(i)_m": 163.13,
-                    "SD_m": 62.78
+                    "E_d": 34.57,
+                    "E_m": 1071.7,
+                    "H(i)_d": 5.69,
+                    "H(i)_m": 176.38,
+                    "SD_m": 84.29
                   },
                   {
                     "month": 9,
-                    "E_d": 22.27,
-                    "E_m": 668.02,
-                    "H(i)_d": 4.7,
-                    "H(i)_m": 141.03,
-                    "SD_m": 51.59
+                    "E_d": 31.42,
+                    "E_m": 942.59,
+                    "H(i)_d": 5.0,
+                    "H(i)_m": 150.15,
+                    "SD_m": 63.01
                   },
                   {
                     "month": 10,
-                    "E_d": 15.45,
-                    "E_m": 479.06,
-                    "H(i)_d": 3.15,
-                    "H(i)_m": 97.75,
-                    "SD_m": 57.78
+                    "E_d": 22.24,
+                    "E_m": 689.38,
+                    "H(i)_d": 3.42,
+                    "H(i)_m": 105.93,
+                    "SD_m": 113.28
                   },
                   {
                     "month": 11,
-                    "E_d": 10.64,
-                    "E_m": 319.14,
-                    "H(i)_d": 2.1,
-                    "H(i)_m": 63.12,
-                    "SD_m": 57.42
+                    "E_d": 13.86,
+                    "E_m": 415.86,
+                    "H(i)_d": 2.08,
+                    "H(i)_m": 62.43,
+                    "SD_m": 76.2
                   },
                   {
                     "month": 12,
-                    "E_d": 8.56,
-                    "E_m": 265.32,
-                    "H(i)_d": 1.68,
-                    "H(i)_m": 51.94,
-                    "SD_m": 61.44
+                    "E_d": 11.5,
+                    "E_m": 356.38,
+                    "H(i)_d": 1.7,
+                    "H(i)_m": 52.68,
+                    "SD_m": 132.89
                   }
                 ]
               },
               "totals": {
                 "fixed": {
-                  "E_d": 18.83,
-                  "E_m": 572.73,
-                  "E_y": 6872.71,
-                  "H(i)_d": 3.92,
-                  "H(i)_m": 119.31,
-                  "H(i)_y": 1431.69,
-                  "SD_m": 24.12,
-                  "SD_y": 289.5,
-                  "l_aoi": -2.97,
-                  "l_spec": "1.65",
-                  "l_tg": -5.67,
-                  "l_total": -19.99
+                  "E_d": 26.1,
+                  "E_m": 793.85,
+                  "E_y": 9526.15,
+                  "H(i)_d": 4.12,
+                  "H(i)_m": 125.41,
+                  "H(i)_y": 1504.94,
+                  "SD_m": 37.48,
+                  "SD_y": 449.8,
+                  "l_aoi": -2.83,
+                  "l_spec": "1.40",
+                  "l_tg": -6.62,
+                  "l_total": -20.88
                 }
               }
             },
@@ -979,54 +950,465 @@
             }
           }
         },
-        "created_at": "2025-07-11T09:28:58.957000"
+        "created_at": "2025-07-13T13:44:51.488000"
       },
       {
-        "id": "0a96af57-e639-44e2-8ae6-1cae6cdb3a64",
-        "first_name": "Jean",
-        "last_name": "Marinez",
-        "address": "12 Rue de soppe-le-bas 68780 Diefmatten",
-        "roof_surface": 55.0,
+        "id": "e032767d-23b6-4134-b550-0d4df5a2d729",
+        "first_name": "Pascal",
+        "last_name": "Lopez",
+        "address": "2 RUELLE DU LIEVRE 68290 MASEVAUX NIEDERBRUCK",
+        "roof_surface": 52.0,
         "roof_orientation": "Sud",
-        "velux_count": 2,
-        "heating_system": "Radiateurs \u00e9lectriques",
-        "water_heating_system": "Ballon \u00e9lectrique standard",
-        "water_heating_capacity": 200,
-        "annual_consumption_kwh": 10242.0,
-        "monthly_edf_payment": 225.0,
-        "annual_edf_payment": 2475.0,
-        "latitude": 47.7089548,
-        "longitude": 7.1128524,
-        "recommended_kit_power": null,
-        "estimated_production": null,
-        "estimated_savings": null,
-        "pvgis_data": null,
-        "created_at": "2025-07-11T09:32:31.958000"
+        "velux_count": 0,
+        "heating_system": "Pompe \u00e0 chaleur Air-Air r\u00e9versible",
+        "water_heating_system": "Ballon thermodynamique",
+        "water_heating_capacity": 270,
+        "annual_consumption_kwh": 8255.0,
+        "monthly_edf_payment": 285.0,
+        "annual_edf_payment": 3135.0,
+        "latitude": 47.7736686,
+        "longitude": 6.9967579,
+        "recommended_kit_power": 8,
+        "estimated_production": 9526.15,
+        "estimated_savings": 1894.9417579999997,
+        "pvgis_data": {
+          "annual_production": 9526.15,
+          "monthly_data": {
+            "fixed": [
+              {
+                "month": 1,
+                "E_d": 12.28,
+                "E_m": 380.67,
+                "H(i)_d": 1.79,
+                "H(i)_m": 55.42,
+                "SD_m": 92.71
+              },
+              {
+                "month": 2,
+                "E_d": 18.69,
+                "E_m": 523.21,
+                "H(i)_d": 2.77,
+                "H(i)_m": 77.45,
+                "SD_m": 147.93
+              },
+              {
+                "month": 3,
+                "E_d": 27.41,
+                "E_m": 849.59,
+                "H(i)_d": 4.15,
+                "H(i)_m": 128.8,
+                "SD_m": 171.99
+              },
+              {
+                "month": 4,
+                "E_d": 33.77,
+                "E_m": 1013.03,
+                "H(i)_d": 5.33,
+                "H(i)_m": 159.84,
+                "SD_m": 191.92
+              },
+              {
+                "month": 5,
+                "E_d": 33.59,
+                "E_m": 1041.34,
+                "H(i)_d": 5.37,
+                "H(i)_m": 166.35,
+                "SD_m": 135.15
+              },
+              {
+                "month": 6,
+                "E_d": 36.9,
+                "E_m": 1106.91,
+                "H(i)_d": 6.04,
+                "H(i)_m": 181.29,
+                "SD_m": 104.2
+              },
+              {
+                "month": 7,
+                "E_d": 36.63,
+                "E_m": 1135.47,
+                "H(i)_d": 6.07,
+                "H(i)_m": 188.22,
+                "SD_m": 120.72
+              },
+              {
+                "month": 8,
+                "E_d": 34.57,
+                "E_m": 1071.7,
+                "H(i)_d": 5.69,
+                "H(i)_m": 176.38,
+                "SD_m": 84.29
+              },
+              {
+                "month": 9,
+                "E_d": 31.42,
+                "E_m": 942.59,
+                "H(i)_d": 5.0,
+                "H(i)_m": 150.15,
+                "SD_m": 63.01
+              },
+              {
+                "month": 10,
+                "E_d": 22.24,
+                "E_m": 689.38,
+                "H(i)_d": 3.42,
+                "H(i)_m": 105.93,
+                "SD_m": 113.28
+              },
+              {
+                "month": 11,
+                "E_d": 13.86,
+                "E_m": 415.86,
+                "H(i)_d": 2.08,
+                "H(i)_m": 62.43,
+                "SD_m": 76.2
+              },
+              {
+                "month": 12,
+                "E_d": 11.5,
+                "E_m": 356.38,
+                "H(i)_d": 1.7,
+                "H(i)_m": 52.68,
+                "SD_m": 132.89
+              }
+            ]
+          },
+          "specific_production": 1190.76875,
+          "raw_pvgis_data": {
+            "inputs": {
+              "location": {
+                "latitude": 47.7736686,
+                "longitude": 6.9967579,
+                "elevation": 409.0
+              },
+              "meteo_data": {
+                "radiation_db": "PVGIS-SARAH2",
+                "meteo_db": "ERA5",
+                "year_min": 2005,
+                "year_max": 2020,
+                "use_horizon": true,
+                "horizon_db": "DEM-calculated"
+              },
+              "mounting_system": {
+                "fixed": {
+                  "slope": {
+                    "value": 35,
+                    "optimal": false
+                  },
+                  "azimuth": {
+                    "value": 0,
+                    "optimal": false
+                  },
+                  "type": "free-standing"
+                }
+              },
+              "pv_module": {
+                "technology": "c-Si",
+                "peak_power": 8.0,
+                "system_loss": 14.0
+              },
+              "economic_data": {
+                "system_cost": null,
+                "interest": null,
+                "lifetime": null
+              }
+            },
+            "outputs": {
+              "monthly": {
+                "fixed": [
+                  {
+                    "month": 1,
+                    "E_d": 12.28,
+                    "E_m": 380.67,
+                    "H(i)_d": 1.79,
+                    "H(i)_m": 55.42,
+                    "SD_m": 92.71
+                  },
+                  {
+                    "month": 2,
+                    "E_d": 18.69,
+                    "E_m": 523.21,
+                    "H(i)_d": 2.77,
+                    "H(i)_m": 77.45,
+                    "SD_m": 147.93
+                  },
+                  {
+                    "month": 3,
+                    "E_d": 27.41,
+                    "E_m": 849.59,
+                    "H(i)_d": 4.15,
+                    "H(i)_m": 128.8,
+                    "SD_m": 171.99
+                  },
+                  {
+                    "month": 4,
+                    "E_d": 33.77,
+                    "E_m": 1013.03,
+                    "H(i)_d": 5.33,
+                    "H(i)_m": 159.84,
+                    "SD_m": 191.92
+                  },
+                  {
+                    "month": 5,
+                    "E_d": 33.59,
+                    "E_m": 1041.34,
+                    "H(i)_d": 5.37,
+                    "H(i)_m": 166.35,
+                    "SD_m": 135.15
+                  },
+                  {
+                    "month": 6,
+                    "E_d": 36.9,
+                    "E_m": 1106.91,
+                    "H(i)_d": 6.04,
+                    "H(i)_m": 181.29,
+                    "SD_m": 104.2
+                  },
+                  {
+                    "month": 7,
+                    "E_d": 36.63,
+                    "E_m": 1135.47,
+                    "H(i)_d": 6.07,
+                    "H(i)_m": 188.22,
+                    "SD_m": 120.72
+                  },
+                  {
+                    "month": 8,
+                    "E_d": 34.57,
+                    "E_m": 1071.7,
+                    "H(i)_d": 5.69,
+                    "H(i)_m": 176.38,
+                    "SD_m": 84.29
+                  },
+                  {
+                    "month": 9,
+                    "E_d": 31.42,
+                    "E_m": 942.59,
+                    "H(i)_d": 5.0,
+                    "H(i)_m": 150.15,
+                    "SD_m": 63.01
+                  },
+                  {
+                    "month": 10,
+                    "E_d": 22.24,
+                    "E_m": 689.38,
+                    "H(i)_d": 3.42,
+                    "H(i)_m": 105.93,
+                    "SD_m": 113.28
+                  },
+                  {
+                    "month": 11,
+                    "E_d": 13.86,
+                    "E_m": 415.86,
+                    "H(i)_d": 2.08,
+                    "H(i)_m": 62.43,
+                    "SD_m": 76.2
+                  },
+                  {
+                    "month": 12,
+                    "E_d": 11.5,
+                    "E_m": 356.38,
+                    "H(i)_d": 1.7,
+                    "H(i)_m": 52.68,
+                    "SD_m": 132.89
+                  }
+                ]
+              },
+              "totals": {
+                "fixed": {
+                  "E_d": 26.1,
+                  "E_m": 793.85,
+                  "E_y": 9526.15,
+                  "H(i)_d": 4.12,
+                  "H(i)_m": 125.41,
+                  "H(i)_y": 1504.94,
+                  "SD_m": 37.48,
+                  "SD_y": 449.8,
+                  "l_aoi": -2.83,
+                  "l_spec": "1.40",
+                  "l_tg": -6.62,
+                  "l_total": -20.88
+                }
+              }
+            },
+            "meta": {
+              "inputs": {
+                "location": {
+                  "description": "Selected location",
+                  "variables": {
+                    "latitude": {
+                      "description": "Latitude",
+                      "units": "decimal degree"
+                    },
+                    "longitude": {
+                      "description": "Longitude",
+                      "units": "decimal degree"
+                    },
+                    "elevation": {
+                      "description": "Elevation",
+                      "units": "m"
+                    }
+                  }
+                },
+                "meteo_data": {
+                  "description": "Sources of meteorological data",
+                  "variables": {
+                    "radiation_db": {
+                      "description": "Solar radiation database"
+                    },
+                    "meteo_db": {
+                      "description": "Database used for meteorological variables other than solar radiation"
+                    },
+                    "year_min": {
+                      "description": "First year of the calculations"
+                    },
+                    "year_max": {
+                      "description": "Last year of the calculations"
+                    },
+                    "use_horizon": {
+                      "description": "Include horizon shadows"
+                    },
+                    "horizon_db": {
+                      "description": "Source of horizon data"
+                    }
+                  }
+                },
+                "mounting_system": {
+                  "description": "Mounting system",
+                  "choices": "fixed, vertical_axis, inclined_axis, two_axis",
+                  "fields": {
+                    "slope": {
+                      "description": "Inclination angle from the horizontal plane",
+                      "units": "degree"
+                    },
+                    "azimuth": {
+                      "description": "Orientation (azimuth) angle of the (fixed) PV system (0 = S, 90 = W, -90 = E)",
+                      "units": "degree"
+                    }
+                  }
+                },
+                "pv_module": {
+                  "description": "PV module parameters",
+                  "variables": {
+                    "technology": {
+                      "description": "PV technology"
+                    },
+                    "peak_power": {
+                      "description": "Nominal (peak) power of the PV module",
+                      "units": "kW"
+                    },
+                    "system_loss": {
+                      "description": "Sum of system losses",
+                      "units": "%"
+                    }
+                  }
+                },
+                "economic_data": {
+                  "description": "Economic inputs",
+                  "variables": {
+                    "system_cost": {
+                      "description": "Total cost of the PV system",
+                      "units": "user-defined currency"
+                    },
+                    "interest": {
+                      "description": "Annual interest",
+                      "units": "%/y"
+                    },
+                    "lifetime": {
+                      "description": "Expected lifetime of the PV system",
+                      "units": "y"
+                    }
+                  }
+                }
+              },
+              "outputs": {
+                "monthly": {
+                  "type": "time series",
+                  "timestamp": "monthly averages",
+                  "variables": {
+                    "E_d": {
+                      "description": "Average daily energy production from the given system",
+                      "units": "kWh/d"
+                    },
+                    "E_m": {
+                      "description": "Average monthly energy production from the given system",
+                      "units": "kWh/mo"
+                    },
+                    "H(i)_d": {
+                      "description": "Average daily sum of global irradiation per square meter received by the modules of the given system",
+                      "units": "kWh/m2/d"
+                    },
+                    "H(i)_m": {
+                      "description": "Average monthly sum of global irradiation per square meter received by the modules of the given system",
+                      "units": "kWh/m2/mo"
+                    },
+                    "SD_m": {
+                      "description": "Standard deviation of the monthly energy production due to year-to-year variation",
+                      "units": "kWh"
+                    }
+                  }
+                },
+                "totals": {
+                  "type": "time series totals",
+                  "variables": {
+                    "E_d": {
+                      "description": "Average daily energy production from the given system",
+                      "units": "kWh/d"
+                    },
+                    "E_m": {
+                      "description": "Average monthly energy production from the given system",
+                      "units": "kWh/mo"
+                    },
+                    "E_y": {
+                      "description": "Average annual energy production from the given system",
+                      "units": "kWh/y"
+                    },
+                    "H(i)_d": {
+                      "description": "Average daily sum of global irradiation per square meter received by the modules of the given system",
+                      "units": "kWh/m2/d"
+                    },
+                    "H(i)_m": {
+                      "description": "Average monthly sum of global irradiation per square meter received by the modules of the given system",
+                      "units": "kWh/m2/mo"
+                    },
+                    "H(i)_y": {
+                      "description": "Average annual sum of global irradiation per square meter received by the modules of the given system",
+                      "units": "kWh/m2/y"
+                    },
+                    "SD_m": {
+                      "description": "Standard deviation of the monthly energy production due to year-to-year variation",
+                      "units": "kWh"
+                    },
+                    "SD_y": {
+                      "description": "Standard deviation of the annual energy production due to year-to-year variation",
+                      "units": "kWh"
+                    },
+                    "l_aoi": {
+                      "description": "Angle of incidence loss",
+                      "units": "%"
+                    },
+                    "l_spec": {
+                      "description": "Spectral loss",
+                      "units": "%"
+                    },
+                    "l_tg": {
+                      "description": "Temperature and irradiance loss",
+                      "units": "%"
+                    },
+                    "l_total": {
+                      "description": "Total loss",
+                      "units": "%"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "created_at": "2025-07-13T13:44:55.025000"
       },
       {
-        "id": "9e92b26d-93c1-4278-b7c3-d42350df674c",
-        "first_name": "Jean",
-        "last_name": "Marinez",
-        "address": "12 Rue de soppe-le-bas 68780 Diefmatten",
-        "roof_surface": 55.0,
-        "roof_orientation": "Sud",
-        "velux_count": 2,
-        "heating_system": "Radiateurs \u00e9lectriques",
-        "water_heating_system": "Ballon \u00e9lectrique standard",
-        "water_heating_capacity": 200,
-        "annual_consumption_kwh": 10242.0,
-        "monthly_edf_payment": 225.0,
-        "annual_edf_payment": 2475.0,
-        "latitude": 47.7089548,
-        "longitude": 7.1128524,
-        "recommended_kit_power": null,
-        "estimated_production": null,
-        "estimated_savings": null,
-        "pvgis_data": null,
-        "created_at": "2025-07-11T09:32:37.456000"
-      },
-      {
-        "id": "4dcbc2ab-4f4c-4e96-b5ac-f05ddf10d37e",
+        "id": "06100f25-0d73-45af-888f-fa2e6b5038fe",
         "first_name": "Jean",
         "last_name": "Dupont",
         "address": "10 Avenue des Champs-\u00c9lys\u00e9es, 75008 Paris",
@@ -1045,7 +1427,7 @@
         "estimated_production": null,
         "estimated_savings": null,
         "pvgis_data": null,
-        "created_at": "2025-07-11T09:52:23.827000"
+        "created_at": "2025-07-13T14:00:24.094000"
       }
     ]
   },
@@ -1053,9 +1435,9 @@
     "test": "Get Client by ID",
     "success": true,
     "details": "Retrieved client: Jean Dupont",
-    "timestamp": "2025-07-11 09:52:23",
+    "timestamp": "2025-07-13 14:00:24",
     "response_data": {
-      "id": "4dcbc2ab-4f4c-4e96-b5ac-f05ddf10d37e",
+      "id": "06100f25-0d73-45af-888f-fa2e6b5038fe",
       "first_name": "Jean",
       "last_name": "Dupont",
       "address": "10 Avenue des Champs-\u00c9lys\u00e9es, 75008 Paris",
@@ -1074,16 +1456,16 @@
       "estimated_production": null,
       "estimated_savings": null,
       "pvgis_data": null,
-      "created_at": "2025-07-11T09:52:23.827000"
+      "created_at": "2025-07-13T14:00:24.094000"
     }
   },
   {
     "test": "Solar Calculation",
     "success": true,
     "details": "Calculation successful: 6kW, 6873 kWh/year, 95.0% autonomy, 1367\u20ac/year savings",
-    "timestamp": "2025-07-11 09:52:24",
+    "timestamp": "2025-07-13 14:00:24",
     "response_data": {
-      "client_id": "4dcbc2ab-4f4c-4e96-b5ac-f05ddf10d37e",
+      "client_id": "06100f25-0d73-45af-888f-fa2e6b5038fe",
       "kit_power": 6,
       "panel_count": 12,
       "estimated_production": 6872.71,
@@ -1277,6 +1659,15 @@
       "autoconsumption_aid": 480,
       "tva_refund": 4580.0,
       "total_aids": 5060.0,
+      "financing_with_aids": {
+        "duration_years": 15,
+        "duration_months": 180,
+        "financed_amount": 17840.0,
+        "monthly_payment": 140.71,
+        "total_cost": 25327.1,
+        "total_interests": 7487.1,
+        "difference_vs_savings": 26.78
+      },
       "pvgis_source": "Donn\u00e9es source PVGIS Commission Europ\u00e9enne",
       "orientation": "Sud",
       "coordinates": {
@@ -1286,17 +1677,32 @@
     }
   },
   {
+    "test": "Financing with Aids",
+    "success": true,
+    "details": "\u2705 Financing with aids working correctly: 17840.0\u20ac financed, 140.71\u20ac/month (vs 99.11\u20ac simple division), 7487.10\u20ac total interests (42.0% effective rate over 15 years)",
+    "timestamp": "2025-07-13 14:00:25",
+    "response_data": {
+      "duration_years": 15,
+      "duration_months": 180,
+      "financed_amount": 17840.0,
+      "monthly_payment": 140.71,
+      "total_cost": 25327.1,
+      "total_interests": 7487.1,
+      "difference_vs_savings": 26.78
+    }
+  },
+  {
     "test": "Error Handling - Invalid Address",
     "success": false,
     "details": "Expected 400 error, got 500",
-    "timestamp": "2025-07-11 09:52:25",
+    "timestamp": "2025-07-13 14:00:26",
     "response_data": null
   },
   {
     "test": "Error Handling - Non-existent Client",
     "success": false,
     "details": "Expected 404 error, got 500",
-    "timestamp": "2025-07-11 09:52:25",
+    "timestamp": "2025-07-13 14:00:26",
     "response_data": null
   }
 ]
