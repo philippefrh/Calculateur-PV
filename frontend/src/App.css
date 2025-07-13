@@ -130,6 +130,52 @@ body {
   backdrop-filter: blur(10px);
 }
 
+/* Styles pour les logos officiels */
+.company-logo-image.centered {
+  max-width: 300px;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+  margin-right: 20px; /* Décaler légèrement sur la droite pour centrage */
+}
+
+.rge-logo-small {
+  max-width: 80px; /* Réduire de moitié la taille des logos RGE */
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.ffb-logo {
+  max-width: 60px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.agir-plus-logo {
+  max-width: 70px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.mma-logo-centered {
+  max-width: 50px;
+  height: auto;
+  margin: 0 auto 10px auto;
+  display: block;
+}
+
+.cert-badge.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cert-badge img {
+  display: block;
+  margin: 0 auto 8px auto;
+}
+
 /* Certifications améliorées */
 .certifications {
   display: flex;
