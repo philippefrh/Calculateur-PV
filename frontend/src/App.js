@@ -898,8 +898,6 @@ Cordialement`);
                   <div className="financing-benefits">
                     <p>✅ 6 premiers mois GRATUITS (0€ pendant l'installation)</p>
                     <p>✅ Aides récupérées: {Math.round(results.total_aids)} € (Prime + TVA)</p>
-                    <p>✅ Taux fixe 3,25% TAEG sur toute la durée</p>
-                    <p>✅ Coût total crédit: {results.financing_with_aids?.total_cost?.toLocaleString()} € (intérêts inclus: {results.financing_with_aids?.total_interests?.toLocaleString()} €)</p>
                   </div>
                 </div>
               </div>
