@@ -438,6 +438,7 @@ async def calculate_solar_solution(client_id: str):
             "tva_refund": tva_refund,
             "total_aids": total_aids,
             "financing_with_aids": financing_with_aids,
+            "all_financing_with_aids": all_financing_with_aids,
             "pvgis_source": "Données source PVGIS Commission Européenne",
             "orientation": orientation,
             "coordinates": {"lat": lat, "lon": lon}
