@@ -1033,19 +1033,43 @@ const EducationalPages = ({ currentPhase, countdown, formData }) => {
       id: 1,
       title: "Installation sur toiture méditerranéenne",
       description: "Installation 6kW sur tuiles rouges - Région PACA",
-      features: ["12 panneaux 500W", "Orientation Sud", "Production: 8200 kWh/an"]
+      features: ["12 panneaux 500W", "Orientation Sud", "Production: 8200 kWh/an"],
+      image: "https://images.unsplash.com/photo-1733578234132-f40198e27f8b"
     },
     {
       id: 2,
       title: "Installation résidentielle moderne",
       description: "Installation 9kW avec système de monitoring",
-      features: ["18 panneaux haute performance", "Onduleur micro", "Suivi temps réel"]
+      features: ["18 panneaux haute performance", "Onduleur micro", "Suivi temps réel"],
+      image: "https://images.unsplash.com/photo-1720610784599-18c02b1cc9ee"
     },
     {
       id: 3,
       title: "Installation sur ardoise",
       description: "Installation 6kW sur toiture traditionnelle",
-      features: ["Fixations renforcées", "Étanchéité parfaite", "Garantie 20 ans"]
+      features: ["Fixations renforcées", "Étanchéité parfaite", "Garantie 20 ans"],
+      image: "https://images.unsplash.com/flagged/photo-1566838616631-f2618f74a6a2"
+    },
+    {
+      id: 4,
+      title: "Maison contemporaine avec véranda",
+      description: "Installation 7kW design moderne",
+      features: ["Intégration architecturale", "Performance optimisée", "Design premium"],
+      image: "https://images.unsplash.com/photo-1591710369924-0dcd50436306"
+    },
+    {
+      id: 5,
+      title: "Installation professionnelle",
+      description: "Équipe certifiée RGE en action",
+      features: ["Installation sécurisée", "Équipe experte", "Matériel premium"],
+      image: "https://images.unsplash.com/photo-1624397640148-949b1732bb0a"
+    },
+    {
+      id: 6,
+      title: "Détail fixations toiture",
+      description: "Système de fixation haute qualité",
+      features: ["Étanchéité garantie", "Fixation renforcée", "Longévité 25 ans"],
+      image: "https://images.unsplash.com/photo-1703287209219-57f5045c1536"
     }
   ];
 
