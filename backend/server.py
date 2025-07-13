@@ -381,8 +381,8 @@ async def calculate_solar_solution(client_id: str):
         # Calculate autonomy percentage
         autonomy_percentage = min(95, (annual_production / annual_consumption) * 100)
         
-        # Calculate autoconsumption (assuming 70% of production is self-consumed)
-        autoconsumption_rate = 0.7
+        # Calculate autoconsumption (assuming 95% of production is self-consumed)
+        autoconsumption_rate = 0.95
         autoconsumption_kwh = annual_production * autoconsumption_rate
         surplus_kwh = annual_production * (1 - autoconsumption_rate)
         
