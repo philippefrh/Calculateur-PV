@@ -177,6 +177,18 @@ backend:
         agent: "testing"
         comment: "✅ Complete calculation workflow successful: 6kW kit recommended, 6873 kWh/year production, 95% autonomy, 1367€/year savings, financing options 6-15 years, aids calculation (480€ autoconsumption + 4580€ TVA = 5060€ total)"
 
+  - task: "Financing with Aids Calculation"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ NEW FINANCING WITH AIDS CALCULATION WORKING PERFECTLY - Fixed issue where financing was calculated with simple division (116€/month). Now correctly calculates with 4.96% TAEG interest rate: 17840€ financed amount (22900€ kit - 5060€ aids), 140.71€/month payment (vs 99.11€ simple division), 25327€ total cost, 7487€ total interests over 15 years. Monthly payment now properly includes banking interests as requested."
+
   - task: "Error Handling for Invalid Inputs"
     implemented: true
     working: false
