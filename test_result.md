@@ -237,7 +237,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Financing with Aids Calculation - Successfully tested and working"
+    - "All Financing Options with Aids (6-15 years) - Successfully tested and working"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
