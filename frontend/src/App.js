@@ -591,6 +591,126 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
             <small>Calculé automatiquement : {formData.monthlyEdfPayment} € × 11 mois = {formData.annualEdfPayment} €/an</small>
           </div>
         )}
+
+        {/* Section de sélection manuelle des kits */}
+        {formData.monthlyEdfPayment && (
+          <div className="kit-selection-section">
+            {!showKitSelection ? (
+              <div className="kit-selection-toggle">
+                <button 
+                  type="button" 
+                  className="show-kits-button"
+                  onClick={handleShowKitSelection}
+                >
+                  📋 Voir tous les kits disponibles pour choix commercial
+                </button>
+                <small>Cliquez pour voir la liste complète des kits et sélectionner manuellement</small>
+              </div>
+            ) : (
+              <div className="kit-selection-panel">
+                <div className="kit-selection-header">
+                  <h4>🔧 Sélection manuelle du kit solaire</h4>
+                  <button 
+                    type="button" 
+                    className="close-kits-button"
+                    onClick={handleCancelKitSelection}
+                  >
+                    ✕ Fermer
+                  </button>
+                </div>
+                
+                {loadingKits ? (
+                  <div className="loading-kits">
+                    <div className="loading-spinner"></div>
+                    <p>Chargement des kits disponibles...</p>
+                  </div>
+                ) : (
+                  <div className="kits-grid">
+                    {availableKits.map((kit) => (
+                      <div 
+                        key={kit.power} 
+                        className={`kit-card ${selectedKit?.power === kit.power ? 'selected' : ''}`}
+                        onClick={() => handleSelectKit(kit)}
+                      >
+                        <div className="kit-header">
+                          <h5>Kit {kit.power}kW</h5>
+                          <span className="kit-panels">{kit.panels} panneaux</span>
+                        </div>
+                        
+                        <div className="kit-details">
+                          <div className="kit-detail-row">
+                            <span>Surface totale:</span>
+                            <span>{kit.surface}m²</span>
+                          </div>
+                          <div className="kit-detail-row">
+                            <span>Prix TTC:</span>
+                            <span>{kit.priceTTC.toLocaleString()}€</span>
+                          </div>
+                          <div className="kit-detail-row">
+                            <span>Prix avec aides:</span>
+                            <span className="price-with-aids">{kit.priceWithAids.toLocaleString()}€</span>
+                          </div>
+                          <div className="kit-detail-row commission">
+                            <span>CO2 économisé:</span>
+                            <span>2500 kilos/an</span>
+                          </div>
+                        </div>
+                        
+                        {selectedKit?.power === kit.power && (
+                          <div className="kit-selected-indicator">
+                            ✓ Sélectionné
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {selectedKit && !loadingKits && (
+                  <div className="kit-selection-actions">
+                    <button 
+                      type="button" 
+                      className="confirm-kit-button"
+                      onClick={handleConfirmKitSelection}
+                    >
+                      ✓ Confirmer la sélection du Kit {selectedKit.power}kW
+                    </button>
+                    <button 
+                      type="button" 
+                      className="cancel-kit-button"
+                      onClick={handleCancelKitSelection}
+                    >
+                      ✕ Annuler et utiliser la recommandation automatique
+                    </button>
+                  </div>
+                )}
+                
+                <div className="kit-selection-note">
+                  <p><strong>ℹ️ Mode commercial :</strong> Cette sélection remplacera la recommandation automatique pour les calculs suivants.</p>
+                </div>
+              </div>
+            )}
+            
+            {formData.useManualKit && formData.manualKit && (
+              <div className="manual-kit-selected">
+                <div className="selected-kit-info">
+                  <h5>🎯 Kit sélectionné manuellement</h5>
+                  <div className="selected-kit-details">
+                    <span>Kit {formData.manualKit.power}kW ({formData.manualKit.panels} panneaux)</span>
+                    <span>Prix avec aides: {formData.manualKit.priceWithAids.toLocaleString()}€</span>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="change-kit-button"
+                    onClick={handleShowKitSelection}
+                  >
+                    🔄 Changer de kit
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         
         <div className="consumption-summary">
           <h4>📋 Résumé de votre profil :</h4>
