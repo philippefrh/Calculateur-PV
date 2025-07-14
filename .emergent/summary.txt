@@ -1,0 +1,107 @@
+<analysis>
+The previous AI engineer successfully initiated development by understanding the existing solar calculation application. The work proceeded in distinct phases: correcting financial calculations for monthly payments to include interest, refining frontend and PDF displays of financing options, adjusting the autoconsumption-to-surplus ratio for improved economics, and meticulously updating all relevant application logos. A significant user experience improvement was the integration of educational pages displaying real installation photos during the PVGIS calculation, which required careful image handling and UI adjustments. The final major feature implemented was a comprehensive manual kit selection tool for sales personnel, allowing flexible choice and displaying detailed kit information. The engineer demonstrated proficiency in debugging, addressing a critical frontend URL error that prevented kit display. All tasks were confirmed through backend and frontend tests, and the engineer consistently sought user validation after each significant update, communicating in French as requested.
+</analysis>
+
+<product_requirements>
+The user manages FRH ENVIRONNEMENT, a solar installation company, and tasked the AI engineer with enhancing a pre-existing full-stack React/FastAPI/MongoDB solar calculation application. The core problem was to evolve the MVP into a more professional and commercially viable tool.
+
+**Initial State & Core Functionality:**
+*   A functional solar calculation app with PVGIS integration.
+*   FastAPI backend: API for solar kits, PVGIS integration, geocoding, MongoDB client management, financial calculations (savings, autonomy, government aids). Error handling needed improvement (returning 500 instead of 400/404).
+*   React frontend: Multi-step forms (4 steps), FRH ENVIRONNEMENT branding, professional home screen, PVGIS calculation with 4-minute countdown, responsive design, data persistence.
+*   PVGIS Integration: Connects to European Commission API for precise solar production data.
+
+**Specific Feature Development & Enhancements:**
+1.  **Correct Monthly Payment Calculation:** Initially, the Financement optimisé sur 15 ans avec aides déduites was a simple division without interest. The user requested this to be fixed to include interest (initially 4.96% TAEG, later changed to 3.25%).
+2.  **Financing Tables UI/PDF Refinement:**
+    *   Remove the Coût total column from the Toutes les options de financement disponibles table (and its PDF equivalent).
+    *   Add a new table Toutes les options de financement disponibles avec aides déduites (and its PDF equivalent) with monthly payments calculated at 3.25% interest for 6-15 year durations.
+3.  **Autoconsumption/Surplus Ratio Adjustment:** Change the energy distribution from 70% autoconsumption / 30% surplus resale to 95% autoconsumption / 5% surplus resale to maximize perceived monthly savings.
+4.  **Logo Integration & Design Polish:**
+    *   Replace placeholder/text logos with official, high-quality images for: RGE QualiPV 2025, RGE QualiPac 2025, Partenaire AGIR PLUS EDF, FRH Environnement, MMA Décennale, and add FFB Adhérent.
+    *   Adjust the size and centering of these logos for a professional look.
+5.  **Educational Pages during PVGIS Calculation:** Create interactive educational pages with real installation photos, technical explanations, and monitoring interface mockups to display during the 4-minute PVGIS calculation time, enhancing client education and commercial support.
+6.  **Manual Kit Selection for Commercials:** In the 4/4 - Consommation Electrique step, provide a button for commercials to view a list of all available solar kits. This list should display power, panel count, total surface, price (TTC and with aids), and a CO2 économisé figure (representing 15% commission). Commercials should be able to select a kit, and this choice should override the automatic recommendation for subsequent calculations. An option to revert to the automatic recommendation should also be available.
+</product_requirements>
+
+<key_technical_concepts>
+-   **Full-Stack Architecture:** React (frontend), FastAPI (backend), MongoDB (database).
+-   **API Integration:** PVGIS API for solar production, internal API calls between frontend/backend (e.g., ).
+-   **Financial Calculations:** Implementation of loan amortization formulas (TAEG/APR) for monthly payments.
+-   **Environment Variables:** Strict usage of  and .
+-   **Service Management:** backend                          RUNNING   pid 46, uptime 0:00:06
+code-server                      RUNNING   pid 48, uptime 0:00:06
+frontend                         STOPPED   Jul 14 06:38 PM
+mongodb                          RUNNING   pid 53, uptime 0:00:06
+supervisor>  for starting/stopping backend/frontend.
+-   **PDF Generation:** Backend modifications (likely ReportLab, though not explicitly stated in trajectory).
+-   **Image Handling:** Integration of external image URLs and CSS for visual presentation.
+-   **Frontend State Management:** React  for UI logic and data persistence.
+</key_technical_concepts>
+
+<code_architecture>
+The application has a standard full-stack architecture with a React frontend and a FastAPI backend, utilizing MongoDB as the database.
+
+**Directory Structure:**
+
+
+-   ****:
+    -   **Summary:** This is the core of the backend logic. It defines FastAPI endpoints, handles client data persistence with MongoDB, integrates with the PVGIS API for solar production calculations, and performs all financial calculations (including monthly payments with and without aid deductions, and total costs). It also contains the logic for generating the PDF report.
+    -   **Changes Made:**
+        -   Modified  and added a new structure/functionality to include interest in monthly payment calculations for both standard and aid-deducted financing, and also created a new endpoint to get all kit options with aid-deduction.
+        -   Updated the response structure to include  and  data.
+        -   Adjusted the interest rate for Financement optimisé sur 15 ans avec aides déduites and Toutes les options de financement disponibles avec aides déduites from 4.96% to 3.25%.
+        -   Changed the  from 0.7 to 0.95 (70% to 95%).
+        -   Modified PDF generation logic to remove the Coût total column from existing financing tables and add a new table OPTIONS DE FINANCEMENT AVEC AIDES DÉDUITES with 3.25% calculations.
+
+-   ****:
+    -   **Summary:** This is the main React component responsible for rendering the multi-step user interface, managing form data, making API calls to the backend, and displaying results. It also hosts the new educational pages and the kit selection interface.
+    -   **Changes Made:**
+        -   Updated the display of Financement optimisé sur 15 ans avec aides déduites to use the corrected monthly payment data from the backend.
+        -   Removed the Taux fixe and Coût total crédit lines from the optimized financing section.
+        -   Implemented the logic to remove the Coût total column from the Toutes les options de financement disponibles table and added the new Toutes les options de financement disponibles avec aides déduites table.
+        -   Replaced various text/placeholder logos with actual image URLs of official logos (FRH, RGE QualiPV/QualiPac, MMA, AGIR PLUS EDF, FFB Adhérent).
+        -   Integrated  component within the  to display content during PVGIS calculation, including image rendering.
+        -   Introduced the manual kit selection UI in the  (step 4/4), including fetching kit data from the backend, displaying it, and managing the user's selected kit.
+        -   Fixed a critical bug where  used an incorrect backend URL construction.
+
+-   ****:
+    -   **Summary:** Contains the custom CSS rules for the application's layout, components, and responsive design.
+    -   **Changes Made:**
+        -   Added new CSS classes to adjust the sizes and centering of the newly integrated official logos (e.g., , , , , , ).
+        -   Added styles for the educational pages components and their images to ensure proper display during the calculation phase.
+        -   Added styles for the new manual kit selection interface, including grid display and selection indicators.
+
+-   ** & **:
+    -   **Summary:** These files store environment-specific configurations.  holds , , and .  holds  and . These files are crucial for the application's deployment and proper service communication.
+    -   **Changes Made:** No direct changes to the content of these files were made by the AI engineer, adhering to the critical rule of not modifying protected environment variables. However, the application code was adjusted to correctly read and use these variables.
+</code_architecture>
+
+<pending_tasks>
+All explicit user requests detailed in the trajectory have been implemented and verified. There are no pending tasks from previous discussions that were left incomplete.
+</pending_tasks>
+
+<current_work>
+Immediately before this summary request, the previous AI engineer successfully implemented and verified the Manual Kit Selection for Commercial Use feature. This functionality is integrated into the 4/4 - Consommation Electrique step of the application.
+
+**Current State of the Product:**
+*   **User Interface:** In the Consommation Electrique section, after entering annual consumption and monthly EDF payment, a new button Voir tous les kits disponibles pour choix commercial is present.
+*   **Kit Selection Overlay:** Clicking this button reveals an interactive grid displaying all available solar kits (from 3kW to 9kW).
+*   **Detailed Kit Information:** For each kit, the following details are presented:
+    *   **Puissance** (e.g., 3kW) and **nombre de panneaux** (e.g., 6 panneaux).
+    *   **Surface totale** nécessaire.
+    *   **Prix TTC** (Total Tax Included).
+    *   **Prix avec aides déduites** (Price with aids deducted).
+    *   **CO2 économisé : 2500 kilos/an**: This value is a placeholder for the commercial's 15% commission, presented in a commercially appealing context as requested.
+*   **Interactive Selection:** Commercials can select any kit from the list, with a visual indicator (✓ Sélectionné).
+*   **Choice Persistence:** Once a kit is selected and confirmed, this choice overrides the application's default recommended kit for all subsequent calculations (PVGIS, financing, etc.).
+*   **Flexibility:** Commercials can choose to either select a kit manually or close the selection interface to revert to the automatically recommended kit.
+
+**Work Done & Nuances:**
+The implementation involved adding new UI components and state management in  to display the kit grid and handle user interaction. The backend API endpoint  was already in place to provide the kit data. A critical bug was identified and fixed during this phase: the  function in the frontend was using an incorrect URL construction, causing the kits not to display. This was resolved by ensuring the correct  constant (derived from ) was used for the API call. Error handling with  and  was also robustified.
+The functionality has been thoroughly tested and confirmed to be working correctly, providing commercials with enhanced control over the sales process.
+</current_work>
+
+<optional_next_step>
+The previous AI engineer has completed the last user request. The next step is to await further instructions from the user regarding desired improvements or new features.
+</optional_next_step>
