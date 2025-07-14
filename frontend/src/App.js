@@ -336,6 +336,9 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
     if (heating.includes("Pompe à chaleur")) {
       return "🔥 Excellente synergie avec le solaire !";
     }
+    if (heating.includes("Cheminée") || heating.includes("Poêle")) {
+      return "🔥 Chauffage au bois - Le solaire complètera parfaitement votre système";
+    }
     return "🏠 Installation solaire rentable malgré le chauffage non-électrique";
   };
 
