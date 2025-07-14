@@ -1100,8 +1100,9 @@ Cordialement`);
                     </div>
                   </div>
                   <div className="financing-benefits">
-                    <p>✅ 6 premiers mois GRATUITS (0€ pendant l'installation)</p>
+                    <p>✅ 6 premiers mois GRATUITS (Rien à débourser pendant les 6 premiers mois)</p>
                     <p>✅ Aides récupérées: {Math.round(results.total_aids)} € (Prime + TVA)</p>
+                    <p>✅ Réinjection des Aides et Subventions récupérées entre le 7ème et 12ème mois</p>
                   </div>
                 </div>
               </div>
