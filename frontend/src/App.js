@@ -402,6 +402,53 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
           </div>
         )}
         
+        <div className="form-group">
+          <label>🔌 Quel type de compteur *</label>
+          <select
+            value={formData.meterType}
+            onChange={(e) => setFormData({...formData, meterType: e.target.value})}
+            className={errors.meterType ? 'error' : ''}
+            required
+          >
+            <option value="">Sélectionnez votre type de compteur</option>
+            <option value="Compteur classique">⚙️ Compteur classique</option>
+            <option value="Compteur LINKY">📡 Compteur LINKY</option>
+          </select>
+          {errors.meterType && <span className="error-message">{errors.meterType}</span>}
+        </div>
+        
+        <div className="form-group">
+          <label>⚡ Puissance compteur (kW) *</label>
+          <input
+            type="number"
+            value={formData.meterPower}
+            onChange={(e) => setFormData({...formData, meterPower: e.target.value})}
+            placeholder="ex: 6, 9, 12, 14, 18, 22"
+            min="3"
+            max="36"
+            step="1"
+            className={errors.meterPower ? 'error' : ''}
+            required
+          />
+          {errors.meterPower && <span className="error-message">{errors.meterPower}</span>}
+          <small>💡 Puissance standard : 6kW, 9kW, 12kW, 14kW, 18kW, 22kW</small>
+        </div>
+        
+        <div className="form-group">
+          <label>🔌 Monophasé - Triphasé *</label>
+          <select
+            value={formData.phaseType}
+            onChange={(e) => setFormData({...formData, phaseType: e.target.value})}
+            className={errors.phaseType ? 'error' : ''}
+            required
+          >
+            <option value="">Sélectionnez le type de phase</option>
+            <option value="Monophasé">🔌 Monophasé</option>
+            <option value="Triphasé">🔌🔌🔌 Triphasé</option>
+          </select>
+          {errors.phaseType && <span className="error-message">{errors.phaseType}</span>}
+        </div>
+        
         <div className="form-buttons">
           <button type="button" onClick={onPrevious} className="prev-button">⬅️ Précédent</button>
           <button type="submit" className="next-button">Suivant ➡️</button>
