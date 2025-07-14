@@ -14,7 +14,7 @@ const AutonomyLogo = () => (
         <span className="autonomy-status negative">Négatif</span>
       </div>
       <div className="autonomy-section green">
-        <span className="autonomy-text">POURCENTAGE D'AUTONOMIE DE COULEUR VERT</span>
+        <span className="autonomy-text">POURCENTAGE D'AUTONOMIE DE COULEUR VERT TROUVÉ = Permet l'envois de votre dossier en commission</span>
         <span className="autonomy-status positive">Positif</span>
       </div>
     </div>
