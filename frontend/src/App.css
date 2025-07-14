@@ -96,6 +96,10 @@ body::after {
   font-weight: bold;
   margin-bottom: 15px;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #2c5530, #4a7c59);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .company-subtitle {
