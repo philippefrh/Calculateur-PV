@@ -606,7 +606,7 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
                   className="show-kits-button"
                   onClick={handleShowKitSelection}
                 >
-                  📋 Voir tous les kits disponibles pour choix commercial
+                  📋 Voir tous les kits disponibles avec puissances et surfaces
                 </button>
                 <small>Cliquez pour voir la liste complète des kits et sélectionner manuellement</small>
               </div>
