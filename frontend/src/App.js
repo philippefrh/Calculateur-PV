@@ -359,8 +359,12 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
             <option value="Chauffage électrique avec plancher chauffant">⚡ Plancher chauffant électrique</option>
             <option value="Chaudière Gaz">🔥 Chaudière Gaz</option>
             <option value="Chaudière Fuel">🛢️ Chaudière Fuel</option>
+            <option value="Chaudière électrique">⚡ Chaudière électrique</option>
             <option value="Pompe à chaleur Air-Air réversible">❄️🔥 Pompe à chaleur Air-Air (réversible)</option>
             <option value="Pompe à chaleur Air-Eau">💧🔥 Pompe à chaleur Air-Eau</option>
+            <option value="Cheminée">🔥 Cheminée</option>
+            <option value="Poêle à bois">🪵 Poêle à bois</option>
+            <option value="Poêle à granulé">🌾 Poêle à granulé</option>
           </select>
           {errors.heatingSystem && <span className="error-message">{errors.heatingSystem}</span>}
           {formData.heatingSystem && (
