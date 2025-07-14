@@ -521,7 +521,7 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
 
   // Calcul automatique du total annuel
   const calculateAnnualTotal = (monthly) => {
-    return monthly * 11; // 11 mois comme spécifié
+    return monthly * 12; // 12 mois pour calcul annuel
   };
 
   const getConsumptionAdvice = (consumption) => {
