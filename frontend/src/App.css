@@ -145,6 +145,75 @@ body {
   margin-bottom: 8px;
 }
 
+/* Styles pour les systèmes de chauffage multiples */
+.heating-system-selector {
+  margin-bottom: 15px;
+}
+
+.heating-system-additional {
+  margin-bottom: 15px;
+}
+
+.system-label {
+  font-weight: 600;
+  color: #2c5530;
+  margin-bottom: 5px;
+  display: block;
+  font-size: 0.9rem;
+}
+
+.selected-additional-systems {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 10px;
+}
+
+.additional-systems-label {
+  font-weight: 600;
+  color: #2c5530;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.additional-systems-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.additional-system-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+.remove-system-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.remove-system-btn:hover {
+  background: #cc0000;
+}
+}
+
 .ffb-logo {
   max-width: 60px;
   height: auto;
