@@ -353,25 +353,90 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
       
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>🔥 Système de chauffage actuel *</label>
-          <select
-            value={formData.heatingSystem}
-            onChange={(e) => setFormData({...formData, heatingSystem: e.target.value})}
-            className={errors.heatingSystem ? 'error' : ''}
-            required
-          >
-            <option value="">Sélectionnez votre système</option>
-            <option value="Radiateurs électriques">⚡ Radiateurs électriques</option>
-            <option value="Chauffage électrique avec plancher chauffant">⚡ Plancher chauffant électrique</option>
-            <option value="Chaudière Gaz">🔥 Chaudière Gaz</option>
-            <option value="Chaudière Fuel">🛢️ Chaudière Fuel</option>
-            <option value="Chaudière électrique">⚡ Chaudière électrique</option>
-            <option value="Pompe à chaleur Air-Air réversible">❄️🔥 Pompe à chaleur Air-Air (réversible)</option>
-            <option value="Pompe à chaleur Air-Eau">💧🔥 Pompe à chaleur Air-Eau</option>
-            <option value="Cheminée">🔥 Cheminée</option>
-            <option value="Poêle à bois">🪵 Poêle à bois</option>
-            <option value="Poêle à granulé">🌾 Poêle à granulé</option>
-          </select>
+          <label>🔥 Système(s) de chauffage actuel(s) *</label>
+          
+          {/* Système principal */}
+          <div className="heating-system-selector">
+            <label className="system-label">Système principal :</label>
+            <select
+              value={formData.heatingSystem || ''}
+              onChange={(e) => setFormData({...formData, heatingSystem: e.target.value})}
+              className={errors.heatingSystem ? 'error' : ''}
+              required
+            >
+              <option value="">Sélectionnez votre système principal</option>
+              <option value="Radiateurs électriques">⚡ Radiateurs électriques</option>
+              <option value="Chauffage électrique avec plancher chauffant">⚡ Plancher chauffant électrique</option>
+              <option value="Chaudière Gaz">🔥 Chaudière Gaz</option>
+              <option value="Chaudière Fuel">🛢️ Chaudière Fuel</option>
+              <option value="Chaudière électrique">⚡ Chaudière électrique</option>
+              <option value="Pompe à chaleur Air-Air réversible">❄️🔥 Pompe à chaleur Air-Air (réversible)</option>
+              <option value="Pompe à chaleur Air-Eau">💧🔥 Pompe à chaleur Air-Eau</option>
+              <option value="Cheminée">🔥 Cheminée</option>
+              <option value="Poêle à bois">🪵 Poêle à bois</option>
+              <option value="Poêle à granulé">🌾 Poêle à granulé</option>
+            </select>
+          </div>
+          
+          {/* Systèmes d'appoint */}
+          <div className="heating-system-additional">
+            <label className="system-label">Système(s) d'appoint :</label>
+            <select
+              value=""
+              onChange={(e) => {
+                if (e.target.value) {
+                  const additionalSystems = formData.additionalHeatingSystems || [];
+                  if (!additionalSystems.includes(e.target.value)) {
+                    setFormData({
+                      ...formData, 
+                      additionalHeatingSystems: [...additionalSystems, e.target.value]
+                    });
+                  }
+                  e.target.value = '';
+                }
+              }}
+            >
+              <option value="">+ Ajouter un système d'appoint</option>
+              <option value="Radiateurs électriques">⚡ Radiateurs électriques</option>
+              <option value="Chauffage électrique avec plancher chauffant">⚡ Plancher chauffant électrique</option>
+              <option value="Chaudière Gaz">🔥 Chaudière Gaz</option>
+              <option value="Chaudière Fuel">🛢️ Chaudière Fuel</option>
+              <option value="Chaudière électrique">⚡ Chaudière électrique</option>
+              <option value="Pompe à chaleur Air-Air réversible">❄️🔥 Pompe à chaleur Air-Air (réversible)</option>
+              <option value="Pompe à chaleur Air-Eau">💧🔥 Pompe à chaleur Air-Eau</option>
+              <option value="Cheminée">🔥 Cheminée</option>
+              <option value="Poêle à bois">🪵 Poêle à bois</option>
+              <option value="Poêle à granulé">🌾 Poêle à granulé</option>
+            </select>
+          </div>
+          
+          {/* Affichage des systèmes d'appoint sélectionnés */}
+          {formData.additionalHeatingSystems && formData.additionalHeatingSystems.length > 0 && (
+            <div className="selected-additional-systems">
+              <p className="additional-systems-label">Systèmes d'appoint sélectionnés :</p>
+              <div className="additional-systems-list">
+                {formData.additionalHeatingSystems.map((system, index) => (
+                  <div key={index} className="additional-system-item">
+                    <span>{system}</span>
+                    <button
+                      type="button"
+                      className="remove-system-btn"
+                      onClick={() => {
+                        const updatedSystems = formData.additionalHeatingSystems.filter((_, i) => i !== index);
+                        setFormData({
+                          ...formData,
+                          additionalHeatingSystems: updatedSystems
+                        });
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
           {errors.heatingSystem && <span className="error-message">{errors.heatingSystem}</span>}
           {formData.heatingSystem && (
             <div className="heating-advice">{getHeatingAdvice(formData.heatingSystem)}</div>
