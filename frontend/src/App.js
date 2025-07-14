@@ -410,6 +410,90 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
 // Formulaire étape 4 - Consommation amélioré
 const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
   const [errors, setErrors] = useState({});
+  const [showKitSelection, setShowKitSelection] = useState(false);
+  const [availableKits, setAvailableKits] = useState([]);
+  const [selectedKit, setSelectedKit] = useState(null);
+  const [loadingKits, setLoadingKits] = useState(false);
+
+  // Récupérer les kits solaires disponibles
+  const fetchAvailableKits = async () => {
+    if (availableKits.length > 0) return; // Déjà chargés
+    
+    setLoadingKits(true);
+    try {
+      const response = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL}/api/solar-kits`);
+      const kits = await response.json();
+      
+      // Transformer les données pour inclure les informations calculées
+      const kitsWithDetails = Object.entries(kits).map(([power, info]) => {
+        const kitPower = parseInt(power);
+        const priceHT = info.price / 1.2; // Prix HT (TTC / 1.2)
+        const commission = priceHT * 0.15; // Commission 15%
+        const surfaceTotal = info.panels * 2.1; // Surface par panneau: 2.1m²
+        
+        // Calcul des aides
+        const autoconsumptionAid = kitPower * 80; // 80€/kW
+        const tvaRefund = kitPower > 3 ? info.price * 0.2 : 0; // TVA 20% si > 3kW
+        const totalAids = autoconsumptionAid + tvaRefund;
+        const priceWithAids = info.price - totalAids;
+        
+        return {
+          power: kitPower,
+          panels: info.panels,
+          priceTTC: info.price,
+          priceHT: Math.round(priceHT),
+          commission: Math.round(commission),
+          surface: surfaceTotal,
+          autoconsumptionAid,
+          tvaRefund: Math.round(tvaRefund),
+          totalAids: Math.round(totalAids),
+          priceWithAids: Math.round(priceWithAids)
+        };
+      });
+      
+      setAvailableKits(kitsWithDetails.sort((a, b) => a.power - b.power));
+    } catch (error) {
+      console.error('Erreur lors du chargement des kits:', error);
+    }
+    setLoadingKits(false);
+  };
+
+  const handleShowKitSelection = () => {
+    setShowKitSelection(true);
+    fetchAvailableKits();
+  };
+
+  const handleSelectKit = (kit) => {
+    setSelectedKit(kit);
+    // Mettre à jour le formData avec le kit sélectionné
+    setFormData(prev => ({
+      ...prev,
+      selectedManualKit: kit
+    }));
+  };
+
+  const handleConfirmKitSelection = () => {
+    if (selectedKit) {
+      setFormData(prev => ({
+        ...prev,
+        useManualKit: true,
+        manualKit: selectedKit
+      }));
+      setShowKitSelection(false);
+      alert(`Kit ${selectedKit.power}kW sélectionné avec succès !`);
+    }
+  };
+
+  const handleCancelKitSelection = () => {
+    setShowKitSelection(false);
+    setSelectedKit(null);
+    setFormData(prev => ({
+      ...prev,
+      useManualKit: false,
+      manualKit: null,
+      selectedManualKit: null
+    }));
+  };
 
   const validateForm = () => {
     const newErrors = {};
