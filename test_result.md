@@ -288,7 +288,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Educational Pages During PVGIS Calculation (4 minutes) - Successfully tested and working"
+    - "Manual Kit Selection for Commercial Use (Step 4/4) - Successfully tested and working"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
