@@ -474,6 +474,105 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
         )}
         
         <div className="form-group">
+          <label>🧺 Machine à laver</label>
+          <select
+            value={formData.washingMachine || ''}
+            onChange={(e) => setFormData({...formData, washingMachine: e.target.value})}
+          >
+            <option value="">Sélectionnez le nombre</option>
+            <option value="1">1 machine à laver</option>
+            <option value="2">2 machines à laver</option>
+            <option value="3">3 machines à laver</option>
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label>🌬️ Sèche linge</label>
+          <select
+            value={formData.dryer || ''}
+            onChange={(e) => setFormData({...formData, dryer: e.target.value})}
+          >
+            <option value="">Avez-vous un sèche linge ?</option>
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label>🍽️ Lave vaisselle</label>
+          <select
+            value={formData.dishwasher || ''}
+            onChange={(e) => setFormData({...formData, dishwasher: e.target.value})}
+          >
+            <option value="">Avez-vous un lave vaisselle ?</option>
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label>🧊 Frigo</label>
+          <select
+            value={formData.refrigerator || ''}
+            onChange={(e) => setFormData({...formData, refrigerator: e.target.value})}
+          >
+            <option value="">Sélectionnez le nombre</option>
+            <option value="1">1 frigo</option>
+            <option value="2">2 frigos</option>
+            <option value="3">3 frigos</option>
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label>🔥 Four électrique</label>
+          <select
+            value={formData.electricOven || ''}
+            onChange={(e) => setFormData({...formData, electricOven: e.target.value})}
+          >
+            <option value="">Avez-vous un four électrique ?</option>
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label>🍳 Plaque de cuisson</label>
+          <select
+            value={formData.cookingPlate || ''}
+            onChange={(e) => setFormData({...formData, cookingPlate: e.target.value})}
+          >
+            <option value="">Sélectionnez le type</option>
+            <option value="electrique">⚡ Électrique</option>
+            <option value="gaz">🔥 Gaz</option>
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label>💨 Hotte aspirante</label>
+          <select
+            value={formData.hood || ''}
+            onChange={(e) => setFormData({...formData, hood: e.target.value})}
+          >
+            <option value="">Avez-vous une hotte aspirante ?</option>
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label>🌀 VMC (Ventilation Mécanique Contrôlée)</label>
+          <select
+            value={formData.vmc || ''}
+            onChange={(e) => setFormData({...formData, vmc: e.target.value})}
+          >
+            <option value="">Sélectionnez le type de VMC</option>
+            <option value="simple_flux">🌀 Simple flux</option>
+            <option value="double_flux">🌀🌀 Double flux</option>
+            <option value="non">Non</option>
+          </select>
+        </div>
+        
+        <div className="form-group">
           <label>🔌 Quel type de compteur *</label>
           <select
             value={formData.meterType}
