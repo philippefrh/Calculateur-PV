@@ -314,6 +314,9 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
     const newErrors = {};
     if (!formData.heatingSystem) newErrors.heatingSystem = "Système de chauffage obligatoire";
     if (!formData.waterHeatingSystem) newErrors.waterHeatingSystem = "Système d'eau chaude obligatoire";
+    if (!formData.meterType) newErrors.meterType = "Type de compteur obligatoire";
+    if (!formData.meterPower) newErrors.meterPower = "Puissance compteur obligatoire";
+    if (!formData.phaseType) newErrors.phaseType = "Type de phase obligatoire";
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
