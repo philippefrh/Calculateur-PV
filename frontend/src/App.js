@@ -656,7 +656,7 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
                           </div>
                           <div className="kit-detail-row commission">
                             <span>CO2 économisé:</span>
-                            <span>2500 kilos/an</span>
+                            <span>{kit.commission} kilos/an</span>
                           </div>
                         </div>
                         
