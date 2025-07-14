@@ -421,7 +421,10 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
     
     setLoadingKits(true);
     try {
-      const response = await fetch(`${import.meta.env.REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL}/api/solar-kits`);
+      const response = await fetch(`${API}/solar-kits`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const kits = await response.json();
       
       // Transformer les données pour inclure les informations calculées
@@ -454,6 +457,7 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
       setAvailableKits(kitsWithDetails.sort((a, b) => a.power - b.power));
     } catch (error) {
       console.error('Erreur lors du chargement des kits:', error);
+      alert('Erreur lors du chargement des kits. Veuillez réessayer.');
     }
     setLoadingKits(false);
   };
