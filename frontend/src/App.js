@@ -592,7 +592,7 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
               readOnly
               className="readonly-field"
             />
-            <small>Calculé automatiquement : {formData.monthlyEdfPayment} € × 11 mois = {formData.annualEdfPayment} €/an</small>
+            <small>Calculé automatiquement : {formData.monthlyEdfPayment} € × 12 mois = {formData.annualEdfPayment} €/an</small>
           </div>
         )}
 
