@@ -434,10 +434,15 @@ async def calculate_solar_solution(client_id: str):
         orientation = client['roof_orientation']
         lat = client['latitude']
         lon = client['longitude']
+        client_mode = client.get('client_mode', 'particuliers')  # Default to particuliers if not specified
+        
+        # Get appropriate kits and aids configuration
+        solar_kits = get_solar_kits_by_mode(client_mode)
+        aids_config = get_aids_by_mode(client_mode)
         
         # Calculate optimal kit size
-        best_kit = calculate_optimal_kit_size(annual_consumption, roof_surface)
-        kit_info = SOLAR_KITS[best_kit]
+        best_kit = calculate_optimal_kit_size(annual_consumption, roof_surface, client_mode)
+        kit_info = solar_kits[best_kit]
         
         # Get PVGIS data
         pvgis_data = await get_pvgis_data(lat, lon, orientation, best_kit)
@@ -458,9 +463,9 @@ async def calculate_solar_solution(client_id: str):
         # Calculate financing options
         financing_options = calculate_financing_options(kit_info['price'], monthly_savings)
         
-        # Calculate aids (using particuliers rates by default)
-        autoconsumption_aid_total = best_kit * AUTOCONSUMPTION_AID_PARTICULIERS  # 80€/kW
-        tva_refund = kit_info['price'] * TVA_RATE_PARTICULIERS if best_kit > 3 else 0  # No TVA refund for 3kW
+        # Calculate aids based on client mode
+        autoconsumption_aid_total = best_kit * aids_config['autoconsumption_aid_rate']
+        tva_refund = kit_info['price'] * aids_config['tva_rate'] if best_kit > 3 else 0
         total_aids = autoconsumption_aid_total + tva_refund
         
         # Calculate financing options with aids deducted
@@ -496,6 +501,7 @@ async def calculate_solar_solution(client_id: str):
         # Add additional info for frontend
         result = calculation.dict()
         result.update({
+            "client_mode": client_mode,
             "kit_price": kit_info['price'],
             "autoconsumption_kwh": autoconsumption_kwh,
             "surplus_kwh": surplus_kwh,
@@ -506,7 +512,8 @@ async def calculate_solar_solution(client_id: str):
             "all_financing_with_aids": all_financing_with_aids,
             "pvgis_source": "Données source PVGIS Commission Européenne",
             "orientation": orientation,
-            "coordinates": {"lat": lat, "lon": lon}
+            "coordinates": {"lat": lat, "lon": lon},
+            "aids_config": aids_config  # Include aids configuration for frontend
         })
         
         return result
