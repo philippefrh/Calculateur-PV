@@ -2160,6 +2160,7 @@ function App() {
   const [currentStep, setCurrentStep] = useState('start');
   const [calculationResults, setCalculationResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [clientMode, setClientMode] = useState('particuliers'); // 'particuliers' ou 'professionnels'
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -2172,7 +2173,8 @@ function App() {
     waterHeatingCapacity: '',
     annualConsumption: '',
     monthlyEdfPayment: '',
-    annualEdfPayment: ''
+    annualEdfPayment: '',
+    clientMode: 'particuliers' // Nouveau champ pour le mode client
   });
 
   useEffect(() => {
