@@ -127,13 +127,21 @@ const StartScreen = ({ onStart, clientMode, setClientMode }) => {
       </div>
       
       <button className="start-button" onClick={handleClick}>
-        🌞 Commencer l'Étude Solaire Gratuite
+        {clientMode === 'particuliers' ? 
+          '🌞 Commencer l\'Étude Solaire Gratuite' : 
+          '🏢 Commencer l\'Étude Solaire Professionnelle'
+        }
       </button>
       
       <div className="benefits">
         <div className="benefit-item">
           <span className="benefit-icon">✓</span>
-          <span>Réalisez jusqu'à 70% d'économies sur vos factures d'électricité</span>
+          <span>
+            {clientMode === 'particuliers' ? 
+              'Réalisez jusqu\'à 70% d\'économies sur vos factures d\'électricité' :
+              'Réduisez vos coûts énergétiques et bénéficiez d\'avantages fiscaux'
+            }
+          </span>
         </div>
         <div className="benefit-item">
           <span className="benefit-icon">✓</span>
@@ -141,7 +149,12 @@ const StartScreen = ({ onStart, clientMode, setClientMode }) => {
         </div>
         <div className="benefit-item">
           <span className="benefit-icon">✓</span>
-          <span>Panneaux garantis 25 ans et garanties de production</span>
+          <span>
+            {clientMode === 'particuliers' ? 
+              'Panneaux garantis 25 ans et garanties de production' :
+              'Solutions professionnelles avec garanties étendues'
+            }
+          </span>
         </div>
         <div className="benefit-item">
           <span className="benefit-icon">✓</span>
@@ -149,7 +162,12 @@ const StartScreen = ({ onStart, clientMode, setClientMode }) => {
         </div>
         <div className="benefit-item">
           <span className="benefit-icon">✓</span>
-          <span>Profitez des dispositifs d'aides et de subventions</span>
+          <span>
+            {clientMode === 'particuliers' ? 
+              'Profitez des dispositifs d\'aides et de subventions' :
+              'Amortissement accéléré et avantages fiscaux pour entreprises'
+            }
+          </span>
         </div>
       </div>
 
