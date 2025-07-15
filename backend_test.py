@@ -18,6 +18,9 @@ class SolarCalculatorTester:
         self.session = requests.Session()
         self.test_results = []
         self.client_id = None
+        self.professional_client_id = None
+        self.particuliers_calculation = None
+        self.professionnels_calculation = None
         
     def log_test(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test results"""
