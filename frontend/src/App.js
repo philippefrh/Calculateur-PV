@@ -1581,24 +1581,17 @@ Cordialement`);
                     <div key={index} className="table-row">
                       <span>{option.duration_years} ans</span>
                       <span>{Math.round(option.monthly_payment)} €</span>
-      )}
-
-      <div className="results-footer">
-        <div className="action-buttons">
-          <button type="button" onClick={onPrevious} className="prev-button">⬅️ Modifier les données</button>
-          <button 
-            type="button" 
-            onClick={generatePDF} 
-            className={`pdf-button ${isGeneratingPDF ? 'generating' : ''}`}
-            disabled={isGeneratingPDF}
-          >
-            {isGeneratingPDF ? '⏳ Génération...' : '📄 Télécharger le Rapport PDF Complet'}
-          </button>
-          <button type="button" onClick={sendToExpert} className="expert-button">
-            👨‍💼 Prendre RDV avec un Expert
-          </button>
+                      <span className={Math.abs(option.difference_vs_savings) < 20 ? 'success' : 'warning'}>
+                        {option.difference_vs_savings > 0 ? '+' : ''}{Math.round(option.difference_vs_savings)} €/mois
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       <div className="results-footer">
         <div className="action-buttons">
