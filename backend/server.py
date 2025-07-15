@@ -1012,7 +1012,7 @@ async def calculate_solar_solution(client_id: str):
         result = calculation.dict()
         result.update({
             "client_mode": client_mode,
-            "kit_price": kit_info['price'],
+            "kit_price": kit_price,
             "autoconsumption_kwh": autoconsumption_kwh,
             "surplus_kwh": surplus_kwh,
             "autoconsumption_aid": autoconsumption_aid_total,
