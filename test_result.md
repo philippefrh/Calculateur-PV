@@ -117,20 +117,20 @@ backend:
         agent: "testing"
         comment: "✅ API accessible, returns correct message: 'Solar Calculator API with PVGIS Integration'"
 
-  - task: "Solar Kits Endpoint"
+  - task: "Solar Kits Endpoint with Client Mode Support"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "testing"
         comment: "✅ All solar kits (3-9kW) available with correct pricing. 6kW kit: 22900€, 12 panels"
-      - working: true
-        agent: "testing"
-        comment: "✅ SOLAR KITS ENDPOINT ADDED AND WORKING - Added missing /solar-kits endpoint that returns SOLAR_KITS data structure. All 7 kit sizes (3-9kW) available with correct pricing and panel counts. Test now passes successfully."
+      - working: false
+        agent: "main"
+        comment: "🔄 UPDATED FOR PROFESSIONAL VERSION - Added new endpoint /solar-kits/{client_mode} to support both 'particuliers' and 'professionnels' modes. Professionnels have access to larger kits (12kW, 15kW, 20kW) and slightly different pricing. Legacy /solar-kits endpoint maintained for backward compatibility."
 
   - task: "PVGIS Direct Test Endpoint"
     implemented: true
@@ -144,17 +144,20 @@ backend:
         agent: "testing"
         comment: "✅ PVGIS integration working perfectly. Paris 6kW test: 6805.93 kWh/year production with detailed monthly data from European Commission PVGIS"
 
-  - task: "Client Creation with Geocoding"
+  - task: "Client Creation with Geocoding and Client Mode"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "testing"
         comment: "✅ Client creation successful with automatic geocoding. Test client 'Jean Dupont' at Champs-Élysées correctly geocoded to Paris coordinates (48.8680, 2.3154)"
+      - working: false
+        agent: "main"
+        comment: "🔄 UPDATED FOR PROFESSIONAL VERSION - Added client_mode field to ClientInfo and ClientInfoCreate models. Default mode is 'particuliers' but can be set to 'professionnels' for different calculation logic."
 
   - task: "Client Retrieval Operations"
     implemented: true
@@ -168,35 +171,35 @@ backend:
         agent: "testing"
         comment: "✅ Both GET /clients (list all) and GET /clients/{id} (get specific) working correctly"
 
-  - task: "Complete Solar Calculation with PVGIS"
+  - task: "Professional Mode Solar Calculation with PVGIS"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "testing"
         comment: "✅ Complete calculation workflow successful: 6kW kit recommended, 6873 kWh/year production, 95% autonomy, 1367€/year savings, financing options 6-15 years, aids calculation (480€ autoconsumption + 4580€ TVA = 5060€ total)"
+      - working: false
+        agent: "main"
+        comment: "🔄 UPDATED FOR PROFESSIONAL VERSION - Modified calculate_solar_solution to support both client modes. Professionnels get different aid rates (60€/kW vs 80€/kW) and access to larger kits. Added amortissement accéléré for professional clients."
 
-  - task: "Financing with Aids Calculation"
+  - task: "Dual Mode Financing Calculation"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "testing"
         comment: "✅ NEW FINANCING WITH AIDS CALCULATION WORKING PERFECTLY - Fixed issue where financing was calculated with simple division (116€/month). Now correctly calculates with 4.96% TAEG interest rate: 17840€ financed amount (22900€ kit - 5060€ aids), 140.71€/month payment (vs 99.11€ simple division), 25327€ total cost, 7487€ total interests over 15 years. Monthly payment now properly includes banking interests as requested."
-      - working: true
-        agent: "testing"
-        comment: "✅ CONFIRMED WORKING - Retested financing with aids calculation. 17840€ financed, 140.71€/month with 4.96% TAEG interest (vs 99.11€ simple division), 7487€ total interests over 15 years. All calculations correct."
-      - working: true
-        agent: "testing"
-        comment: "✅ NEW 3.25% TAEG RATE CONFIRMED WORKING - Updated interest rate from 4.96% to 3.25% TAEG successfully implemented. Test results: 17840€ financed amount, 125.36€/month payment (vs 140.71€ with old 4.96% rate), 4724€ total interests over 15 years. Monthly savings: 15.35€ (10.9% reduction). Rate change working as requested."
+      - working: false
+        agent: "main"
+        comment: "🔄 UPDATED FOR PROFESSIONAL VERSION - Financing calculations now take into account client mode. Professionnels have different aid calculations which affect financing amounts. Added aids_config to results for frontend display."
 
   - task: "All Financing Options with Aids (6-15 years)"
     implemented: true
