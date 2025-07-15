@@ -1703,6 +1703,484 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Modest Savings Example", False, f"Error: {str(e)}")
 
+    def test_professional_workflow_complete(self):
+        """Test complet workflow professionnel - Create professional client and test calculate-professional endpoint"""
+        try:
+            # Create a realistic professional client
+            client_data = {
+                "first_name": "Pierre",
+                "last_name": "Entreprise",
+                "address": "25 Avenue de l'Opéra, 75001 Paris",
+                "roof_surface": 150.0,  # Large roof for professional
+                "roof_orientation": "Sud",
+                "velux_count": 6,
+                "heating_system": "Pompe à chaleur industrielle",
+                "water_heating_system": "Solaire thermique professionnel",
+                "water_heating_capacity": 500,
+                "annual_consumption_kwh": 15000.0,  # High consumption for professional
+                "monthly_edf_payment": 400.0,
+                "annual_edf_payment": 4800.0,
+                "client_mode": "professionnels"
+            }
+            
+            # Create client
+            response = self.session.post(f"{self.base_url}/clients", json=client_data)
+            if response.status_code != 200:
+                self.log_test("Professional Workflow Complete", False, f"Failed to create professional client: {response.status_code}")
+                return
+            
+            client = response.json()
+            professional_client_id = client["id"]
+            
+            # Test /api/calculate-professional/{client_id} endpoint with all price levels
+            price_levels = ["base", "remise", "remise_max"]
+            results = {}
+            
+            for price_level in price_levels:
+                response = self.session.post(f"{self.base_url}/calculate-professional/{professional_client_id}", 
+                                           params={"price_level": price_level})
+                
+                if response.status_code == 200:
+                    calculation = response.json()
+                    results[price_level] = calculation
+                else:
+                    self.log_test("Professional Workflow Complete", False, 
+                                f"Failed to calculate professional solution for {price_level}: {response.status_code}")
+                    return
+            
+            # Verify all calculations succeeded and have required fields
+            issues = []
+            for price_level, calc in results.items():
+                required_fields = ["kit_power", "kit_price", "leasing_options", "optimal_kit", 
+                                 "monthly_savings", "commission", "price_level"]
+                missing_fields = [field for field in required_fields if field not in calc]
+                if missing_fields:
+                    issues.append(f"{price_level}: missing fields {missing_fields}")
+            
+            # Check if MEILLEUR KITS OPTIMISE was found
+            optimal_kits_found = []
+            for price_level, calc in results.items():
+                optimal_kit = calc.get("optimal_kit")
+                if optimal_kit:
+                    optimal_kits_found.append(f"{price_level}: {optimal_kit.get('kit_power')}kW at {optimal_kit.get('monthly_payment')}€/month")
+                else:
+                    issues.append(f"{price_level}: No optimal kit found")
+            
+            # Verify leasing calculations are correct
+            for price_level, calc in results.items():
+                leasing_options = calc.get("leasing_options", [])
+                if not leasing_options:
+                    issues.append(f"{price_level}: No leasing options available")
+                else:
+                    # Check that leasing rates are reasonable (1-3%)
+                    for option in leasing_options:
+                        rate = option.get("rate", 0)
+                        if not (1.0 <= rate <= 3.0):
+                            issues.append(f"{price_level}: Leasing rate {rate}% outside expected range 1-3%")
+            
+            if issues:
+                self.log_test("Professional Workflow Complete", False, f"Issues found: {'; '.join(issues)}", results)
+            else:
+                # Success message with key details
+                base_calc = results["base"]
+                kit_power = base_calc.get("kit_power", 0)
+                monthly_savings = base_calc.get("monthly_savings", 0)
+                optimal_summary = "; ".join(optimal_kits_found) if optimal_kits_found else "None found"
+                
+                self.log_test("Professional Workflow Complete", True, 
+                            f"✅ Professional workflow complete: {kit_power}kW recommended, {monthly_savings:.0f}€/month savings. Optimal kits: {optimal_summary}. All 3 price levels working.", 
+                            results)
+                
+                # Store for comparison tests
+                self.professional_workflow_result = results
+                
+        except Exception as e:
+            self.log_test("Professional Workflow Complete", False, f"Error: {str(e)}")
+
+    def test_professional_vs_particuliers_comparison(self):
+        """Test comparatif Particuliers vs Professionnels - Same client in both modes"""
+        try:
+            # Create same client profile in both modes
+            base_client_data = {
+                "first_name": "Comparaison",
+                "last_name": "Test",
+                "address": "50 Rue de Rivoli, 75001 Paris",
+                "roof_surface": 100.0,
+                "roof_orientation": "Sud",
+                "velux_count": 4,
+                "heating_system": "Pompe à chaleur",
+                "water_heating_system": "Ballon électrique",
+                "water_heating_capacity": 300,
+                "annual_consumption_kwh": 10000.0,
+                "monthly_edf_payment": 300.0,
+                "annual_edf_payment": 3600.0
+            }
+            
+            # Create particuliers client
+            part_data = {**base_client_data, "client_mode": "particuliers"}
+            part_response = self.session.post(f"{self.base_url}/clients", json=part_data)
+            if part_response.status_code != 200:
+                self.log_test("Professional vs Particuliers Comparison", False, "Failed to create particuliers client")
+                return
+            part_client_id = part_response.json()["id"]
+            
+            # Create professional client
+            prof_data = {**base_client_data, "client_mode": "professionnels"}
+            prof_response = self.session.post(f"{self.base_url}/clients", json=prof_data)
+            if prof_response.status_code != 200:
+                self.log_test("Professional vs Particuliers Comparison", False, "Failed to create professional client")
+                return
+            prof_client_id = prof_response.json()["id"]
+            
+            # Calculate for particuliers
+            part_calc_response = self.session.post(f"{self.base_url}/calculate/{part_client_id}")
+            if part_calc_response.status_code != 200:
+                self.log_test("Professional vs Particuliers Comparison", False, "Failed to calculate for particuliers")
+                return
+            part_calc = part_calc_response.json()
+            
+            # Calculate for professional (using base price level)
+            prof_calc_response = self.session.post(f"{self.base_url}/calculate-professional/{prof_client_id}", 
+                                                 params={"price_level": "base"})
+            if prof_calc_response.status_code != 200:
+                self.log_test("Professional vs Particuliers Comparison", False, "Failed to calculate for professional")
+                return
+            prof_calc = prof_calc_response.json()
+            
+            # Compare results
+            issues = []
+            
+            # Compare aid rates
+            part_aids_config = part_calc.get("aids_config", {})
+            prof_aids_config = prof_calc.get("aids_config", {})
+            
+            part_aid_rate = part_aids_config.get("autoconsumption_aid_rate", 0)
+            prof_aid_rate = prof_aids_config.get("autoconsumption_aid_rate", 0)
+            
+            if part_aid_rate != 80:
+                issues.append(f"Particuliers aid rate should be 80€/kW, got {part_aid_rate}€/kW")
+            if prof_aid_rate != 190:  # Professional rate is 190€/kW according to backend
+                issues.append(f"Professional aid rate should be 190€/kW, got {prof_aid_rate}€/kW")
+            
+            # Compare autoconsumption rates
+            part_auto_rate = part_aids_config.get("autoconsumption_rate", 0)
+            prof_auto_rate = prof_aids_config.get("autoconsumption_rate", 0)
+            
+            if part_auto_rate != 0.95:
+                issues.append(f"Particuliers autoconsumption should be 95%, got {part_auto_rate*100}%")
+            if prof_auto_rate != 0.80:
+                issues.append(f"Professional autoconsumption should be 80%, got {prof_auto_rate*100}%")
+            
+            # Compare EDF rates
+            part_edf_rate = part_aids_config.get("edf_rate", 0)
+            prof_edf_rate = prof_aids_config.get("edf_rate", 0)
+            
+            if part_edf_rate != 0.2516:
+                issues.append(f"Particuliers EDF rate should be 0.2516€/kWh, got {part_edf_rate}€/kWh")
+            if prof_edf_rate != 0.26:
+                issues.append(f"Professional EDF rate should be 0.26€/kWh, got {prof_edf_rate}€/kWh")
+            
+            # Compare financing types
+            part_has_financing = "financing_with_aids" in part_calc
+            prof_has_leasing = "leasing_options" in prof_calc
+            
+            if not part_has_financing:
+                issues.append("Particuliers should have financing_with_aids")
+            if not prof_has_leasing:
+                issues.append("Professional should have leasing_options")
+            
+            # Compare kit access
+            part_kit_power = part_calc.get("kit_power", 0)
+            prof_kit_power = prof_calc.get("kit_power", 0)
+            
+            # Professional should potentially have access to larger kits
+            if prof_kit_power < part_kit_power:
+                issues.append(f"Professional kit {prof_kit_power}kW smaller than particuliers {part_kit_power}kW (unexpected)")
+            
+            if issues:
+                self.log_test("Professional vs Particuliers Comparison", False, f"Comparison issues: {'; '.join(issues)}")
+            else:
+                # Success summary
+                comparison_summary = (
+                    f"✅ Comparison successful: "
+                    f"Aid rates: Particuliers {part_aid_rate}€/kW vs Professional {prof_aid_rate}€/kW. "
+                    f"Autoconsumption: Particuliers {part_auto_rate*100:.0f}% vs Professional {prof_auto_rate*100:.0f}%. "
+                    f"EDF rates: Particuliers {part_edf_rate}€/kWh vs Professional {prof_edf_rate}€/kWh. "
+                    f"Financing: Particuliers credit vs Professional leasing. "
+                    f"Kit sizes: Particuliers {part_kit_power}kW vs Professional {prof_kit_power}kW"
+                )
+                
+                self.log_test("Professional vs Particuliers Comparison", True, comparison_summary, {
+                    "particuliers": {
+                        "aid_rate": part_aid_rate,
+                        "autoconsumption_rate": part_auto_rate,
+                        "edf_rate": part_edf_rate,
+                        "kit_power": part_kit_power,
+                        "financing_type": "credit"
+                    },
+                    "professional": {
+                        "aid_rate": prof_aid_rate,
+                        "autoconsumption_rate": prof_auto_rate,
+                        "edf_rate": prof_edf_rate,
+                        "kit_power": prof_kit_power,
+                        "financing_type": "leasing"
+                    }
+                })
+                
+        except Exception as e:
+            self.log_test("Professional vs Particuliers Comparison", False, f"Error: {str(e)}")
+
+    def test_professional_price_levels(self):
+        """Test des 3 niveaux de prix professionnels - base, remise, remise_max"""
+        if not hasattr(self, 'professional_workflow_result'):
+            self.log_test("Professional Price Levels", False, "No professional workflow result available from previous test")
+            return
+            
+        try:
+            results = self.professional_workflow_result
+            
+            # Extract pricing data for all levels
+            pricing_data = {}
+            for price_level in ["base", "remise", "remise_max"]:
+                calc = results.get(price_level, {})
+                pricing_data[price_level] = {
+                    "kit_price": calc.get("kit_price", 0),
+                    "commission": calc.get("commission", 0),
+                    "kit_power": calc.get("kit_power", 0)
+                }
+            
+            issues = []
+            
+            # Verify prices decrease: base > remise > remise_max
+            base_price = pricing_data["base"]["kit_price"]
+            remise_price = pricing_data["remise"]["kit_price"]
+            remise_max_price = pricing_data["remise_max"]["kit_price"]
+            
+            if not (base_price > remise_price > remise_max_price):
+                issues.append(f"Prices should decrease: base {base_price}€ > remise {remise_price}€ > remise_max {remise_max_price}€")
+            
+            # Verify commissions change appropriately
+            base_commission = pricing_data["base"]["commission"]
+            remise_commission = pricing_data["remise"]["commission"]
+            remise_max_commission = pricing_data["remise_max"]["commission"]
+            
+            # Commission should be lower for remise_max
+            if remise_max_commission >= base_commission:
+                issues.append(f"Remise_max commission {remise_max_commission}€ should be lower than base {base_commission}€")
+            
+            # Check that optimization works for each level
+            optimization_results = []
+            for price_level in ["base", "remise", "remise_max"]:
+                calc = results.get(price_level, {})
+                optimal_kit = calc.get("optimal_kit")
+                if optimal_kit:
+                    optimization_results.append(f"{price_level}: {optimal_kit.get('kit_power')}kW at {optimal_kit.get('monthly_payment')}€/month")
+                else:
+                    optimization_results.append(f"{price_level}: No optimal kit")
+            
+            # Verify price differences are reasonable (at least 2% between levels)
+            price_diff_base_remise = ((base_price - remise_price) / base_price) * 100
+            price_diff_remise_max = ((remise_price - remise_max_price) / remise_price) * 100
+            
+            if price_diff_base_remise < 1:
+                issues.append(f"Price difference base->remise {price_diff_base_remise:.1f}% too small (expected >1%)")
+            if price_diff_remise_max < 1:
+                issues.append(f"Price difference remise->remise_max {price_diff_remise_max:.1f}% too small (expected >1%)")
+            
+            if issues:
+                self.log_test("Professional Price Levels", False, f"Price level issues: {'; '.join(issues)}", pricing_data)
+            else:
+                self.log_test("Professional Price Levels", True, 
+                            f"✅ All 3 price levels working: Base {base_price}€ > Remise {remise_price}€ > Remise_max {remise_max_price}€. "
+                            f"Price reductions: {price_diff_base_remise:.1f}% and {price_diff_remise_max:.1f}%. "
+                            f"Commissions: Base {base_commission}€, Remise_max {remise_max_commission}€. "
+                            f"Optimization: {'; '.join(optimization_results)}", 
+                            pricing_data)
+                
+        except Exception as e:
+            self.log_test("Professional Price Levels", False, f"Error: {str(e)}")
+
+    def test_realistic_usage_case(self):
+        """Test cas d'usage réel - Client with 250-350€/month savings"""
+        try:
+            # Create client with medium consumption to get 250-350€/month savings
+            client_data = {
+                "first_name": "Usage",
+                "last_name": "Réel",
+                "address": "75 Boulevard Saint-Germain, 75006 Paris",
+                "roof_surface": 80.0,
+                "roof_orientation": "Sud",
+                "velux_count": 3,
+                "heating_system": "Pompe à chaleur",
+                "water_heating_system": "Ballon thermodynamique",
+                "water_heating_capacity": 250,
+                "annual_consumption_kwh": 8500.0,  # Medium consumption
+                "monthly_edf_payment": 280.0,
+                "annual_edf_payment": 3360.0,
+                "client_mode": "professionnels"
+            }
+            
+            # Create client
+            response = self.session.post(f"{self.base_url}/clients", json=client_data)
+            if response.status_code != 200:
+                self.log_test("Realistic Usage Case", False, f"Failed to create client: {response.status_code}")
+                return
+            
+            client_id = response.json()["id"]
+            
+            # Calculate professional solution
+            response = self.session.post(f"{self.base_url}/calculate-professional/{client_id}", 
+                                       params={"price_level": "base"})
+            if response.status_code != 200:
+                self.log_test("Realistic Usage Case", False, f"Failed to calculate: {response.status_code}")
+                return
+            
+            calculation = response.json()
+            
+            # Check monthly savings are in target range
+            monthly_savings = calculation.get("monthly_savings", 0)
+            if not (250 <= monthly_savings <= 350):
+                self.log_test("Realistic Usage Case", False, 
+                            f"Monthly savings {monthly_savings:.0f}€ not in target range 250-350€")
+                return
+            
+            # Check if optimal kit was found
+            optimal_kit = calculation.get("optimal_kit")
+            if not optimal_kit:
+                self.log_test("Realistic Usage Case", False, "No optimal kit found for realistic usage case")
+                return
+            
+            # Verify leasing is rentable (monthly payment ≤ monthly savings)
+            optimal_payment = optimal_kit.get("monthly_payment", 0)
+            optimal_benefit = optimal_kit.get("monthly_benefit", 0)
+            
+            issues = []
+            
+            if optimal_payment > monthly_savings:
+                issues.append(f"Leasing payment {optimal_payment}€ > monthly savings {monthly_savings}€ (not rentable)")
+            
+            if optimal_benefit < 0:
+                issues.append(f"Monthly benefit {optimal_benefit}€ is negative (not profitable)")
+            
+            # Check that recommended kit is reasonable for consumption
+            kit_power = optimal_kit.get("kit_power", 0)
+            annual_consumption = client_data["annual_consumption_kwh"]
+            
+            # Kit should produce roughly 80-120% of consumption
+            estimated_production = calculation.get("estimated_production", 0)
+            production_ratio = estimated_production / annual_consumption if annual_consumption > 0 else 0
+            
+            if not (0.7 <= production_ratio <= 1.3):
+                issues.append(f"Production ratio {production_ratio:.1%} outside reasonable range 70-130%")
+            
+            if issues:
+                self.log_test("Realistic Usage Case", False, f"Usage case issues: {'; '.join(issues)}", calculation)
+            else:
+                self.log_test("Realistic Usage Case", True, 
+                            f"✅ Realistic usage case successful: {monthly_savings:.0f}€/month savings, "
+                            f"{kit_power}kW optimal kit at {optimal_payment:.0f}€/month leasing, "
+                            f"{optimal_benefit:.0f}€/month benefit, {production_ratio:.0%} production ratio", 
+                            {
+                                "monthly_savings": monthly_savings,
+                                "optimal_kit": optimal_kit,
+                                "production_ratio": production_ratio
+                            })
+                
+        except Exception as e:
+            self.log_test("Realistic Usage Case", False, f"Error: {str(e)}")
+
+    def test_leasing_matrix_comprehensive(self):
+        """Test de la matrice de leasing - Examples: 25.000€/72 mois, 50.000€/96 mois"""
+        try:
+            test_cases = [
+                {"amount": 25000, "duration": 72, "expected_available": True, "expected_rate_range": (1.7, 1.8)},
+                {"amount": 50000, "duration": 96, "expected_available": True, "expected_rate_range": (1.3, 1.5)},
+                {"amount": 20000, "duration": 84, "expected_available": False, "reason": "zone rouge"},  # Should be red zone
+                {"amount": 15000, "duration": 60, "expected_available": True, "expected_rate_range": (2.0, 2.1)},
+                {"amount": 75000, "duration": 84, "expected_available": True, "expected_rate_range": (1.5, 1.6)}
+            ]
+            
+            issues = []
+            results = []
+            
+            for case in test_cases:
+                amount = case["amount"]
+                duration = case["duration"]
+                expected_available = case["expected_available"]
+                
+                # Test by creating a mock professional calculation
+                # We'll use the leasing calculation functions directly through an API call
+                
+                # Create a test client for this amount
+                client_data = {
+                    "first_name": "Leasing",
+                    "last_name": "Test",
+                    "address": "100 Avenue des Champs-Élysées, 75008 Paris",
+                    "roof_surface": 200.0,
+                    "roof_orientation": "Sud",
+                    "velux_count": 8,
+                    "heating_system": "Pompe à chaleur industrielle",
+                    "water_heating_system": "Solaire thermique",
+                    "water_heating_capacity": 1000,
+                    "annual_consumption_kwh": amount * 0.5,  # Scale consumption with amount
+                    "monthly_edf_payment": amount * 0.02,  # Scale payment with amount
+                    "annual_edf_payment": amount * 0.24,
+                    "client_mode": "professionnels"
+                }
+                
+                # Create client
+                response = self.session.post(f"{self.base_url}/clients", json=client_data)
+                if response.status_code != 200:
+                    issues.append(f"Failed to create test client for {amount}€")
+                    continue
+                
+                client_id = response.json()["id"]
+                
+                # Get professional calculation to see leasing options
+                response = self.session.post(f"{self.base_url}/calculate-professional/{client_id}")
+                if response.status_code != 200:
+                    issues.append(f"Failed to calculate for {amount}€ test")
+                    continue
+                
+                calculation = response.json()
+                leasing_options = calculation.get("leasing_options", [])
+                
+                # Find the specific duration option
+                target_option = next((opt for opt in leasing_options if opt.get("duration_months") == duration), None)
+                
+                if expected_available:
+                    if not target_option:
+                        issues.append(f"{amount}€/{duration}months: Expected available but not found")
+                    else:
+                        rate = target_option.get("rate", 0)
+                        expected_min, expected_max = case["expected_rate_range"]
+                        
+                        if not (expected_min <= rate <= expected_max):
+                            issues.append(f"{amount}€/{duration}months: Rate {rate}% outside expected range {expected_min}-{expected_max}%")
+                        
+                        monthly_payment = target_option.get("monthly_payment", 0)
+                        expected_payment = amount * (rate / 100)
+                        
+                        if abs(monthly_payment - expected_payment) > 10:  # 10€ tolerance
+                            issues.append(f"{amount}€/{duration}months: Payment {monthly_payment}€ != expected {expected_payment:.2f}€")
+                        
+                        results.append(f"{amount}€/{duration}months: {rate}% rate, {monthly_payment}€/month")
+                else:
+                    if target_option:
+                        issues.append(f"{amount}€/{duration}months: Expected unavailable (zone rouge) but found rate {target_option.get('rate')}%")
+                    else:
+                        results.append(f"{amount}€/{duration}months: Correctly unavailable (zone rouge)")
+            
+            if issues:
+                self.log_test("Leasing Matrix Comprehensive", False, f"Matrix issues: {'; '.join(issues)}")
+            else:
+                self.log_test("Leasing Matrix Comprehensive", True, 
+                            f"✅ Leasing matrix working correctly: {'; '.join(results)}", 
+                            {"test_cases": len(test_cases), "results": results})
+                
+        except Exception as e:
+            self.log_test("Leasing Matrix Comprehensive", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all tests in order"""
         print("🚀 Starting Solar Calculator Backend Tests")
