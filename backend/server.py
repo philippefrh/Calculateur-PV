@@ -302,16 +302,22 @@ SOLAR_KITS_PROFESSIONNELS = {
 SOLAR_KITS = SOLAR_KITS_PARTICULIERS
 
 # EDF rates and constants
-EDF_RATE_PER_KWH = 0.2516  # €/kWh
+EDF_RATE_PER_KWH = 0.2516  # €/kWh pour particuliers
+EDF_RATE_PER_KWH_PROFESSIONNELS = 0.26  # €/kWh pour professionnels (autoconsommation)
 ANNUAL_RATE_INCREASE = 0.05  # 5% per year
-SURPLUS_SALE_RATE = 0.076  # €/kWh for surplus sold to EDF
+SURPLUS_SALE_RATE = 0.076  # €/kWh for surplus sold to EDF (particuliers)
+SURPLUS_SALE_RATE_PROFESSIONNELS = 0.0761  # €/kWh for surplus sold to EDF (professionnels)
+
+# Autoconsumption rates
+AUTOCONSUMPTION_RATE_PARTICULIERS = 0.95  # 95% autoconsommation
+AUTOCONSUMPTION_RATE_PROFESSIONNELS = 0.80  # 80% autoconsommation
 
 # Aides et subventions - Particuliers
 AUTOCONSUMPTION_AID_PARTICULIERS = 80  # €/kW installed
 TVA_RATE_PARTICULIERS = 0.20  # 20% TVA (except 3kW)
 
 # Aides et subventions - Professionnels
-AUTOCONSUMPTION_AID_PROFESSIONNELS = 60  # €/kW installed (aide réduite)
+AUTOCONSUMPTION_AID_PROFESSIONNELS = 190  # €/kW installed (190€ par kW)
 TVA_RATE_PROFESSIONNELS = 0.20  # 20% TVA mais amortissement différent
 AMORTISSEMENT_ACCELERE = 0.30  # 30% amortissement accéléré première année
 
