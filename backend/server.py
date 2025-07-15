@@ -372,8 +372,16 @@ async def root():
 
 @api_router.get("/solar-kits")
 async def get_solar_kits():
-    """Get available solar kits with pricing"""
-    return SOLAR_KITS
+    """Get available solar kits with pricing (legacy endpoint for particuliers)"""
+    return SOLAR_KITS_PARTICULIERS
+
+@api_router.get("/solar-kits/{client_mode}")
+async def get_solar_kits_by_client_mode(client_mode: str):
+    """Get available solar kits with pricing based on client mode"""
+    if client_mode not in ["particuliers", "professionnels"]:
+        raise HTTPException(status_code=400, detail="Invalid client mode. Use 'particuliers' or 'professionnels'")
+    
+    return get_solar_kits_by_mode(client_mode)
 
 @api_router.post("/clients", response_model=ClientInfo)
 async def create_client(client_data: ClientInfoCreate):
