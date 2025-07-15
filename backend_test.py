@@ -1051,18 +1051,27 @@ class SolarCalculatorTester:
         print(f"Backend URL: {self.base_url}")
         print("=" * 60)
         
-        # Priority 1 tests
-        print("\n📋 PRIORITY 1 - Main Endpoints")
+        # Priority 1 tests - NEW: Professional Version Endpoints
+        print("\n📋 PRIORITY 1 - Professional Version Endpoints")
         self.test_api_root()
-        self.test_solar_kits()
+        self.test_solar_kits_legacy()
+        self.test_solar_kits_particuliers()
+        self.test_solar_kits_professionnels()
+        self.test_solar_kits_pricing_comparison()
         self.test_pvgis_direct()
         
-        # Priority 2 tests - Complete workflow
-        print("\n📋 PRIORITY 2 - Complete Client Workflow")
-        self.test_create_client()
+        # Priority 2 tests - Client Creation with Modes
+        print("\n📋 PRIORITY 2 - Client Creation with Professional Mode Support")
+        self.test_create_client_particuliers()
+        self.test_create_client_professionnels()
         self.test_get_clients()
         self.test_get_client_by_id()
-        self.test_solar_calculation()
+        
+        # Priority 3 tests - Solar Calculations with Professional Mode
+        print("\n📋 PRIORITY 3 - Solar Calculations with Professional Mode")
+        self.test_solar_calculation_particuliers()
+        self.test_solar_calculation_professionnels()
+        self.test_particuliers_vs_professionnels_comparison()
         
         # Priority 3 - NEW: Test autoconsumption/surplus distribution changes
         print("\n📋 PRIORITY 3 - NEW Autoconsumption/Surplus Distribution (95%/5%)")
