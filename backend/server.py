@@ -132,18 +132,170 @@ SOLAR_KITS_PARTICULIERS = {
     9: {"price": 29900, "panels": 18}
 }
 
-# Solar Kit Pricing - Professionnels (prix légèrement inférieurs pour volumes)
+# Solar Kit Pricing - Professionnels (tarifs HT du tableau PRO)
 SOLAR_KITS_PROFESSIONNELS = {
-    3: {"price": 13900, "panels": 6},
-    4: {"price": 19500, "panels": 8},
-    5: {"price": 20500, "panels": 10},
-    6: {"price": 21500, "panels": 12},
-    7: {"price": 23500, "panels": 14},
-    8: {"price": 25500, "panels": 16},
-    9: {"price": 28500, "panels": 18},
-    12: {"price": 35900, "panels": 24},  # Kits plus puissants pour pros
-    15: {"price": 42900, "panels": 30},
-    20: {"price": 55900, "panels": 40}
+    10: {
+        "panels": 24, "surface": 45,
+        "prime": 1900, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 18400, "tarif_remise_ht": 17900, "tarif_remise_max_ht": 17400,
+        "commission_normale": 1840, "commission_remise_max": 1590
+    },
+    11: {
+        "panels": 26, "surface": 50,
+        "prime": 2090, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 20200, "tarif_remise_ht": 19650, "tarif_remise_max_ht": 19100,
+        "commission_normale": 2020, "commission_remise_max": 1745
+    },
+    12: {
+        "panels": 29, "surface": 54,
+        "prime": 2280, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 22000, "tarif_remise_ht": 21400, "tarif_remise_max_ht": 20800,
+        "commission_normale": 2200, "commission_remise_max": 1900
+    },
+    13: {
+        "panels": 31, "surface": 59,
+        "prime": 2470, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 23700, "tarif_remise_ht": 23050, "tarif_remise_max_ht": 22400,
+        "commission_normale": 2370, "commission_remise_max": 2045
+    },
+    14: {
+        "panels": 33, "surface": 63,
+        "prime": 2660, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 25400, "tarif_remise_ht": 24700, "tarif_remise_max_ht": 24000,
+        "commission_normale": 2540, "commission_remise_max": 2190
+    },
+    15: {
+        "panels": 36, "surface": 68,
+        "prime": 2850, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 27200, "tarif_remise_ht": 26450, "tarif_remise_max_ht": 25700,
+        "commission_normale": 2720, "commission_remise_max": 2345
+    },
+    16: {
+        "panels": 38, "surface": 72,
+        "prime": 3040, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 28900, "tarif_remise_ht": 28100, "tarif_remise_max_ht": 27300,
+        "commission_normale": 2890, "commission_remise_max": 2490
+    },
+    17: {
+        "panels": 40, "surface": 77,
+        "prime": 3230, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 30600, "tarif_remise_ht": 29750, "tarif_remise_max_ht": 28900,
+        "commission_normale": 3060, "commission_remise_max": 2635
+    },
+    18: {
+        "panels": 43, "surface": 81,
+        "prime": 3420, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 32200, "tarif_remise_ht": 31300, "tarif_remise_max_ht": 30400,
+        "commission_normale": 3220, "commission_remise_max": 2770
+    },
+    19: {
+        "panels": 45, "surface": 86,
+        "prime": 3610, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 33900, "tarif_remise_ht": 32950, "tarif_remise_max_ht": 32000,
+        "commission_normale": 3390, "commission_remise_max": 2915
+    },
+    20: {
+        "panels": 48, "surface": 90,
+        "prime": 3800, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 35600, "tarif_remise_ht": 34600, "tarif_remise_max_ht": 33600,
+        "commission_normale": 3560, "commission_remise_max": 3060
+    },
+    21: {
+        "panels": 50, "surface": 95,
+        "prime": 3990, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 37200, "tarif_remise_ht": 36150, "tarif_remise_max_ht": 35100,
+        "commission_normale": 3720, "commission_remise_max": 3195
+    },
+    22: {
+        "panels": 52, "surface": 100,
+        "prime": 4180, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 38800, "tarif_remise_ht": 37700, "tarif_remise_max_ht": 36600,
+        "commission_normale": 3880, "commission_remise_max": 3330
+    },
+    23: {
+        "panels": 55, "surface": 104,
+        "prime": 4370, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 40400, "tarif_remise_ht": 39250, "tarif_remise_max_ht": 38100,
+        "commission_normale": 4040, "commission_remise_max": 3465
+    },
+    24: {
+        "panels": 57, "surface": 109,
+        "prime": 4560, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 42000, "tarif_remise_ht": 40800, "tarif_remise_max_ht": 39600,
+        "commission_normale": 4200, "commission_remise_max": 3600
+    },
+    25: {
+        "panels": 60, "surface": 113,
+        "prime": 4750, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 43600, "tarif_remise_ht": 42350, "tarif_remise_max_ht": 41100,
+        "commission_normale": 4360, "commission_remise_max": 3735
+    },
+    26: {
+        "panels": 62, "surface": 118,
+        "prime": 4940, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 45200, "tarif_remise_ht": 43900, "tarif_remise_max_ht": 42600,
+        "commission_normale": 4520, "commission_remise_max": 3870
+    },
+    27: {
+        "panels": 64, "surface": 122,
+        "prime": 5130, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 46700, "tarif_remise_ht": 45350, "tarif_remise_max_ht": 44000,
+        "commission_normale": 4670, "commission_remise_max": 3995
+    },
+    28: {
+        "panels": 67, "surface": 127,
+        "prime": 5320, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 48300, "tarif_remise_ht": 46900, "tarif_remise_max_ht": 45500,
+        "commission_normale": 4830, "commission_remise_max": 4130
+    },
+    29: {
+        "panels": 69, "surface": 131,
+        "prime": 5510, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 49800, "tarif_remise_ht": 48350, "tarif_remise_max_ht": 46900,
+        "commission_normale": 4980, "commission_remise_max": 4255
+    },
+    30: {
+        "panels": 71, "surface": 136,
+        "prime": 5700, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 51300, "tarif_remise_ht": 49800, "tarif_remise_max_ht": 48300,
+        "commission_normale": 5130, "commission_remise_max": 4380
+    },
+    31: {
+        "panels": 74, "surface": 140,
+        "prime": 5890, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 52900, "tarif_remise_ht": 51350, "tarif_remise_max_ht": 49800,
+        "commission_normale": 5290, "commission_remise_max": 4515
+    },
+    32: {
+        "panels": 76, "surface": 145,
+        "prime": 6080, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 54300, "tarif_remise_ht": 52700, "tarif_remise_max_ht": 51100,
+        "commission_normale": 5430, "commission_remise_max": 4650
+    },
+    33: {
+        "panels": 79, "surface": 149,
+        "prime": 6270, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 55800, "tarif_remise_ht": 54150, "tarif_remise_max_ht": 52500,
+        "commission_normale": 5580, "commission_remise_max": 4755
+    },
+    34: {
+        "panels": 81, "surface": 154,
+        "prime": 6460, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 57300, "tarif_remise_ht": 55600, "tarif_remise_max_ht": 53900,
+        "commission_normale": 5730, "commission_remise_max": 4880
+    },
+    35: {
+        "panels": 83, "surface": 158,
+        "prime": 6650, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 58800, "tarif_remise_ht": 57050, "tarif_remise_max_ht": 55300,
+        "commission_normale": 5880, "commission_remise_max": 5005
+    },
+    36: {
+        "panels": 86, "surface": 163,
+        "prime": 6840, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 60200, "tarif_remise_ht": 58400, "tarif_remise_max_ht": 56600,
+        "commission_normale": 6020, "commission_remise_max": 5120
+    }
 }
 
 # Deprecated - keeping for backward compatibility
