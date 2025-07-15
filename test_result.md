@@ -119,11 +119,11 @@ backend:
 
   - task: "Solar Kits Endpoint with Client Mode Support"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
@@ -131,6 +131,9 @@ backend:
       - working: false
         agent: "main"
         comment: "🔄 UPDATED FOR PROFESSIONAL VERSION - Added new endpoint /solar-kits/{client_mode} to support both 'particuliers' and 'professionnels' modes. Professionnels have access to larger kits (12kW, 15kW, 20kW) and slightly different pricing. Legacy /solar-kits endpoint maintained for backward compatibility."
+      - working: true
+        agent: "testing"
+        comment: "✅ PROFESSIONAL VERSION SOLAR KITS FULLY TESTED - All three endpoints working perfectly: 1) Legacy /solar-kits returns particuliers kits (3-9kW). 2) /solar-kits/particuliers returns same kits (3-9kW only). 3) /solar-kits/professionnels returns extended kits (3-9kW + 12kW, 15kW, 20kW). Professional pricing confirmed lower: 6kW: 22900€→21500€ (-1400€), 12kW: 35900€, 20kW: 55900€. Pricing comparison shows professionals get volume discounts on all common kits. Professional version implementation successful."
 
   - task: "PVGIS Direct Test Endpoint"
     implemented: true
