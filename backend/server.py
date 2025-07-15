@@ -150,10 +150,6 @@ EDF_RATE_PER_KWH = 0.2516  # €/kWh
 ANNUAL_RATE_INCREASE = 0.05  # 5% per year
 SURPLUS_SALE_RATE = 0.076  # €/kWh for surplus sold to EDF
 
-# Legacy constants (to be removed)
-AUTOCONSUMPTION_AID = 80  # €/kW installed
-TVA_RATE = 0.20  # 20% TVA (except 3kW)
-
 # Aides et subventions - Particuliers
 AUTOCONSUMPTION_AID_PARTICULIERS = 80  # €/kW installed
 TVA_RATE_PARTICULIERS = 0.20  # 20% TVA (except 3kW)
