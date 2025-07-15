@@ -72,6 +72,9 @@ class ClientInfo(BaseModel):
     monthly_edf_payment: float
     annual_edf_payment: float
     
+    # Client mode
+    client_mode: str = "particuliers"  # Nouveau champ pour le mode client
+    
     # Location data from geocoding
     latitude: Optional[float] = None
     longitude: Optional[float] = None
