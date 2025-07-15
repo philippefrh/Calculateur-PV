@@ -606,6 +606,118 @@ async def get_client(client_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/calculate-professional/{client_id}")
+async def calculate_professional_solution(client_id: str, price_level: str = "base"):
+    """
+    Calculate solar solution for professional clients with pricing level
+    price_level: "base", "remise", "remise_max"
+    """
+    try:
+        client = await db.clients.find_one({"id": client_id})
+        if not client:
+            raise HTTPException(status_code=404, detail="Client not found")
+        
+        # Extract client data
+        annual_consumption = client['annual_consumption_kwh']
+        roof_surface = client['roof_surface']
+        orientation = client['roof_orientation']
+        lat = client['latitude']
+        lon = client['longitude']
+        client_mode = client.get('client_mode', 'professionnels')
+        
+        # Get appropriate kits and aids configuration
+        solar_kits = get_solar_kits_by_mode(client_mode)
+        aids_config = get_aids_by_mode(client_mode)
+        
+        # Calculate optimal kit size
+        best_kit = calculate_optimal_kit_size(annual_consumption, roof_surface, client_mode)
+        kit_info = solar_kits[best_kit]
+        
+        # Get price based on level for professionals
+        if client_mode == "professionnels":
+            kit_price = get_professional_kit_price(kit_info, price_level)
+            commission = get_professional_commission(kit_info, price_level)
+        else:
+            kit_price = kit_info.get('price', 0)
+            commission = 0
+        
+        # Get PVGIS data
+        pvgis_data = await get_pvgis_data(lat, lon, orientation, best_kit)
+        annual_production = pvgis_data["annual_production"]
+        
+        # Calculate autonomy percentage
+        autonomy_percentage = min(95, (annual_production / annual_consumption) * 100)
+        
+        # Calculate autoconsumption with correct rates by mode
+        autoconsumption_rate = aids_config['autoconsumption_rate']
+        edf_rate = aids_config['edf_rate']
+        surplus_sale_rate = aids_config['surplus_sale_rate']
+        
+        autoconsumption_kwh = annual_production * autoconsumption_rate
+        surplus_kwh = annual_production * (1 - autoconsumption_rate)
+        
+        # Calculate savings with correct rates
+        annual_savings = (autoconsumption_kwh * edf_rate) + (surplus_kwh * surplus_sale_rate)
+        monthly_savings = annual_savings / 12
+        
+        # Calculate aids based on client mode
+        if client_mode == "professionnels":
+            # Pour les professionnels, utiliser la prime déjà calculée dans les kits
+            autoconsumption_aid_total = kit_info.get('prime', 0)
+            tva_refund = 0  # Pas de TVA pour les professionnels (récupérée par l'entreprise)
+        else:
+            # Pour les particuliers, calculer avec le taux habituel
+            autoconsumption_aid_total = best_kit * aids_config['autoconsumption_aid_rate']
+            tva_refund = kit_price * aids_config['tva_rate'] if best_kit > 3 else 0
+        
+        total_aids = autoconsumption_aid_total + tva_refund
+        
+        # Calculate financing options with aids deducted
+        financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings)
+        
+        # Calculate all financing options with aids deducted for all durations
+        all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings)
+        
+        # Result for professional clients
+        result = {
+            "client_id": client_id,
+            "client_mode": client_mode,
+            "price_level": price_level,
+            "kit_power": best_kit,
+            "panel_count": kit_info['panels'],
+            "surface": kit_info.get('surface', 0),
+            "estimated_production": annual_production,
+            "estimated_savings": annual_savings,
+            "autonomy_percentage": autonomy_percentage,
+            "monthly_savings": monthly_savings,
+            "kit_price": kit_price,
+            "commission": commission,
+            "autoconsumption_kwh": autoconsumption_kwh,
+            "surplus_kwh": surplus_kwh,
+            "autoconsumption_aid": autoconsumption_aid_total,
+            "tva_refund": tva_refund,
+            "total_aids": total_aids,
+            "financing_with_aids": financing_with_aids,
+            "all_financing_with_aids": all_financing_with_aids,
+            "pvgis_source": "Données source PVGIS Commission Européenne",
+            "orientation": orientation,
+            "coordinates": {"lat": lat, "lon": lon},
+            "aids_config": aids_config,
+            "pricing_options": {
+                "tarif_base_ht": kit_info.get('tarif_base_ht', 0),
+                "tarif_remise_ht": kit_info.get('tarif_remise_ht', 0),
+                "tarif_remise_max_ht": kit_info.get('tarif_remise_max_ht', 0),
+                "commission_normale": kit_info.get('commission_normale', 0),
+                "commission_remise_max": kit_info.get('commission_remise_max', 0)
+            }
+        }
+        
+        return result
+        
+    except Exception as e:
+        logging.error(f"Professional calculation error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/calculate/{client_id}")
 async def calculate_solar_solution(client_id: str):
     try:
