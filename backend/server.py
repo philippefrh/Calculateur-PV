@@ -499,30 +499,7 @@ async def geocode_address(address: str) -> Tuple[float, float]:
     Uses multiple fallback services for reliability
     """
     try:
-        # Try OpenCage Data API first (more reliable in containers)
-        opencage_url = f"https://api.opencagedata.com/geocode/v1/json"
-        opencage_params = {
-            "q": address,
-            "key": "demo",  # Demo key for testing
-            "limit": 1,
-            "countrycode": "fr"
-        }
-        
-        async with httpx.AsyncClient() as client:
-            response = await client.get(opencage_url, params=opencage_params, timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("results"):
-                    result = data["results"][0]
-                    lat = result["geometry"]["lat"]
-                    lon = result["geometry"]["lng"]
-                    logging.info(f"Geocoded address '{address}' to ({lat}, {lon}) using OpenCage")
-                    return lat, lon
-    except Exception as e:
-        logging.warning(f"OpenCage geocoding failed: {e}")
-    
-    try:
-        # Fallback to geocode.maps.co (free service)
+        # Try geocode.maps.co (free service that works in containers)
         geocode_url = "https://geocode.maps.co/search"
         geocode_params = {
             "q": address,
@@ -544,7 +521,7 @@ async def geocode_address(address: str) -> Tuple[float, float]:
     except Exception as e:
         logging.warning(f"Geocode.maps.co geocoding failed: {e}")
     
-    # Last fallback: use approximate coordinates for major French cities
+    # Fallback: use approximate coordinates for major French cities
     city_coordinates = {
         "paris": (48.8566, 2.3522),
         "marseille": (43.2965, 5.3698),
