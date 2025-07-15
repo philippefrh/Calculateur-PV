@@ -117,8 +117,8 @@ class PVGISData(BaseModel):
     monthly_data: List[dict]
     orientation_factor: float
 
-# Solar Kit Pricing
-SOLAR_KITS = {
+# Solar Kit Pricing - Particuliers
+SOLAR_KITS_PARTICULIERS = {
     3: {"price": 14900, "panels": 6},
     4: {"price": 20900, "panels": 8},
     5: {"price": 21900, "panels": 10},
@@ -127,6 +127,23 @@ SOLAR_KITS = {
     8: {"price": 26900, "panels": 16},
     9: {"price": 29900, "panels": 18}
 }
+
+# Solar Kit Pricing - Professionnels (prix légèrement inférieurs pour volumes)
+SOLAR_KITS_PROFESSIONNELS = {
+    3: {"price": 13900, "panels": 6},
+    4: {"price": 19500, "panels": 8},
+    5: {"price": 20500, "panels": 10},
+    6: {"price": 21500, "panels": 12},
+    7: {"price": 23500, "panels": 14},
+    8: {"price": 25500, "panels": 16},
+    9: {"price": 28500, "panels": 18},
+    12: {"price": 35900, "panels": 24},  # Kits plus puissants pour pros
+    15: {"price": 42900, "panels": 30},
+    20: {"price": 55900, "panels": 40}
+}
+
+# Deprecated - keeping for backward compatibility
+SOLAR_KITS = SOLAR_KITS_PARTICULIERS
 
 # EDF rates and constants
 EDF_RATE_PER_KWH = 0.2516  # €/kWh
