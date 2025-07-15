@@ -362,7 +362,7 @@ def calculate_leasing_options(amount: float) -> List[Dict]:
     for duration in durations:
         rate = get_leasing_rate(amount, duration)
         if rate is not None:  # Only if not in red zone
-            monthly_payment = amount * rate
+            monthly_payment = amount * (rate / 100)  # Convert percentage to decimal
             options.append({
                 "duration_months": duration,
                 "duration_years": duration / 12,
