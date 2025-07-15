@@ -1712,6 +1712,26 @@ class SolarCalculatorTester:
         # PRIORITY: Review Request Validation Tests
         self.test_review_request_validation()
         
+        # === NEW PROFESSIONAL VERSION COMPREHENSIVE TESTS ===
+        print("\n" + "="*50)
+        print("🏢 PROFESSIONAL VERSION COMPREHENSIVE TESTING")
+        print("="*50)
+        
+        # 1. Test complet workflow professionnel
+        self.test_professional_workflow_complete()
+        
+        # 2. Test comparatif Particuliers vs Professionnels
+        self.test_professional_vs_particuliers_comparison()
+        
+        # 3. Test des 3 niveaux de prix professionnels
+        self.test_professional_price_levels()
+        
+        # 4. Test cas d'usage réel
+        self.test_realistic_usage_case()
+        
+        # 5. Test de la matrice de leasing
+        self.test_leasing_matrix_comprehensive()
+        
         # Priority 1 tests - NEW: Professional Version Endpoints
         print("\n📋 PRIORITY 1 - Professional Version Endpoints")
         self.test_api_root()
