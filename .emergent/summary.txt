@@ -1,112 +1,61 @@
 <analysis>
-The previous AI engineer successfully evolved an MVP solar calculation application, integrating numerous user-requested enhancements. The work commenced with fixing the CO2 emission calculation to be dynamic per kit (15% of HT price) and refining UI texts like the kit selection button and annual payment display (12 months, no explanatory line). Subsequently, the financing vignette text was updated, and the autonomy percentage messages were made more descriptive, guiding users on commission submission. Significant functional additions included enabling multi-selection for heating systems and expanding the appliance input fields. The final major work involved a comprehensive visual overhaul, introducing a modern gradient background, glassmorphism effects, and improved button aesthetics. Throughout, the engineer demonstrated strong debugging skills (e.g., frontend URL fix, CSS syntax error), consistently sought user feedback with previews, and adapted to evolving requirements, culminating in a robust and visually enhanced application awaiting professional version specifications.
+The previous AI engineer successfully transformed an MVP solar calculation application, meticulously integrating numerous user-requested enhancements. Key achievements included dynamic CO2 emission calculations, refinement of UI texts and financial displays (e.g., annual payments), updates to financing vignette text, and more descriptive autonomy percentage messages. Significant functional additions encompassed enabling multi-selection for heating systems, expanding appliance input fields, and a comprehensive visual overhaul featuring a modern gradient background, glassmorphism effects, and improved button aesthetics. The engineer demonstrated strong debugging skills and consistently adapted to evolving requirements.
+The immediate interaction, preceding this summary, centered on preparing for the next development phase: the Professional Version. The user expressed concerns about potential bugs in new versions and the ability to revert. The AI engineer proactively addressed these by explaining the available rollback and Save to GitHub options, recommending the latter for a secure backup. The conversation concluded with the user's explicit agreement to proceed with a save point, followed by an ok acknowledging the proposed approach, setting the stage for future development.
 </analysis>
 
 <product_requirements>
-The user, managing FRH ENVIRONNEMENT, aimed to transform an existing React/FastAPI/MongoDB solar calculation MVP into a professional tool. Key requirements included:
-1.  **Financial Calculation Correction**: Correcting Financement optimisé sur 15 ans avec aides déduites to include interest (3.25% TAEG).
-2.  **UI/PDF Refinement**: Removing Coût total from financing tables and adding new Financement avec aides déduites tables (3.25% interest, 6-15 years).
-3.  **Autoconsumption Ratio Adjustment**: Changing from 70/30 to 95/5 autoconsumption/surplus for perceived savings.
-4.  **Logo Integration**: Replacing placeholders with official logos (RGE, AGIR PLUS EDF, FRH, MMA, FFB) and styling.
-5.  **Educational Pages**: Displaying interactive educational content with real photos during PVGIS calculation.
-6.  **Manual Kit Selection**: Enabling sales personnel to select kits, overriding automatic recommendations, displaying detailed info (power, panels, surface, TTC/aids price, CO2 économisé as 15% commission).
-7.  **Ongoing Enhancements (Current Session)**:
-    *   Dynamic CO2 calculation (15% of HT price for each kit).
-    *   Update button text: Voir tous les kits disponibles avec puissances et surfaces.
-    *   Annual payment calculation: 12 months, remove explanatory text.
-    *   Modify financing vignette text: 0€ pendant linstallation" -> "Rien à débourser pendant les 6 premiers mois"; add "Réinjection des Aides et Subventions récupérées entre le 7ème et 12ème mois".
-    *   Update autonomy percentage texts for clarity regarding commission submission.
-    *   Expand heating form fields: Add "Cheminée", "Poêle a bois", "Poêle à granulé", "Chaudière électrique" to heating systems; introduce "Quel type de compteur", "Puissance compteur", "Monophasé - Triphasé" fields.
-    *   Implement multi-selection for heating systems (principal + auxiliary).
-    *   Add comprehensive appliance fields: Machine à laver, Sèche linge, Lave vaisselle, Frigo, Four électrique, Plaque de cuisson, Hotte aspirante, VMC.
-    *   Visual improvements: New gradient background, glassmorphism effects, improved buttons.
-8.  **Future Feature (Pending)**: Create a dual version of the application for "Particuliers" (individuals) and "Professionnels" (professionals), each with distinct calculations, kit pricing, aids, and financing (classic credit vs. leasing).
+FRH ENVIRONNEMENT aims to evolve an existing React/FastAPI/MongoDB solar calculation MVP into a professional tool. The core problem is enhancing functionality, accuracy, and user experience for solar installation calculations.
+
+Key requirements and implemented features include:
+1.  **Financial Calculation Correction**: Accurate interest (3.25% TAEG) for optimized financing options.
+2.  **UI/PDF Refinement**: Removing Coût total from tables, adding Financement avec aides déduites tables (3.25% interest, 6-15 years).
+3.  **Autoconsumption Ratio Adjustment**: Updated from 70/30 to 95/5 for perceived savings.
+4.  **Logo Integration**: Displaying official logos (RGE, AGIR PLUS EDF, FRH, MMA, FFB) with appropriate styling.
+5.  **Educational Pages**: Interactive content during PVGIS calculation.
+6.  **Manual Kit Selection**: Allowing sales personnel to select kits with detailed info (power, panels, surface, TTC/aids price, dynamic CO2 commission).
+7.  **Ongoing Enhancements (Current Session)**: Dynamic CO2 calculation (15% of HT price), updated button text (Voir tous les kits disponibles avec puissances et surfaces), annual payment calculation (12 months, no explanatory text), financing vignette text changes (Rien à débourser pendant les 6 premiers mois, Réinjection des Aides...), clarified autonomy percentage texts, expanded heating form fields (Cheminée, Poêle, Chaudière électrique), multi-selection for heating systems, and new appliance fields (Machine à laver, Sèche linge, etc.).
+8.  **Visual Improvements**: Modern gradient background, glassmorphism effects, and enhanced button styles.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-Stack Architecture**: React (frontend), FastAPI (backend), MongoDB (database).
 -   **API Integration**: PVGIS API, internal frontend/backend communication.
 -   **Financial Calculations**: Loan amortization (TAEG/APR).
--   **Environment Variables**: Strict use of `REACT_APP_BACKEND_URL`, `MONGO_URL`.
--   **Frontend State Management**: React `useState`, `useEffect`.
--   **CSS Styling**: Gradient backgrounds, `backdrop-filter` for glassmorphism, animations.
+-   **Environment Variables**: Strict use of , .
+-   **Frontend State Management**: React , .
+-   **CSS Styling**: Gradient backgrounds,  for glassmorphism, animations.
 </key_technical_concepts>
 
 <code_architecture>
 The application features a standard full-stack setup: React frontend, FastAPI backend, and MongoDB database.
 
 **Directory Structure:**
-```
-/app/
-├── backend/          # FastAPI backend
-│   ├── .env          # Environment variables (MONGO_URL, DB_NAME, STRIPE_API_KEY)
-│   ├── server.py     # Main backend application logic
-│   └── __pycache__/  # Python bytecode cache
-├── frontend/         # React frontend
-│   ├── .env          # Environment variables (REACT_APP_BACKEND_URL, WDS_SOCKET_PORT)
-│   └── src/          # Source code for React app
-│       ├── App.js    # Main React component, central logic and UI
-│       ├── App.css   # Main CSS for styling
-│       └── index.css # Global CSS
-├── tests/            # Test directory
-├── scripts/          # Utility scripts
-├── test_result.md    # Testing data, user problem statement, and communication log
-└── README.md         # Project documentation
-```
 
--   **`/app/backend/server.py`**:
-    -   **Summary:** This file orchestrates the backend, handling FastAPI endpoints, MongoDB interactions, PVGIS API calls, and all financial calculations (monthly payments with interest, total costs). It also manages PDF report generation.
-    -   **Changes Made:**
-        -   `calculate_financing_options` updated to include interest for both standard and aid-deducted financing.
-        -   New endpoint to retrieve kit options with aid-deduction.
-        -   Interest rate for specific financing options (`Financement optimisé sur 15 ans avec aides déduites`, `Toutes les options de financement disponibles avec aides déduites`) changed from 4.96% to 3.25%.
-        -   `autoconsumption_rate` adjusted from 0.7 to 0.95.
-        -   PDF generation logic modified to remove "Coût total" from existing tables and add a new "OPTIONS DE FINANCEMENT AVEC AIDES DÉDUITES" table. No direct changes were mentioned in the most recent user requests.
-
--   **`/app/frontend/src/App.js`**:
-    -   **Summary:** The core React component, managing the multi-step UI, form data, API calls, and result display. It also integrates educational pages and the kit selection interface.
-    -   **Changes Made:**
-        -   Display logic updated for "Financement optimisé sur 15 ans avec aides déduites" to use corrected backend data; "Taux fixe" and "Coût total crédit" lines removed.
-        -   "Coût total" column removed from "Toutes les options de financement disponibles" table, and "Toutes les options de financement disponibles avec aides déduites" table added.
-        -   Placeholder logos replaced with actual image URLs.
-        -   `EducationalPages` integrated within `CalculationScreen`.
-        -   Manual kit selection UI introduced in `ConsumptionForm` (step 4/4), including `fetchAvailableKits` fix for incorrect backend URL construction.
-        -   **Most Recent Changes:**
-            -   CO2 calculation logic at line 658 modified to dynamically calculate 15% of HT price per kit.
-            -   Button text at line 609 changed to "Voir tous les kits disponibles avec puissances et surfaces".
-            -   Annual payment calculation logic at line 524 updated to `245€ * 12`, and the explanatory line "Calculé automatiquement..." removed.
-            -   Financing vignette text modified around line 1100: "0€ pendant linstallation replaced with Rien à débourser pendant les 6 premiers mois, and a new line Réinjection des Aides et Subventions récupérées entre le 7ème et 12ème mois added.
-            -   Autonomy percentage texts updated.
-            -   New heating system options (Cheminée, Poêle a bois, Poêle à granulé, Chaudière électrique) added to dropdowns.
-            -   New input fields for Quel type de compteur, Puissance compteur, Monophasé - Triphasé added to heating form.
-            -   Heating system selection logic modified for multi-selection (principal + auxiliary).
-            -   Eight new appliance fields (Machine à lavée, Sèche linge, Lave vaisselle, Frigo, Four électrique, Plaque de cuisson, Hotte aspirante, VMC) added below Capacité du ballon.
-            -   Styling updates for visual improvements (gradient, glassmorphism, button effects).
 
 -   ****:
+    -   **Summary:** Orchestrates the backend, handling FastAPI endpoints, MongoDB interactions, PVGIS API calls, and all financial calculations. It also manages PDF report generation.
+    -   **Changes Made:** Updated  for interest, new endpoint for aid-deducted kits, interest rate for specific options changed from 4.96% to 3.25%,  adjusted to 0.95, and PDF generation logic modified for OPTIONS DE FINANCEMENT AVEC AIDES DÉDUITES table.
+-   ****:
+    -   **Summary:** The core React component, managing the multi-step UI, form data, API calls, and result display, including educational pages and kit selection.
+    -   **Changes Made:** Display logic for financing updated, Coût total removed, new aid-deducted table added, placeholder logos replaced,  integrated, manual kit selection UI introduced (with  fix). Most recent changes include dynamic CO2 calculation (15% of HT price), updated button text, annual payment calculation (), financing vignette text modified (Rien à débourser pendant les 6 premiers mois, new line for aid reinjection), autonomy percentage texts updated, new heating system options added with multi-selection, and eight new appliance input fields.
+-   ****:
     -   **Summary:** Contains the application's visual styling.
-    -   **Changes Made:**
-        -   New CSS classes for logo sizing and centering.
-        -   Styles for educational pages and manual kit selection.
-        -   **Most Recent Changes:**
-            -   Added styles for the multi-select heating system.
-            -   Introduced new styles for a modern gradient background, glassmorphism effects for cards (, subtle borders, multi-layered shadows), and enhanced button styles (gradient, hover animations, 3D effect).
-
+    -   **Changes Made:** New CSS classes for logo sizing, educational pages, manual kit selection. Most recent changes include styles for multi-select heating, a modern gradient background, glassmorphism effects for cards (, subtle borders, shadows), and enhanced button styles (gradient, hover animations, 3D effect).
 -   ** & **:
-    -   **Summary:** Environment variable configuration files.  contains , , .  holds , . Critical for deployment and service communication.
-    -   **Changes Made:** No direct modifications to these files were made; changes involved correctly reading and utilizing these variables.
+    -   **Summary:** Environment variable configuration files critical for deployment and service communication.
+    -   **Changes Made:** No direct modifications were made; changes involved correctly reading and utilizing these variables.
 </code_architecture>
 
 <pending_tasks>
--   The primary pending task is the implementation of the Professional Version of the application. This includes:
-    -   Adding a toggle button on the homepage to switch between Particuliers and Professionnels modes.
+-   **Professional Version Implementation**: This major feature involves creating a dual application version (Particuliers and Professionnels).
+    -   Adding a homepage toggle button to switch modes.
     -   Implementing distinct calculation methods for each mode.
     -   Integrating different kit pricing, aids, and subsidies for professionals.
     -   Developing a separate financing system for professionals (leasing).
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary request, the AI engineer completed a comprehensive visual overhaul of the application, significantly modernizing its appearance. This work involved modifications to both  and .
+Immediately prior to this summary request, the AI engineer completed a comprehensive visual overhaul of the application, significantly modernizing its appearance. This involved extensive modifications to both  and .
 
 **Current State of the Product (Visuals):**
 *   **Background**: The application now features a striking, modern gradient background (blue/violet, e.g.,  to ) with subtle rotating rays and dynamic luminous particles, replacing the previous plain background.
@@ -119,5 +68,5 @@ The implementation involved adding significant CSS rules to  to define the new b
 </current_work>
 
 <optional_next_step>
-The next step is to receive the detailed specifications from the user for the Professional Version of the application and begin its implementation.
+Facilitate the Save to GitHub action as agreed upon, then begin planning and implementing the Professional Version.
 </optional_next_step>
