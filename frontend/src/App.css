@@ -2767,6 +2767,202 @@ body::after {
   }
 }
 
+/* Styles pour les résultats professionnels */
+.professional-results {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.optimal-kit-section {
+  margin-bottom: 40px;
+}
+
+.optimal-kit-section h3 {
+  color: #4caf50;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.optimal-kit-card {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  border-radius: 15px;
+  padding: 25px;
+  color: white;
+  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.optimal-kit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.optimal-kit-header h4 {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.optimal-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.optimal-kit-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.optimal-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.optimal-detail-row:last-child {
+  border-bottom: none;
+}
+
+.optimal-detail-row.benefit {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.leasing-payment {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.monthly-savings {
+  font-size: 18px;
+  font-weight: bold;
+  color: #e8f5e8;
+}
+
+.monthly-benefit {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffeb3b;
+}
+
+/* Section Options de Leasing */
+.leasing-options-section {
+  margin-bottom: 40px;
+}
+
+.leasing-options-section h3 {
+  color: #2196f3;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.leasing-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.leasing-option-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.leasing-option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.leasing-option-header h4 {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.leasing-rate {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.leasing-option-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leasing-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.leasing-detail-row span:first-child {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.leasing-detail-row span:last-child {
+  color: white;
+  font-weight: bold;
+}
+
+.monthly-payment {
+  color: #4caf50;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Responsive pour les résultats professionnels */
+@media (max-width: 768px) {
+  .leasing-options-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .optimal-kit-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .optimal-detail-row {
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+  }
+}
+
 /* Styles spécifiques pour les professionnels */
 .price-remise-max {
   color: #4caf50;
