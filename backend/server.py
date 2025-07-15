@@ -632,8 +632,17 @@ async def calculate_solar_solution(client_id: str):
         financing_options = calculate_financing_options(kit_info['price'], monthly_savings)
         
         # Calculate aids based on client mode
-        autoconsumption_aid_total = best_kit * aids_config['autoconsumption_aid_rate']
-        tva_refund = kit_info['price'] * aids_config['tva_rate'] if best_kit > 3 else 0
+        aids_config = get_aids_by_mode(client_mode)
+        
+        if client_mode == "professionnels":
+            # Pour les professionnels, utiliser la prime déjà calculée dans les kits
+            autoconsumption_aid_total = kit_info.get('prime', 0)
+            tva_refund = 0  # Pas de TVA pour les professionnels (récupérée par l'entreprise)
+        else:
+            # Pour les particuliers, calculer avec le taux habituel
+            autoconsumption_aid_total = best_kit * aids_config['autoconsumption_aid_rate']
+            tva_refund = kit_info['price'] * aids_config['tva_rate'] if best_kit > 3 else 0
+        
         total_aids = autoconsumption_aid_total + tva_refund
         
         # Calculate financing options with aids deducted
