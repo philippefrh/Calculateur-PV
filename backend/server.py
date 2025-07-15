@@ -149,8 +149,19 @@ SOLAR_KITS = SOLAR_KITS_PARTICULIERS
 EDF_RATE_PER_KWH = 0.2516  # €/kWh
 ANNUAL_RATE_INCREASE = 0.05  # 5% per year
 SURPLUS_SALE_RATE = 0.076  # €/kWh for surplus sold to EDF
+
+# Legacy constants (to be removed)
 AUTOCONSUMPTION_AID = 80  # €/kW installed
 TVA_RATE = 0.20  # 20% TVA (except 3kW)
+
+# Aides et subventions - Particuliers
+AUTOCONSUMPTION_AID_PARTICULIERS = 80  # €/kW installed
+TVA_RATE_PARTICULIERS = 0.20  # 20% TVA (except 3kW)
+
+# Aides et subventions - Professionnels
+AUTOCONSUMPTION_AID_PROFESSIONNELS = 60  # €/kW installed (aide réduite)
+TVA_RATE_PROFESSIONNELS = 0.20  # 20% TVA mais amortissement différent
+AMORTISSEMENT_ACCELERE = 0.30  # 30% amortissement accéléré première année
 
 # Orientation factors for PVGIS
 ORIENTATION_ASPECTS = {
