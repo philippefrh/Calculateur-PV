@@ -1472,7 +1472,7 @@ Cordialement`);
                   <span className="aid-amount"><strong>{Math.round(results.total_aids)} €</strong></span>
                 </div>
               </div>
-          </div>
+            </div>
           )}
 
             {optimalFinancing && (
