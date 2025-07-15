@@ -2181,6 +2181,14 @@ function App() {
     console.log('App useEffect - Current step:', currentStep);
   }, [currentStep]);
 
+  useEffect(() => {
+    // Synchroniser le mode client avec le formData
+    setFormData(prev => ({
+      ...prev,
+      clientMode: clientMode
+    }));
+  }, [clientMode]);
+
   const handleStart = () => {
     console.log('handleStart called at:', new Date().toISOString());
     setCurrentStep('personal');
