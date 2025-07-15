@@ -955,7 +955,14 @@ async def calculate_solar_solution(client_id: str):
         monthly_savings = annual_savings / 12
         
         # Calculate financing options
-        financing_options = calculate_financing_options(kit_info['price'], monthly_savings)
+        if client_mode == "professionnels":
+            # Pour les professionnels, utiliser le prix de base par défaut
+            kit_price = get_professional_kit_price(kit_info, "base")
+        else:
+            # Pour les particuliers, utiliser le prix TTC
+            kit_price = kit_info.get('price', 0)
+        
+        financing_options = calculate_financing_options(kit_price, monthly_savings)
         
         # Calculate aids based on client mode
         aids_config = get_aids_by_mode(client_mode)
