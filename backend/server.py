@@ -268,8 +268,9 @@ def calculate_optimal_kit_size(annual_consumption: float, roof_surface: float, c
     # Choose the limiting factor
     target_power = min(max_power_by_surface, target_power_by_consumption * 1.1)  # 110% buffer
     
-    # Find the closest available kit
-    available_powers = list(SOLAR_KITS.keys())
+    # Find the closest available kit based on client mode
+    available_kits = get_solar_kits_by_mode(client_mode)
+    available_powers = list(available_kits.keys())
     best_power = min(available_powers, key=lambda x: abs(x - target_power))
     
     return best_power
