@@ -47,14 +47,14 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("API Root", False, f"Connection error: {str(e)}")
     
-    def test_solar_kits(self):
-        """Test solar kits endpoint"""
+    def test_solar_kits_legacy(self):
+        """Test legacy solar kits endpoint (should return particuliers kits)"""
         try:
             response = self.session.get(f"{self.base_url}/solar-kits")
             if response.status_code == 200:
                 kits = response.json()
                 if isinstance(kits, dict) and len(kits) > 0:
-                    # Check if we have expected kit sizes
+                    # Check if we have expected kit sizes for particuliers
                     expected_sizes = [3, 4, 5, 6, 7, 8, 9]
                     available_sizes = list(kits.keys())
                     available_sizes = [int(k) for k in available_sizes]
@@ -63,19 +63,138 @@ class SolarCalculatorTester:
                         # Check pricing structure
                         kit_6 = kits.get("6", {})
                         if "price" in kit_6 and "panels" in kit_6:
-                            self.log_test("Solar Kits", True, 
-                                        f"All kits available. 6kW kit: {kit_6['price']}€, {kit_6['panels']} panels", 
+                            self.log_test("Solar Kits Legacy", True, 
+                                        f"Legacy endpoint working. 6kW kit: {kit_6['price']}€, {kit_6['panels']} panels", 
                                         kits)
                         else:
-                            self.log_test("Solar Kits", False, "Missing price/panels info in kit data", kits)
+                            self.log_test("Solar Kits Legacy", False, "Missing price/panels info in kit data", kits)
                     else:
-                        self.log_test("Solar Kits", False, f"Missing expected kit sizes. Available: {available_sizes}", kits)
+                        self.log_test("Solar Kits Legacy", False, f"Missing expected kit sizes. Available: {available_sizes}", kits)
                 else:
-                    self.log_test("Solar Kits", False, f"Invalid kits format: {kits}", kits)
+                    self.log_test("Solar Kits Legacy", False, f"Invalid kits format: {kits}", kits)
             else:
-                self.log_test("Solar Kits", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_test("Solar Kits Legacy", False, f"HTTP {response.status_code}: {response.text}")
         except Exception as e:
-            self.log_test("Solar Kits", False, f"Error: {str(e)}")
+            self.log_test("Solar Kits Legacy", False, f"Error: {str(e)}")
+
+    def test_solar_kits_particuliers(self):
+        """Test solar kits endpoint for particuliers mode"""
+        try:
+            response = self.session.get(f"{self.base_url}/solar-kits/particuliers")
+            if response.status_code == 200:
+                kits = response.json()
+                if isinstance(kits, dict) and len(kits) > 0:
+                    # Check if we have expected kit sizes for particuliers (3-9kW)
+                    expected_sizes = [3, 4, 5, 6, 7, 8, 9]
+                    available_sizes = list(kits.keys())
+                    available_sizes = [int(k) for k in available_sizes]
+                    
+                    if all(size in available_sizes for size in expected_sizes):
+                        # Should NOT have professional kits (12, 15, 20kW)
+                        professional_sizes = [12, 15, 20]
+                        has_professional_kits = any(size in available_sizes for size in professional_sizes)
+                        
+                        if not has_professional_kits:
+                            kit_6 = kits.get("6", {})
+                            self.log_test("Solar Kits Particuliers", True, 
+                                        f"Particuliers kits (3-9kW only). 6kW kit: {kit_6['price']}€, {kit_6['panels']} panels", 
+                                        kits)
+                        else:
+                            self.log_test("Solar Kits Particuliers", False, 
+                                        f"Particuliers should not have professional kits. Found: {[s for s in available_sizes if s in professional_sizes]}", 
+                                        kits)
+                    else:
+                        self.log_test("Solar Kits Particuliers", False, f"Missing expected kit sizes. Available: {available_sizes}", kits)
+                else:
+                    self.log_test("Solar Kits Particuliers", False, f"Invalid kits format: {kits}", kits)
+            else:
+                self.log_test("Solar Kits Particuliers", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Solar Kits Particuliers", False, f"Error: {str(e)}")
+
+    def test_solar_kits_professionnels(self):
+        """Test solar kits endpoint for professionnels mode"""
+        try:
+            response = self.session.get(f"{self.base_url}/solar-kits/professionnels")
+            if response.status_code == 200:
+                kits = response.json()
+                if isinstance(kits, dict) and len(kits) > 0:
+                    # Check if we have expected kit sizes for professionnels (3-9kW + 12, 15, 20kW)
+                    expected_basic_sizes = [3, 4, 5, 6, 7, 8, 9]
+                    expected_professional_sizes = [12, 15, 20]
+                    all_expected_sizes = expected_basic_sizes + expected_professional_sizes
+                    
+                    available_sizes = list(kits.keys())
+                    available_sizes = [int(k) for k in available_sizes]
+                    
+                    if all(size in available_sizes for size in all_expected_sizes):
+                        # Check pricing - should be slightly lower than particuliers
+                        kit_6 = kits.get("6", {})
+                        kit_12 = kits.get("12", {})
+                        kit_20 = kits.get("20", {})
+                        
+                        if all(kit.get("price") and kit.get("panels") for kit in [kit_6, kit_12, kit_20]):
+                            self.log_test("Solar Kits Professionnels", True, 
+                                        f"Professional kits available (3-9kW + 12,15,20kW). 6kW: {kit_6['price']}€, 12kW: {kit_12['price']}€, 20kW: {kit_20['price']}€", 
+                                        kits)
+                        else:
+                            self.log_test("Solar Kits Professionnels", False, "Missing price/panels info in professional kit data", kits)
+                    else:
+                        missing_sizes = [s for s in all_expected_sizes if s not in available_sizes]
+                        self.log_test("Solar Kits Professionnels", False, f"Missing professional kit sizes: {missing_sizes}. Available: {available_sizes}", kits)
+                else:
+                    self.log_test("Solar Kits Professionnels", False, f"Invalid kits format: {kits}", kits)
+            else:
+                self.log_test("Solar Kits Professionnels", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Solar Kits Professionnels", False, f"Error: {str(e)}")
+
+    def test_solar_kits_pricing_comparison(self):
+        """Test that professional kits have different (lower) pricing than particuliers"""
+        try:
+            # Get particuliers kits
+            response_part = self.session.get(f"{self.base_url}/solar-kits/particuliers")
+            response_prof = self.session.get(f"{self.base_url}/solar-kits/professionnels")
+            
+            if response_part.status_code == 200 and response_prof.status_code == 200:
+                kits_part = response_part.json()
+                kits_prof = response_prof.json()
+                
+                # Compare pricing for common kits (3-9kW)
+                common_sizes = [3, 4, 5, 6, 7, 8, 9]
+                pricing_differences = []
+                
+                for size in common_sizes:
+                    if str(size) in kits_part and str(size) in kits_prof:
+                        part_price = kits_part[str(size)]["price"]
+                        prof_price = kits_prof[str(size)]["price"]
+                        
+                        if prof_price < part_price:
+                            difference = part_price - prof_price
+                            pricing_differences.append(f"{size}kW: {part_price}€ → {prof_price}€ (-{difference}€)")
+                        elif prof_price == part_price:
+                            pricing_differences.append(f"{size}kW: same price {part_price}€")
+                        else:
+                            pricing_differences.append(f"{size}kW: HIGHER for pros {prof_price}€ vs {part_price}€")
+                
+                if len(pricing_differences) == len(common_sizes):
+                    # Check if most professional prices are lower
+                    lower_count = sum(1 for diff in pricing_differences if "→" in diff and "-" in diff)
+                    if lower_count >= len(common_sizes) * 0.7:  # At least 70% should be lower
+                        self.log_test("Solar Kits Pricing Comparison", True, 
+                                    f"Professional pricing is lower for most kits. Examples: {'; '.join(pricing_differences[:3])}", 
+                                    {"particuliers_sample": {str(k): kits_part[str(k)] for k in [6, 9]}, 
+                                     "professionnels_sample": {str(k): kits_prof[str(k)] for k in [6, 9, 12, 20]}})
+                    else:
+                        self.log_test("Solar Kits Pricing Comparison", False, 
+                                    f"Professional pricing not consistently lower. Details: {'; '.join(pricing_differences)}")
+                else:
+                    self.log_test("Solar Kits Pricing Comparison", False, f"Could not compare all common kit sizes")
+            else:
+                self.log_test("Solar Kits Pricing Comparison", False, 
+                            f"Failed to get kits data. Particuliers: {response_part.status_code}, Professionnels: {response_prof.status_code}")
+        except Exception as e:
+            self.log_test("Solar Kits Pricing Comparison", False, f"Error: {str(e)}")
     
     def test_pvgis_direct(self):
         """Test direct PVGIS endpoint with Paris coordinates"""
