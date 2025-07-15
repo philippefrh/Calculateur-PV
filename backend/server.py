@@ -407,13 +407,19 @@ def get_aids_by_mode(client_mode: str = "particuliers"):
         return {
             "autoconsumption_aid_rate": AUTOCONSUMPTION_AID_PROFESSIONNELS,
             "tva_rate": TVA_RATE_PROFESSIONNELS,
-            "amortissement_accelere": AMORTISSEMENT_ACCELERE
+            "amortissement_accelere": AMORTISSEMENT_ACCELERE,
+            "autoconsumption_rate": AUTOCONSUMPTION_RATE_PROFESSIONNELS,
+            "edf_rate": EDF_RATE_PER_KWH_PROFESSIONNELS,
+            "surplus_sale_rate": SURPLUS_SALE_RATE_PROFESSIONNELS
         }
     else:
         return {
             "autoconsumption_aid_rate": AUTOCONSUMPTION_AID_PARTICULIERS,
             "tva_rate": TVA_RATE_PARTICULIERS,
-            "amortissement_accelere": 0
+            "amortissement_accelere": 0,
+            "autoconsumption_rate": AUTOCONSUMPTION_RATE_PARTICULIERS,
+            "edf_rate": EDF_RATE_PER_KWH,
+            "surplus_sale_rate": SURPLUS_SALE_RATE
         }
 
 def calculate_optimal_kit_size(annual_consumption: float, roof_surface: float, client_mode: str = "particuliers") -> int:
