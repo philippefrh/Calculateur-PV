@@ -2262,7 +2262,11 @@ function App() {
   if (currentStep === 'start') {
     return (
       <div className="App">
-        <StartScreen onStart={handleStart} />
+        <StartScreen 
+          onStart={handleStart} 
+          clientMode={clientMode} 
+          setClientMode={setClientMode} 
+        />
       </div>
     );
   }
