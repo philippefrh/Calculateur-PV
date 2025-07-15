@@ -615,13 +615,17 @@ async def calculate_solar_solution(client_id: str):
         # Calculate autonomy percentage
         autonomy_percentage = min(95, (annual_production / annual_consumption) * 100)
         
-        # Calculate autoconsumption (assuming 95% of production is self-consumed)
-        autoconsumption_rate = 0.95
+        # Calculate autoconsumption with correct rates by mode
+        aids_config = get_aids_by_mode(client_mode)
+        autoconsumption_rate = aids_config['autoconsumption_rate']
+        edf_rate = aids_config['edf_rate']
+        surplus_sale_rate = aids_config['surplus_sale_rate']
+        
         autoconsumption_kwh = annual_production * autoconsumption_rate
         surplus_kwh = annual_production * (1 - autoconsumption_rate)
         
-        # Calculate savings
-        annual_savings = (autoconsumption_kwh * EDF_RATE_PER_KWH) + (surplus_kwh * SURPLUS_SALE_RATE)
+        # Calculate savings with correct rates
+        annual_savings = (autoconsumption_kwh * edf_rate) + (surplus_kwh * surplus_sale_rate)
         monthly_savings = annual_savings / 12
         
         # Calculate financing options
