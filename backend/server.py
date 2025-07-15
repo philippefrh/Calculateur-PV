@@ -399,6 +399,27 @@ def get_solar_kits_by_mode(client_mode: str = "particuliers"):
     else:
         return SOLAR_KITS_PARTICULIERS
 
+def get_professional_kit_price(kit_info: dict, price_level: str = "base") -> float:
+    """
+    Get professional kit price based on price level
+    price_level: "base", "remise", "remise_max"
+    """
+    if price_level == "remise":
+        return kit_info.get('tarif_remise_ht', kit_info.get('tarif_base_ht', 0))
+    elif price_level == "remise_max":
+        return kit_info.get('tarif_remise_max_ht', kit_info.get('tarif_base_ht', 0))
+    else:  # base
+        return kit_info.get('tarif_base_ht', 0)
+
+def get_professional_commission(kit_info: dict, price_level: str = "base") -> float:
+    """
+    Get professional commission based on price level
+    """
+    if price_level == "remise_max":
+        return kit_info.get('commission_remise_max', kit_info.get('commission_normale', 0))
+    else:  # base or remise
+        return kit_info.get('commission_normale', 0)
+
 def get_aids_by_mode(client_mode: str = "particuliers"):
     """
     Get aids configuration based on client mode
