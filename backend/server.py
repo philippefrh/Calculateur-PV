@@ -228,7 +228,33 @@ async def get_pvgis_data(lat: float, lon: float, orientation: str, kit_power: in
         logging.error(f"PVGIS API error: {e}")
         raise HTTPException(status_code=500, detail=f"Error fetching PVGIS data: {str(e)}")
 
-def calculate_optimal_kit_size(annual_consumption: float, roof_surface: float) -> int:
+def get_solar_kits_by_mode(client_mode: str = "particuliers"):
+    """
+    Get solar kits based on client mode
+    """
+    if client_mode == "professionnels":
+        return SOLAR_KITS_PROFESSIONNELS
+    else:
+        return SOLAR_KITS_PARTICULIERS
+
+def get_aids_by_mode(client_mode: str = "particuliers"):
+    """
+    Get aids configuration based on client mode
+    """
+    if client_mode == "professionnels":
+        return {
+            "autoconsumption_aid_rate": AUTOCONSUMPTION_AID_PROFESSIONNELS,
+            "tva_rate": TVA_RATE_PROFESSIONNELS,
+            "amortissement_accelere": AMORTISSEMENT_ACCELERE
+        }
+    else:
+        return {
+            "autoconsumption_aid_rate": AUTOCONSUMPTION_AID_PARTICULIERS,
+            "tva_rate": TVA_RATE_PARTICULIERS,
+            "amortissement_accelere": 0
+        }
+
+def calculate_optimal_kit_size(annual_consumption: float, roof_surface: float, client_mode: str = "particuliers") -> int:
     """
     Calculate optimal kit size based on consumption and roof space
     """
