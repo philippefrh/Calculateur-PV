@@ -1,0 +1,44 @@
+[
+  {
+    "test": "Get Existing Clients",
+    "success": true,
+    "details": "Found 73 total clients: 10 professional, 63 particuliers",
+    "timestamp": "2025-07-15 22:01:00",
+    "response_data": null
+  },
+  {
+    "test": "Professional Kits Structure",
+    "success": true,
+    "details": "\u2705 Professional kits structure correct. Small kits: 7, Large kits: 27. 6kW: base 21900\u20ac, prime 1140\u20ac. 15kW: base 27200\u20ac, prime 2850\u20ac",
+    "timestamp": "2025-07-15 22:01:18",
+    "response_data": null
+  },
+  {
+    "test": "Professional Calculation Endpoint",
+    "success": true,
+    "details": "\u2705 All 3 price levels working. Kit: 11kW, Prices: 20200\u20ac > 19650\u20ac > 19100\u20ac, 80% autoconsumption, 0.26\u20ac/kWh EDF rate",
+    "timestamp": "2025-07-15 22:01:22",
+    "response_data": null
+  },
+  {
+    "test": "Leasing Matrix Functionality",
+    "success": false,
+    "details": "Matrix issues: Too few duration options: [60]",
+    "timestamp": "2025-07-15 22:01:22",
+    "response_data": null
+  },
+  {
+    "test": "Optimal Kit Algorithm",
+    "success": false,
+    "details": "Algorithm issues: No optimal kits found for any price level",
+    "timestamp": "2025-07-15 22:01:22",
+    "response_data": null
+  },
+  {
+    "test": "Professional vs Particuliers Rates",
+    "success": true,
+    "details": "\u2705 Rate differences correct: Autoconsumption: Prof 80% vs Part 95%. EDF rates: Prof 0.26\u20ac/kWh vs Part 0.2516\u20ac/kWh. Aid rates: Prof 190\u20ac/kW vs Part 80\u20ac/kW. Financing: Prof leasing vs Part credit",
+    "timestamp": "2025-07-15 22:01:25",
+    "response_data": null
+  }
+]
