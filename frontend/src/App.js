@@ -22,11 +22,17 @@ const AutonomyLogo = () => (
 );
 
 // Écran de démarrage amélioré avec vrais logos
-const StartScreen = ({ onStart }) => {
+const StartScreen = ({ onStart, clientMode, setClientMode }) => {
   
   const handleClick = () => {
     console.log("Button clicked!");
+    console.log("Client mode:", clientMode);
     onStart();
+  };
+  
+  const handleModeChange = (mode) => {
+    setClientMode(mode);
+    console.log("Mode changed to:", mode);
   };
   
   return (
