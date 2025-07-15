@@ -149,11 +149,11 @@ backend:
 
   - task: "Client Creation with Geocoding and Client Mode"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
@@ -161,6 +161,9 @@ backend:
       - working: false
         agent: "main"
         comment: "🔄 UPDATED FOR PROFESSIONAL VERSION - Added client_mode field to ClientInfo and ClientInfoCreate models. Default mode is 'particuliers' but can be set to 'professionnels' for different calculation logic."
+      - working: true
+        agent: "testing"
+        comment: "✅ PROFESSIONAL VERSION CLIENT CREATION FULLY TESTED - Both client modes working perfectly: 1) Particuliers client created with client_mode='particuliers', geocoded to Paris (48.8680, 2.3154). 2) Professional client created with client_mode='professionnels', geocoded to Paris (48.8559, 2.3576). Client mode field properly stored and retrieved. Higher consumption (12000 kWh) and larger roof (120m²) for professional client. Both clients accessible via GET endpoints. Professional version client creation successful."
 
   - task: "Client Retrieval Operations"
     implemented: true
