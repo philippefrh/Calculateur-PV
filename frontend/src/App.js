@@ -706,33 +706,47 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
       // Transformer les données pour inclure les informations calculées
       const kitsWithDetails = Object.entries(kits).map(([power, info]) => {
         const kitPower = parseInt(power);
-        const priceHT = info.price / 1.2; // Prix HT (TTC / 1.2)
-        const commission = priceHT * 0.15; // Commission 15%
-        const surfaceTotal = info.panels * 2.1; // Surface par panneau: 2.1m²
         
-        // Calcul des aides selon le mode client
-        let autoconsumptionAidRate = 80; // Default for particuliers
         if (clientMode === 'professionnels') {
-          autoconsumptionAidRate = 60; // Aide réduite pour professionnels
+          // Pour les professionnels, utiliser les données du tableau
+          return {
+            power: kitPower,
+            panels: info.panels,
+            surface: info.surface,
+            prime: info.prime,
+            priceTTC: info.tarif_base_ht, // Prix de base HT
+            priceHT: info.tarif_base_ht,
+            priceRemise: info.tarif_remise_ht,
+            priceRemiseMax: info.tarif_remise_max_ht,
+            commissionNormale: info.commission_normale,
+            commissionRemiseMax: info.commission_remise_max,
+            priceWithAids: info.tarif_base_ht - info.prime, // Prix base - prime
+            commission: info.commission_normale // Commission par défaut
+          };
+        } else {
+          // Pour les particuliers, calcul traditionnel
+          const priceHT = info.price / 1.2; // Prix HT (TTC / 1.2)
+          const commission = priceHT * 0.15; // Commission 15%
+          const surfaceTotal = info.panels * 2.1; // Surface par panneau: 2.1m²
+          
+          const autoconsumptionAid = kitPower * 80; // 80€/kW
+          const tvaRefund = kitPower > 3 ? info.price * 0.2 : 0; // TVA 20% si > 3kW
+          const totalAids = autoconsumptionAid + tvaRefund;
+          const priceWithAids = info.price - totalAids;
+          
+          return {
+            power: kitPower,
+            panels: info.panels,
+            priceTTC: info.price,
+            priceHT: Math.round(priceHT),
+            commission: Math.round(commission),
+            surface: surfaceTotal,
+            autoconsumptionAid,
+            tvaRefund: Math.round(tvaRefund),
+            totalAids: Math.round(totalAids),
+            priceWithAids: Math.round(priceWithAids)
+          };
         }
-        
-        const autoconsumptionAid = kitPower * autoconsumptionAidRate;
-        const tvaRefund = kitPower > 3 ? info.price * 0.2 : 0; // TVA 20% si > 3kW
-        const totalAids = autoconsumptionAid + tvaRefund;
-        const priceWithAids = info.price - totalAids;
-        
-        return {
-          power: kitPower,
-          panels: info.panels,
-          priceTTC: info.price,
-          priceHT: Math.round(priceHT),
-          commission: Math.round(commission),
-          surface: surfaceTotal,
-          autoconsumptionAid,
-          tvaRefund: Math.round(tvaRefund),
-          totalAids: Math.round(totalAids),
-          priceWithAids: Math.round(priceWithAids)
-        };
       });
       
       setAvailableKits(kitsWithDetails.sort((a, b) => a.power - b.power));
