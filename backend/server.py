@@ -301,6 +301,124 @@ SOLAR_KITS_PROFESSIONNELS = {
 # Deprecated - keeping for backward compatibility
 SOLAR_KITS = SOLAR_KITS_PARTICULIERS
 
+# Matrice des taux de leasing professionnel
+LEASING_MATRIX = {
+    # Tranches de montant (min, max) : {durée_mois: taux}
+    (12501, 25000): {
+        60: 2.07,
+        72: None,  # Zone rouge - non disponible
+        84: None,  # Zone rouge - non disponible
+        96: None   # Zone rouge - non disponible
+    },
+    (25001, 37500): {
+        60: 2.06,
+        72: 1.77,
+        84: None,  # Zone rouge - non disponible
+        96: None   # Zone rouge - non disponible
+    },
+    (37501, 50000): {
+        60: 2.05,
+        72: 1.76,
+        84: 1.56,
+        96: None   # Zone rouge - non disponible
+    },
+    (50001, 75000): {
+        60: 2.04,
+        72: 1.75,
+        84: 1.55,
+        96: 1.4
+    },
+    (75001, 100000): {
+        60: 2.03,
+        72: 1.74,
+        84: 1.54,
+        96: 1.39
+    },
+    (100001, 999999): {  # 100.000€ et +
+        60: 2.02,
+        72: 1.73,
+        84: 1.53,
+        96: 1.38
+    }
+}
+
+def get_leasing_rate(amount: float, duration_months: int) -> float:
+    """
+    Get leasing rate based on amount and duration
+    Returns None if combination is not available (zone rouge)
+    """
+    for (min_amount, max_amount), rates in LEASING_MATRIX.items():
+        if min_amount <= amount <= max_amount:
+            return rates.get(duration_months)
+    return None
+
+def calculate_leasing_options(amount: float) -> List[Dict]:
+    """
+    Calculate all available leasing options for an amount
+    """
+    options = []
+    durations = [60, 72, 84, 96]
+    
+    for duration in durations:
+        rate = get_leasing_rate(amount, duration)
+        if rate is not None:  # Only if not in red zone
+            monthly_payment = amount * rate
+            options.append({
+                "duration_months": duration,
+                "duration_years": duration / 12,
+                "rate": rate,
+                "monthly_payment": round(monthly_payment, 2),
+                "total_payment": round(monthly_payment * duration, 2)
+            })
+    
+    return options
+
+def find_optimal_leasing_kit(solar_kits: dict, monthly_savings: float, client_mode: str = "professionnels") -> Dict:
+    """
+    Find the optimal kit that matches monthly savings with leasing payment
+    Returns the "MEILLEUR KITS OPTIMISE"
+    """
+    if client_mode != "professionnels":
+        return None
+    
+    best_options = []
+    
+    for power, kit_info in solar_kits.items():
+        # Test all 3 price levels for professionals
+        price_levels = {
+            "base": kit_info.get('tarif_base_ht', 0),
+            "remise": kit_info.get('tarif_remise_ht', 0),
+            "remise_max": kit_info.get('tarif_remise_max_ht', 0)
+        }
+        
+        for level, price in price_levels.items():
+            if price > 0:
+                leasing_options = calculate_leasing_options(price)
+                
+                for option in leasing_options:
+                    monthly_payment = option['monthly_payment']
+                    benefit = monthly_savings - monthly_payment
+                    
+                    # Only consider options where leasing payment <= monthly savings
+                    if benefit >= 0:
+                        best_options.append({
+                            "kit_power": power,
+                            "price_level": level,
+                            "kit_price": price,
+                            "duration_months": option['duration_months'],
+                            "monthly_payment": monthly_payment,
+                            "monthly_savings": monthly_savings,
+                            "monthly_benefit": benefit,
+                            "total_payment": option['total_payment'],
+                            "leasing_rate": option['rate'],
+                            "kit_info": kit_info
+                        })
+    
+    # Sort by monthly benefit (highest first, then by lowest monthly payment)
+    best_options.sort(key=lambda x: (-x['monthly_benefit'], x['monthly_payment']))
+    
+    return best_options[0] if best_options else None
+
 # EDF rates and constants
 EDF_RATE_PER_KWH = 0.2516  # €/kWh pour particuliers
 EDF_RATE_PER_KWH_PROFESSIONNELS = 0.26  # €/kWh pour professionnels (autoconsommation)
