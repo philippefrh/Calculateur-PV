@@ -1420,11 +1420,297 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Three Price Levels Optimization", False, f"Error: {str(e)}")
     
+    def test_review_request_validation(self):
+        """Test rapide de validation des corrections apportées au système de leasing professionnel"""
+        print("\n🎯 TESTING REVIEW REQUEST VALIDATION")
+        print("=" * 60)
+        
+        # 1. Test des kits 3-9kW ajoutés
+        self.test_professional_kits_3_9kw()
+        
+        # 2. Test de l'endpoint de calcul général corrigé
+        self.test_general_calculation_professional_client()
+        
+        # 3. Test de l'algorithme optimal avec les nouveaux kits
+        self.test_optimal_algorithm_with_new_kits()
+        
+        # 4. Test d'un exemple concret avec économies modestes
+        self.test_modest_savings_example()
+    
+    def test_professional_kits_3_9kw(self):
+        """Test que les kits 3-9kW sont maintenant présents avec la structure professionnelle"""
+        try:
+            response = self.session.get(f"{self.base_url}/solar-kits/professionnels")
+            if response.status_code == 200:
+                kits = response.json()
+                
+                # Vérifier que les kits 3-9kW sont présents
+                expected_small_kits = [3, 4, 5, 6, 7, 8, 9]
+                available_sizes = [int(k) for k in kits.keys()]
+                
+                missing_small_kits = [size for size in expected_small_kits if size not in available_sizes]
+                
+                if not missing_small_kits:
+                    # Vérifier la structure professionnelle (tarif_base_ht, etc.)
+                    kit_6 = kits.get("6", {})
+                    required_fields = ["tarif_base_ht", "tarif_remise_ht", "tarif_remise_max_ht", "prime", "panels"]
+                    missing_fields = [field for field in required_fields if field not in kit_6]
+                    
+                    if not missing_fields:
+                        self.log_test("Professional Kits 3-9kW Added", True, 
+                                    f"✅ Kits 3-9kW présents avec structure professionnelle. 6kW: base {kit_6['tarif_base_ht']}€, remise {kit_6['tarif_remise_ht']}€, prime {kit_6['prime']}€", 
+                                    {str(k): kits[str(k)] for k in expected_small_kits if str(k) in kits})
+                    else:
+                        self.log_test("Professional Kits 3-9kW Added", False, 
+                                    f"Structure professionnelle incomplète pour kit 6kW. Champs manquants: {missing_fields}", kit_6)
+                else:
+                    self.log_test("Professional Kits 3-9kW Added", False, 
+                                f"❌ Kits 3-9kW manquants: {missing_small_kits}. Disponibles: {available_sizes}", kits)
+            else:
+                self.log_test("Professional Kits 3-9kW Added", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Professional Kits 3-9kW Added", False, f"Error: {str(e)}")
+    
+    def test_general_calculation_professional_client(self):
+        """Test que l'endpoint de calcul général ne plante plus avec les kits professionnels"""
+        # Créer un client professionnel pour le test
+        try:
+            client_data = {
+                "first_name": "Test",
+                "last_name": "Professional",
+                "address": "10 Rue de la Paix, 75001 Paris",
+                "roof_surface": 80.0,
+                "roof_orientation": "Sud",
+                "velux_count": 2,
+                "heating_system": "Pompe à chaleur",
+                "water_heating_system": "Solaire thermique",
+                "water_heating_capacity": 200,
+                "annual_consumption_kwh": 8000.0,
+                "monthly_edf_payment": 250.0,
+                "annual_edf_payment": 3000.0,
+                "client_mode": "professionnels"
+            }
+            
+            # Créer le client
+            create_response = self.session.post(f"{self.base_url}/clients", json=client_data)
+            if create_response.status_code != 200:
+                self.log_test("General Calculation Professional Client", False, f"Failed to create professional client: {create_response.status_code}")
+                return
+            
+            client = create_response.json()
+            client_id = client["id"]
+            
+            # Tester l'endpoint de calcul général
+            calc_response = self.session.post(f"{self.base_url}/calculate/{client_id}")
+            if calc_response.status_code == 200:
+                calculation = calc_response.json()
+                
+                # Vérifier que le calcul s'est bien passé
+                required_fields = ["kit_power", "estimated_production", "monthly_savings", "client_mode"]
+                missing_fields = [field for field in required_fields if field not in calculation]
+                
+                if not missing_fields:
+                    client_mode = calculation.get("client_mode")
+                    kit_power = calculation.get("kit_power")
+                    monthly_savings = calculation.get("monthly_savings")
+                    
+                    if client_mode == "professionnels":
+                        self.log_test("General Calculation Professional Client", True, 
+                                    f"✅ Calcul général réussi pour client professionnel. Kit {kit_power}kW, économies {monthly_savings:.2f}€/mois", 
+                                    calculation)
+                    else:
+                        self.log_test("General Calculation Professional Client", False, 
+                                    f"Client mode incorrect: {client_mode} (attendu: professionnels)", calculation)
+                else:
+                    self.log_test("General Calculation Professional Client", False, 
+                                f"Champs manquants dans le calcul: {missing_fields}", calculation)
+            else:
+                self.log_test("General Calculation Professional Client", False, 
+                            f"❌ Calcul général échoue encore: HTTP {calc_response.status_code}: {calc_response.text}")
+                
+        except Exception as e:
+            self.log_test("General Calculation Professional Client", False, f"Error: {str(e)}")
+    
+    def test_optimal_algorithm_with_new_kits(self):
+        """Test que l'algorithme optimal trouve maintenant un MEILLEUR KITS OPTIMISE"""
+        try:
+            # Créer un client avec consommation modérée pour tester les petits kits
+            client_data = {
+                "first_name": "Optimal",
+                "last_name": "Test",
+                "address": "25 Avenue Montaigne, 75008 Paris",
+                "roof_surface": 60.0,
+                "roof_orientation": "Sud",
+                "velux_count": 1,
+                "heating_system": "Radiateurs électriques",
+                "water_heating_system": "Ballon électrique",
+                "water_heating_capacity": 150,
+                "annual_consumption_kwh": 5000.0,  # Consommation modérée
+                "monthly_edf_payment": 200.0,
+                "annual_edf_payment": 2400.0,
+                "client_mode": "professionnels"
+            }
+            
+            # Créer le client
+            create_response = self.session.post(f"{self.base_url}/clients", json=client_data)
+            if create_response.status_code != 200:
+                self.log_test("Optimal Algorithm with New Kits", False, f"Failed to create client: {create_response.status_code}")
+                return
+            
+            client = create_response.json()
+            client_id = client["id"]
+            
+            # Tester l'endpoint professionnel avec algorithme optimal
+            calc_response = self.session.post(f"{self.base_url}/calculate-professional/{client_id}")
+            if calc_response.status_code == 200:
+                calculation = calc_response.json()
+                
+                # Vérifier la présence du champ optimal_kit
+                optimal_kit = calculation.get("optimal_kit")
+                monthly_savings = calculation.get("monthly_savings", 0)
+                
+                if optimal_kit is not None:
+                    if optimal_kit:  # Si un kit optimal a été trouvé
+                        kit_power = optimal_kit.get("kit_power")
+                        monthly_payment = optimal_kit.get("monthly_payment")
+                        monthly_benefit = optimal_kit.get("monthly_benefit")
+                        
+                        # Vérifier que la mensualité de leasing ≤ économies mensuelles
+                        if monthly_payment <= monthly_savings:
+                            self.log_test("Optimal Algorithm with New Kits", True, 
+                                        f"✅ MEILLEUR KITS OPTIMISE trouvé: {kit_power}kW, leasing {monthly_payment:.2f}€/mois ≤ économies {monthly_savings:.2f}€/mois, bénéfice {monthly_benefit:.2f}€/mois", 
+                                        optimal_kit)
+                        else:
+                            self.log_test("Optimal Algorithm with New Kits", False, 
+                                        f"❌ Kit optimal trouvé mais leasing {monthly_payment:.2f}€/mois > économies {monthly_savings:.2f}€/mois", 
+                                        optimal_kit)
+                    else:
+                        # Aucun kit optimal trouvé - vérifier si c'est à cause des kits manquants
+                        leasing_options = calculation.get("leasing_options", [])
+                        if not leasing_options:
+                            self.log_test("Optimal Algorithm with New Kits", False, 
+                                        f"❌ Aucun kit optimal ET aucune option de leasing. Problème avec les kits 3-9kW?", 
+                                        calculation)
+                        else:
+                            # Il y a des options mais aucune n'est optimale
+                            min_payment = min(opt["monthly_payment"] for opt in leasing_options)
+                            self.log_test("Optimal Algorithm with New Kits", False, 
+                                        f"❌ Aucun kit optimal trouvé. Paiement minimum {min_payment:.2f}€/mois > économies {monthly_savings:.2f}€/mois. Besoin de plus petits kits?", 
+                                        {"monthly_savings": monthly_savings, "min_leasing_payment": min_payment})
+                else:
+                    self.log_test("Optimal Algorithm with New Kits", False, 
+                                "❌ Champ 'optimal_kit' manquant dans la réponse", calculation)
+            else:
+                self.log_test("Optimal Algorithm with New Kits", False, 
+                            f"❌ Endpoint professionnel échoue: HTTP {calc_response.status_code}: {calc_response.text}")
+                
+        except Exception as e:
+            self.log_test("Optimal Algorithm with New Kits", False, f"Error: {str(e)}")
+    
+    def test_modest_savings_example(self):
+        """Test d'un exemple concret avec économies mensuelles modestes (200-300€/mois)"""
+        try:
+            # Créer un client avec économies modestes
+            client_data = {
+                "first_name": "Modest",
+                "last_name": "Savings",
+                "address": "15 Rue Saint-Honoré, 75001 Paris",
+                "roof_surface": 50.0,
+                "roof_orientation": "Sud-Est",
+                "velux_count": 1,
+                "heating_system": "Gaz",
+                "water_heating_system": "Gaz",
+                "water_heating_capacity": 100,
+                "annual_consumption_kwh": 4000.0,  # Consommation plus faible
+                "monthly_edf_payment": 150.0,      # Facture plus faible
+                "annual_edf_payment": 1800.0,
+                "client_mode": "professionnels"
+            }
+            
+            # Créer le client
+            create_response = self.session.post(f"{self.base_url}/clients", json=client_data)
+            if create_response.status_code != 200:
+                self.log_test("Modest Savings Example", False, f"Failed to create modest client: {create_response.status_code}")
+                return
+            
+            client = create_response.json()
+            client_id = client["id"]
+            
+            # Tester le calcul professionnel
+            calc_response = self.session.post(f"{self.base_url}/calculate-professional/{client_id}")
+            if calc_response.status_code == 200:
+                calculation = calc_response.json()
+                
+                monthly_savings = calculation.get("monthly_savings", 0)
+                optimal_kit = calculation.get("optimal_kit")
+                kit_power = calculation.get("kit_power")
+                
+                # Vérifier que les économies sont dans la fourchette modeste
+                if 200 <= monthly_savings <= 400:
+                    savings_range_ok = True
+                    savings_msg = f"économies {monthly_savings:.2f}€/mois dans la fourchette 200-400€"
+                else:
+                    savings_range_ok = False
+                    savings_msg = f"économies {monthly_savings:.2f}€/mois hors fourchette 200-400€"
+                
+                # Vérifier qu'un kit 3-6kW est trouvé
+                if kit_power and 3 <= kit_power <= 6:
+                    kit_size_ok = True
+                    kit_msg = f"kit {kit_power}kW adapté (3-6kW)"
+                else:
+                    kit_size_ok = False
+                    kit_msg = f"kit {kit_power}kW inadapté (attendu 3-6kW)"
+                
+                # Vérifier qu'un kit optimal est trouvé avec leasing adapté
+                if optimal_kit:
+                    optimal_payment = optimal_kit.get("monthly_payment", 0)
+                    optimal_benefit = optimal_kit.get("monthly_benefit", 0)
+                    
+                    if optimal_payment <= monthly_savings and optimal_benefit >= 0:
+                        optimal_ok = True
+                        optimal_msg = f"kit optimal {optimal_kit.get('kit_power')}kW avec leasing {optimal_payment:.2f}€/mois ≤ économies"
+                    else:
+                        optimal_ok = False
+                        optimal_msg = f"kit optimal trouvé mais leasing {optimal_payment:.2f}€/mois > économies {monthly_savings:.2f}€/mois"
+                else:
+                    optimal_ok = False
+                    optimal_msg = "aucun kit optimal trouvé"
+                
+                # Résultat global
+                all_ok = savings_range_ok and kit_size_ok and optimal_ok
+                
+                if all_ok:
+                    self.log_test("Modest Savings Example", True, 
+                                f"✅ Exemple concret réussi: {savings_msg}, {kit_msg}, {optimal_msg}", 
+                                {
+                                    "monthly_savings": monthly_savings,
+                                    "recommended_kit": kit_power,
+                                    "optimal_kit": optimal_kit
+                                })
+                else:
+                    issues = []
+                    if not savings_range_ok: issues.append(savings_msg)
+                    if not kit_size_ok: issues.append(kit_msg)
+                    if not optimal_ok: issues.append(optimal_msg)
+                    
+                    self.log_test("Modest Savings Example", False, 
+                                f"❌ Problèmes détectés: {'; '.join(issues)}", 
+                                calculation)
+            else:
+                self.log_test("Modest Savings Example", False, 
+                            f"❌ Calcul échoue: HTTP {calc_response.status_code}: {calc_response.text}")
+                
+        except Exception as e:
+            self.log_test("Modest Savings Example", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all tests in order"""
         print("🚀 Starting Solar Calculator Backend Tests")
         print(f"Backend URL: {self.base_url}")
         print("=" * 60)
+        
+        # PRIORITY: Review Request Validation Tests
+        self.test_review_request_validation()
         
         # Priority 1 tests - NEW: Professional Version Endpoints
         print("\n📋 PRIORITY 1 - Professional Version Endpoints")
