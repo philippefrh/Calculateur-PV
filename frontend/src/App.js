@@ -695,7 +695,9 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
     
     setLoadingKits(true);
     try {
-      const response = await fetch(`${API}/solar-kits`);
+      // Utiliser le nouvel endpoint qui prend en compte le mode client
+      const clientMode = formData.clientMode || 'particuliers';
+      const response = await fetch(`${API}/solar-kits/${clientMode}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -708,8 +710,13 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
         const commission = priceHT * 0.15; // Commission 15%
         const surfaceTotal = info.panels * 2.1; // Surface par panneau: 2.1m²
         
-        // Calcul des aides
-        const autoconsumptionAid = kitPower * 80; // 80€/kW
+        // Calcul des aides selon le mode client
+        let autoconsumptionAidRate = 80; // Default for particuliers
+        if (clientMode === 'professionnels') {
+          autoconsumptionAidRate = 60; // Aide réduite pour professionnels
+        }
+        
+        const autoconsumptionAid = kitPower * autoconsumptionAidRate;
         const tvaRefund = kitPower > 3 ? info.price * 0.2 : 0; // TVA 20% si > 3kW
         const totalAids = autoconsumptionAid + tvaRefund;
         const priceWithAids = info.price - totalAids;
