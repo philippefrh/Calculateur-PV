@@ -790,45 +790,76 @@ async def calculate_professional_solution(client_id: str, price_level: str = "ba
         
         total_aids = autoconsumption_aid_total + tva_refund
         
-        # Calculate financing options with aids deducted
-        financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings)
-        
-        # Calculate all financing options with aids deducted for all durations
-        all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings)
-        
-        # Result for professional clients
-        result = {
-            "client_id": client_id,
-            "client_mode": client_mode,
-            "price_level": price_level,
-            "kit_power": best_kit,
-            "panel_count": kit_info['panels'],
-            "surface": kit_info.get('surface', 0),
-            "estimated_production": annual_production,
-            "estimated_savings": annual_savings,
-            "autonomy_percentage": autonomy_percentage,
-            "monthly_savings": monthly_savings,
-            "kit_price": kit_price,
-            "commission": commission,
-            "autoconsumption_kwh": autoconsumption_kwh,
-            "surplus_kwh": surplus_kwh,
-            "autoconsumption_aid": autoconsumption_aid_total,
-            "tva_refund": tva_refund,
-            "total_aids": total_aids,
-            "financing_with_aids": financing_with_aids,
-            "all_financing_with_aids": all_financing_with_aids,
-            "pvgis_source": "Données source PVGIS Commission Européenne",
-            "orientation": orientation,
-            "coordinates": {"lat": lat, "lon": lon},
-            "aids_config": aids_config,
-            "pricing_options": {
-                "tarif_base_ht": kit_info.get('tarif_base_ht', 0),
-                "tarif_remise_ht": kit_info.get('tarif_remise_ht', 0),
-                "tarif_remise_max_ht": kit_info.get('tarif_remise_max_ht', 0),
-                "commission_normale": kit_info.get('commission_normale', 0),
-                "commission_remise_max": kit_info.get('commission_remise_max', 0)
+        # Calculate financing options based on client mode
+        if client_mode == "professionnels":
+            # Pour les professionnels : utiliser le leasing
+            leasing_options = calculate_leasing_options(kit_price)
+            
+            # Trouver le MEILLEUR KITS OPTIMISE
+            optimal_kit = find_optimal_leasing_kit(solar_kits, monthly_savings, client_mode)
+            
+            result = {
+                "client_id": client_id,
+                "client_mode": client_mode,
+                "price_level": price_level,
+                "kit_power": best_kit,
+                "panel_count": kit_info['panels'],
+                "surface": kit_info.get('surface', 0),
+                "estimated_production": annual_production,
+                "estimated_savings": annual_savings,
+                "autonomy_percentage": autonomy_percentage,
+                "monthly_savings": monthly_savings,
+                "kit_price": kit_price,
+                "commission": commission,
+                "autoconsumption_kwh": autoconsumption_kwh,
+                "surplus_kwh": surplus_kwh,
+                "autoconsumption_aid": autoconsumption_aid_total,
+                "tva_refund": tva_refund,
+                "total_aids": total_aids,
+                "leasing_options": leasing_options,
+                "optimal_kit": optimal_kit,
+                "pvgis_source": "Données source PVGIS Commission Européenne",
+                "orientation": orientation,
+                "coordinates": {"lat": lat, "lon": lon},
+                "aids_config": aids_config,
+                "pricing_options": {
+                    "tarif_base_ht": kit_info.get('tarif_base_ht', 0),
+                    "tarif_remise_ht": kit_info.get('tarif_remise_ht', 0),
+                    "tarif_remise_max_ht": kit_info.get('tarif_remise_max_ht', 0),
+                    "commission_normale": kit_info.get('commission_normale', 0),
+                    "commission_remise_max": kit_info.get('commission_remise_max', 0)
+                }
             }
-        }
+        else:
+            # Pour les particuliers : utiliser le crédit classique
+            financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings)
+            all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings)
+            
+            result = {
+                "client_id": client_id,
+                "client_mode": client_mode,
+                "price_level": price_level,
+                "kit_power": best_kit,
+                "panel_count": kit_info['panels'],
+                "surface": kit_info.get('surface', 0),
+                "estimated_production": annual_production,
+                "estimated_savings": annual_savings,
+                "autonomy_percentage": autonomy_percentage,
+                "monthly_savings": monthly_savings,
+                "kit_price": kit_price,
+                "commission": commission,
+                "autoconsumption_kwh": autoconsumption_kwh,
+                "surplus_kwh": surplus_kwh,
+                "autoconsumption_aid": autoconsumption_aid_total,
+                "tva_refund": tva_refund,
+                "total_aids": total_aids,
+                "financing_with_aids": financing_with_aids,
+                "all_financing_with_aids": all_financing_with_aids,
+                "pvgis_source": "Données source PVGIS Commission Européenne",
+                "orientation": orientation,
+                "coordinates": {"lat": lat, "lon": lon},
+                "aids_config": aids_config
+            }
         
         return result
         
