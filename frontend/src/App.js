@@ -1592,7 +1592,25 @@ Cordialement`);
           )}
         </div>
       )}
-                  <h4>💰 Toutes les options de financement disponibles avec aides déduites</h4>
+      <div className="results-footer">
+        <div className="action-buttons">
+          <button type="button" onClick={onPrevious} className="prev-button">⬅️ Modifier les données</button>
+          <button 
+            type="button" 
+            onClick={generatePDF} 
+            className={`pdf-button ${isGeneratingPDF ? 'generating' : ''}`}
+            disabled={isGeneratingPDF}
+          >
+            {isGeneratingPDF ? '⏳ Génération...' : '📄 Télécharger le Rapport PDF Complet'}
+          </button>
+          <button type="button" onClick={sendToExpert} className="expert-button">
+            👨‍💼 Prendre RDV avec un Expert
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
                   <div className="financing-table">
                     <div className="table-header">
                       <span>Durée</span>
