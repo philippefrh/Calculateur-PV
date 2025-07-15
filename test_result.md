@@ -179,11 +179,11 @@ backend:
 
   - task: "Professional Mode Solar Calculation with PVGIS"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
@@ -191,6 +191,9 @@ backend:
       - working: false
         agent: "main"
         comment: "🔄 UPDATED FOR PROFESSIONAL VERSION - Modified calculate_solar_solution to support both client modes. Professionnels get different aid rates (60€/kW vs 80€/kW) and access to larger kits. Added amortissement accéléré for professional clients."
+      - working: true
+        agent: "testing"
+        comment: "✅ PROFESSIONAL MODE SOLAR CALCULATION FULLY TESTED - Both calculation modes working perfectly: 1) Particuliers: 6kW kit, 6873 kWh/year, 95% autonomy, 480€ aid (80€/kW rate), no amortissement. 2) Professionnels: 12kW kit, 13677 kWh/year, 95% autonomy, 720€ aid (60€/kW rate), 30% amortissement accéléré. Aid rate difference confirmed: -20€/kW for professionals. Professional clients get access to larger kits (12kW recommended vs 6kW for particuliers). aids_config properly returned with different rates. Professional version calculation logic successful."
 
   - task: "Dual Mode Financing Calculation"
     implemented: true
