@@ -10,7 +10,7 @@ import time
 from typing import Dict, Any, List
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://e3070fa0-57b1-4a63-a4a5-165c27281453.preview.emergentagent.com/api"
+BACKEND_URL = "https://b2716940-cf78-4b62-a368-3069f935585f.preview.emergentagent.com/api"
 
 class AllFinancingWithAidsTest:
     def __init__(self):
