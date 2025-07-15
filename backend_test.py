@@ -1044,6 +1044,381 @@ class SolarCalculatorTester:
                 self.log_test("Error Handling - Non-existent Client", False, f"Expected 404 error, got {response.status_code}")
         except Exception as e:
             self.log_test("Error Handling - Non-existent Client", False, f"Error: {str(e)}")
+
+    def test_leasing_matrix_rates(self):
+        """Test the leasing matrix with different amounts and durations"""
+        try:
+            # Test case 1: 30,000€ / 72 mois = 1.77 (autorisé)
+            test_cases = [
+                {"amount": 30000, "duration": 72, "expected_rate": 1.77, "should_exist": True, "description": "30,000€ / 72 mois"},
+                {"amount": 30000, "duration": 84, "expected_rate": None, "should_exist": False, "description": "30,000€ / 84 mois (zone rouge)"},
+                {"amount": 15000, "duration": 60, "expected_rate": 2.07, "should_exist": True, "description": "15,000€ / 60 mois"},
+                {"amount": 50000, "duration": 96, "expected_rate": 1.4, "should_exist": True, "description": "50,000€ / 96 mois"},
+                {"amount": 100000, "duration": 84, "expected_rate": 1.54, "should_exist": True, "description": "100,000€ / 84 mois"},
+            ]
+            
+            issues = []
+            
+            # Since we can't directly test the matrix function, we'll test through the professional endpoint
+            # and verify that leasing options are calculated correctly
+            if not hasattr(self, 'professional_client_id') or not self.professional_client_id:
+                issues.append("No professional client available for leasing tests")
+            else:
+                response = self.session.post(f"{self.base_url}/calculate-professional/{self.professional_client_id}", 
+                                           params={"price_level": "base"})
+                
+                if response.status_code == 200:
+                    calculation = response.json()
+                    leasing_options = calculation.get("leasing_options", [])
+                    
+                    if not leasing_options:
+                        issues.append("No leasing options returned from professional calculation")
+                    else:
+                        # Verify leasing options structure
+                        for option in leasing_options:
+                            required_fields = ["duration_months", "duration_years", "rate", "monthly_payment", "total_payment"]
+                            missing_fields = [field for field in required_fields if field not in option]
+                            if missing_fields:
+                                issues.append(f"Leasing option missing fields: {missing_fields}")
+                            
+                            # Verify rate calculation
+                            duration_months = option.get("duration_months", 0)
+                            rate = option.get("rate", 0)
+                            monthly_payment = option.get("monthly_payment", 0)
+                            kit_price = calculation.get("kit_price", 0)
+                            
+                            if kit_price > 0 and rate > 0:
+                                expected_monthly = kit_price * rate
+                                if abs(monthly_payment - expected_monthly) > 1:
+                                    issues.append(f"Monthly payment {monthly_payment}€ != kit_price {kit_price}€ × rate {rate} = {expected_monthly}€")
+                        
+                        # Test specific matrix values
+                        kit_price = calculation.get("kit_price", 0)
+                        for test_case in test_cases:
+                            amount = test_case["amount"]
+                            duration = test_case["duration"]
+                            expected_rate = test_case["expected_rate"]
+                            should_exist = test_case["should_exist"]
+                            
+                            # Find matching option
+                            matching_option = None
+                            for option in leasing_options:
+                                if option.get("duration_months") == duration:
+                                    matching_option = option
+                                    break
+                            
+                            if should_exist and expected_rate is not None:
+                                if matching_option:
+                                    actual_rate = matching_option.get("rate", 0)
+                                    if abs(actual_rate - expected_rate) > 0.01:
+                                        issues.append(f"Rate mismatch for {duration} months: expected {expected_rate}, got {actual_rate}")
+                                else:
+                                    issues.append(f"Missing leasing option for {duration} months duration")
+                            elif not should_exist:
+                                if matching_option:
+                                    issues.append(f"Found leasing option for {duration} months (should be zone rouge)")
+                else:
+                    issues.append(f"Failed to get professional calculation: HTTP {response.status_code}")
+            
+            if issues:
+                self.log_test("Leasing Matrix Rates", False, f"Leasing matrix issues: {'; '.join(issues)}")
+            else:
+                # Show available leasing options
+                response = self.session.post(f"{self.base_url}/calculate-professional/{self.professional_client_id}", 
+                                           params={"price_level": "base"})
+                if response.status_code == 200:
+                    calculation = response.json()
+                    leasing_options = calculation.get("leasing_options", [])
+                    options_summary = []
+                    for option in leasing_options:
+                        duration = option.get("duration_months", 0)
+                        rate = option.get("rate", 0)
+                        monthly = option.get("monthly_payment", 0)
+                        options_summary.append(f"{duration}mois: {rate}% = {monthly}€/mois")
+                    
+                    self.log_test("Leasing Matrix Rates", True, 
+                                f"✅ Leasing matrix working. Available options: {'; '.join(options_summary)}", 
+                                {"leasing_options": leasing_options, "kit_price": calculation.get("kit_price", 0)})
+                
+        except Exception as e:
+            self.log_test("Leasing Matrix Rates", False, f"Error: {str(e)}")
+
+    def test_optimal_leasing_kit_algorithm(self):
+        """Test the find_optimal_leasing_kit algorithm"""
+        try:
+            if not hasattr(self, 'professional_client_id') or not self.professional_client_id:
+                self.log_test("Optimal Leasing Kit Algorithm", False, "No professional client available for leasing tests")
+                return
+            
+            # Test with different price levels
+            price_levels = ["base", "remise", "remise_max"]
+            optimal_results = {}
+            
+            for price_level in price_levels:
+                response = self.session.post(f"{self.base_url}/calculate-professional/{self.professional_client_id}", 
+                                           params={"price_level": price_level})
+                
+                if response.status_code == 200:
+                    calculation = response.json()
+                    optimal_kit = calculation.get("optimal_kit")
+                    monthly_savings = calculation.get("monthly_savings", 0)
+                    
+                    if optimal_kit:
+                        optimal_results[price_level] = {
+                            "kit_power": optimal_kit.get("kit_power"),
+                            "monthly_payment": optimal_kit.get("monthly_payment"),
+                            "monthly_savings": monthly_savings,
+                            "monthly_benefit": optimal_kit.get("monthly_benefit"),
+                            "price_level": optimal_kit.get("price_level"),
+                            "kit_price": optimal_kit.get("kit_price")
+                        }
+                    else:
+                        optimal_results[price_level] = None
+            
+            issues = []
+            
+            # Verify that optimal kits were found
+            for price_level, result in optimal_results.items():
+                if result is None:
+                    issues.append(f"No optimal kit found for price level '{price_level}'")
+                else:
+                    # Verify that monthly payment <= monthly savings (key requirement)
+                    monthly_payment = result["monthly_payment"]
+                    monthly_savings = result["monthly_savings"]
+                    monthly_benefit = result["monthly_benefit"]
+                    
+                    if monthly_payment > monthly_savings:
+                        issues.append(f"Price level '{price_level}': monthly payment {monthly_payment}€ > monthly savings {monthly_savings}€")
+                    
+                    # Verify monthly benefit calculation
+                    expected_benefit = monthly_savings - monthly_payment
+                    if abs(monthly_benefit - expected_benefit) > 0.01:
+                        issues.append(f"Price level '{price_level}': monthly benefit {monthly_benefit}€ != {monthly_savings}€ - {monthly_payment}€ = {expected_benefit}€")
+            
+            # Verify that remise_max gives better deals than base
+            if optimal_results.get("base") and optimal_results.get("remise_max"):
+                base_benefit = optimal_results["base"]["monthly_benefit"]
+                remise_max_benefit = optimal_results["remise_max"]["monthly_benefit"]
+                
+                if remise_max_benefit <= base_benefit:
+                    issues.append(f"Remise max benefit {remise_max_benefit}€ should be > base benefit {base_benefit}€")
+            
+            if issues:
+                self.log_test("Optimal Leasing Kit Algorithm", False, f"Algorithm issues: {'; '.join(issues)}", optimal_results)
+            else:
+                # Create success summary
+                summary_parts = []
+                for price_level, result in optimal_results.items():
+                    if result:
+                        summary_parts.append(f"{price_level}: {result['kit_power']}kW kit, {result['monthly_payment']}€/mois ≤ {result['monthly_savings']}€ économies (+{result['monthly_benefit']}€ bénéfice)")
+                
+                self.log_test("Optimal Leasing Kit Algorithm", True, 
+                            f"✅ MEILLEUR KITS OPTIMISE algorithm working. {'; '.join(summary_parts)}", 
+                            optimal_results)
+                
+        except Exception as e:
+            self.log_test("Optimal Leasing Kit Algorithm", False, f"Error: {str(e)}")
+
+    def test_professional_endpoint_complete(self):
+        """Test the complete professional endpoint with all features"""
+        try:
+            if not hasattr(self, 'professional_client_id') or not self.professional_client_id:
+                self.log_test("Professional Endpoint Complete", False, "No professional client available")
+                return
+            
+            # Test all three price levels
+            price_levels = ["base", "remise", "remise_max"]
+            results = {}
+            
+            for price_level in price_levels:
+                response = self.session.post(f"{self.base_url}/calculate-professional/{self.professional_client_id}", 
+                                           params={"price_level": price_level})
+                
+                if response.status_code == 200:
+                    calculation = response.json()
+                    results[price_level] = calculation
+                else:
+                    self.log_test("Professional Endpoint Complete", False, 
+                                f"Failed to get calculation for price level '{price_level}': HTTP {response.status_code}")
+                    return
+            
+            issues = []
+            
+            # Verify all required fields are present
+            required_fields = [
+                "client_id", "client_mode", "price_level", "kit_power", "panel_count", 
+                "estimated_production", "estimated_savings", "autonomy_percentage", 
+                "monthly_savings", "kit_price", "commission", "autoconsumption_kwh", 
+                "surplus_kwh", "autoconsumption_aid", "total_aids", "leasing_options", 
+                "optimal_kit", "aids_config", "pricing_options"
+            ]
+            
+            for price_level, calculation in results.items():
+                missing_fields = [field for field in required_fields if field not in calculation]
+                if missing_fields:
+                    issues.append(f"Price level '{price_level}' missing fields: {missing_fields}")
+                
+                # Verify client mode is professional
+                if calculation.get("client_mode") != "professionnels":
+                    issues.append(f"Price level '{price_level}': client_mode should be 'professionnels', got '{calculation.get('client_mode')}'")
+                
+                # Verify price level is correct
+                if calculation.get("price_level") != price_level:
+                    issues.append(f"Price level mismatch: expected '{price_level}', got '{calculation.get('price_level')}'")
+                
+                # Verify professional rates (80% autoconsommation, 0.26€/kWh)
+                aids_config = calculation.get("aids_config", {})
+                autoconsumption_rate = aids_config.get("autoconsumption_rate", 0)
+                edf_rate = aids_config.get("edf_rate", 0)
+                surplus_sale_rate = aids_config.get("surplus_sale_rate", 0)
+                
+                if autoconsumption_rate != 0.80:
+                    issues.append(f"Price level '{price_level}': autoconsumption rate should be 0.80 (80%), got {autoconsumption_rate}")
+                
+                if abs(edf_rate - 0.26) > 0.001:
+                    issues.append(f"Price level '{price_level}': EDF rate should be 0.26€/kWh, got {edf_rate}€/kWh")
+                
+                if abs(surplus_sale_rate - 0.0761) > 0.0001:
+                    issues.append(f"Price level '{price_level}': surplus sale rate should be 0.0761€/kWh, got {surplus_sale_rate}€/kWh")
+                
+                # Verify leasing options exist
+                leasing_options = calculation.get("leasing_options", [])
+                if not leasing_options:
+                    issues.append(f"Price level '{price_level}': no leasing options provided")
+                
+                # Verify optimal kit exists
+                optimal_kit = calculation.get("optimal_kit")
+                if not optimal_kit:
+                    issues.append(f"Price level '{price_level}': no optimal kit found")
+                
+                # Verify prime calculation (should use table data, not calculated)
+                autoconsumption_aid = calculation.get("autoconsumption_aid", 0)
+                kit_power = calculation.get("kit_power", 0)
+                
+                # For professionals, aid should come from table prime, not calculated
+                if autoconsumption_aid <= 0:
+                    issues.append(f"Price level '{price_level}': autoconsumption aid should be > 0, got {autoconsumption_aid}")
+            
+            # Verify price differences between levels
+            if len(results) == 3:
+                base_price = results["base"].get("kit_price", 0)
+                remise_price = results["remise"].get("kit_price", 0)
+                remise_max_price = results["remise_max"].get("kit_price", 0)
+                
+                if not (base_price > remise_price > remise_max_price):
+                    issues.append(f"Price levels should decrease: base {base_price}€ > remise {remise_price}€ > remise_max {remise_max_price}€")
+            
+            if issues:
+                self.log_test("Professional Endpoint Complete", False, f"Professional endpoint issues: {'; '.join(issues)}", results)
+            else:
+                # Create success summary
+                base_calc = results["base"]
+                summary = (
+                    f"✅ Professional endpoint working perfectly. "
+                    f"Kit: {base_calc.get('kit_power')}kW, "
+                    f"Production: {base_calc.get('estimated_production', 0):.0f} kWh/year, "
+                    f"80% autoconsommation rate, "
+                    f"0.26€/kWh EDF rate, "
+                    f"Prime: {base_calc.get('autoconsumption_aid', 0)}€, "
+                    f"Prices: base {results['base'].get('kit_price')}€ > remise {results['remise'].get('kit_price')}€ > remise_max {results['remise_max'].get('kit_price')}€"
+                )
+                
+                self.log_test("Professional Endpoint Complete", True, summary, {
+                    "base_calculation": results["base"],
+                    "price_comparison": {
+                        "base": results["base"].get("kit_price"),
+                        "remise": results["remise"].get("kit_price"),
+                        "remise_max": results["remise_max"].get("kit_price")
+                    }
+                })
+                
+        except Exception as e:
+            self.log_test("Professional Endpoint Complete", False, f"Error: {str(e)}")
+
+    def test_three_price_levels_optimization(self):
+        """Test optimization works for all 3 price levels"""
+        try:
+            if not hasattr(self, 'professional_client_id') or not self.professional_client_id:
+                self.log_test("Three Price Levels Optimization", False, "No professional client available")
+                return
+            
+            price_levels = ["base", "remise", "remise_max"]
+            optimization_results = {}
+            
+            for price_level in price_levels:
+                response = self.session.post(f"{self.base_url}/calculate-professional/{self.professional_client_id}", 
+                                           params={"price_level": price_level})
+                
+                if response.status_code == 200:
+                    calculation = response.json()
+                    optimal_kit = calculation.get("optimal_kit")
+                    leasing_options = calculation.get("leasing_options", [])
+                    
+                    optimization_results[price_level] = {
+                        "optimal_kit": optimal_kit,
+                        "leasing_options_count": len(leasing_options),
+                        "kit_price": calculation.get("kit_price", 0),
+                        "monthly_savings": calculation.get("monthly_savings", 0)
+                    }
+                else:
+                    optimization_results[price_level] = None
+            
+            issues = []
+            
+            # Verify optimization works for each level
+            for price_level, result in optimization_results.items():
+                if result is None:
+                    issues.append(f"Failed to get calculation for price level '{price_level}'")
+                    continue
+                
+                optimal_kit = result["optimal_kit"]
+                if not optimal_kit:
+                    issues.append(f"No optimal kit found for price level '{price_level}'")
+                    continue
+                
+                # Verify optimal kit has required fields
+                required_optimal_fields = [
+                    "kit_power", "monthly_payment", "monthly_savings", "monthly_benefit", 
+                    "price_level", "kit_price", "leasing_rate"
+                ]
+                
+                missing_fields = [field for field in required_optimal_fields if field not in optimal_kit]
+                if missing_fields:
+                    issues.append(f"Optimal kit for '{price_level}' missing fields: {missing_fields}")
+                
+                # Verify price level matches
+                if optimal_kit.get("price_level") != price_level:
+                    issues.append(f"Optimal kit price level '{optimal_kit.get('price_level')}' != requested '{price_level}'")
+                
+                # Verify leasing options exist
+                if result["leasing_options_count"] == 0:
+                    issues.append(f"No leasing options for price level '{price_level}'")
+            
+            # Verify that lower price levels give better optimization results
+            if all(result is not None for result in optimization_results.values()):
+                base_benefit = optimization_results["base"]["optimal_kit"].get("monthly_benefit", 0) if optimization_results["base"]["optimal_kit"] else 0
+                remise_benefit = optimization_results["remise"]["optimal_kit"].get("monthly_benefit", 0) if optimization_results["remise"]["optimal_kit"] else 0
+                remise_max_benefit = optimization_results["remise_max"]["optimal_kit"].get("monthly_benefit", 0) if optimization_results["remise_max"]["optimal_kit"] else 0
+                
+                if not (remise_max_benefit >= remise_benefit >= base_benefit):
+                    issues.append(f"Monthly benefits should increase with better pricing: base {base_benefit}€ ≤ remise {remise_benefit}€ ≤ remise_max {remise_max_benefit}€")
+            
+            if issues:
+                self.log_test("Three Price Levels Optimization", False, f"Optimization issues: {'; '.join(issues)}", optimization_results)
+            else:
+                # Create success summary
+                summary_parts = []
+                for price_level, result in optimization_results.items():
+                    if result and result["optimal_kit"]:
+                        optimal = result["optimal_kit"]
+                        summary_parts.append(f"{price_level}: {optimal.get('kit_power')}kW, {optimal.get('monthly_benefit', 0):.2f}€ bénéfice/mois")
+                
+                self.log_test("Three Price Levels Optimization", True, 
+                            f"✅ Optimization working for all 3 price levels. {'; '.join(summary_parts)}", 
+                            optimization_results)
+                
+        except Exception as e:
+            self.log_test("Three Price Levels Optimization", False, f"Error: {str(e)}")
     
     def run_all_tests(self):
         """Run all tests in order"""
