@@ -2767,6 +2767,45 @@ body::after {
   }
 }
 
+/* Styles spécifiques pour les professionnels */
+.price-remise-max {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.prime-amount {
+  color: #ff9800;
+  font-weight: bold;
+}
+
+.commission {
+  color: #2196f3;
+  font-weight: bold;
+}
+
+.commission-max {
+  color: #e91e63;
+  font-weight: bold;
+}
+
+.kit-detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.kit-detail-row span:first-child {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+}
+
+.kit-detail-row span:last-child {
+  color: white;
+  font-weight: 500;
+}
+
 /* Styles pour la sélection manuelle des kits */
 .kit-selection-section {
   margin: 30px 0;
