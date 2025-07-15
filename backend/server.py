@@ -12,6 +12,7 @@ from datetime import datetime
 import requests
 import aiohttp
 import asyncio
+import httpx
 from geopy.geocoders import Nominatim
 import json
 import io
