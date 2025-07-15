@@ -1472,8 +1472,126 @@ Cordialement`);
                   <span className="aid-amount"><strong>{Math.round(results.total_aids)} €</strong></span>
                 </div>
               </div>
+
+              {optimalFinancing && (
+                <div className="optimal-financing">
+                  <h4>🏦 Options de financement recommandées</h4>
+                  
+                  {/* Financement sans aides déduites */}
+                  <div className="financing-card highlighted">
+                    <div className="financing-header">
+                      <h5>⭐ Financement standard sur {optimalFinancing.duration_years} ans</h5>
+                      <span className="financing-type">Sans aides déduites</span>
+                    </div>
+                    <div className="financing-details">
+                      <div className="financing-row">
+                        <span>Investissement total:</span>
+                        <span className="amount">{results.kit_price?.toLocaleString()} € TTC</span>
+                      </div>
+                      <div className="financing-row">
+                        <span>Mensualité crédit:</span>
+                        <span className="amount">{Math.round(optimalFinancing.monthly_payment)} €/mois</span>
+                      </div>
+                      <div className="financing-row">
+                        <span>Économie EDF:</span>
+                        <span className="amount success">{Math.round(results.monthly_savings)} €/mois</span>
+                      </div>
+                      <div className="financing-row">
+                        <span>Reste à charge:</span>
+                        <span className={`amount ${optimalFinancing.difference_vs_savings < 0 ? 'success' : 'warning'}`}>
+                          {optimalFinancing.difference_vs_savings > 0 ? '+' : ''}{Math.round(optimalFinancing.difference_vs_savings)} €/mois
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Financement avec aides déduites */}
+                  <div className="financing-card">
+                    <div className="financing-header">
+                      <h5>💰 Financement avec aides déduites</h5>
+                      <span className="financing-type">Taux 3.25% TAEG</span>
+                    </div>
+                    <div className="financing-details">
+                      <div className="financing-row">
+                        <span>Montant à financer:</span>
+                        <span className="amount">{Math.round(results.kit_price - results.total_aids).toLocaleString()} €</span>
+                      </div>
+                      <div className="financing-row">
+                        <span>Mensualité:</span>
+                        <span className="amount">{Math.round(results.financing_with_aids?.monthly_payment)} €/mois</span>
+                      </div>
+                      <div className="financing-row">
+                        <span>Économie EDF:</span>
+                        <span className="amount success">{Math.round(results.monthly_savings)} €/mois</span>
+                      </div>
+                      <div className="financing-row">
+                        <span>Reste à charge:</span>
+                        <span className={`amount ${results.financing_with_aids?.difference_vs_savings < 0 ? 'success' : 'warning'}`}>
+                          {results.financing_with_aids?.difference_vs_savings > 0 ? '+' : ''}{Math.round(results.financing_with_aids?.difference_vs_savings)} €/mois
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Section de vignette financing */}
+              <div className="financing-vignette">
+                <h4>🎯 Votre financement optimisé</h4>
+                <div className="vignette-content">
+                  <div className="vignette-text">
+                    <p>Rien à débourser pendant les 6 premiers mois</p>
+                    <p>Réinjection des Aides dans votre financement pour réduire vos mensualités</p>
+                  </div>
+                  <div className="vignette-highlight">
+                    <span className="highlight-text">Mensualité finale : {Math.round(results.financing_with_aids?.monthly_payment || 0)}€</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="all-financing-options">
+                <h4>📊 Toutes les options de financement disponibles</h4>
+                <div className="financing-table">
+                  <div className="table-header">
+                    <span>Durée</span>
+                    <span>Mensualité</span>
+                    <span>Différence vs économies</span>
+                  </div>
+                  {results.financing_options?.map((option, index) => (
+                    <div key={index} className="table-row">
+                      <span>{option.duration_years} ans</span>
+                      <span>{Math.round(option.monthly_payment)} €</span>
+                      <span className={Math.abs(option.difference_vs_savings) < 20 ? 'success' : 'warning'}>
+                        {option.difference_vs_savings > 0 ? '+' : ''}{Math.round(option.difference_vs_savings)} €/mois
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="financing-with-aids">
+                <h4>💸 Toutes les options de financement disponibles avec aides déduites</h4>
+                <div className="financing-table">
+                  <div className="table-header">
+                    <span>Durée</span>
+                    <span>Mensualité</span>
+                    <span>Différence vs économies</span>
+                  </div>
+                  {results.all_financing_with_aids?.map((option, index) => (
+                    <div key={index} className="table-row">
+                      <span>{option.duration_years} ans</span>
+                      <span>{Math.round(option.monthly_payment)} €</span>
+                      <span className={Math.abs(option.difference_vs_savings) < 20 ? 'success' : 'warning'}>
+                        {option.difference_vs_savings > 0 ? '+' : ''}{Math.round(option.difference_vs_savings)} €/mois
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
+        </div>
+      )}
 
             {optimalFinancing && (
               <div className="optimal-financing">
