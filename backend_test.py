@@ -1448,6 +1448,13 @@ class SolarCalculatorTester:
         self.test_solar_calculation_professionnels()
         self.test_particuliers_vs_professionnels_comparison()
         
+        # NEW: Professional Leasing System Tests
+        print("\n📋 PRIORITY 3.5 - NEW Professional Leasing System Tests")
+        self.test_leasing_matrix_rates()
+        self.test_optimal_leasing_kit_algorithm()
+        self.test_professional_endpoint_complete()
+        self.test_three_price_levels_optimization()
+        
         # Priority 3 - NEW: Test autoconsumption/surplus distribution changes
         print("\n📋 PRIORITY 4 - NEW Autoconsumption/Surplus Distribution (95%/5%)")
         self.test_autoconsumption_surplus_distribution()
