@@ -134,6 +134,50 @@ SOLAR_KITS_PARTICULIERS = {
 
 # Solar Kit Pricing - Professionnels (tarifs HT du tableau PRO)
 SOLAR_KITS_PROFESSIONNELS = {
+    # Kits 3-9kW pour professionnels (prix estimés selon logique du tableau)
+    3: {
+        "panels": 6, "surface": 13,
+        "prime": 570, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 13900, "tarif_remise_ht": 13500, "tarif_remise_max_ht": 13100,
+        "commission_normale": 1390, "commission_remise_max": 1200
+    },
+    4: {
+        "panels": 8, "surface": 17,
+        "prime": 760, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 18900, "tarif_remise_ht": 18400, "tarif_remise_max_ht": 17900,
+        "commission_normale": 1890, "commission_remise_max": 1650
+    },
+    5: {
+        "panels": 10, "surface": 21,
+        "prime": 950, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 20900, "tarif_remise_ht": 20350, "tarif_remise_max_ht": 19800,
+        "commission_normale": 2090, "commission_remise_max": 1800
+    },
+    6: {
+        "panels": 12, "surface": 25,
+        "prime": 1140, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 21900, "tarif_remise_ht": 21300, "tarif_remise_max_ht": 20700,
+        "commission_normale": 2190, "commission_remise_max": 1900
+    },
+    7: {
+        "panels": 14, "surface": 29,
+        "prime": 1330, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 23900, "tarif_remise_ht": 23250, "tarif_remise_max_ht": 22600,
+        "commission_normale": 2390, "commission_remise_max": 2050
+    },
+    8: {
+        "panels": 16, "surface": 34,
+        "prime": 1520, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 25900, "tarif_remise_ht": 25200, "tarif_remise_max_ht": 24500,
+        "commission_normale": 2590, "commission_remise_max": 2200
+    },
+    9: {
+        "panels": 18, "surface": 38,
+        "prime": 1710, "tarif_rachat_surplus": 0.0761,
+        "tarif_base_ht": 28900, "tarif_remise_ht": 28100, "tarif_remise_max_ht": 27300,
+        "commission_normale": 2890, "commission_remise_max": 2450
+    },
+    # Kits 10-36kW du tableau original
     10: {
         "panels": 24, "surface": 45,
         "prime": 1900, "tarif_rachat_surplus": 0.0761,
