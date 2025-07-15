@@ -228,8 +228,8 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("PVGIS Direct", False, f"Error: {str(e)}")
     
-    def test_create_client(self):
-        """Test client creation with realistic French data"""
+    def test_create_client_particuliers(self):
+        """Test client creation with particuliers mode"""
         try:
             client_data = {
                 "first_name": "Jean",
@@ -243,33 +243,88 @@ class SolarCalculatorTester:
                 "water_heating_capacity": 200,
                 "annual_consumption_kwh": 6500.0,
                 "monthly_edf_payment": 180.0,
-                "annual_edf_payment": 2160.0
+                "annual_edf_payment": 2160.0,
+                "client_mode": "particuliers"
             }
             
             response = self.session.post(f"{self.base_url}/clients", json=client_data)
             if response.status_code == 200:
                 client = response.json()
                 
-                # Check if geocoding worked
-                if "latitude" in client and "longitude" in client and "id" in client:
+                # Check if geocoding worked and client_mode is stored
+                if "latitude" in client and "longitude" in client and "id" in client and "client_mode" in client:
                     lat, lon = client["latitude"], client["longitude"]
+                    client_mode = client["client_mode"]
                     self.client_id = client["id"]  # Store for next test
                     
                     # Paris coordinates should be around 48.8566, 2.3522
-                    if 48.5 <= lat <= 49.0 and 2.0 <= lon <= 2.7:
-                        self.log_test("Create Client", True, 
-                                    f"Client created successfully. ID: {self.client_id}, Coords: {lat:.4f}, {lon:.4f}", 
+                    if 48.5 <= lat <= 49.0 and 2.0 <= lon <= 2.7 and client_mode == "particuliers":
+                        self.log_test("Create Client Particuliers", True, 
+                                    f"Particuliers client created. ID: {self.client_id}, Mode: {client_mode}, Coords: {lat:.4f}, {lon:.4f}", 
                                     client)
                     else:
-                        self.log_test("Create Client", False, 
-                                    f"Geocoding seems incorrect. Coords: {lat}, {lon} (expected Paris area)", 
-                                    client)
+                        issues = []
+                        if not (48.5 <= lat <= 49.0 and 2.0 <= lon <= 2.7):
+                            issues.append(f"Geocoding incorrect: {lat}, {lon}")
+                        if client_mode != "particuliers":
+                            issues.append(f"Client mode incorrect: {client_mode}")
+                        self.log_test("Create Client Particuliers", False, f"Issues: {'; '.join(issues)}", client)
                 else:
-                    self.log_test("Create Client", False, "Missing latitude, longitude, or id in response", client)
+                    missing_fields = [f for f in ["latitude", "longitude", "id", "client_mode"] if f not in client]
+                    self.log_test("Create Client Particuliers", False, f"Missing fields: {missing_fields}", client)
             else:
-                self.log_test("Create Client", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_test("Create Client Particuliers", False, f"HTTP {response.status_code}: {response.text}")
         except Exception as e:
-            self.log_test("Create Client", False, f"Error: {str(e)}")
+            self.log_test("Create Client Particuliers", False, f"Error: {str(e)}")
+
+    def test_create_client_professionnels(self):
+        """Test client creation with professionnels mode"""
+        try:
+            client_data = {
+                "first_name": "Marie",
+                "last_name": "Martin",
+                "address": "15 Rue de Rivoli, 75001 Paris",
+                "roof_surface": 120.0,  # Larger roof for professional
+                "roof_orientation": "Sud",
+                "velux_count": 4,
+                "heating_system": "Pompe à chaleur",
+                "water_heating_system": "Solaire thermique",
+                "water_heating_capacity": 300,
+                "annual_consumption_kwh": 12000.0,  # Higher consumption for professional
+                "monthly_edf_payment": 350.0,
+                "annual_edf_payment": 4200.0,
+                "client_mode": "professionnels"
+            }
+            
+            response = self.session.post(f"{self.base_url}/clients", json=client_data)
+            if response.status_code == 200:
+                client = response.json()
+                
+                # Check if geocoding worked and client_mode is stored
+                if "latitude" in client and "longitude" in client and "id" in client and "client_mode" in client:
+                    lat, lon = client["latitude"], client["longitude"]
+                    client_mode = client["client_mode"]
+                    self.professional_client_id = client["id"]  # Store for comparison test
+                    
+                    # Paris coordinates should be around 48.8566, 2.3522
+                    if 48.5 <= lat <= 49.0 and 2.0 <= lon <= 2.7 and client_mode == "professionnels":
+                        self.log_test("Create Client Professionnels", True, 
+                                    f"Professional client created. ID: {self.professional_client_id}, Mode: {client_mode}, Coords: {lat:.4f}, {lon:.4f}", 
+                                    client)
+                    else:
+                        issues = []
+                        if not (48.5 <= lat <= 49.0 and 2.0 <= lon <= 2.7):
+                            issues.append(f"Geocoding incorrect: {lat}, {lon}")
+                        if client_mode != "professionnels":
+                            issues.append(f"Client mode incorrect: {client_mode}")
+                        self.log_test("Create Client Professionnels", False, f"Issues: {'; '.join(issues)}", client)
+                else:
+                    missing_fields = [f for f in ["latitude", "longitude", "id", "client_mode"] if f not in client]
+                    self.log_test("Create Client Professionnels", False, f"Missing fields: {missing_fields}", client)
+            else:
+                self.log_test("Create Client Professionnels", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Create Client Professionnels", False, f"Error: {str(e)}")
     
     def test_get_clients(self):
         """Test getting all clients"""
