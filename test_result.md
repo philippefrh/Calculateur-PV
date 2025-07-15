@@ -119,11 +119,11 @@ backend:
 
   - task: "Solar Kits Endpoint with Client Mode Support"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "testing"
@@ -134,6 +134,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ PROFESSIONAL VERSION SOLAR KITS FULLY TESTED - All three endpoints working perfectly: 1) Legacy /solar-kits returns particuliers kits (3-9kW). 2) /solar-kits/particuliers returns same kits (3-9kW only). 3) /solar-kits/professionnels returns extended kits (3-9kW + 12kW, 15kW, 20kW). Professional pricing confirmed lower: 6kW: 22900€→21500€ (-1400€), 12kW: 35900€, 20kW: 55900€. Pricing comparison shows professionals get volume discounts on all common kits. Professional version implementation successful."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE FOUND - Professional kits endpoint only returns 10-36kW range, missing 3-9kW kits that are essential for smaller professional clients. This causes calculation failures and prevents optimal kit finding for clients with lower consumption. SOLAR_KITS_PROFESSIONNELS needs to include 3-9kW range with professional pricing structure."
 
   - task: "PVGIS Direct Test Endpoint"
     implemented: true
@@ -179,11 +182,11 @@ backend:
 
   - task: "Professional Mode Solar Calculation with PVGIS"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "testing"
@@ -194,6 +197,45 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ PROFESSIONAL MODE SOLAR CALCULATION FULLY TESTED - Both calculation modes working perfectly: 1) Particuliers: 6kW kit, 6873 kWh/year, 95% autonomy, 480€ aid (80€/kW rate), no amortissement. 2) Professionnels: 12kW kit, 13677 kWh/year, 95% autonomy, 720€ aid (60€/kW rate), 30% amortissement accéléré. Aid rate difference confirmed: -20€/kW for professionals. Professional clients get access to larger kits (12kW recommended vs 6kW for particuliers). aids_config properly returned with different rates. Professional version calculation logic successful."
+      - working: false
+        agent: "testing"
+        comment: "❌ PROFESSIONAL CALCULATION FAILING - Regular /calculate/{client_id} endpoint fails for professional clients with 'price' error. Professional kits structure uses 'tarif_base_ht', 'tarif_remise_ht' fields instead of 'price' field. Line 914 in calculate_solar_solution tries to access kit_info['price'] which doesn't exist for professional kits."
+
+  - task: "Professional Leasing Matrix Implementation"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ LEASING MATRIX FIXED - Fixed critical bug in calculate_leasing_options where rates were not converted from percentage to decimal (amount * rate instead of amount * rate/100). Now correctly calculates: 20,200€ × 2.07% = 418€/month instead of 41,814€/month. Matrix structure working with proper rate ranges and zone rouge restrictions."
+
+  - task: "Professional Leasing Optimization Algorithm"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ OPTIMIZATION ALGORITHM WORKING CORRECTLY - find_optimal_leasing_kit algorithm correctly identifies that no optimal kit exists when monthly leasing payments exceed monthly savings. Test case: 11kW kit at 395-418€/month vs 233€ monthly savings = negative benefit, correctly returns None. Algorithm logic is sound but needs smaller professional kits (3-9kW) for lower consumption clients."
+
+  - task: "Professional Endpoint with Price Levels"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ PROFESSIONAL ENDPOINT WORKING - /api/calculate-professional/{client_id} endpoint working perfectly with all 3 price levels (base/remise/remise_max). Correctly applies 80% autoconsumption rate, 0.26€/kWh EDF rate, 0.0761€/kWh surplus rate. Price levels working: base 20,200€ > remise 19,650€ > remise_max 19,100€. Leasing options calculated correctly. Only issue is missing smaller kits for optimal recommendations."
 
   - task: "Dual Mode Financing Calculation"
     implemented: true
