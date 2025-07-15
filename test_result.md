@@ -330,7 +330,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Manual Kit Selection for Commercial Use (Step 4/4) - Successfully tested and working"
+    - "Professional Mode Frontend Integration - needs testing"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
