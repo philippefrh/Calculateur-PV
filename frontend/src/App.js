@@ -1328,45 +1328,152 @@ Cordialement`);
 
       {activeTab === 'financial' && (
         <div className="tab-content">
-          <div className="financing-section">
-            <h3>💰 Analyse financière complète</h3>
-            
-            <div className="financial-summary">
-              <div className="financial-item">
-                <span className="financial-label">💳 Investissement:</span>
-                <span className="financial-value">{results.kit_price?.toLocaleString()} € TTC</span>
-              </div>
-              <div className="financial-item">
-                <span className="financial-label">🎁 Aides totales:</span>
-                <span className="financial-value success">-{Math.round(results.total_aids)} €</span>
-              </div>
-              <div className="financial-item">
-                <span className="financial-label">💸 Reste à financer:</span>
-                <span className="financial-value">{(results.kit_price - results.total_aids).toLocaleString()} €</span>
-              </div>
-              <div className="financial-item">
-                <span className="financial-label">⏱️ Retour sur investissement:</span>
-                <span className="financial-value">{Math.round((results.kit_price - results.total_aids) / results.estimated_savings)} ans</span>
-              </div>
-            </div>
-
-            <div className="aids-breakdown">
-              <h4>🎁 Détail des aides disponibles</h4>
-              <div className="aid-item">
-                <span>Prime autoconsommation EDF (versée à M+6):</span>
-                <span className="aid-amount">{results.autoconsumption_aid} €</span>
-              </div>
-              {results.tva_refund > 0 && (
-                <div className="aid-item">
-                  <span>TVA remboursée 20% (versée à M+12):</span>
-                  <span className="aid-amount">{Math.round(results.tva_refund)} €</span>
+          {/* Affichage conditionnel selon le mode client */}
+          {results.client_mode === 'professionnels' ? (
+            <div className="professional-results">
+              {/* Section MEILLEUR KITS OPTIMISE */}
+              {results.optimal_kit && (
+                <div className="optimal-kit-section">
+                  <h3>🎯 MEILLEUR KITS OPTIMISE</h3>
+                  <div className="optimal-kit-card">
+                    <div className="optimal-kit-header">
+                      <h4>Kit {results.optimal_kit.kit_power}kW - Leasing {results.optimal_kit.duration_months} mois</h4>
+                      <span className="optimal-badge">RECOMMANDÉ</span>
+                    </div>
+                    <div className="optimal-kit-details">
+                      <div className="optimal-detail-row">
+                        <span>Mensualité leasing :</span>
+                        <span className="leasing-payment">{results.optimal_kit.monthly_payment?.toFixed(2)}€/mois</span>
+                      </div>
+                      <div className="optimal-detail-row">
+                        <span>Économies mensuelles :</span>
+                        <span className="monthly-savings">{results.optimal_kit.monthly_savings?.toFixed(2)}€/mois</span>
+                      </div>
+                      <div className="optimal-detail-row benefit">
+                        <span>Bénéfice mensuel :</span>
+                        <span className="monthly-benefit">+{results.optimal_kit.monthly_benefit?.toFixed(2)}€/mois</span>
+                      </div>
+                      <div className="optimal-detail-row">
+                        <span>Niveau de prix :</span>
+                        <span className="price-level">{results.optimal_kit.price_level || 'base'}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
-              <div className="aid-item total-aid">
-                <span><strong>Total des aides récupérables:</strong></span>
-                <span className="aid-amount"><strong>{Math.round(results.total_aids)} €</strong></span>
+              
+              {/* Section Options de Leasing */}
+              {results.leasing_options && results.leasing_options.length > 0 && (
+                <div className="leasing-options-section">
+                  <h3>💰 Options de Leasing Disponibles</h3>
+                  <div className="leasing-options-grid">
+                    {results.leasing_options.map((option, index) => (
+                      <div key={index} className="leasing-option-card">
+                        <div className="leasing-option-header">
+                          <h4>{option.duration_months} mois</h4>
+                          <span className="leasing-rate">{option.rate}%</span>
+                        </div>
+                        <div className="leasing-option-details">
+                          <div className="leasing-detail-row">
+                            <span>Mensualité :</span>
+                            <span className="monthly-payment">{option.monthly_payment?.toFixed(2)}€</span>
+                          </div>
+                          <div className="leasing-detail-row">
+                            <span>Total payé :</span>
+                            <span className="total-payment">{option.total_payment?.toFixed(2)}€</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Section Analyse Financière Professionnelle */}
+              <div className="professional-financial-analysis">
+                <h3>📊 Analyse Financière Professionnelle</h3>
+                <div className="financial-cards">
+                  <div className="financial-card">
+                    <h4>🏭 Avantages Professionnels</h4>
+                    <div className="financial-details">
+                      <div className="financial-row">
+                        <span>Prime subvention :</span>
+                        <span className="prime-amount">{results.autoconsumption_aid?.toFixed(2)}€</span>
+                      </div>
+                      <div className="financial-row">
+                        <span>TVA récupérée :</span>
+                        <span className="tva-benefit">Oui (par l'entreprise)</span>
+                      </div>
+                      <div className="financial-row">
+                        <span>Amortissement accéléré :</span>
+                        <span className="amortissement">30% première année</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="financial-card">
+                    <h4>⚡ Consommation Professionnelle</h4>
+                    <div className="financial-details">
+                      <div className="financial-row">
+                        <span>Autoconsommation :</span>
+                        <span className="autoconsumption">{results.autoconsumption_kwh?.toFixed(0)} kWh (80%)</span>
+                      </div>
+                      <div className="financial-row">
+                        <span>Surplus revendu :</span>
+                        <span className="surplus">{results.surplus_kwh?.toFixed(0)} kWh (20%)</span>
+                      </div>
+                      <div className="financial-row">
+                        <span>Tarif EDF pro :</span>
+                        <span className="edf-rate">0.26€/kWh</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+          ) : (
+            // Affichage traditionnel pour les particuliers
+            <div className="financing-section">
+              <h3>💰 Analyse financière complète</h3>
+              
+              <div className="financial-summary">
+                <div className="financial-item">
+                  <span className="financial-label">💳 Investissement:</span>
+                  <span className="financial-value">{results.kit_price?.toLocaleString()} € TTC</span>
+                </div>
+                <div className="financial-item">
+                  <span className="financial-label">🎁 Aides totales:</span>
+                  <span className="financial-value success">-{Math.round(results.total_aids)} €</span>
+                </div>
+                <div className="financial-item">
+                  <span className="financial-label">💸 Reste à financer:</span>
+                  <span className="financial-value">{(results.kit_price - results.total_aids).toLocaleString()} €</span>
+                </div>
+                <div className="financial-item">
+                  <span className="financial-label">⏱️ Retour sur investissement:</span>
+                  <span className="financial-value">{Math.round((results.kit_price - results.total_aids) / results.estimated_savings)} ans</span>
+                </div>
+              </div>
+
+              <div className="aids-breakdown">
+                <h4>🎁 Détail des aides disponibles</h4>
+                <div className="aid-item">
+                  <span>Prime autoconsommation EDF (versée à M+6):</span>
+                  <span className="aid-amount">{results.autoconsumption_aid} €</span>
+                </div>
+                {results.tva_refund > 0 && (
+                  <div className="aid-item">
+                    <span>TVA remboursée 20% (versée à M+12):</span>
+                    <span className="aid-amount">{Math.round(results.tva_refund)} €</span>
+                  </div>
+                )}
+                <div className="aid-item total-aid">
+                  <span><strong>Total des aides récupérables:</strong></span>
+                  <span className="aid-amount"><strong>{Math.round(results.total_aids)} €</strong></span>
+                </div>
+              </div>
+          </div>
+          )}
 
             {optimalFinancing && (
               <div className="optimal-financing">
