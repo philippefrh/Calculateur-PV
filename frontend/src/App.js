@@ -2041,13 +2041,22 @@ const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
         water_heating_capacity: parseInt(formData.waterHeatingCapacity) || null,
         annual_consumption_kwh: parseFloat(formData.annualConsumption),
         monthly_edf_payment: parseFloat(formData.monthlyEdfPayment),
-        annual_edf_payment: parseFloat(formData.annualEdfPayment)
+        annual_edf_payment: parseFloat(formData.annualEdfPayment),
+        client_mode: formData.clientMode || 'particuliers'
       });
 
       const clientId = clientResponse.data.id;
 
-      // Ensuite faire le calcul PVGIS
-      const calculationResponse = await axios.post(`${API}/calculate/${clientId}`);
+      // Effectuer le calcul selon le mode client
+      let calculationResponse;
+      if (formData.clientMode === 'professionnels') {
+        // Pour les professionnels, utiliser l'endpoint dédié avec niveau de prix
+        const priceLevel = 'base'; // Par défaut, mais peut être modifié
+        calculationResponse = await axios.post(`${API}/calculate-professional/${clientId}?price_level=${priceLevel}`);
+      } else {
+        // Pour les particuliers, utiliser l'endpoint classique
+        calculationResponse = await axios.post(`${API}/calculate/${clientId}`);
+      }
       
       setCalculationResults(calculationResponse.data);
       setTimeout(() => onComplete(calculationResponse.data), 2000);
