@@ -65,6 +65,92 @@ body::after {
   z-index: 10;
 }
 
+/* Mode selector styles */
+.mode-selector {
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.mode-toggle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.mode-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 5px;
+  gap: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mode-toggle-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: transparent;
+  color: white;
+  min-width: 140px;
+}
+
+.mode-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.mode-toggle-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+}
+
+.mode-description {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 350px;
+  line-height: 1.4;
+}
+
+.mode-description p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Responsive design for mode selector */
+@media (max-width: 768px) {
+  .mode-toggle-container {
+    padding: 20px;
+  }
+  
+  .mode-toggle-btn {
+    min-width: 120px;
+    font-size: 13px;
+    padding: 10px 15px;
+  }
+  
+  .mode-description {
+    font-size: 13px;
+  }
+}
+
 /* Écran de démarrage amélioré */
 .start-screen {
   background: rgba(255, 255, 255, 0.95);
