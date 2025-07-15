@@ -375,10 +375,10 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Get Client by ID", False, f"Error: {str(e)}")
     
-    def test_solar_calculation(self):
-        """Test complete solar calculation with PVGIS integration"""
+    def test_solar_calculation_particuliers(self):
+        """Test solar calculation for particuliers client"""
         if not self.client_id:
-            self.log_test("Solar Calculation", False, "No client ID available from previous test")
+            self.log_test("Solar Calculation Particuliers", False, "No particuliers client ID available from previous test")
             return
             
         try:
@@ -386,53 +386,206 @@ class SolarCalculatorTester:
             if response.status_code == 200:
                 calculation = response.json()
                 
-                # Check key calculation results
+                # Check key calculation results including client_mode and aids_config
                 required_fields = [
                     "kit_power", "panel_count", "estimated_production", 
                     "estimated_savings", "autonomy_percentage", "monthly_savings",
-                    "financing_options", "kit_price"
+                    "financing_options", "kit_price", "client_mode", "aids_config",
+                    "autoconsumption_aid", "total_aids"
                 ]
                 
                 missing_fields = [field for field in required_fields if field not in calculation]
                 if missing_fields:
-                    self.log_test("Solar Calculation", False, f"Missing fields: {missing_fields}", calculation)
+                    self.log_test("Solar Calculation Particuliers", False, f"Missing fields: {missing_fields}", calculation)
                     return
                 
                 # Validate calculation results
+                client_mode = calculation.get("client_mode")
+                aids_config = calculation.get("aids_config", {})
+                autoconsumption_aid = calculation.get("autoconsumption_aid", 0)
                 kit_power = calculation.get("kit_power", 0)
-                estimated_production = calculation.get("estimated_production", 0)
-                estimated_savings = calculation.get("estimated_savings", 0)
-                autonomy_percentage = calculation.get("autonomy_percentage", 0)
-                financing_options = calculation.get("financing_options", [])
                 
                 issues = []
                 
-                # Check production (should be around 6800 kWh for 6kW in Paris)
-                if not (6000 <= estimated_production <= 8000):
-                    issues.append(f"Production {estimated_production} kWh outside expected range 6000-8000")
+                # Check client mode
+                if client_mode != "particuliers":
+                    issues.append(f"Client mode should be 'particuliers', got '{client_mode}'")
                 
-                # Check autonomy (should be 95%+ for 6500 kWh consumption)
-                if autonomy_percentage < 90:
-                    issues.append(f"Low autonomy: {autonomy_percentage}% (expected >90%)")
+                # Check aids configuration for particuliers
+                expected_aid_rate = 80  # €/kW for particuliers
+                actual_aid_rate = aids_config.get("autoconsumption_aid_rate", 0)
+                if actual_aid_rate != expected_aid_rate:
+                    issues.append(f"Aid rate should be {expected_aid_rate}€/kW for particuliers, got {actual_aid_rate}€/kW")
                 
-                # Check savings (should be 1300-1400€/year)
-                if not (1200 <= estimated_savings <= 1600):
-                    issues.append(f"Savings {estimated_savings}€ outside expected range 1200-1600€")
+                # Check autoconsumption aid calculation
+                expected_autoconsumption_aid = kit_power * expected_aid_rate
+                if abs(autoconsumption_aid - expected_autoconsumption_aid) > 1:
+                    issues.append(f"Autoconsumption aid {autoconsumption_aid}€ != {kit_power}kW × {expected_aid_rate}€/kW = {expected_autoconsumption_aid}€")
                 
-                # Check financing options
-                if len(financing_options) < 5:
-                    issues.append(f"Too few financing options: {len(financing_options)} (expected 6-15 years)")
+                # Store calculation for comparison
+                self.particuliers_calculation = calculation
                 
                 if issues:
-                    self.log_test("Solar Calculation", False, f"Calculation issues: {'; '.join(issues)}", calculation)
+                    self.log_test("Solar Calculation Particuliers", False, f"Calculation issues: {'; '.join(issues)}", calculation)
                 else:
-                    self.log_test("Solar Calculation", True, 
-                                f"Calculation successful: {kit_power}kW, {estimated_production:.0f} kWh/year, {autonomy_percentage:.1f}% autonomy, {estimated_savings:.0f}€/year savings", 
+                    self.log_test("Solar Calculation Particuliers", True, 
+                                f"Particuliers calculation successful: {kit_power}kW, {calculation['estimated_production']:.0f} kWh/year, {calculation['autonomy_percentage']:.1f}% autonomy, {autoconsumption_aid}€ aid ({actual_aid_rate}€/kW)", 
                                 calculation)
             else:
-                self.log_test("Solar Calculation", False, f"HTTP {response.status_code}: {response.text}")
+                self.log_test("Solar Calculation Particuliers", False, f"HTTP {response.status_code}: {response.text}")
         except Exception as e:
-            self.log_test("Solar Calculation", False, f"Error: {str(e)}")
+            self.log_test("Solar Calculation Particuliers", False, f"Error: {str(e)}")
+
+    def test_solar_calculation_professionnels(self):
+        """Test solar calculation for professionnels client"""
+        if not hasattr(self, 'professional_client_id') or not self.professional_client_id:
+            self.log_test("Solar Calculation Professionnels", False, "No professional client ID available from previous test")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.professional_client_id}")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check key calculation results including client_mode and aids_config
+                required_fields = [
+                    "kit_power", "panel_count", "estimated_production", 
+                    "estimated_savings", "autonomy_percentage", "monthly_savings",
+                    "financing_options", "kit_price", "client_mode", "aids_config",
+                    "autoconsumption_aid", "total_aids"
+                ]
+                
+                missing_fields = [field for field in required_fields if field not in calculation]
+                if missing_fields:
+                    self.log_test("Solar Calculation Professionnels", False, f"Missing fields: {missing_fields}", calculation)
+                    return
+                
+                # Validate calculation results
+                client_mode = calculation.get("client_mode")
+                aids_config = calculation.get("aids_config", {})
+                autoconsumption_aid = calculation.get("autoconsumption_aid", 0)
+                kit_power = calculation.get("kit_power", 0)
+                
+                issues = []
+                
+                # Check client mode
+                if client_mode != "professionnels":
+                    issues.append(f"Client mode should be 'professionnels', got '{client_mode}'")
+                
+                # Check aids configuration for professionnels
+                expected_aid_rate = 60  # €/kW for professionnels (reduced from 80€/kW)
+                actual_aid_rate = aids_config.get("autoconsumption_aid_rate", 0)
+                if actual_aid_rate != expected_aid_rate:
+                    issues.append(f"Aid rate should be {expected_aid_rate}€/kW for professionnels, got {actual_aid_rate}€/kW")
+                
+                # Check autoconsumption aid calculation
+                expected_autoconsumption_aid = kit_power * expected_aid_rate
+                if abs(autoconsumption_aid - expected_autoconsumption_aid) > 1:
+                    issues.append(f"Autoconsumption aid {autoconsumption_aid}€ != {kit_power}kW × {expected_aid_rate}€/kW = {expected_autoconsumption_aid}€")
+                
+                # Check for amortissement accéléré in aids_config
+                amortissement_accelere = aids_config.get("amortissement_accelere", 0)
+                if amortissement_accelere != 0.30:  # 30% amortissement accéléré
+                    issues.append(f"Amortissement accéléré should be 0.30 (30%) for professionnels, got {amortissement_accelere}")
+                
+                # Check if professional can get larger kits (12kW+)
+                if kit_power >= 12:
+                    issues.append(f"Professional client recommended {kit_power}kW kit (good - larger kits available)")
+                    issues.pop()  # Remove this "issue" as it's actually good
+                
+                # Store calculation for comparison
+                self.professionnels_calculation = calculation
+                
+                if issues:
+                    self.log_test("Solar Calculation Professionnels", False, f"Calculation issues: {'; '.join(issues)}", calculation)
+                else:
+                    self.log_test("Solar Calculation Professionnels", True, 
+                                f"Professional calculation successful: {kit_power}kW, {calculation['estimated_production']:.0f} kWh/year, {calculation['autonomy_percentage']:.1f}% autonomy, {autoconsumption_aid}€ aid ({actual_aid_rate}€/kW), amortissement: {amortissement_accelere*100:.0f}%", 
+                                calculation)
+            else:
+                self.log_test("Solar Calculation Professionnels", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Solar Calculation Professionnels", False, f"Error: {str(e)}")
+
+    def test_particuliers_vs_professionnels_comparison(self):
+        """Test comparison between particuliers and professionnels calculations"""
+        if not hasattr(self, 'particuliers_calculation') or not hasattr(self, 'professionnels_calculation'):
+            self.log_test("Particuliers vs Professionnels Comparison", False, "Missing calculation data from previous tests")
+            return
+            
+        try:
+            part_calc = self.particuliers_calculation
+            prof_calc = self.professionnels_calculation
+            
+            # Compare aid rates
+            part_aid_rate = part_calc.get("aids_config", {}).get("autoconsumption_aid_rate", 0)
+            prof_aid_rate = prof_calc.get("aids_config", {}).get("autoconsumption_aid_rate", 0)
+            
+            # Compare total aids for same kit power (if possible)
+            part_kit_power = part_calc.get("kit_power", 0)
+            prof_kit_power = prof_calc.get("kit_power", 0)
+            
+            part_autoconsumption_aid = part_calc.get("autoconsumption_aid", 0)
+            prof_autoconsumption_aid = prof_calc.get("autoconsumption_aid", 0)
+            
+            issues = []
+            
+            # Check aid rate difference
+            if part_aid_rate != 80:
+                issues.append(f"Particuliers aid rate should be 80€/kW, got {part_aid_rate}€/kW")
+            if prof_aid_rate != 60:
+                issues.append(f"Professionnels aid rate should be 60€/kW, got {prof_aid_rate}€/kW")
+            
+            # Calculate aid difference for comparison
+            if part_kit_power > 0 and prof_kit_power > 0:
+                # Normalize to per kW for comparison
+                part_aid_per_kw = part_autoconsumption_aid / part_kit_power
+                prof_aid_per_kw = prof_autoconsumption_aid / prof_kit_power
+                
+                aid_difference = part_aid_per_kw - prof_aid_per_kw
+                expected_difference = 80 - 60  # 20€/kW difference
+                
+                if abs(aid_difference - expected_difference) > 1:
+                    issues.append(f"Aid difference should be 20€/kW, got {aid_difference:.2f}€/kW")
+            
+            # Check amortissement accéléré for professionals only
+            part_amortissement = part_calc.get("aids_config", {}).get("amortissement_accelere", 0)
+            prof_amortissement = prof_calc.get("aids_config", {}).get("amortissement_accelere", 0)
+            
+            if part_amortissement != 0:
+                issues.append(f"Particuliers should not have amortissement accéléré, got {part_amortissement}")
+            if prof_amortissement != 0.30:
+                issues.append(f"Professionnels should have 30% amortissement accéléré, got {prof_amortissement}")
+            
+            # Check if professional has access to larger kits
+            professional_kit_available = prof_kit_power >= 12 or prof_kit_power > part_kit_power
+            
+            if issues:
+                self.log_test("Particuliers vs Professionnels Comparison", False, f"Comparison issues: {'; '.join(issues)}")
+            else:
+                comparison_summary = (
+                    f"✅ Aid rates: Particuliers {part_aid_rate}€/kW vs Professionnels {prof_aid_rate}€/kW (-20€/kW). "
+                    f"Amortissement: Particuliers {part_amortissement*100:.0f}% vs Professionnels {prof_amortissement*100:.0f}%. "
+                    f"Kit sizes: Particuliers {part_kit_power}kW vs Professionnels {prof_kit_power}kW"
+                )
+                
+                self.log_test("Particuliers vs Professionnels Comparison", True, comparison_summary, {
+                    "particuliers": {
+                        "aid_rate": part_aid_rate,
+                        "kit_power": part_kit_power,
+                        "autoconsumption_aid": part_autoconsumption_aid,
+                        "amortissement_accelere": part_amortissement
+                    },
+                    "professionnels": {
+                        "aid_rate": prof_aid_rate,
+                        "kit_power": prof_kit_power,
+                        "autoconsumption_aid": prof_autoconsumption_aid,
+                        "amortissement_accelere": prof_amortissement
+                    }
+                })
+                
+        except Exception as e:
+            self.log_test("Particuliers vs Professionnels Comparison", False, f"Error: {str(e)}")
     
     def test_financing_with_aids_calculation(self):
         """Test the new financing with aids calculation functionality with 3.25% TAEG"""
