@@ -197,11 +197,11 @@ backend:
 
   - task: "Dual Mode Financing Calculation"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
@@ -209,6 +209,9 @@ backend:
       - working: false
         agent: "main"
         comment: "🔄 UPDATED FOR PROFESSIONAL VERSION - Financing calculations now take into account client mode. Professionnels have different aid calculations which affect financing amounts. Added aids_config to results for frontend display."
+      - working: true
+        agent: "testing"
+        comment: "✅ DUAL MODE FINANCING CALCULATION FULLY TESTED - Professional version financing working perfectly with different aid rates affecting calculations: 1) Particuliers: 17840€ financed (22900€ - 5060€ aids), 125.36€/month with 3.25% TAEG. 2) Professionnels: Different aid amounts due to 60€/kW vs 80€/kW rate affecting financed amounts. Both modes use same 3.25% TAEG rate for aids financing. All financing options (6-15 years) calculated correctly for both modes. aids_config properly included in response for frontend display. Professional version financing implementation successful."
 
   - task: "All Financing Options with Aids (6-15 years)"
     implemented: true
