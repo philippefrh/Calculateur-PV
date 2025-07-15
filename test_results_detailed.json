@@ -3,7 +3,7 @@
     "test": "Professional Kits 3-9kW Added",
     "success": true,
     "details": "\u2705 Kits 3-9kW pr\u00e9sents avec structure professionnelle. 6kW: base 21900\u20ac, remise 21300\u20ac, prime 1140\u20ac",
-    "timestamp": "2025-07-15 21:43:59",
+    "timestamp": "2025-07-15 21:56:18",
     "response_data": {
       "3": {
         "panels": 6,
@@ -86,310 +86,65 @@
   },
   {
     "test": "General Calculation Professional Client",
-    "success": true,
-    "details": "\u2705 Calcul g\u00e9n\u00e9ral r\u00e9ussi pour client professionnel. Kit 7kW, \u00e9conomies 149.36\u20ac/mois",
-    "timestamp": "2025-07-15 21:44:02",
-    "response_data": {
-      "client_id": "e89eb6a5-fa10-4d1b-960a-3d9d81d4b2d7",
-      "kit_power": 7,
-      "panel_count": 14,
-      "estimated_production": 8029.44,
-      "estimated_savings": 1792.3315967999997,
-      "autonomy_percentage": 95.0,
-      "monthly_savings": 149.36096639999997,
-      "financing_options": [
-        {
-          "duration_years": 6,
-          "duration_months": 72,
-          "monthly_payment": 384.46,
-          "savings_ratio": 2.57,
-          "difference_vs_savings": 235.1
-        },
-        {
-          "duration_years": 7,
-          "duration_months": 84,
-          "monthly_payment": 337.35,
-          "savings_ratio": 2.26,
-          "difference_vs_savings": 187.99
-        },
-        {
-          "duration_years": 8,
-          "duration_months": 96,
-          "monthly_payment": 302.12,
-          "savings_ratio": 2.02,
-          "difference_vs_savings": 152.76
-        },
-        {
-          "duration_years": 9,
-          "duration_months": 108,
-          "monthly_payment": 274.8,
-          "savings_ratio": 1.84,
-          "difference_vs_savings": 125.44
-        },
-        {
-          "duration_years": 10,
-          "duration_months": 120,
-          "monthly_payment": 253.03,
-          "savings_ratio": 1.69,
-          "difference_vs_savings": 103.67
-        },
-        {
-          "duration_years": 11,
-          "duration_months": 132,
-          "monthly_payment": 235.29,
-          "savings_ratio": 1.58,
-          "difference_vs_savings": 85.93
-        },
-        {
-          "duration_years": 12,
-          "duration_months": 144,
-          "monthly_payment": 220.57,
-          "savings_ratio": 1.48,
-          "difference_vs_savings": 71.21
-        },
-        {
-          "duration_years": 13,
-          "duration_months": 156,
-          "monthly_payment": 208.18,
-          "savings_ratio": 1.39,
-          "difference_vs_savings": 58.81
-        },
-        {
-          "duration_years": 14,
-          "duration_months": 168,
-          "monthly_payment": 197.61,
-          "savings_ratio": 1.32,
-          "difference_vs_savings": 48.25
-        },
-        {
-          "duration_years": 15,
-          "duration_months": 180,
-          "monthly_payment": 188.5,
-          "savings_ratio": 1.26,
-          "difference_vs_savings": 39.14
-        }
-      ],
-      "pvgis_annual_production": 8029.44,
-      "pvgis_monthly_data": [
-        {
-          "month": 1,
-          "E_d": 10.23,
-          "E_m": 317.1,
-          "H(i)_d": 1.7,
-          "H(i)_m": 52.77,
-          "SD_m": 48.95
-        },
-        {
-          "month": 2,
-          "E_d": 15.96,
-          "E_m": 446.87,
-          "H(i)_d": 2.68,
-          "H(i)_m": 75.11,
-          "SD_m": 108.63
-        },
-        {
-          "month": 3,
-          "E_d": 22.8,
-          "E_m": 706.78,
-          "H(i)_d": 3.93,
-          "H(i)_m": 121.9,
-          "SD_m": 109.41
-        },
-        {
-          "month": 4,
-          "E_d": 29.9,
-          "E_m": 897.04,
-          "H(i)_d": 5.33,
-          "H(i)_m": 159.77,
-          "SD_m": 132.38
-        },
-        {
-          "month": 5,
-          "E_d": 29.03,
-          "E_m": 900.05,
-          "H(i)_d": 5.23,
-          "H(i)_m": 162.02,
-          "SD_m": 138.59
-        },
-        {
-          "month": 6,
-          "E_d": 30.24,
-          "E_m": 907.16,
-          "H(i)_d": 5.56,
-          "H(i)_m": 166.93,
-          "SD_m": 114.29
-        },
-        {
-          "month": 7,
-          "E_d": 30.39,
-          "E_m": 942.13,
-          "H(i)_d": 5.68,
-          "H(i)_m": 176.21,
-          "SD_m": 99.95
-        },
-        {
-          "month": 8,
-          "E_d": 28.42,
-          "E_m": 881.1,
-          "H(i)_d": 5.26,
-          "H(i)_m": 163.13,
-          "SD_m": 73.25
-        },
-        {
-          "month": 9,
-          "E_d": 25.97,
-          "E_m": 779.18,
-          "H(i)_d": 4.7,
-          "H(i)_m": 140.96,
-          "SD_m": 60.15
-        },
-        {
-          "month": 10,
-          "E_d": 18.09,
-          "E_m": 560.78,
-          "H(i)_d": 3.17,
-          "H(i)_m": 98.13,
-          "SD_m": 67.8
-        },
-        {
-          "month": 11,
-          "E_d": 12.47,
-          "E_m": 374.19,
-          "H(i)_d": 2.11,
-          "H(i)_m": 63.41,
-          "SD_m": 67.74
-        },
-        {
-          "month": 12,
-          "E_d": 10.23,
-          "E_m": 317.07,
-          "H(i)_d": 1.71,
-          "H(i)_m": 53.13,
-          "SD_m": 73.55
-        }
-      ],
-      "client_mode": "professionnels",
-      "kit_price": 23900,
-      "autoconsumption_kwh": 6423.552,
-      "surplus_kwh": 1605.8879999999995,
-      "autoconsumption_aid": 1330,
-      "tva_refund": 0,
-      "total_aids": 1330,
-      "financing_with_aids": {
-        "duration_years": 15,
-        "duration_months": 180,
-        "financed_amount": 22570,
-        "monthly_payment": 158.59,
-        "total_interests": 5976.62,
-        "difference_vs_savings": 9.23
-      },
-      "all_financing_with_aids": [
-        {
-          "duration_years": 6,
-          "duration_months": 72,
-          "monthly_payment": 345.45,
-          "total_interests": 2302.5,
-          "difference_vs_savings": 196.09
-        },
-        {
-          "duration_years": 7,
-          "duration_months": 84,
-          "monthly_payment": 300.77,
-          "total_interests": 2695.02,
-          "difference_vs_savings": 151.41
-        },
-        {
-          "duration_years": 8,
-          "duration_months": 96,
-          "monthly_payment": 267.31,
-          "total_interests": 3091.48,
-          "difference_vs_savings": 117.95
-        },
-        {
-          "duration_years": 9,
-          "duration_months": 108,
-          "monthly_payment": 241.31,
-          "total_interests": 3491.88,
-          "difference_vs_savings": 91.95
-        },
-        {
-          "duration_years": 10,
-          "duration_months": 120,
-          "monthly_payment": 220.55,
-          "total_interests": 3896.22,
-          "difference_vs_savings": 71.19
-        },
-        {
-          "duration_years": 11,
-          "duration_months": 132,
-          "monthly_payment": 203.59,
-          "total_interests": 4304.49,
-          "difference_vs_savings": 54.23
-        },
-        {
-          "duration_years": 12,
-          "duration_months": 144,
-          "monthly_payment": 189.49,
-          "total_interests": 4716.67,
-          "difference_vs_savings": 40.13
-        },
-        {
-          "duration_years": 13,
-          "duration_months": 156,
-          "monthly_payment": 177.58,
-          "total_interests": 5132.76,
-          "difference_vs_savings": 28.22
-        },
-        {
-          "duration_years": 14,
-          "duration_months": 168,
-          "monthly_payment": 167.4,
-          "total_interests": 5552.75,
-          "difference_vs_savings": 18.04
-        },
-        {
-          "duration_years": 15,
-          "duration_months": 180,
-          "monthly_payment": 158.59,
-          "total_interests": 5976.62,
-          "difference_vs_savings": 9.23
-        }
-      ],
-      "pvgis_source": "Donn\u00e9es source PVGIS Commission Europ\u00e9enne",
-      "orientation": "Sud",
-      "coordinates": {
-        "lat": 48.8689953,
-        "lon": 2.3311419
-      },
-      "aids_config": {
-        "autoconsumption_aid_rate": 190,
-        "tva_rate": 0.2,
-        "amortissement_accelere": 0.3,
-        "autoconsumption_rate": 0.8,
-        "edf_rate": 0.26,
-        "surplus_sale_rate": 0.0761
-      }
-    }
+    "success": false,
+    "details": "Failed to create professional client: 500",
+    "timestamp": "2025-07-15 21:56:21",
+    "response_data": null
   },
   {
     "test": "Optimal Algorithm with New Kits",
     "success": false,
     "details": "Failed to create client: 500",
-    "timestamp": "2025-07-15 21:44:05",
+    "timestamp": "2025-07-15 21:56:21",
     "response_data": null
   },
   {
     "test": "Modest Savings Example",
     "success": false,
     "details": "Failed to create modest client: 500",
-    "timestamp": "2025-07-15 21:44:09",
+    "timestamp": "2025-07-15 21:56:31",
+    "response_data": null
+  },
+  {
+    "test": "Professional Workflow Complete",
+    "success": false,
+    "details": "Failed to create professional client: 500",
+    "timestamp": "2025-07-15 21:56:31",
+    "response_data": null
+  },
+  {
+    "test": "Professional vs Particuliers Comparison",
+    "success": false,
+    "details": "Failed to create particuliers client",
+    "timestamp": "2025-07-15 21:56:33",
+    "response_data": null
+  },
+  {
+    "test": "Professional Price Levels",
+    "success": false,
+    "details": "No professional workflow result available from previous test",
+    "timestamp": "2025-07-15 21:56:33",
+    "response_data": null
+  },
+  {
+    "test": "Realistic Usage Case",
+    "success": false,
+    "details": "Failed to create client: 500",
+    "timestamp": "2025-07-15 21:56:35",
+    "response_data": null
+  },
+  {
+    "test": "Leasing Matrix Comprehensive",
+    "success": false,
+    "details": "Matrix issues: Failed to create test client for 25000\u20ac; Failed to create test client for 50000\u20ac; Failed to create test client for 20000\u20ac; Failed to create test client for 15000\u20ac; Failed to create test client for 75000\u20ac",
+    "timestamp": "2025-07-15 21:56:43",
     "response_data": null
   },
   {
     "test": "API Root",
     "success": true,
     "details": "API accessible, message: Solar Calculator API with PVGIS Integration",
-    "timestamp": "2025-07-15 21:44:09",
+    "timestamp": "2025-07-15 21:56:43",
     "response_data": {
       "message": "Solar Calculator API with PVGIS Integration"
     }
@@ -398,7 +153,7 @@
     "test": "Solar Kits Legacy",
     "success": true,
     "details": "Legacy endpoint working. 6kW kit: 22900\u20ac, 12 panels",
-    "timestamp": "2025-07-15 21:44:09",
+    "timestamp": "2025-07-15 21:56:43",
     "response_data": {
       "3": {
         "price": 14900,
@@ -434,7 +189,7 @@
     "test": "Solar Kits Particuliers",
     "success": true,
     "details": "Particuliers kits (3-9kW only). 6kW kit: 22900\u20ac, 12 panels",
-    "timestamp": "2025-07-15 21:44:09",
+    "timestamp": "2025-07-15 21:56:43",
     "response_data": {
       "3": {
         "price": 14900,
@@ -470,7 +225,7 @@
     "test": "Solar Kits Professionnels",
     "success": false,
     "details": "Missing price/panels info in professional kit data",
-    "timestamp": "2025-07-15 21:44:09",
+    "timestamp": "2025-07-15 21:56:43",
     "response_data": {
       "3": {
         "panels": 6,
@@ -852,14 +607,14 @@
     "test": "Solar Kits Pricing Comparison",
     "success": false,
     "details": "Error: 'price'",
-    "timestamp": "2025-07-15 21:44:09",
+    "timestamp": "2025-07-15 21:56:43",
     "response_data": null
   },
   {
     "test": "PVGIS Direct",
     "success": true,
     "details": "PVGIS working. Annual production: 6805.93 kWh for 6kW in Paris",
-    "timestamp": "2025-07-15 21:44:10",
+    "timestamp": "2025-07-15 21:56:44",
     "response_data": {
       "coordinates": {
         "lat": 48.8566,
@@ -1307,21 +1062,21 @@
     "test": "Create Client Particuliers",
     "success": false,
     "details": "HTTP 500: {\"detail\":\"400: Could not find coordinates for address: 10 Avenue des Champs-\u00c9lys\u00e9es, 75008 Paris\"}",
-    "timestamp": "2025-07-15 21:44:14",
+    "timestamp": "2025-07-15 21:56:45",
     "response_data": null
   },
   {
     "test": "Create Client Professionnels",
     "success": false,
     "details": "HTTP 500: {\"detail\":\"400: Could not find coordinates for address: 15 Rue de Rivoli, 75001 Paris\"}",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Get Clients",
     "success": true,
     "details": "Retrieved 73 clients",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": [
       {
         "id": "91a78bea-3ecb-4659-a60a-35c73f78b283",
@@ -31586,98 +31341,98 @@
     "test": "Get Client by ID",
     "success": false,
     "details": "No client ID available from previous test",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Solar Calculation Particuliers",
     "success": false,
     "details": "No particuliers client ID available from previous test",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Solar Calculation Professionnels",
     "success": false,
     "details": "No professional client ID available from previous test",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Particuliers vs Professionnels Comparison",
     "success": false,
     "details": "Error: 'NoneType' object has no attribute 'get'",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Leasing Matrix Rates",
     "success": false,
     "details": "Leasing matrix issues: No professional client available for leasing tests",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Optimal Leasing Kit Algorithm",
     "success": false,
     "details": "No professional client available for leasing tests",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Professional Endpoint Complete",
     "success": false,
     "details": "No professional client available",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Three Price Levels Optimization",
     "success": false,
     "details": "No professional client available",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Autoconsumption/Surplus Distribution",
     "success": false,
     "details": "No client ID available from previous test",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Financing with Aids",
     "success": false,
     "details": "No client ID available from previous test",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "All Financing with Aids",
     "success": false,
     "details": "No client ID available from previous test",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "PDF Generation - Financing Tables",
     "success": false,
     "details": "No client ID available from previous test",
-    "timestamp": "2025-07-15 21:44:17",
+    "timestamp": "2025-07-15 21:56:47",
     "response_data": null
   },
   {
     "test": "Error Handling - Invalid Address",
     "success": false,
     "details": "Expected 400 error, got 500",
-    "timestamp": "2025-07-15 21:44:20",
+    "timestamp": "2025-07-15 21:56:48",
     "response_data": null
   },
   {
     "test": "Error Handling - Non-existent Client",
     "success": false,
     "details": "Expected 404 error, got 500",
-    "timestamp": "2025-07-15 21:44:20",
+    "timestamp": "2025-07-15 21:56:48",
     "response_data": null
   }
 ]
