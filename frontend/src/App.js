@@ -1587,9 +1587,11 @@ Cordialement`);
                     </div>
                   ))}
                 </div>
-
-                {/* Nouveau tableau avec aides déduites */}
-                <div className="all-financing-options" style={{marginTop: '30px'}}>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
                   <h4>💰 Toutes les options de financement disponibles avec aides déduites</h4>
                   <div className="financing-table">
                     <div className="table-header">
