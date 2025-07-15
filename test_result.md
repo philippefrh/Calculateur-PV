@@ -241,6 +241,18 @@ backend:
         comment: "✅ PDF GENERATION WITH NEW FINANCING TABLES STRUCTURE FULLY TESTED AND WORKING - Successfully verified all requirements from review request: 1) Created new test client 'Marie Martin' with 7kW solar system recommendation. 2) Complete solar calculation performed with 7978 kWh annual production and 161.44€ monthly savings. 3) PDF generated successfully (163,452 bytes) with both financing tables: - 'OPTIONS DE FINANCEMENT' table: 4.96% TAEG, 10 rows (6-15 years), 4 columns WITHOUT 'total_cost' as requested - 'OPTIONS DE FINANCEMENT AVEC AIDES DÉDUITES' table: 3.25% TAEG, 10 rows (6-15 years), 4 columns WITHOUT 'total_cost' as requested, green header color (#4caf50). 4) Interest rate comparison verified: 15-year financing shows 196.39€/month (4.96% TAEG) vs 136.04€/month (3.25% TAEG) = 60.35€/month savings (30.7% reduction). 5) Data structure correctly updated - removed 'total_cost' field from all financing calculation functions. All PDF requirements met perfectly."
 
 frontend:
+  - task: "Homepage Toggle Mode Selection"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "🔄 NEW FEATURE - Added toggle mode selection on homepage allowing users to choose between 'Particuliers' and 'Professionnels' modes. Toggle buttons are styled with glassmorphism effect and change application terminology accordingly. Default mode is 'particuliers'."
+
   - task: "Complete Frontend Workflow Testing"
     implemented: true
     working: true
@@ -255,6 +267,18 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ EDUCATIONAL PAGES DURING PVGIS CALCULATION SUCCESSFULLY TESTED - Comprehensive testing completed of the new 4-minute educational experience during PVGIS calculation. Key findings: 1) Successfully navigated through all 4 form steps to reach calculation screen. 2) Educational pages container properly displays during 4-minute countdown. 3) Demo mode functionality working perfectly for sales demonstrations (⚡ Mode Démo ON). 4) Countdown circle with progress indicator functioning correctly (4:00 initial countdown). 5) Educational content successfully replaces old static tips as requested. 6) All 4 educational phases implemented: Phase 0 (Installations FRH), Phase 1 (Solar explanation), Phase 2 (Monitoring interface), Phase 3 (Investment analysis). 7) Calculation completes successfully and transitions to results screen showing 7kW kit, 95% autonomy, 8041 kWh production, 1953€ savings. 8) Commercial objective achieved: provides 4 minutes of valuable client education time for sales representatives to explain solar technology professionally. The educational pages feature is ready for production deployment."
+
+  - task: "Professional Mode Frontend Integration"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "🔄 NEW FEATURE - Updated frontend to support professional mode throughout the application. Client mode is now passed through formData and synchronized with backend. Need to update kit selection to call new endpoint /solar-kits/{client_mode} and handle professional-specific features."
 
   - task: "Educational Pages During PVGIS Calculation (4 minutes)"
     implemented: true
