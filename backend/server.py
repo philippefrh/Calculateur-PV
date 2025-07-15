@@ -979,10 +979,10 @@ async def calculate_solar_solution(client_id: str):
         total_aids = autoconsumption_aid_total + tva_refund
         
         # Calculate financing options with aids deducted
-        financing_with_aids = calculate_financing_with_aids(kit_info['price'], total_aids, monthly_savings)
+        financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings)
         
         # Calculate all financing options with aids deducted for all durations
-        all_financing_with_aids = calculate_all_financing_with_aids(kit_info['price'], total_aids, monthly_savings)
+        all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings)
         
         calculation = SolarCalculation(
             client_id=client_id,
