@@ -940,18 +940,50 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious }) => {
                             <span>Surface totale:</span>
                             <span>{kit.surface}m²</span>
                           </div>
-                          <div className="kit-detail-row">
-                            <span>Prix TTC:</span>
-                            <span>{kit.priceTTC.toLocaleString()}€</span>
-                          </div>
-                          <div className="kit-detail-row">
-                            <span>Prix avec aides:</span>
-                            <span className="price-with-aids">{kit.priceWithAids.toLocaleString()}€</span>
-                          </div>
-                          <div className="kit-detail-row commission">
-                            <span>CO2 économisé:</span>
-                            <span>{kit.commission} kilos/an</span>
-                          </div>
+                          
+                          {formData.clientMode === 'professionnels' ? (
+                            <>
+                              <div className="kit-detail-row">
+                                <span>Prix de base HT:</span>
+                                <span>{kit.priceHT.toLocaleString()}€</span>
+                              </div>
+                              <div className="kit-detail-row">
+                                <span>Prix remisé HT:</span>
+                                <span>{kit.priceRemise.toLocaleString()}€</span>
+                              </div>
+                              <div className="kit-detail-row">
+                                <span>Prix remisé MAX HT:</span>
+                                <span className="price-remise-max">{kit.priceRemiseMax.toLocaleString()}€</span>
+                              </div>
+                              <div className="kit-detail-row">
+                                <span>Prime subvention:</span>
+                                <span className="prime-amount">{kit.prime.toLocaleString()}€</span>
+                              </div>
+                              <div className="kit-detail-row">
+                                <span>Commission normale:</span>
+                                <span className="commission">{kit.commissionNormale.toLocaleString()}€</span>
+                              </div>
+                              <div className="kit-detail-row">
+                                <span>Commission remise MAX:</span>
+                                <span className="commission-max">{kit.commissionRemiseMax.toLocaleString()}€</span>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="kit-detail-row">
+                                <span>Prix TTC:</span>
+                                <span>{kit.priceTTC.toLocaleString()}€</span>
+                              </div>
+                              <div className="kit-detail-row">
+                                <span>Prix avec aides:</span>
+                                <span className="price-with-aids">{kit.priceWithAids.toLocaleString()}€</span>
+                              </div>
+                              <div className="kit-detail-row commission">
+                                <span>CO2 économisé:</span>
+                                <span>{kit.commission} kilos/an</span>
+                              </div>
+                            </>
+                          )}
                         </div>
                         
                         {selectedKit?.power === kit.power && (
