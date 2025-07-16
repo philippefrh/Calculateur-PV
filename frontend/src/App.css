@@ -193,6 +193,13 @@ body::after {
   margin-right: 20px; /* Décaler légèrement sur la droite pour centrage */
 }
 
+.company-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Style pour le texte région - Option 2 */
 .region-subtitle {
   font-size: 1.1rem;
@@ -202,8 +209,7 @@ body::after {
   opacity: 0.8;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
-  display: block;
-  width: 100%;
+  margin-left: 20px; /* Compenser le décalage du logo */
 }
 
 .rge-logo-small {
