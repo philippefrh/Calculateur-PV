@@ -1144,6 +1144,153 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Error Handling - Non-existent Client", False, f"Error: {str(e)}")
     
+    def test_financing_duration_synchronization(self):
+        """Test the financing duration synchronization fix - verify that financing_with_aids uses same duration as optimal financing"""
+        if not self.client_id:
+            self.log_test("Financing Duration Synchronization", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test for France region
+            france_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}")
+            if france_response.status_code != 200:
+                self.log_test("Financing Duration Synchronization", False, f"Failed to get France calculation: {france_response.status_code}")
+                return
+            
+            france_calc = france_response.json()
+            
+            # Test for Martinique region
+            martinique_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique")
+            if martinique_response.status_code != 200:
+                self.log_test("Financing Duration Synchronization", False, f"Failed to get Martinique calculation: {martinique_response.status_code}")
+                return
+            
+            martinique_calc = martinique_response.json()
+            
+            issues = []
+            
+            # Test France region synchronization
+            france_financing_options = france_calc.get("financing_options", [])
+            france_financing_with_aids = france_calc.get("financing_with_aids", {})
+            france_monthly_savings = france_calc.get("monthly_savings", 0)
+            
+            if not france_financing_options:
+                issues.append("France: Missing financing_options")
+            elif not france_financing_with_aids:
+                issues.append("France: Missing financing_with_aids")
+            else:
+                # Find optimal duration using same logic as backend
+                optimal_france_option = None
+                for option in france_financing_options:
+                    diff = option.get("difference_vs_savings", float('inf'))
+                    if -20 <= diff <= 20:
+                        optimal_france_option = option
+                        break
+                
+                if optimal_france_option is None:
+                    optimal_france_option = france_financing_options[-1]  # Last option if none found
+                
+                optimal_france_duration = optimal_france_option["duration_years"]
+                aids_france_duration = france_financing_with_aids.get("duration_years", 0)
+                
+                if optimal_france_duration != aids_france_duration:
+                    issues.append(f"France: Optimal financing duration {optimal_france_duration} years != financing_with_aids duration {aids_france_duration} years")
+                
+                # Verify the logic matches frontend expectations
+                if abs(optimal_france_option.get("difference_vs_savings", 0)) > 20:
+                    # If no option within ±20€, should use last option (15 years typically)
+                    if aids_france_duration != france_financing_options[-1]["duration_years"]:
+                        issues.append(f"France: When no option within ±20€ range, should use last option ({france_financing_options[-1]['duration_years']} years), got {aids_france_duration} years")
+            
+            # Test Martinique region synchronization
+            martinique_financing_options = martinique_calc.get("financing_options", [])
+            martinique_financing_with_aids = martinique_calc.get("financing_with_aids", {})
+            martinique_monthly_savings = martinique_calc.get("monthly_savings", 0)
+            
+            if not martinique_financing_options:
+                issues.append("Martinique: Missing financing_options")
+            elif not martinique_financing_with_aids:
+                issues.append("Martinique: Missing financing_with_aids")
+            else:
+                # Find optimal duration using same logic as backend
+                optimal_martinique_option = None
+                for option in martinique_financing_options:
+                    diff = option.get("difference_vs_savings", float('inf'))
+                    if -20 <= diff <= 20:
+                        optimal_martinique_option = option
+                        break
+                
+                if optimal_martinique_option is None:
+                    optimal_martinique_option = martinique_financing_options[-1]  # Last option if none found
+                
+                optimal_martinique_duration = optimal_martinique_option["duration_years"]
+                aids_martinique_duration = martinique_financing_with_aids.get("duration_years", 0)
+                
+                if optimal_martinique_duration != aids_martinique_duration:
+                    issues.append(f"Martinique: Optimal financing duration {optimal_martinique_duration} years != financing_with_aids duration {aids_martinique_duration} years")
+            
+            # Test comparison fairness - both should have same duration for fair comparison
+            if france_financing_options and france_financing_with_aids and martinique_financing_options and martinique_financing_with_aids:
+                # Verify that monthly payments are comparable (with aids should be lower due to reduced principal)
+                france_optimal_payment = optimal_france_option.get("monthly_payment", 0) if 'optimal_france_option' in locals() and optimal_france_option else 0
+                france_aids_payment = france_financing_with_aids.get("monthly_payment", 0)
+                
+                if france_aids_payment >= france_optimal_payment:
+                    issues.append(f"France: Financing with aids payment ({france_aids_payment:.2f}€) should be lower than optimal financing payment ({france_optimal_payment:.2f}€)")
+                
+                martinique_optimal_payment = optimal_martinique_option.get("monthly_payment", 0) if 'optimal_martinique_option' in locals() and optimal_martinique_option else 0
+                martinique_aids_payment = martinique_financing_with_aids.get("monthly_payment", 0)
+                
+                if martinique_aids_payment >= martinique_optimal_payment:
+                    issues.append(f"Martinique: Financing with aids payment ({martinique_aids_payment:.2f}€) should be lower than optimal financing payment ({martinique_optimal_payment:.2f}€)")
+            
+            # Test that financing_options contains different durations for both regions
+            if france_financing_options:
+                france_durations = [opt["duration_years"] for opt in france_financing_options]
+                expected_france_durations = list(range(5, 16))  # 5-15 years for France
+                if france_durations != expected_france_durations:
+                    issues.append(f"France: Expected durations {expected_france_durations}, got {france_durations}")
+            
+            if martinique_financing_options:
+                martinique_durations = [opt["duration_years"] for opt in martinique_financing_options]
+                expected_martinique_durations = list(range(3, 16))  # 3-15 years for Martinique
+                if martinique_durations != expected_martinique_durations:
+                    issues.append(f"Martinique: Expected durations {expected_martinique_durations}, got {martinique_durations}")
+            
+            if issues:
+                self.log_test("Financing Duration Synchronization", False, f"Synchronization issues: {'; '.join(issues)}", {
+                    "france_optimal_duration": optimal_france_duration if 'optimal_france_duration' in locals() else None,
+                    "france_aids_duration": aids_france_duration if 'aids_france_duration' in locals() else None,
+                    "martinique_optimal_duration": optimal_martinique_duration if 'optimal_martinique_duration' in locals() else None,
+                    "martinique_aids_duration": aids_martinique_duration if 'aids_martinique_duration' in locals() else None
+                })
+            else:
+                # Success message with details
+                france_summary = f"France: {optimal_france_duration}y optimal = {aids_france_duration}y with aids ({france_aids_payment:.2f}€ vs {france_optimal_payment:.2f}€)"
+                martinique_summary = f"Martinique: {optimal_martinique_duration}y optimal = {aids_martinique_duration}y with aids ({martinique_aids_payment:.2f}€ vs {martinique_optimal_payment:.2f}€)"
+                
+                self.log_test("Financing Duration Synchronization", True, 
+                            f"✅ FINANCING DURATION SYNCHRONIZATION WORKING PERFECTLY - {france_summary}, {martinique_summary}. Fair comparison achieved with same durations for both financing options.", 
+                            {
+                                "france": {
+                                    "optimal_duration": optimal_france_duration,
+                                    "aids_duration": aids_france_duration,
+                                    "optimal_payment": france_optimal_payment,
+                                    "aids_payment": france_aids_payment,
+                                    "monthly_savings": france_monthly_savings
+                                },
+                                "martinique": {
+                                    "optimal_duration": optimal_martinique_duration,
+                                    "aids_duration": aids_martinique_duration,
+                                    "optimal_payment": martinique_optimal_payment,
+                                    "aids_payment": martinique_aids_payment,
+                                    "monthly_savings": martinique_monthly_savings
+                                }
+                            })
+                
+        except Exception as e:
+            self.log_test("Financing Duration Synchronization", False, f"Error: {str(e)}")
+    
     def run_all_tests(self):
         """Run all tests in order"""
         print("🚀 Starting Solar Calculator Backend Tests")
