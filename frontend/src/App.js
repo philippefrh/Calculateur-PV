@@ -22,48 +22,15 @@ const AutonomyLogo = () => (
 );
 
 // Écran de démarrage amélioré avec vrais logos
-const StartScreen = ({ onStart, clientMode, setClientMode }) => {
+const StartScreen = ({ onStart }) => {
   
   const handleClick = () => {
     console.log("Button clicked!");
-    console.log("Client mode:", clientMode);
     onStart();
-  };
-  
-  const handleModeChange = (mode) => {
-    setClientMode(mode);
-    console.log("Mode changed to:", mode);
   };
   
   return (
     <div className="start-screen">
-      {/* Toggle Mode Selection */}
-      <div className="mode-selector">
-        <div className="mode-toggle-container">
-          <div className="mode-toggle">
-            <button 
-              className={`mode-toggle-btn ${clientMode === 'particuliers' ? 'active' : ''}`}
-              onClick={() => handleModeChange('particuliers')}
-            >
-              👥 Particuliers
-            </button>
-            <button 
-              className={`mode-toggle-btn ${clientMode === 'professionnels' ? 'active' : ''}`}
-              onClick={() => handleModeChange('professionnels')}
-            >
-              🏢 Professionnels
-            </button>
-          </div>
-          <div className="mode-description">
-            {clientMode === 'particuliers' ? (
-              <p>🏠 Calculateur spécialisé pour les particuliers et résidences privées</p>
-            ) : (
-              <p>🏢 Calculateur spécialisé pour les entreprises et professionnels</p>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Logo FRH Environnement officiel */}
       <div className="company-header">
         <div className="company-image">
@@ -74,9 +41,7 @@ const StartScreen = ({ onStart, clientMode, setClientMode }) => {
           />
         </div>
         <h1 className="company-title">Installateur Photovoltaïque</h1>
-        <p className="company-subtitle">
-          FRH ENVIRONNEMENT - Énergie Solaire {clientMode === 'particuliers' ? 'Résidentiel' : 'Professionnel'}
-        </p>
+        <p className="company-subtitle">FRH ENVIRONNEMENT - Énergie Solaire Professionnel</p>
         <div className="company-stats">
           <div className="stat-item">
             <span className="stat-number">+ de 5000</span>
