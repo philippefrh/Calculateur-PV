@@ -2107,6 +2107,8 @@ function App() {
   const [currentStep, setCurrentStep] = useState('start');
   const [calculationResults, setCalculationResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedRegion, setSelectedRegion] = useState('france');
+  const [regionConfig, setRegionConfig] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
