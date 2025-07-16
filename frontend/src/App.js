@@ -46,6 +46,8 @@ const RegionSelector = ({ selectedRegion, onRegionChange, regionConfig }) => {
 // Écran de démarrage amélioré avec vrais logos
 const StartScreen = ({ onStart, regionConfig }) => {
   
+  console.log('StartScreen rendered with regionConfig:', regionConfig);
+  
   const handleClick = () => {
     console.log("Button clicked!");
     onStart();
