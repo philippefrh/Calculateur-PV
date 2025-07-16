@@ -581,8 +581,8 @@ async def calculate_solar_solution(client_id: str, region: str = "france"):
             tva_refund = kit_info['price'] * TVA_RATE if best_kit > 3 else 0  # No TVA refund for 3kW
             total_aids = autoconsumption_aid_total + tva_refund
         
-        # Calculate financing options with aids deducted
-        financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings, region)
+        # Calculate financing options with aids deducted (same duration as optimal financing)
+        financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings, region, financing_options)
         
         # Calculate all financing options with aids deducted for all durations
         all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings, region)
