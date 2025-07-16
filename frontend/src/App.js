@@ -61,9 +61,15 @@ const StartScreen = ({ onStart, regionConfig }) => {
             alt="FRH Environnement - Installateur Photovoltaïque"
             className="company-logo-image centered"
           />
+          {regionConfig?.logo_subtitle && (
+            <div className="region-subtitle">{regionConfig.logo_subtitle}</div>
+          )}
         </div>
         <h1 className="company-title">Installateur Photovoltaïque</h1>
-        <p className="company-subtitle">FRH ENVIRONNEMENT - Énergie Solaire Professionnel</p>
+        <p className="company-subtitle">{regionConfig?.company_info?.subtitle || "FRH ENVIRONNEMENT - Énergie Solaire Professionnel"}</p>
+        {regionConfig?.company_info?.address && (
+          <p className="company-address">{regionConfig.company_info.address}</p>
+        )}
         <div className="company-stats">
           <div className="stat-item">
             <span className="stat-number">+ de 5000</span>
