@@ -2249,7 +2249,12 @@ function App() {
   if (currentStep === 'start') {
     return (
       <div className="App">
-        <StartScreen onStart={handleStart} />
+        <RegionSelector 
+          selectedRegion={selectedRegion} 
+          onRegionChange={handleRegionChange}
+          regionConfig={regionConfig}
+        />
+        <StartScreen onStart={handleStart} regionConfig={regionConfig} />
       </div>
     );
   }
@@ -2257,6 +2262,11 @@ function App() {
   if (currentStep === 'personal') {
     return (
       <div className="App">
+        <RegionSelector 
+          selectedRegion={selectedRegion} 
+          onRegionChange={handleRegionChange}
+          regionConfig={regionConfig}
+        />
         <PersonalInfoForm 
           formData={formData} 
           setFormData={setFormData} 
@@ -2270,6 +2280,11 @@ function App() {
   if (currentStep === 'technical') {
     return (
       <div className="App">
+        <RegionSelector 
+          selectedRegion={selectedRegion} 
+          onRegionChange={handleRegionChange}
+          regionConfig={regionConfig}
+        />
         <TechnicalInfoForm 
           formData={formData} 
           setFormData={setFormData} 
