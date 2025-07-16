@@ -567,10 +567,18 @@ async def calculate_solar_solution(client_id: str, region: str = "france"):
         # Calculate all financing options with aids deducted for all durations
         all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings, region)
         
+        # Calculer le nombre de panneaux selon la région
+        if region == "martinique":
+            # Pour Martinique, calculer les panneaux basé sur la puissance (1 panneau = 500W)
+            panel_count = kit_info['power'] * 2  # 1kW = 2 panneaux de 500W
+        else:
+            # Pour France, utiliser les données existantes
+            panel_count = kit_info.get('panels', 0)
+        
         calculation = SolarCalculation(
             client_id=client_id,
             kit_power=kit_info['power'] if region == "martinique" else best_kit,
-            panel_count=kit_info.get('panels', 0),
+            panel_count=panel_count,
             estimated_production=annual_production,
             estimated_savings=annual_savings,
             autonomy_percentage=autonomy_percentage,
