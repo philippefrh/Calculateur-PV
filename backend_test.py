@@ -1163,17 +1163,27 @@ class SolarCalculatorTester:
         self.test_get_client_by_id()
         self.test_solar_calculation()
         
-        # Priority 3 - NEW: Test autoconsumption/surplus distribution changes
-        print("\n📋 PRIORITY 3 - NEW Autoconsumption/Surplus Distribution (95%/5%)")
+        # Priority 3 - NEW: Region System Tests
+        print("\n📋 PRIORITY 3 - NEW Region System")
+        self.test_regions_endpoint()
+        self.test_france_region_config()
+        self.test_martinique_region_config()
+        self.test_martinique_kits_endpoint()
+        self.test_calculation_default_region()
+        self.test_calculation_martinique_region()
+        self.test_region_financing_differences()
+        
+        # Priority 4 - NEW: Test autoconsumption/surplus distribution changes
+        print("\n📋 PRIORITY 4 - NEW Autoconsumption/Surplus Distribution (95%/5%)")
         self.test_autoconsumption_surplus_distribution()
         
-        # Priority 4 - Financing with aids tests (3.25% TAEG)
-        print("\n📋 PRIORITY 4 - Financing with Aids Calculation (3.25% TAEG)")
+        # Priority 5 - Financing with aids tests (3.25% TAEG)
+        print("\n📋 PRIORITY 5 - Financing with Aids Calculation (3.25% TAEG)")
         self.test_financing_with_aids_calculation()
         self.test_all_financing_with_aids_calculation()
         
-        # Priority 5 - PDF Generation with Financing Tables
-        print("\n📋 PRIORITY 5 - PDF Generation with Financing Tables")
+        # Priority 6 - PDF Generation with Financing Tables
+        print("\n📋 PRIORITY 6 - PDF Generation with Financing Tables")
         self.test_pdf_generation_financing_tables()
         
         # Error handling tests
