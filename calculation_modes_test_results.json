@@ -1,9 +1,75 @@
 [
   {
     "test": "Setup Test Client",
-    "success": false,
-    "details": "Failed to create client: 500",
-    "timestamp": "2025-07-16 20:24:08",
+    "success": true,
+    "details": "Using existing client: Pascal Lopez (ID: 91a78bea-3ecb-4659-a60a-35c73f78b283, 8255.0 kWh/an, 285.0\u20ac/month)",
+    "timestamp": "2025-07-16 20:24:48",
     "response_data": null
+  },
+  {
+    "test": "Default Mode Verification",
+    "success": true,
+    "details": "\u2705 Default mode is 'realistic'. Monthly savings: 192.57\u20ac, Real savings: 67.6%",
+    "timestamp": "2025-07-16 20:24:49",
+    "response_data": {
+      "calculation_mode": "realistic",
+      "monthly_savings": 192.57334363622496,
+      "real_savings_percentage": 67.56959425832456
+    }
+  },
+  {
+    "test": "Explicit Realistic Mode",
+    "success": true,
+    "details": "\u2705 Realistic mode working. Monthly savings: 192.57\u20ac, Real savings: 67.6%",
+    "timestamp": "2025-07-16 20:24:51",
+    "response_data": {
+      "monthly_savings": 192.57334363622496,
+      "real_savings_percentage": 67.56959425832456
+    }
+  },
+  {
+    "test": "Explicit Optimistic Mode",
+    "success": true,
+    "details": "\u2705 Optimistic mode working. Monthly savings: 287.62\u20ac, Real savings: 100.9%",
+    "timestamp": "2025-07-16 20:24:52",
+    "response_data": {
+      "monthly_savings": 287.6241082928033,
+      "real_savings_percentage": 100.9207397518608
+    }
+  },
+  {
+    "test": "Response Structure",
+    "success": true,
+    "details": "\u2705 Response structure correct. Mode: realistic, Config name: Mode R\u00e9aliste, All required fields present",
+    "timestamp": "2025-07-16 20:24:52",
+    "response_data": {
+      "required_fields_present": true,
+      "calculation_mode": "realistic"
+    }
+  },
+  {
+    "test": "Mode Comparison",
+    "success": true,
+    "details": "\u2705 Mode comparison successful. Realistic: 192.57\u20ac/month (67.6% real), Optimistic: 287.62\u20ac/month (100.9% real). Difference: +95.05\u20ac/month (+49.4%), +33.4% real savings",
+    "timestamp": "2025-07-16 20:24:52",
+    "response_data": {
+      "realistic_monthly": 192.57334363622496,
+      "optimistic_monthly": 287.6241082928033,
+      "realistic_real_savings": 67.56959425832456,
+      "optimistic_real_savings": 100.9207397518608,
+      "monthly_difference": 95.05076465657837,
+      "monthly_increase_percentage": 49.35821482963459,
+      "real_savings_difference": 33.35114549353624
+    }
+  },
+  {
+    "test": "Default vs Explicit Consistency",
+    "success": true,
+    "details": "\u2705 Default and explicit realistic modes are consistent. Monthly savings: 192.57\u20ac vs 192.57\u20ac (diff: 0.00\u20ac), Real savings: 67.6% vs 67.6% (diff: 0.0%)",
+    "timestamp": "2025-07-16 20:24:52",
+    "response_data": {
+      "monthly_diff": 0.0,
+      "real_savings_diff": 0.0
+    }
   }
 ]
