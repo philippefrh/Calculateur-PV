@@ -2102,13 +2102,13 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
               fill="none"
             />
             <circle
-              cx="100"
-              cy="100"
-              r="90"
+              cx="125"
+              cy="125"
+              r="110"
               stroke="url(#gradient)"
               strokeWidth="8"
               fill="none"
-              strokeDasharray={`${progressPercentage * 5.65} 565`}
+              strokeDasharray={`${progressPercentage * 6.91} 691`}
               strokeLinecap="round"
               className="progress-circle"
             />
