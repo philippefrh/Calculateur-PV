@@ -1337,6 +1337,16 @@ class SolarCalculatorTester:
         print("\n📋 PRIORITY 6 - PDF Generation with Financing Tables")
         self.test_pdf_generation_financing_tables()
         
+        # NEW: Priority 7 - Calculation Modes Tests
+        print("\n📋 PRIORITY 7 - NEW Calculation Modes System")
+        self.test_calculation_modes_endpoint()
+        self.test_realistic_mode_config()
+        self.test_optimistic_mode_config()
+        self.test_calculation_with_realistic_mode()
+        self.test_calculation_with_optimistic_mode()
+        self.test_calculation_modes_comparison()
+        self.test_calculation_invalid_mode()
+        
         # Error handling tests
         print("\n📋 ERROR HANDLING TESTS")
         self.test_error_cases()
