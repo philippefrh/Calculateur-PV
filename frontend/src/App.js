@@ -2041,7 +2041,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const progressPercentage = ((240 - countdown) / 240) * 100;
+  const progressPercentage = ((120 - countdown) / 120) * 100;
 
   const toggleDemoMode = () => {
     setIsDemoMode(!isDemoMode);
