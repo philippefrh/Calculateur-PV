@@ -2425,6 +2425,7 @@ function App() {
           onComplete={handleCalculationComplete}
           onPrevious={handlePrevious}
           selectedRegion={selectedRegion}
+          selectedCalculationMode={selectedCalculationMode}
         />
       </div>
     );
