@@ -193,6 +193,16 @@ body::after {
   margin-right: 20px; /* Décaler légèrement sur la droite pour centrage */
 }
 
+/* Style pour le texte région - Option 2 */
+.region-subtitle {
+  font-size: 1.1rem;
+  color: #4a7c59;
+  font-weight: 500;
+  margin-top: 8px;
+  opacity: 0.8;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .rge-logo-small {
   max-width: 80px; /* Réduire de moitié la taille des logos RGE */
   height: auto;
