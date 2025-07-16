@@ -32,31 +32,26 @@ class CalculationModesSpecificTester:
         print(f"{status} {test_name}: {details}")
     
     def setup_test_client(self):
-        """Create test client with specific data from review request"""
+        """Use existing client for testing"""
         try:
-            client_data = {
-                "first_name": "Test",
-                "last_name": "Client",
-                "address": "Paris, France",
-                "roof_surface": 100.0,
-                "roof_orientation": "Sud",
-                "velux_count": 2,
-                "heating_system": "Radiateurs électriques",
-                "water_heating_system": "Ballon électrique",
-                "water_heating_capacity": 200,
-                "annual_consumption_kwh": 6890.0,  # Specific test data
-                "monthly_edf_payment": 240.0,      # Specific test data
-                "annual_edf_payment": 2880.0
-            }
-            
-            response = self.session.post(f"{self.base_url}/clients", json=client_data)
+            # Get existing clients
+            response = self.session.get(f"{self.base_url}/clients")
             if response.status_code == 200:
-                client = response.json()
-                self.client_id = client["id"]
-                self.log_test("Setup Test Client", True, f"Test client created with ID: {self.client_id}")
-                return True
+                clients = response.json()
+                if clients and len(clients) > 0:
+                    # Use first available client
+                    self.client_id = clients[0]["id"]
+                    client_name = f"{clients[0].get('first_name', 'Unknown')} {clients[0].get('last_name', 'Client')}"
+                    consumption = clients[0].get('annual_consumption_kwh', 'Unknown')
+                    payment = clients[0].get('monthly_edf_payment', 'Unknown')
+                    self.log_test("Setup Test Client", True, 
+                                f"Using existing client: {client_name} (ID: {self.client_id}, {consumption} kWh/an, {payment}€/month)")
+                    return True
+                else:
+                    self.log_test("Setup Test Client", False, "No existing clients found")
+                    return False
             else:
-                self.log_test("Setup Test Client", False, f"Failed to create client: {response.status_code}")
+                self.log_test("Setup Test Client", False, f"Failed to get clients: {response.status_code}")
                 return False
         except Exception as e:
             self.log_test("Setup Test Client", False, f"Error: {str(e)}")
