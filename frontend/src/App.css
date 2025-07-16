@@ -261,6 +261,121 @@ body::after {
   white-space: pre-line;
 }
 
+/* Styles pour la nouvelle vignette projet */
+.project-summary-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: none;
+}
+
+.summary-cell {
+  padding: 20px;
+  text-align: center;
+  border-right: 1px solid #ffffff20;
+  position: relative;
+}
+
+.summary-cell:last-child {
+  border-right: none;
+}
+
+.summary-cell.dark {
+  background-color: #2c3e50;
+  color: white;
+}
+
+.summary-cell.green {
+  background-color: #7dd87d;
+  color: white;
+}
+
+.cell-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.cell-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* Styles pour le résumé financier */
+.financial-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.financial-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  font-size: 0.95rem;
+}
+
+.financial-icon {
+  font-size: 1.2rem;
+}
+
+.financial-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.financial-value {
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.financial-value.aides {
+  color: #27ae60;
+}
+
+/* Media queries pour responsive */
+@media (max-width: 768px) {
+  .summary-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .financial-summary {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .financial-item {
+    justify-content: center;
+  }
+  
+  .cell-value {
+    font-size: 1.2rem;
+  }
+  
+  .cell-title {
+    font-size: 0.8rem;
+  }
+}
+
 .rge-logo-small {
   max-width: 80px; /* Réduire de moitié la taille des logos RGE */
   height: auto;
