@@ -58,14 +58,14 @@ REGIONS_CONFIG = {
             "subtitle": "FRH ENVIRONNEMENT - Énergie Solaire Professionnel"
         },
         "interest_rates": {
-            "standard": 0.0396,  # 3.96% TAEG
-            "with_aids": 0.0396  # 3.96% TAEG
+            "standard": 0.0496,  # 4.96% TAEG
+            "with_aids": 0.0496  # 4.96% TAEG
         },
         "kits": {
             # Configuration actuelle France - à récupérer depuis la base
         },
         "financing": {
-            "min_duration": 3,
+            "min_duration": 5,
             "max_duration": 15,
             "aids_recovery_months": 7  # Récupération entre 7-12 mois
         },
