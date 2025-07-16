@@ -1850,7 +1850,7 @@ const EducationalPages = ({ currentPhase, countdown, formData }) => {
 };
 
 // Écran de calcul avec countdown 4 minutes - Version Premium
-const CalculationScreen = ({ formData, onComplete, onPrevious }) => {
+const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = "france" }) => {
   const [countdown, setCountdown] = useState(240); // 4 minutes = 240 secondes
   const [currentPhase, setCurrentPhase] = useState(0);
   const [calculationResults, setCalculationResults] = useState(null);
