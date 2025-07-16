@@ -2128,6 +2128,26 @@ function App() {
     console.log('App useEffect - Current step:', currentStep);
   }, [currentStep]);
 
+  // Charger la configuration de la région
+  useEffect(() => {
+    const fetchRegionConfig = async () => {
+      try {
+        const response = await axios.get(`${API}/regions/${selectedRegion}`);
+        setRegionConfig(response.data.config);
+      } catch (error) {
+        console.error('Erreur lors du chargement de la configuration de région:', error);
+      }
+    };
+    
+    fetchRegionConfig();
+  }, [selectedRegion]);
+
+  const handleRegionChange = (region) => {
+    setSelectedRegion(region);
+    // Réinitialiser les résultats de calcul si on change de région
+    setCalculationResults(null);
+  };
+
   const handleStart = () => {
     console.log('handleStart called at:', new Date().toISOString());
     setCurrentStep('personal');
