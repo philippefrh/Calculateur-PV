@@ -1405,7 +1405,7 @@ Cordialement`);
                   </div>
                   <div className="financing-benefits">
                     <p>✅ 6 premiers mois GRATUITS (Rien à débourser pendant les 6 premiers mois)</p>
-                    <p>✅ Aides récupérées: {Math.round(results.total_aids)} € (Prime + TVA)</p>
+                    <p>✅ Aides récupérées: {Math.round(results.total_aids)} € (Aides et Subventions)</p>
                     <p>✅ Réinjection des Aides et Subventions récupérées entre le 7ème et 12ème mois</p>
                   </div>
                 </div>
