@@ -1928,7 +1928,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     {
       title: "🔬 Consultation PVGIS Commission Européenne",
       description: "Récupération des données officielles d'ensoleillement et calcul de la production solaire optimale...",
-      duration: 60,
+      duration: 30,
       tips: [
         "🏛️ Base de données officielle européenne",
         "⚡ Calcul selon l'orientation " + formData.roofOrientation,
