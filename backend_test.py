@@ -678,8 +678,437 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("PDF Generation - Financing Tables", False, f"Error: {str(e)}")
 
+    def test_regions_endpoint(self):
+        """Test GET /api/regions - should return list of available regions"""
+        try:
+            response = self.session.get(f"{self.base_url}/regions")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "regions" not in data or "regions_data" not in data:
+                    self.log_test("Regions Endpoint", False, "Missing 'regions' or 'regions_data' in response", data)
+                    return
+                
+                regions = data["regions"]
+                regions_data = data["regions_data"]
+                
+                # Check that both france and martinique are available
+                expected_regions = ["france", "martinique"]
+                if not all(region in regions for region in expected_regions):
+                    self.log_test("Regions Endpoint", False, f"Missing expected regions. Got: {regions}, Expected: {expected_regions}", data)
+                    return
+                
+                # Check regions_data structure
+                for region in expected_regions:
+                    if region not in regions_data:
+                        self.log_test("Regions Endpoint", False, f"Missing {region} in regions_data", data)
+                        return
+                    
+                    region_info = regions_data[region]
+                    required_fields = ["name", "logo_subtitle", "company_info"]
+                    missing_fields = [field for field in required_fields if field not in region_info]
+                    if missing_fields:
+                        self.log_test("Regions Endpoint", False, f"Missing fields in {region}: {missing_fields}", data)
+                        return
+                
+                self.log_test("Regions Endpoint", True, 
+                            f"✅ Regions endpoint working. Available regions: {regions}. France: {regions_data['france']['name']}, Martinique: {regions_data['martinique']['name']}", 
+                            data)
+            else:
+                self.log_test("Regions Endpoint", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Regions Endpoint", False, f"Error: {str(e)}")
+
+    def test_france_region_config(self):
+        """Test GET /api/regions/france - should return France region configuration"""
+        try:
+            response = self.session.get(f"{self.base_url}/regions/france")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "region" not in data or "config" not in data:
+                    self.log_test("France Region Config", False, "Missing 'region' or 'config' in response", data)
+                    return
+                
+                if data["region"] != "france":
+                    self.log_test("France Region Config", False, f"Expected region 'france', got '{data['region']}'", data)
+                    return
+                
+                config = data["config"]
+                
+                # Check required configuration fields
+                required_fields = ["name", "company_info", "interest_rates", "financing", "autoconsumption_rate", "optimization_coefficient"]
+                missing_fields = [field for field in required_fields if field not in config]
+                if missing_fields:
+                    self.log_test("France Region Config", False, f"Missing config fields: {missing_fields}", data)
+                    return
+                
+                # Check interest rates
+                interest_rates = config["interest_rates"]
+                if "standard" not in interest_rates or "with_aids" not in interest_rates:
+                    self.log_test("France Region Config", False, "Missing interest rate fields", data)
+                    return
+                
+                # Check financing configuration
+                financing = config["financing"]
+                if financing["min_duration"] != 3 or financing["max_duration"] != 15:
+                    self.log_test("France Region Config", False, f"France financing duration should be 3-15 years, got {financing['min_duration']}-{financing['max_duration']}", data)
+                    return
+                
+                self.log_test("France Region Config", True, 
+                            f"✅ France region config working. Name: {config['name']}, Interest rates: {interest_rates['standard']:.2%} standard, {interest_rates['with_aids']:.2%} with aids, Financing: {financing['min_duration']}-{financing['max_duration']} years", 
+                            data)
+            else:
+                self.log_test("France Region Config", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("France Region Config", False, f"Error: {str(e)}")
+
+    def test_martinique_region_config(self):
+        """Test GET /api/regions/martinique - should return Martinique region configuration with 3 kits"""
+        try:
+            response = self.session.get(f"{self.base_url}/regions/martinique")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "region" not in data or "config" not in data:
+                    self.log_test("Martinique Region Config", False, "Missing 'region' or 'config' in response", data)
+                    return
+                
+                if data["region"] != "martinique":
+                    self.log_test("Martinique Region Config", False, f"Expected region 'martinique', got '{data['region']}'", data)
+                    return
+                
+                config = data["config"]
+                
+                # Check required configuration fields
+                required_fields = ["name", "logo_subtitle", "company_info", "interest_rates", "kits", "financing", "autoconsumption_rate", "optimization_coefficient"]
+                missing_fields = [field for field in required_fields if field not in config]
+                if missing_fields:
+                    self.log_test("Martinique Region Config", False, f"Missing config fields: {missing_fields}", data)
+                    return
+                
+                # Check Martinique-specific fields
+                if config["name"] != "Martinique":
+                    self.log_test("Martinique Region Config", False, f"Expected name 'Martinique', got '{config['name']}'", data)
+                    return
+                
+                if config["logo_subtitle"] != "Région Martinique":
+                    self.log_test("Martinique Region Config", False, f"Expected logo_subtitle 'Région Martinique', got '{config['logo_subtitle']}'", data)
+                    return
+                
+                # Check interest rates (should be 8% = 0.08)
+                interest_rates = config["interest_rates"]
+                if interest_rates["standard"] != 0.08 or interest_rates["with_aids"] != 0.08:
+                    self.log_test("Martinique Region Config", False, f"Martinique interest rates should be 8% (0.08), got standard: {interest_rates['standard']}, with_aids: {interest_rates['with_aids']}", data)
+                    return
+                
+                # Check kits (should have 3 kits: 3kW, 6kW, 9kW)
+                kits = config["kits"]
+                expected_kits = ["kit_3kw", "kit_6kw", "kit_9kw"]
+                if not all(kit in kits for kit in expected_kits):
+                    self.log_test("Martinique Region Config", False, f"Missing expected kits. Got: {list(kits.keys())}, Expected: {expected_kits}", data)
+                    return
+                
+                # Verify kit prices and aids
+                expected_kit_data = {
+                    "kit_3kw": {"power": 3, "price_ttc": 9900, "aid_amount": 5340},
+                    "kit_6kw": {"power": 6, "price_ttc": 13900, "aid_amount": 6480},
+                    "kit_9kw": {"power": 9, "price_ttc": 16900, "aid_amount": 9720}
+                }
+                
+                issues = []
+                for kit_id, expected_data in expected_kit_data.items():
+                    kit_data = kits[kit_id]
+                    for field, expected_value in expected_data.items():
+                        if kit_data.get(field) != expected_value:
+                            issues.append(f"{kit_id}.{field}: expected {expected_value}, got {kit_data.get(field)}")
+                
+                if issues:
+                    self.log_test("Martinique Region Config", False, f"Kit data issues: {'; '.join(issues)}", data)
+                    return
+                
+                # Check financing duration (should be 3-15 years)
+                financing = config["financing"]
+                if financing["min_duration"] != 3 or financing["max_duration"] != 15:
+                    self.log_test("Martinique Region Config", False, f"Martinique financing duration should be 3-15 years, got {financing['min_duration']}-{financing['max_duration']}", data)
+                    return
+                
+                self.log_test("Martinique Region Config", True, 
+                            f"✅ Martinique region config working. 3 kits: 3kW (9900€, aid 5340€), 6kW (13900€, aid 6480€), 9kW (16900€, aid 9720€). Interest rate: 8%, Financing: 3-15 years", 
+                            data)
+            else:
+                self.log_test("Martinique Region Config", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Martinique Region Config", False, f"Error: {str(e)}")
+
+    def test_martinique_kits_endpoint(self):
+        """Test GET /api/regions/martinique/kits - should return the 3 Martinique kits"""
+        try:
+            response = self.session.get(f"{self.base_url}/regions/martinique/kits")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "kits" not in data:
+                    self.log_test("Martinique Kits Endpoint", False, "Missing 'kits' in response", data)
+                    return
+                
+                kits = data["kits"]
+                
+                # Should have exactly 3 kits
+                if len(kits) != 3:
+                    self.log_test("Martinique Kits Endpoint", False, f"Expected 3 kits, got {len(kits)}", data)
+                    return
+                
+                # Check each kit structure and data
+                expected_kits = {
+                    "kit_3kw": {"power": 3, "price_ttc": 9900, "aid_amount": 5340},
+                    "kit_6kw": {"power": 6, "price_ttc": 13900, "aid_amount": 6480},
+                    "kit_9kw": {"power": 9, "price_ttc": 16900, "aid_amount": 9720}
+                }
+                
+                kit_ids = [kit["id"] for kit in kits]
+                if not all(kit_id in kit_ids for kit_id in expected_kits.keys()):
+                    self.log_test("Martinique Kits Endpoint", False, f"Missing expected kit IDs. Got: {kit_ids}, Expected: {list(expected_kits.keys())}", data)
+                    return
+                
+                issues = []
+                for kit in kits:
+                    kit_id = kit["id"]
+                    if kit_id in expected_kits:
+                        expected_data = expected_kits[kit_id]
+                        
+                        # Check required fields
+                        required_fields = ["name", "power", "price_ttc", "aid_amount", "surface"]
+                        missing_fields = [field for field in required_fields if field not in kit]
+                        if missing_fields:
+                            issues.append(f"{kit_id} missing fields: {missing_fields}")
+                            continue
+                        
+                        # Check values
+                        if kit["power"] != expected_data["power"]:
+                            issues.append(f"{kit_id} power: expected {expected_data['power']}, got {kit['power']}")
+                        if kit["price_ttc"] != expected_data["price_ttc"]:
+                            issues.append(f"{kit_id} price_ttc: expected {expected_data['price_ttc']}, got {kit['price_ttc']}")
+                        if kit["aid_amount"] != expected_data["aid_amount"]:
+                            issues.append(f"{kit_id} aid_amount: expected {expected_data['aid_amount']}, got {kit['aid_amount']}")
+                
+                if issues:
+                    self.log_test("Martinique Kits Endpoint", False, f"Kit validation issues: {'; '.join(issues)}", data)
+                    return
+                
+                # Create summary of kits
+                kit_summary = []
+                for kit in kits:
+                    kit_summary.append(f"{kit['power']}kW ({kit['price_ttc']}€, aid {kit['aid_amount']}€)")
+                
+                self.log_test("Martinique Kits Endpoint", True, 
+                            f"✅ Martinique kits endpoint working. 3 kits available: {', '.join(kit_summary)}", 
+                            data)
+            else:
+                self.log_test("Martinique Kits Endpoint", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Martinique Kits Endpoint", False, f"Error: {str(e)}")
+
+    def test_calculation_default_region(self):
+        """Test POST /api/calculate/{client_id} - should work with default region (france)"""
+        if not self.client_id:
+            self.log_test("Calculation Default Region", False, "No client ID available from previous test")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.client_id}")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check that region is france by default
+                if calculation.get("region") != "france":
+                    self.log_test("Calculation Default Region", False, f"Expected default region 'france', got '{calculation.get('region')}'", calculation)
+                    return
+                
+                # Check that region_config is present and matches france
+                region_config = calculation.get("region_config")
+                if not region_config:
+                    self.log_test("Calculation Default Region", False, "Missing region_config in response", calculation)
+                    return
+                
+                if region_config.get("name") != "France":
+                    self.log_test("Calculation Default Region", False, f"Expected region_config.name 'France', got '{region_config.get('name')}'", calculation)
+                    return
+                
+                # Check that calculation uses France-specific logic (SOLAR_KITS, not martinique kits)
+                kit_power = calculation.get("kit_power")
+                if kit_power not in [3, 4, 5, 6, 7, 8, 9]:  # France kit sizes
+                    self.log_test("Calculation Default Region", False, f"Kit power {kit_power} not in France kit range", calculation)
+                    return
+                
+                self.log_test("Calculation Default Region", True, 
+                            f"✅ Default region calculation working. Region: {calculation['region']}, Kit: {kit_power}kW, Production: {calculation.get('estimated_production', 0):.0f} kWh/year", 
+                            {"region": calculation["region"], "kit_power": kit_power, "production": calculation.get("estimated_production")})
+            else:
+                self.log_test("Calculation Default Region", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Calculation Default Region", False, f"Error: {str(e)}")
+
+    def test_calculation_martinique_region(self):
+        """Test POST /api/calculate/{client_id}?region=martinique - should work with Martinique region"""
+        if not self.client_id:
+            self.log_test("Calculation Martinique Region", False, "No client ID available from previous test")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check that region is martinique
+                if calculation.get("region") != "martinique":
+                    self.log_test("Calculation Martinique Region", False, f"Expected region 'martinique', got '{calculation.get('region')}'", calculation)
+                    return
+                
+                # Check that region_config is present and matches martinique
+                region_config = calculation.get("region_config")
+                if not region_config:
+                    self.log_test("Calculation Martinique Region", False, "Missing region_config in response", calculation)
+                    return
+                
+                if region_config.get("name") != "Martinique":
+                    self.log_test("Calculation Martinique Region", False, f"Expected region_config.name 'Martinique', got '{region_config.get('name')}'", calculation)
+                    return
+                
+                # Check that calculation uses Martinique-specific logic (3, 6, or 9 kW only)
+                kit_power = calculation.get("kit_power")
+                if kit_power not in [3, 6, 9]:  # Martinique kit sizes
+                    self.log_test("Calculation Martinique Region", False, f"Kit power {kit_power} not in Martinique kit range [3, 6, 9]", calculation)
+                    return
+                
+                # Check that financing uses 8% interest rate
+                financing_options = calculation.get("financing_options", [])
+                if financing_options:
+                    first_option = financing_options[0]
+                    if first_option.get("taeg") != 0.08:
+                        self.log_test("Calculation Martinique Region", False, f"Expected 8% TAEG for Martinique, got {first_option.get('taeg')}", calculation)
+                        return
+                
+                # Check that aids are from Martinique configuration
+                total_aids = calculation.get("total_aids", 0)
+                expected_aids = {3: 5340, 6: 6480, 9: 9720}
+                if total_aids != expected_aids.get(kit_power, 0):
+                    self.log_test("Calculation Martinique Region", False, f"Expected aids {expected_aids.get(kit_power, 0)}€ for {kit_power}kW kit, got {total_aids}€", calculation)
+                    return
+                
+                # Check kit price
+                kit_price = calculation.get("kit_price", 0)
+                expected_prices = {3: 9900, 6: 13900, 9: 16900}
+                if kit_price != expected_prices.get(kit_power, 0):
+                    self.log_test("Calculation Martinique Region", False, f"Expected price {expected_prices.get(kit_power, 0)}€ for {kit_power}kW kit, got {kit_price}€", calculation)
+                    return
+                
+                self.log_test("Calculation Martinique Region", True, 
+                            f"✅ Martinique region calculation working. Kit: {kit_power}kW ({kit_price}€), Aids: {total_aids}€, Interest rate: 8%, Production: {calculation.get('estimated_production', 0):.0f} kWh/year", 
+                            {"region": calculation["region"], "kit_power": kit_power, "kit_price": kit_price, "total_aids": total_aids, "production": calculation.get("estimated_production")})
+            else:
+                self.log_test("Calculation Martinique Region", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Calculation Martinique Region", False, f"Error: {str(e)}")
+
+    def test_region_financing_differences(self):
+        """Test that financing calculations use region-specific rates"""
+        if not self.client_id:
+            self.log_test("Region Financing Differences", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Get France calculation
+            france_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}")
+            if france_response.status_code != 200:
+                self.log_test("Region Financing Differences", False, f"Failed to get France calculation: {france_response.status_code}")
+                return
+            
+            france_calc = france_response.json()
+            
+            # Get Martinique calculation
+            martinique_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique")
+            if martinique_response.status_code != 200:
+                self.log_test("Region Financing Differences", False, f"Failed to get Martinique calculation: {martinique_response.status_code}")
+                return
+            
+            martinique_calc = martinique_response.json()
+            
+            # Compare interest rates
+            france_financing = france_calc.get("financing_options", [])
+            martinique_financing = martinique_calc.get("financing_options", [])
+            
+            if not france_financing or not martinique_financing:
+                self.log_test("Region Financing Differences", False, "Missing financing options in one or both calculations")
+                return
+            
+            france_taeg = france_financing[0].get("taeg", 0)
+            martinique_taeg = martinique_financing[0].get("taeg", 0)
+            
+            # France should use 3.96% (0.0396), Martinique should use 8% (0.08)
+            if abs(france_taeg - 0.0396) > 0.001:
+                self.log_test("Region Financing Differences", False, f"France TAEG should be 3.96%, got {france_taeg:.4f}")
+                return
+            
+            if abs(martinique_taeg - 0.08) > 0.001:
+                self.log_test("Region Financing Differences", False, f"Martinique TAEG should be 8%, got {martinique_taeg:.4f}")
+                return
+            
+            # Compare monthly payments for same duration (15 years)
+            france_15y = next((opt for opt in france_financing if opt["duration_years"] == 15), None)
+            martinique_15y = next((opt for opt in martinique_financing if opt["duration_years"] == 15), None)
+            
+            if not france_15y or not martinique_15y:
+                self.log_test("Region Financing Differences", False, "Missing 15-year financing option in one or both calculations")
+                return
+            
+            # Martinique should have higher monthly payments due to higher interest rate
+            france_payment = france_15y["monthly_payment"]
+            martinique_payment = martinique_15y["monthly_payment"]
+            
+            # Note: We can't directly compare payments because kit prices are different
+            # But we can verify the rates are applied correctly
+            
+            self.log_test("Region Financing Differences", True, 
+                        f"✅ Region-specific financing rates working. France: {france_taeg:.2%} TAEG (15y: {france_payment:.2f}€/month), Martinique: {martinique_taeg:.2%} TAEG (15y: {martinique_payment:.2f}€/month)", 
+                        {
+                            "france_taeg": france_taeg,
+                            "martinique_taeg": martinique_taeg,
+                            "france_15y_payment": france_payment,
+                            "martinique_15y_payment": martinique_payment
+                        })
+        except Exception as e:
+            self.log_test("Region Financing Differences", False, f"Error: {str(e)}")
+
     def test_error_cases(self):
         """Test error handling"""
+        # Test invalid region
+        try:
+            if self.client_id:
+                response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=invalid_region")
+                if response.status_code == 400:
+                    self.log_test("Error Handling - Invalid Region", True, "Correctly rejected invalid region with 400 error")
+                else:
+                    self.log_test("Error Handling - Invalid Region", False, f"Expected 400 error for invalid region, got {response.status_code}")
+            else:
+                self.log_test("Error Handling - Invalid Region", False, "No client ID available for test")
+        except Exception as e:
+            self.log_test("Error Handling - Invalid Region", False, f"Error: {str(e)}")
+        
+        # Test non-existent region config
+        try:
+            response = self.session.get(f"{self.base_url}/regions/nonexistent")
+            if response.status_code == 404:
+                self.log_test("Error Handling - Non-existent Region Config", True, "Correctly returned 404 for non-existent region")
+            else:
+                self.log_test("Error Handling - Non-existent Region Config", False, f"Expected 404 error, got {response.status_code}")
+        except Exception as e:
+            self.log_test("Error Handling - Non-existent Region Config", False, f"Error: {str(e)}")
+        
         # Test invalid address
         try:
             invalid_client_data = {
