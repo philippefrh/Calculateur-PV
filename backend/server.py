@@ -957,6 +957,73 @@ async def test_pvgis(lat: float, lon: float, orientation: str = "Sud", power: in
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# Endpoints pour la gestion des régions
+@api_router.get("/regions")
+async def get_regions():
+    """
+    Récupère la liste des régions disponibles
+    """
+    return {
+        "regions": list(REGIONS_CONFIG.keys()),
+        "regions_data": {
+            region: {
+                "name": config["name"],
+                "logo_subtitle": config["logo_subtitle"],
+                "company_info": config["company_info"]
+            }
+            for region, config in REGIONS_CONFIG.items()
+        }
+    }
+
+@api_router.get("/regions/{region_name}")
+async def get_region_config(region_name: str):
+    """
+    Récupère la configuration complète d'une région
+    """
+    if region_name not in REGIONS_CONFIG:
+        raise HTTPException(status_code=404, detail=f"Region '{region_name}' not found")
+    
+    return {
+        "region": region_name,
+        "config": REGIONS_CONFIG[region_name]
+    }
+
+@api_router.get("/regions/{region_name}/kits")
+async def get_region_kits(region_name: str):
+    """
+    Récupère les kits disponibles pour une région
+    """
+    if region_name not in REGIONS_CONFIG:
+        raise HTTPException(status_code=404, detail=f"Region '{region_name}' not found")
+    
+    region_config = REGIONS_CONFIG[region_name]
+    
+    if region_name == "martinique":
+        # Retourner les kits fixes de Martinique
+        kits = []
+        for kit_id, kit_data in region_config["kits"].items():
+            kits.append({
+                "id": kit_id,
+                "name": kit_data["description"],
+                "power": kit_data["power"],
+                "price_ht": kit_data["price_ttc"],  # Prix TTC pour Martinique
+                "price_ttc": kit_data["price_ttc"],
+                "aid_amount": kit_data["aid_amount"],
+                "surface": kit_data["surface"],
+                "co2_savings": kit_data["price_ttc"] * 0.15  # 15% comme commission CO2
+            })
+        return {"kits": kits}
+    else:
+        # Pour la France, récupérer les kits depuis la base de données (logique existante)
+        kits = db.kits.find()
+        kits_list = await kits.to_list(length=100)
+        
+        # Convertir ObjectId en string pour JSON
+        for kit in kits_list:
+            kit["_id"] = str(kit["_id"])
+            
+        return {"kits": kits_list}
+
 # Include the router in the main app
 app.include_router(api_router)
 
