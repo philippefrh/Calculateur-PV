@@ -2077,7 +2077,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   return (
     <div className="calculation-screen">
       <div className="calculation-header">
-        <h2>🚀 Calcul de votre solution solaire en cours</h2>
+        <h2>Calcul de votre solution solaire en cours</h2>
         <p>Analyse PVGIS Commission Européenne - Données officielles</p>
         
         {/* Mode démo pour les démonstrations */}
