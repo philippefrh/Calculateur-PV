@@ -2018,8 +2018,8 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
 
       const clientId = clientResponse.data.id;
 
-      // Ensuite faire le calcul PVGIS avec la région sélectionnée
-      const calculationResponse = await axios.post(`${API}/calculate/${clientId}?region=${selectedRegion}`);
+      // Ensuite faire le calcul PVGIS avec la région et le mode de calcul sélectionnés
+      const calculationResponse = await axios.post(`${API}/calculate/${clientId}?region=${selectedRegion}&calculation_mode=${selectedCalculationMode}`);
       
       setCalculationResults(calculationResponse.data);
       setTimeout(() => onComplete(calculationResponse.data), 2000);
