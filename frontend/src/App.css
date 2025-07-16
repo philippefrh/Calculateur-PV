@@ -190,7 +190,6 @@ body::after {
   height: auto;
   margin: 0 auto;
   display: block;
-  margin-right: 20px; /* Décaler légèrement sur la droite pour centrage */
 }
 
 .company-image {
@@ -209,7 +208,6 @@ body::after {
   opacity: 0.8;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
-  margin-left: 20px; /* Compenser le décalage du logo */
 }
 
 .rge-logo-small {
