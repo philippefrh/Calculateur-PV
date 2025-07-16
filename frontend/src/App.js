@@ -1388,7 +1388,7 @@ Cordialement`);
                 {/* Financement avec aides déduites */}
                 <div className="financing-card highlighted-green">
                   <div className="financing-header">
-                    <h5>💰 Financement optimisé sur {results.financing_with_aids?.duration_years} ans</h5>
+                    <h5>💰 Financement optimisé sur {results.financing_with_aids?.duration_years?.toFixed(1)} ans</h5>
                     <span className="recommended-badge green">Avec aides déduites</span>
                   </div>
                   <div className="financing-details">
