@@ -1014,8 +1014,9 @@ async def generate_pdf_report(client_id: str):
         if not client:
             raise HTTPException(status_code=404, detail="Client not found")
         
-        # Get calculation data - recalculate if needed
-        calculation_response = await calculate_solar_solution(client_id)
+        # Get calculation data - recalculate with correct region
+        client_region = client.get('region', 'france')  # Récupérer la région du client
+        calculation_response = await calculate_solar_solution(client_id, client_region)
         
         # Generate PDF
         pdf_bytes = await generate_solar_report_pdf(client_id, calculation_response)
