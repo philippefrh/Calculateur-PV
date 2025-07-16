@@ -2192,7 +2192,9 @@ function App() {
   useEffect(() => {
     const fetchRegionConfig = async () => {
       try {
+        console.log('Fetching region config for:', selectedRegion);
         const response = await axios.get(`${API}/regions/${selectedRegion}`);
+        console.log('Region config loaded:', response.data.config);
         setRegionConfig(response.data.config);
       } catch (error) {
         console.error('Erreur lors du chargement de la configuration de région:', error);
