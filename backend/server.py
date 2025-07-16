@@ -697,7 +697,12 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
             "orientation": orientation,
             "coordinates": {"lat": lat, "lon": lon},
             "region": region,
-            "region_config": region_config
+            "region_config": region_config,
+            "calculation_mode": calculation_mode,
+            "calculation_config": calculation_config,
+            "real_savings_percentage": real_savings_percentage,
+            "autoconsumption_rate": autoconsumption_rate,
+            "annual_edf_bill": annual_edf_bill
         })
         
         return result
