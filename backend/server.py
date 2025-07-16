@@ -570,6 +570,7 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
             raise HTTPException(status_code=404, detail="Client not found")
         
         region_config = REGIONS_CONFIG[region]
+        calculation_config = CALCULATION_MODES[calculation_mode]
         
         # Extract client data
         annual_consumption = client['annual_consumption_kwh']
@@ -593,29 +594,38 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
                                          kit_info['power'] if region == "martinique" else best_kit)
         annual_production = pvgis_data["annual_production"]
         
-        # Calculate autonomy percentage
-        autonomy_percentage = min(95, (annual_production / annual_consumption) * 100)
+        # Calculate autonomy percentage based on calculation mode
+        autonomy_percentage = min(calculation_config["autonomy_cap"], (annual_production / annual_consumption) * 100)
         
-        # Calculate autoconsumption (optimized to 98% with quality equipment)
-        autoconsumption_rate = region_config["autoconsumption_rate"]
+        # Calculate autoconsumption using mode-specific rate
+        autoconsumption_rate = calculation_config["autoconsumption_rate"]
         autoconsumption_kwh = annual_production * autoconsumption_rate
         surplus_kwh = annual_production * (1 - autoconsumption_rate)
         
         # Calculate savings with future EDF rate increases (average over 3 years)
-        year1_savings = (autoconsumption_kwh * EDF_RATE_PER_KWH) + (surplus_kwh * SURPLUS_SALE_RATE)
-        year2_savings = year1_savings * (1 + ANNUAL_RATE_INCREASE)
-        year3_savings = year2_savings * (1 + ANNUAL_RATE_INCREASE)
+        # Use mode-specific rate increase and surplus sale rate
+        annual_rate_increase = calculation_config["annual_rate_increase"]
+        surplus_sale_rate = calculation_config["surplus_sale_rate"]
+        
+        year1_savings = (autoconsumption_kwh * EDF_RATE_PER_KWH) + (surplus_kwh * surplus_sale_rate)
+        year2_savings = year1_savings * (1 + annual_rate_increase)
+        year3_savings = year2_savings * (1 + annual_rate_increase)
         avg_savings_3years = (year1_savings + year2_savings + year3_savings) / 3
         
-        # Add maintenance savings (no EDF network maintenance costs)
-        maintenance_savings = 300  # €/year
+        # Add maintenance savings (mode-specific)
+        maintenance_savings = calculation_config["maintenance_savings"]  # €/year
         
-        # Apply energy optimization coefficient for behavioral savings
-        energy_optimization_coefficient = region_config["optimization_coefficient"]
+        # Apply energy optimization coefficient for behavioral savings (mode-specific)
+        energy_optimization_coefficient = calculation_config["optimization_coefficient"]
         
         # Calculate total annual savings
         annual_savings = (avg_savings_3years + maintenance_savings) * energy_optimization_coefficient
         monthly_savings = annual_savings / 12
+        
+        # Calculate real savings percentage (économies réelles par rapport à la facture EDF)
+        monthly_edf_bill = client['monthly_edf_payment']
+        annual_edf_bill = monthly_edf_bill * 12
+        real_savings_percentage = (annual_savings / annual_edf_bill) * 100 if annual_edf_bill > 0 else 0
         
         # Calculate financing options with region-specific rates
         kit_price = kit_info['price_ttc'] if region == "martinique" else kit_info['price']
