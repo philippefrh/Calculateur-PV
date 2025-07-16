@@ -2161,6 +2161,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState('france');
   const [regionConfig, setRegionConfig] = useState(null);
+  const [selectedCalculationMode, setSelectedCalculationMode] = useState('optimistic');
+  const [calculationModes, setCalculationModes] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
