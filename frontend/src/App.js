@@ -49,10 +49,6 @@ const CalculationModeSelector = ({ selectedMode, onModeChange, calculationModes 
   
   return (
     <div className="calculation-mode-selector">
-      <div className="mode-header">
-        <h3>Mode de calcul</h3>
-        <p>Choisissez le mode de calcul des économies</p>
-      </div>
       <div className="mode-options">
         {Object.entries(calculationModes).map(([modeKey, modeInfo]) => (
           <button 
