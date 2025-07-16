@@ -464,11 +464,17 @@ async def get_client(client_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/calculate/{client_id}")
-async def calculate_solar_solution(client_id: str):
+async def calculate_solar_solution(client_id: str, region: str = "france"):
     try:
+        # Vérifier que la région existe
+        if region not in REGIONS_CONFIG:
+            raise HTTPException(status_code=400, detail=f"Region '{region}' not supported")
+        
         client = await db.clients.find_one({"id": client_id})
         if not client:
             raise HTTPException(status_code=404, detail="Client not found")
+        
+        region_config = REGIONS_CONFIG[region]
         
         # Extract client data
         annual_consumption = client['annual_consumption_kwh']
@@ -477,19 +483,26 @@ async def calculate_solar_solution(client_id: str):
         lat = client['latitude']
         lon = client['longitude']
         
-        # Calculate optimal kit size
-        best_kit = calculate_optimal_kit_size(annual_consumption, roof_surface)
-        kit_info = SOLAR_KITS[best_kit]
+        # Calculate optimal kit size based on region
+        if region == "martinique":
+            # Pour Martinique, utiliser les kits fixes
+            best_kit = calculate_optimal_kit_size_martinique(annual_consumption, roof_surface)
+            kit_info = region_config["kits"][best_kit]
+        else:
+            # Pour France, utiliser la logique existante
+            best_kit = calculate_optimal_kit_size(annual_consumption, roof_surface)
+            kit_info = SOLAR_KITS[best_kit]
         
         # Get PVGIS data
-        pvgis_data = await get_pvgis_data(lat, lon, orientation, best_kit)
+        pvgis_data = await get_pvgis_data(lat, lon, orientation, 
+                                         kit_info['power'] if region == "martinique" else best_kit)
         annual_production = pvgis_data["annual_production"]
         
         # Calculate autonomy percentage
         autonomy_percentage = min(95, (annual_production / annual_consumption) * 100)
         
         # Calculate autoconsumption (optimized to 98% with quality equipment)
-        autoconsumption_rate = 0.98
+        autoconsumption_rate = region_config["autoconsumption_rate"]
         autoconsumption_kwh = annual_production * autoconsumption_rate
         surplus_kwh = annual_production * (1 - autoconsumption_rate)
         
@@ -503,30 +516,38 @@ async def calculate_solar_solution(client_id: str):
         maintenance_savings = 300  # €/year
         
         # Apply energy optimization coefficient for behavioral savings
-        energy_optimization_coefficient = 1.24
+        energy_optimization_coefficient = region_config["optimization_coefficient"]
         
         # Calculate total annual savings
         annual_savings = (avg_savings_3years + maintenance_savings) * energy_optimization_coefficient
         monthly_savings = annual_savings / 12
         
-        # Calculate financing options
-        financing_options = calculate_financing_options(kit_info['price'], monthly_savings)
+        # Calculate financing options with region-specific rates
+        kit_price = kit_info['price_ttc'] if region == "martinique" else kit_info['price']
+        financing_options = calculate_financing_options(kit_price, monthly_savings, region)
         
-        # Calculate aids
-        autoconsumption_aid_total = best_kit * AUTOCONSUMPTION_AID  # 80€/kW
-        tva_refund = kit_info['price'] * TVA_RATE if best_kit > 3 else 0  # No TVA refund for 3kW
-        total_aids = autoconsumption_aid_total + tva_refund
+        # Calculate aids based on region
+        if region == "martinique":
+            # Pour Martinique, aides fixes par kit
+            total_aids = kit_info['aid_amount']
+            autoconsumption_aid_total = total_aids
+            tva_refund = 0  # Pas de récupération TVA en Martinique
+        else:
+            # Pour France, calcul existant
+            autoconsumption_aid_total = best_kit * AUTOCONSUMPTION_AID  # 80€/kW
+            tva_refund = kit_info['price'] * TVA_RATE if best_kit > 3 else 0  # No TVA refund for 3kW
+            total_aids = autoconsumption_aid_total + tva_refund
         
         # Calculate financing options with aids deducted
-        financing_with_aids = calculate_financing_with_aids(kit_info['price'], total_aids, monthly_savings)
+        financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings, region)
         
         # Calculate all financing options with aids deducted for all durations
-        all_financing_with_aids = calculate_all_financing_with_aids(kit_info['price'], total_aids, monthly_savings)
+        all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings, region)
         
         calculation = SolarCalculation(
             client_id=client_id,
-            kit_power=best_kit,
-            panel_count=kit_info['panels'],
+            kit_power=kit_info['power'] if region == "martinique" else best_kit,
+            panel_count=kit_info.get('panels', 0),
             estimated_production=annual_production,
             estimated_savings=annual_savings,
             autonomy_percentage=autonomy_percentage,
@@ -540,17 +561,18 @@ async def calculate_solar_solution(client_id: str):
         await db.clients.update_one(
             {"id": client_id},
             {"$set": {
-                "recommended_kit_power": best_kit,
+                "recommended_kit_power": kit_info['power'] if region == "martinique" else best_kit,
                 "estimated_production": annual_production,
                 "estimated_savings": annual_savings,
-                "pvgis_data": pvgis_data
+                "pvgis_data": pvgis_data,
+                "region": region
             }}
         )
         
         # Add additional info for frontend
         result = calculation.dict()
         result.update({
-            "kit_price": kit_info['price'],
+            "kit_price": kit_price,
             "autoconsumption_kwh": autoconsumption_kwh,
             "surplus_kwh": surplus_kwh,
             "autoconsumption_aid": autoconsumption_aid_total,
@@ -560,7 +582,9 @@ async def calculate_solar_solution(client_id: str):
             "all_financing_with_aids": all_financing_with_aids,
             "pvgis_source": "Données source PVGIS Commission Européenne",
             "orientation": orientation,
-            "coordinates": {"lat": lat, "lon": lon}
+            "coordinates": {"lat": lat, "lon": lon},
+            "region": region,
+            "region_config": region_config
         })
         
         return result
