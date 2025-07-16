@@ -376,9 +376,25 @@ def calculate_financing_options(kit_price: float, monthly_savings: float, region
     
     return options
 
-def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france") -> Dict:
+def find_optimal_duration(financing_options: List[Dict], monthly_savings: float) -> int:
+    """
+    Find the optimal financing duration based on the same logic as frontend
+    """
+    optimal_option = None
+    for option in financing_options:
+        if option["difference_vs_savings"] >= -20 and option["difference_vs_savings"] <= 20:
+            optimal_option = option
+            break
+    
+    if optimal_option is None:
+        optimal_option = financing_options[-1]  # Last option if none found
+    
+    return optimal_option["duration_years"]
+
+def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", financing_options: List[Dict] = None) -> Dict:
     """
     Calculate financing options with aids deducted - WITH INTERESTS
+    Use same duration as optimal financing for comparison
     """
     region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG["france"])
     taeg = region_config["interest_rates"]["with_aids"]
@@ -387,8 +403,12 @@ def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_s
     # Amount to finance after aids
     financed_amount = kit_price - total_aids
     
-    # Calculate for 15 years (180 months) as shown in the screenshot
-    years = 15
+    # Use same duration as optimal financing option for fair comparison
+    if financing_options:
+        years = find_optimal_duration(financing_options, monthly_savings)
+    else:
+        years = 15  # Fallback to 15 years
+    
     months = years * 12
     
     if monthly_rate > 0:
