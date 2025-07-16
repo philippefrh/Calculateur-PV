@@ -2094,9 +2094,9 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
         <div className="countdown-circle">
           <svg width="300" height="300" className="countdown-svg">
             <circle
-              cx="125"
-              cy="125"
-              r="110"
+              cx="150"
+              cy="150"
+              r="130"
               stroke="#e0e0e0"
               strokeWidth="8"
               fill="none"
