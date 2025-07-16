@@ -262,6 +262,17 @@ backend:
         comment: "✅ REGION SYSTEM IMPLEMENTATION FULLY TESTED AND WORKING PERFECTLY - Comprehensive testing completed of all region system requirements: 1) ✅ GET /api/regions returns list of available regions (france, martinique) with correct structure. 2) ✅ GET /api/regions/france returns France region configuration with 3.96% interest rates, 3-15 year financing. 3) ✅ GET /api/regions/martinique returns Martinique region configuration with 3 kits, 8% interest rates, correct company info. 4) ✅ GET /api/regions/martinique/kits returns 3 Martinique kits (3kW: 9900€/aid 5340€, 6kW: 13900€/aid 6480€, 9kW: 16900€/aid 9720€). 5) ✅ POST /api/calculate/{client_id} works with default region (france). 6) ✅ POST /api/calculate/{client_id}?region=martinique works with Martinique region. 7) ✅ REGIONS_CONFIG properly defined with all required fields. 8) ✅ Martinique kits have correct prices and aids as specified. 9) ✅ Martinique interest rates are 8% (0.08) vs France 3.96%. 10) ✅ Financing calculations use region-specific rates correctly. 11) ✅ Martinique uses 3-15 year financing duration. 12) ✅ Aid calculations differ between regions as expected. All region system functionality working perfectly and ready for production."
 
 frontend:
+  - task: "Region Selector System Implementation"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ REGION SELECTOR SYSTEM FULLY TESTED AND WORKING PERFECTLY - Comprehensive testing completed of all region selector functionality. RESULTS: 1) ✅ France selected by default with correct 'active' class and loads France region config successfully. 2) ✅ Martinique button click DOES trigger region change (contrary to initial problem report). 3) ✅ API calls working correctly: GET /api/regions/martinique and /api/regions/france called appropriately. 4) ✅ Button state management perfect: active/inactive classes switch correctly between France and Martinique. 5) ✅ StartScreen updates correctly with region-specific content: France shows 'Adresse France (actuelle)' with no region subtitle (logo_subtitle: null), Martinique shows 'Région Martinique' subtitle and 'F.R.H Environnement SAS, 11 rue des Arts et Métiers, Fort-de-France' address. 6) ✅ Region selection persists during navigation to form steps. 7) ✅ Console logs confirm proper region config loading with expected data structures. 8) ✅ All expected behavior from review request working as designed. The initial problem statement appears to have been inaccurate - the region selector system is fully operational and ready for production use."
   - task: "Complete Frontend Workflow Testing"
     implemented: true
     working: true
