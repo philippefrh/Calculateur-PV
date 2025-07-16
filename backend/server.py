@@ -394,7 +394,7 @@ def find_optimal_duration(financing_options: List[Dict], monthly_savings: float)
 def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", financing_options: List[Dict] = None) -> Dict:
     """
     Calculate financing options with aids deducted - WITH INTERESTS
-    Use same duration as optimal financing for comparison
+    Use mensualité = économie_mensuelle - 25€ for guaranteed positive cash flow
     """
     region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG["france"])
     taeg = region_config["interest_rates"]["with_aids"]
@@ -403,27 +403,55 @@ def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_s
     # Amount to finance after aids
     financed_amount = kit_price - total_aids
     
-    # Use same duration as optimal financing option for fair comparison
-    if financing_options:
-        years = find_optimal_duration(financing_options, monthly_savings)
-    else:
-        years = 15  # Fallback to 15 years
+    # Calculate optimal monthly payment: monthly_savings - 25€ for guaranteed positive cash flow
+    target_monthly_payment = monthly_savings - 25
     
-    months = years * 12
+    # Ensure minimum payment to avoid unrealistic durations
+    min_payment = financed_amount / (15 * 12)  # Maximum 15 years
+    max_payment = financed_amount / (3 * 12)   # Minimum 3 years
     
+    if target_monthly_payment < min_payment:
+        target_monthly_payment = min_payment
+    elif target_monthly_payment > max_payment:
+        target_monthly_payment = max_payment
+    
+    # Calculate duration for this monthly payment
     if monthly_rate > 0:
-        # Standard loan calculation WITH INTERESTS
-        monthly_payment_with_interests = financed_amount * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
+        # Solve for number of months: target_payment = financed_amount * [r * (1+r)^n] / [(1+r)^n - 1]
+        # Using iterative approach to find optimal duration
+        best_duration = 12  # Start with 1 year
+        best_difference = float('inf')
+        
+        for months in range(12, 181):  # 1 to 15 years
+            calculated_payment = financed_amount * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
+            difference = abs(calculated_payment - target_monthly_payment)
+            
+            if difference < best_difference:
+                best_difference = difference
+                best_duration = months
+            
+            # If we found exact match or very close, break
+            if difference < 0.01:
+                break
+        
+        # Calculate final payment with optimal duration
+        final_monthly_payment = financed_amount * (monthly_rate * (1 + monthly_rate)**best_duration) / ((1 + monthly_rate)**best_duration - 1)
+        years = best_duration / 12
+        months = best_duration
+        
     else:
-        monthly_payment_with_interests = financed_amount / months
+        # No interest case
+        final_monthly_payment = target_monthly_payment
+        years = financed_amount / target_monthly_payment / 12
+        months = int(years * 12)
     
     return {
         "duration_years": years,
         "duration_months": months,
         "financed_amount": round(financed_amount, 2),
-        "monthly_payment": round(monthly_payment_with_interests, 2),
-        "total_interests": round((monthly_payment_with_interests * months) - financed_amount, 2),
-        "difference_vs_savings": round(monthly_payment_with_interests - monthly_savings, 2)
+        "monthly_payment": round(final_monthly_payment, 2),
+        "total_interests": round((final_monthly_payment * months) - financed_amount, 2),
+        "difference_vs_savings": round(final_monthly_payment - monthly_savings, 2)
     }
 
 def calculate_all_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france") -> List[Dict]:
