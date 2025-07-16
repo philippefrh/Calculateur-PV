@@ -50,7 +50,7 @@ PVGIS_BASE_URL = "https://re.jrc.ec.europa.eu/api/v5_2"
 # Configuration des modes de calcul
 CALCULATION_MODES = {
     "realistic": {
-        "name": "Mode Réaliste",
+        "name": "Etude 1",
         "description": "Calculs basés sur les standards du marché",
         "autoconsumption_rate": 0.85,  # 85% autoconsommation (plus réaliste)
         "optimization_coefficient": 1.0,  # Pas d'optimisation comportementale
