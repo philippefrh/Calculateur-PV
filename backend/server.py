@@ -678,7 +678,8 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
                 "estimated_production": annual_production,
                 "estimated_savings": annual_savings,
                 "pvgis_data": pvgis_data,
-                "region": region
+                "region": region,
+                "calculation_mode": calculation_mode
             }}
         )
         
