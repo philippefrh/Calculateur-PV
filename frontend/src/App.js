@@ -2330,6 +2330,11 @@ function App() {
           onRegionChange={handleRegionChange}
           regionConfig={regionConfig}
         />
+        <CalculationModeSelector 
+          selectedMode={selectedCalculationMode} 
+          onModeChange={handleCalculationModeChange}
+          calculationModes={calculationModes}
+        />
         <StartScreen 
           onStart={handleStart} 
           regionConfig={regionConfig} 
