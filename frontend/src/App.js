@@ -1209,8 +1209,8 @@ Cordialement`);
                 <div className="cell-value">{Math.round(results.financing_with_aids?.duration_years)} années</div>
               </div>
               <div className="summary-cell dark">
-                <div className="cell-title">Pourcentage d'économies est.</div>
-                <div className="cell-value">{Math.round(results.autonomy_percentage)} %</div>
+                <div className="cell-title">Pourcentage d'économies réel</div>
+                <div className="cell-value">{Math.round(results.real_savings_percentage || results.autonomy_percentage)} %</div>
               </div>
               <div className="summary-cell green">
                 <div className="cell-title">Économies moyenne mensuelle</div>
