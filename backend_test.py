@@ -1329,6 +1329,10 @@ class SolarCalculatorTester:
         self.test_financing_with_aids_calculation()
         self.test_all_financing_with_aids_calculation()
         
+        # NEW: Priority 5.5 - Test financing duration synchronization fix
+        print("\n📋 PRIORITY 5.5 - NEW Financing Duration Synchronization Fix")
+        self.test_financing_duration_synchronization()
+        
         # Priority 6 - PDF Generation with Financing Tables
         print("\n📋 PRIORITY 6 - PDF Generation with Financing Tables")
         self.test_pdf_generation_financing_tables()
