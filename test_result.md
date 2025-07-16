@@ -146,15 +146,18 @@ backend:
 
   - task: "Client Creation with Geocoding"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
         comment: "✅ Client creation successful with automatic geocoding. Test client 'Jean Dupont' at Champs-Élysées correctly geocoded to Paris coordinates (48.8680, 2.3154)"
+      - working: false
+        agent: "testing"
+        comment: "❌ Geocoding service failing with 400 error for addresses like 'Paris, France' and 'Champs-Élysées'. Using existing clients for testing. Core functionality works but geocoding needs investigation."
 
   - task: "Client Retrieval Operations"
     implemented: true
@@ -260,6 +263,18 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ REGION SYSTEM IMPLEMENTATION FULLY TESTED AND WORKING PERFECTLY - Comprehensive testing completed of all region system requirements: 1) ✅ GET /api/regions returns list of available regions (france, martinique) with correct structure. 2) ✅ GET /api/regions/france returns France region configuration with 3.96% interest rates, 3-15 year financing. 3) ✅ GET /api/regions/martinique returns Martinique region configuration with 3 kits, 8% interest rates, correct company info. 4) ✅ GET /api/regions/martinique/kits returns 3 Martinique kits (3kW: 9900€/aid 5340€, 6kW: 13900€/aid 6480€, 9kW: 16900€/aid 9720€). 5) ✅ POST /api/calculate/{client_id} works with default region (france). 6) ✅ POST /api/calculate/{client_id}?region=martinique works with Martinique region. 7) ✅ REGIONS_CONFIG properly defined with all required fields. 8) ✅ Martinique kits have correct prices and aids as specified. 9) ✅ Martinique interest rates are 8% (0.08) vs France 3.96%. 10) ✅ Financing calculations use region-specific rates correctly. 11) ✅ Martinique uses 3-15 year financing duration. 12) ✅ Aid calculations differ between regions as expected. All region system functionality working perfectly and ready for production."
+
+  - task: "Calculation Modes System Implementation"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ CALCULATION MODES SYSTEM FULLY TESTED AND WORKING PERFECTLY - Comprehensive testing completed of all calculation modes requirements: 1) ✅ GET /api/calculation-modes returns available modes (realistic, optimistic) with correct names and descriptions. 2) ✅ GET /api/calculation-modes/realistic returns realistic mode config: 85% autoconsumption, 1.0 coefficient, 3% EDF increase. 3) ✅ GET /api/calculation-modes/optimistic returns optimistic mode config: 98% autoconsumption, 1.24 coefficient, 5% EDF increase. 4) ✅ POST /api/calculate with realistic mode: 192.57€/month savings, 67.6% real savings percentage. 5) ✅ POST /api/calculate with optimistic mode: 287.62€/month savings, 100.9% real savings percentage. 6) ✅ Modes comparison shows significant difference: +95.05€/month (+33.4% real savings) optimistic vs realistic. 7) ✅ calculation_mode and calculation_config correctly included in responses. 8) ✅ real_savings_percentage correctly calculated for both modes. 9) ✅ Invalid mode correctly rejected with appropriate error. All calculation modes functionality working perfectly and ready for production use."
 
 frontend:
   - task: "Region Selector System Implementation"
