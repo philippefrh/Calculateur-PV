@@ -210,6 +210,57 @@ body::after {
   text-align: center;
 }
 
+/* Styles pour le sélecteur de région */
+.region-selector {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.region-options {
+  display: flex;
+  gap: 8px;
+}
+
+.region-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  color: #333;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.region-btn:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+
+.region-btn.active {
+  background: linear-gradient(135deg, #4a7c59, #2c5530);
+  color: white;
+  box-shadow: 0 4px 16px rgba(74, 124, 89, 0.3);
+}
+
+/* Style pour l'adresse de la compagnie */
+.company-address {
+  font-size: 1rem;
+  color: #666;
+  margin-top: 10px;
+  font-style: italic;
+  white-space: pre-line;
+}
+
 .rge-logo-small {
   max-width: 80px; /* Réduire de moitié la taille des logos RGE */
   height: auto;
