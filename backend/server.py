@@ -60,7 +60,7 @@ CALCULATION_MODES = {
         "autonomy_cap": 100  # Pas de plafond artificiel
     },
     "optimistic": {
-        "name": "Mode Optimiste",
+        "name": "Etude 2",
         "description": "Calculs optimisés pour objectifs commerciaux",
         "autoconsumption_rate": 0.98,  # 98% autoconsommation (très optimiste)
         "optimization_coefficient": 1.24,  # +24% d'économies comportementales
