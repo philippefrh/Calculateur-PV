@@ -1918,7 +1918,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     {
       title: "🌍 Géolocalisation de votre adresse",
       description: "Nous localisons précisément votre domicile pour obtenir les données d'ensoleillement de la Commission Européenne PVGIS...",
-      duration: 60,
+      duration: 30,
       tips: [
         "💡 Nous utilisons les coordonnées GPS exactes",
         "🌞 Calcul de l'irradiation solaire spécifique à votre région", 
