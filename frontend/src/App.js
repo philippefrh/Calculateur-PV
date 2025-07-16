@@ -2286,7 +2286,11 @@ function App() {
           onRegionChange={handleRegionChange}
           regionConfig={regionConfig}
         />
-        <StartScreen onStart={handleStart} regionConfig={regionConfig} />
+        <StartScreen 
+          onStart={handleStart} 
+          regionConfig={regionConfig} 
+          key={selectedRegion}
+        />
       </div>
     );
   }
