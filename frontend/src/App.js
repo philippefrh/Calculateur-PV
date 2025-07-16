@@ -39,6 +39,7 @@ const StartScreen = ({ onStart }) => {
             alt="FRH Environnement - Installateur Photovoltaïque"
             className="company-logo-image centered"
           />
+          <div className="region-subtitle">Région Martinique</div>
         </div>
         <h1 className="company-title">Installateur Photovoltaïque</h1>
         <p className="company-subtitle">FRH ENVIRONNEMENT - Énergie Solaire Professionnel</p>
