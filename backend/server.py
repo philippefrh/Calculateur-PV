@@ -294,15 +294,20 @@ def calculate_optimal_kit_size(annual_consumption: float, roof_surface: float) -
     
     return best_power
 
-def calculate_financing_options(kit_price: float, monthly_savings: float) -> List[Dict]:
+def calculate_financing_options(kit_price: float, monthly_savings: float, region: str = "france") -> List[Dict]:
     """
-    Calculate financing options from 6 to 15 years
+    Calculate financing options from 3 to 15 years based on region
     """
-    taeg = 0.0496  # 4.96% TAEG
+    region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG["france"])
+    taeg = region_config["interest_rates"]["standard"]
     monthly_rate = taeg / 12
+    
+    min_duration = region_config["financing"]["min_duration"]
+    max_duration = region_config["financing"]["max_duration"]
+    
     options = []
     
-    for years in range(6, 16):  # 6 to 15 years
+    for years in range(min_duration, max_duration + 1):
         months = years * 12
         
         if monthly_rate > 0:
@@ -319,16 +324,18 @@ def calculate_financing_options(kit_price: float, monthly_savings: float) -> Lis
             "duration_months": months,
             "monthly_payment": round(monthly_payment, 2),
             "savings_ratio": round(savings_ratio, 2),
-            "difference_vs_savings": round(monthly_payment - monthly_savings, 2)
+            "difference_vs_savings": round(monthly_payment - monthly_savings, 2),
+            "taeg": taeg
         })
     
     return options
 
-def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float) -> Dict:
+def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france") -> Dict:
     """
     Calculate financing options with aids deducted - WITH INTERESTS
     """
-    taeg = 0.0396  # 3.96% TAEG (taux réduit avec aides)
+    region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG["france"])
+    taeg = region_config["interest_rates"]["with_aids"]
     monthly_rate = taeg / 12
     
     # Amount to finance after aids
