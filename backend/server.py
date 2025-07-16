@@ -287,7 +287,7 @@ def calculate_all_financing_with_aids(kit_price: float, total_aids: float, month
     """
     Calculate financing options with aids deducted for all durations (6-15 years) - WITH INTERESTS
     """
-    taeg = 0.0325  # 3.25% TAEG (taux réduit avec aides)
+    taeg = 0.0396  # 3.96% TAEG (taux réduit avec aides)
     monthly_rate = taeg / 12
     
     # Amount to finance after aids
