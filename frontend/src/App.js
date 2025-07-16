@@ -1977,7 +1977,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
 
   useEffect(() => {
     // Changement de phase selon le temps écoulé
-    const elapsed = 240 - countdown;
+    const elapsed = 120 - countdown;
     let currentPhaseIndex = 0;
     let totalDuration = 0;
     
