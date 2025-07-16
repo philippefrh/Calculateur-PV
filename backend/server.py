@@ -297,6 +297,29 @@ def calculate_optimal_kit_size_martinique(annual_consumption: float, roof_surfac
     else:
         return "kit_9kw"
 
+def calculate_optimal_kit_size_martinique(annual_consumption: float, roof_surface: float) -> str:
+    """
+    Calculate optimal kit size for Martinique based on consumption and roof space
+    Returns kit_id (e.g., 'kit_3kw', 'kit_6kw', 'kit_9kw')
+    """
+    # Each panel is 2.1 m² and 0.5 kW
+    max_panels_by_surface = int(roof_surface / 2.1)
+    max_power_by_surface = max_panels_by_surface * 0.5
+    
+    # Target 80-100% of annual consumption
+    target_power_by_consumption = annual_consumption / 1400  # Assuming ~1400 kWh/kW/year in Martinique
+    
+    # Choose the limiting factor
+    target_power = min(max_power_by_surface, target_power_by_consumption * 1.1)  # 110% buffer
+    
+    # Find the closest available kit
+    if target_power <= 4:
+        return "kit_3kw"
+    elif target_power <= 7:
+        return "kit_6kw"
+    else:
+        return "kit_9kw"
+
 def calculate_optimal_kit_size(annual_consumption: float, roof_surface: float) -> int:
     """
     Calculate optimal kit size based on consumption and roof space
