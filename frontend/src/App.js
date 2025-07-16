@@ -1153,77 +1153,67 @@ Cordialement`);
       
       {activeTab === 'overview' && (
         <div className="tab-content">
-          <div className="results-grid">
-            <div className="result-card primary">
-              <div className="card-icon">⚡</div>
-              <h3>Kit Solaire Optimal</h3>
-              <div className="big-number">{results.kit_power} kW</div>
-              <p>{results.panel_count} panneaux de 500W</p>
-              <p className="price">{results.kit_price?.toLocaleString()} € TTC</p>
-              <div className="card-footer">
-                <small>Surface nécessaire: {results.panel_count * 2.1} m²</small>
+          {/* Nouvelle vignette avec le design demandé */}
+          <div className="project-summary-table">
+            <div className="summary-row">
+              <div className="summary-cell dark">
+                <div className="cell-title">Coût du projet</div>
+                <div className="cell-value">{results.kit_price?.toLocaleString()} € TTC</div>
+              </div>
+              <div className="summary-cell dark">
+                <div className="cell-title">KAP Photovoltaïque</div>
+                <div className="cell-value">0,00 €</div>
+              </div>
+              <div className="summary-cell dark">
+                <div className="cell-title">Prime à l'autoconsommation</div>
+                <div className="cell-value">{results.total_aids?.toLocaleString()} €</div>
+              </div>
+              <div className="summary-cell green">
+                <div className="cell-title">Coût réel du projet</div>
+                <div className="cell-value">{results.financing_with_aids?.financed_amount?.toLocaleString()} €</div>
               </div>
             </div>
-
-            <div className="result-card success">
-              <div className="card-icon">🔋</div>
-              <h3>Autonomie Énergétique</h3>
-              <div className="big-number" style={{color: 'white'}}>
-                {Math.round(results.autonomy_percentage)}%
+            <div className="summary-row">
+              <div className="summary-cell dark">
+                <div className="cell-title">Production annuelle du PV</div>
+                <div className="cell-value">{Math.round(results.estimated_production).toLocaleString()} kWh</div>
               </div>
-              <p>Autoconsommation optimisée</p>
-              <div className="autonomy-bar">
-                <div 
-                  className="autonomy-fill" 
-                  style={{
-                    width: `${results.autonomy_percentage}%`,
-                    backgroundColor: getAutonomyColor(results.autonomy_percentage)
-                  }}
-                ></div>
+              <div className="summary-cell dark">
+                <div className="cell-title">Durée d'amortissement *</div>
+                <div className="cell-value">{Math.round(results.financing_with_aids?.duration_years)} années</div>
               </div>
-            </div>
-
-            <div className="result-card production">
-              <div className="card-icon">☀️</div>
-              <h3>Production Annuelle</h3>
-              <div className="big-number">{Math.round(results.estimated_production)} kWh</div>
-              <p>Données PVGIS officielles</p>
-              <p>Orientation: {results.orientation}</p>
-              <div className="card-footer">
-                <small>Soit {Math.round(results.estimated_production/365)} kWh/jour</small>
+              <div className="summary-cell dark">
+                <div className="cell-title">Pourcentage d'économies est.</div>
+                <div className="cell-value">{Math.round(results.autonomy_percentage)} %</div>
               </div>
-            </div>
-
-            <div className="result-card savings">
-              <div className="card-icon">💰</div>
-              <h3>Économies Garanties</h3>
-              <div className="big-number">{Math.round(results.estimated_savings)} €</div>
-              <p>Soit {Math.round(results.monthly_savings)} €/mois</p>
-              <div className="savings-breakdown">
-                <small>Autoconsommation: {Math.round(results.autoconsumption_kwh)} kWh</small>
-                <small>Surplus vendu: {Math.round(results.surplus_kwh)} kWh</small>
+              <div className="summary-cell green">
+                <div className="cell-title">Économies moyenne mensuelle</div>
+                <div className="cell-value">{Math.round(results.monthly_savings)} €/mois</div>
               </div>
             </div>
           </div>
 
-          <div className="impact-section">
-            <h3>🌱 Impact Environnemental</h3>
-            <div className="impact-grid">
-              <div className="impact-card">
-                <h4>🌳 CO₂ évité</h4>
-                <p className="impact-value">{Math.round(results.estimated_production * 0.0571)} kg/an</p>
-                <small>Équivalent à {Math.round(results.estimated_production * 0.0571 / 25)} arbres plantés</small>
-              </div>
-              <div className="impact-card">
-                <h4>🏠 Plus-value immobilière</h4>
-                <p className="impact-value">Classe A/B</p>
-                <small>Augmentation significative de la valeur du bien</small>
-              </div>
-              <div className="impact-card">
-                <h4>⚡ Indépendance</h4>
-                <p className="impact-value">{Math.round(results.autonomy_percentage)}% autonome</p>
-                <small>Protection contre la hausse des tarifs</small>
-              </div>
+          {/* Résumé financier sous le tableau */}
+          <div className="financial-summary">
+            <div className="financial-item">
+              <span className="financial-icon">💰</span>
+              <span className="financial-label">Investissement:</span>
+              <span className="financial-value">{results.kit_price?.toLocaleString()} € TTC</span>
+            </div>
+            <div className="financial-item">
+              <span className="financial-icon">🎁</span>
+              <span className="financial-label">Aides totales:</span>
+              <span className="financial-value aides">-{results.total_aids?.toLocaleString()} €</span>
+            </div>
+            <div className="financial-item">
+              <span className="financial-icon">💳</span>
+              <span className="financial-label">Reste à financer:</span>
+              <span className="financial-value">{results.financing_with_aids?.financed_amount?.toLocaleString()} €</span>
+            </div>
+            <div className="financial-item">
+              <span className="financial-icon">⏱️</span>
+              <span className="financial-label">Retour sur investissement:</span>
+              <span className="financial-value">{Math.round(results.financing_with_aids?.duration_years)} ans</span>
             </div>
           </div>
         </div>
