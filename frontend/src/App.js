@@ -1938,7 +1938,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     {
       title: "🔧 Optimisation de votre installation",
       description: "Analyse de votre consommation (" + formData.annualConsumption + " kWh/an) et sélection du kit optimal...",
-      duration: 60,
+      duration: 30,
       tips: [
         "🏠 Surface disponible: " + formData.roofSurface + " m²",
         "⚡ Système: " + formData.heatingSystem,
