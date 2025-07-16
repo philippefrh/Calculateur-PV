@@ -1,0 +1,9 @@
+[
+  {
+    "test": "Setup Test Client",
+    "success": false,
+    "details": "Failed to create client: 500",
+    "timestamp": "2025-07-16 20:24:08",
+    "response_data": null
+  }
+]
