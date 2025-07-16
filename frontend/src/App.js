@@ -2198,9 +2198,31 @@ function App() {
     fetchRegionConfig();
   }, [selectedRegion]);
 
+  // Charger les modes de calcul disponibles
+  useEffect(() => {
+    const fetchCalculationModes = async () => {
+      try {
+        console.log('Fetching calculation modes');
+        const response = await axios.get(`${API}/calculation-modes`);
+        console.log('Calculation modes loaded:', response.data.modes);
+        setCalculationModes(response.data.modes);
+      } catch (error) {
+        console.error('Erreur lors du chargement des modes de calcul:', error);
+      }
+    };
+    
+    fetchCalculationModes();
+  }, []);
+
   const handleRegionChange = (region) => {
     setSelectedRegion(region);
     // Réinitialiser les résultats de calcul si on change de région
+    setCalculationResults(null);
+  };
+
+  const handleCalculationModeChange = (mode) => {
+    setSelectedCalculationMode(mode);
+    // Réinitialiser les résultats de calcul si on change de mode
     setCalculationResults(null);
   };
 
