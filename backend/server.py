@@ -47,6 +47,30 @@ api_router = APIRouter(prefix="/api")
 # PVGIS Configuration
 PVGIS_BASE_URL = "https://re.jrc.ec.europa.eu/api/v5_2"
 
+# Configuration des modes de calcul
+CALCULATION_MODES = {
+    "realistic": {
+        "name": "Mode Réaliste",
+        "description": "Calculs basés sur les standards du marché",
+        "autoconsumption_rate": 0.85,  # 85% autoconsommation (plus réaliste)
+        "optimization_coefficient": 1.0,  # Pas d'optimisation comportementale
+        "maintenance_savings": 100,  # €/year (réduction maintenance réseau)
+        "annual_rate_increase": 0.03,  # 3% augmentation EDF par an
+        "surplus_sale_rate": 0.076,  # €/kWh pour surplus vendu à EDF
+        "autonomy_cap": 100  # Pas de plafond artificiel
+    },
+    "optimistic": {
+        "name": "Mode Optimiste",
+        "description": "Calculs optimisés pour objectifs commerciaux",
+        "autoconsumption_rate": 0.98,  # 98% autoconsommation (très optimiste)
+        "optimization_coefficient": 1.24,  # +24% d'économies comportementales
+        "maintenance_savings": 300,  # €/year (économies maintenance importantes)
+        "annual_rate_increase": 0.05,  # 5% augmentation EDF par an
+        "surplus_sale_rate": 0.076,  # €/kWh pour surplus vendu à EDF
+        "autonomy_cap": 95  # Plafond à 95% pour l'affichage
+    }
+}
+
 # Configuration des régions
 REGIONS_CONFIG = {
     "france": {
@@ -68,9 +92,7 @@ REGIONS_CONFIG = {
             "min_duration": 5,
             "max_duration": 15,
             "aids_recovery_months": 7  # Récupération entre 7-12 mois
-        },
-        "autoconsumption_rate": 0.98,
-        "optimization_coefficient": 1.24
+        }
     },
     "martinique": {
         "name": "Martinique",
@@ -111,9 +133,7 @@ REGIONS_CONFIG = {
             "min_duration": 3,
             "max_duration": 15,
             "aids_recovery_months": 3  # Récupération 3-4 mois après installation
-        },
-        "autoconsumption_rate": 0.98,
-        "optimization_coefficient": 1.24
+        }
     }
 }
 
