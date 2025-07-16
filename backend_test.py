@@ -1291,6 +1291,349 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Financing Duration Synchronization", False, f"Error: {str(e)}")
     
+    def test_calculation_modes_endpoint(self):
+        """Test GET /api/calculation-modes - should return available calculation modes"""
+        try:
+            response = self.session.get(f"{self.base_url}/calculation-modes")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "modes" not in data:
+                    self.log_test("Calculation Modes Endpoint", False, "Missing 'modes' in response", data)
+                    return
+                
+                modes = data["modes"]
+                
+                # Check that both realistic and optimistic modes are available
+                expected_modes = ["realistic", "optimistic"]
+                if not all(mode in modes for mode in expected_modes):
+                    self.log_test("Calculation Modes Endpoint", False, f"Missing expected modes. Got: {list(modes.keys())}, Expected: {expected_modes}", data)
+                    return
+                
+                # Check mode structure
+                for mode_name in expected_modes:
+                    mode_info = modes[mode_name]
+                    required_fields = ["name", "description"]
+                    missing_fields = [field for field in required_fields if field not in mode_info]
+                    if missing_fields:
+                        self.log_test("Calculation Modes Endpoint", False, f"Missing fields in {mode_name}: {missing_fields}", data)
+                        return
+                
+                # Check specific mode names and descriptions
+                if modes["realistic"]["name"] != "Mode Réaliste":
+                    self.log_test("Calculation Modes Endpoint", False, f"Expected realistic mode name 'Mode Réaliste', got '{modes['realistic']['name']}'", data)
+                    return
+                
+                if modes["optimistic"]["name"] != "Mode Optimiste":
+                    self.log_test("Calculation Modes Endpoint", False, f"Expected optimistic mode name 'Mode Optimiste', got '{modes['optimistic']['name']}'", data)
+                    return
+                
+                self.log_test("Calculation Modes Endpoint", True, 
+                            f"✅ Calculation modes endpoint working. Available modes: {list(modes.keys())}. Realistic: '{modes['realistic']['name']}', Optimistic: '{modes['optimistic']['name']}'", 
+                            data)
+            else:
+                self.log_test("Calculation Modes Endpoint", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Calculation Modes Endpoint", False, f"Error: {str(e)}")
+
+    def test_realistic_mode_config(self):
+        """Test GET /api/calculation-modes/realistic - should return realistic mode configuration"""
+        try:
+            response = self.session.get(f"{self.base_url}/calculation-modes/realistic")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "mode" not in data or "config" not in data:
+                    self.log_test("Realistic Mode Config", False, "Missing 'mode' or 'config' in response", data)
+                    return
+                
+                if data["mode"] != "realistic":
+                    self.log_test("Realistic Mode Config", False, f"Expected mode 'realistic', got '{data['mode']}'", data)
+                    return
+                
+                config = data["config"]
+                
+                # Check required configuration fields
+                required_fields = ["name", "description", "autoconsumption_rate", "optimization_coefficient", "annual_rate_increase"]
+                missing_fields = [field for field in required_fields if field not in config]
+                if missing_fields:
+                    self.log_test("Realistic Mode Config", False, f"Missing config fields: {missing_fields}", data)
+                    return
+                
+                # Check specific realistic mode values
+                if config["autoconsumption_rate"] != 0.85:
+                    self.log_test("Realistic Mode Config", False, f"Expected autoconsumption_rate 0.85 (85%), got {config['autoconsumption_rate']}", data)
+                    return
+                
+                if config["optimization_coefficient"] != 1.0:
+                    self.log_test("Realistic Mode Config", False, f"Expected optimization_coefficient 1.0, got {config['optimization_coefficient']}", data)
+                    return
+                
+                if config["annual_rate_increase"] != 0.03:
+                    self.log_test("Realistic Mode Config", False, f"Expected annual_rate_increase 0.03 (3%), got {config['annual_rate_increase']}", data)
+                    return
+                
+                self.log_test("Realistic Mode Config", True, 
+                            f"✅ Realistic mode config working. Autoconsumption: {config['autoconsumption_rate']*100}%, Coefficient: {config['optimization_coefficient']}, EDF increase: {config['annual_rate_increase']*100}%/year", 
+                            data)
+            else:
+                self.log_test("Realistic Mode Config", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Realistic Mode Config", False, f"Error: {str(e)}")
+
+    def test_optimistic_mode_config(self):
+        """Test GET /api/calculation-modes/optimistic - should return optimistic mode configuration"""
+        try:
+            response = self.session.get(f"{self.base_url}/calculation-modes/optimistic")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "mode" not in data or "config" not in data:
+                    self.log_test("Optimistic Mode Config", False, "Missing 'mode' or 'config' in response", data)
+                    return
+                
+                if data["mode"] != "optimistic":
+                    self.log_test("Optimistic Mode Config", False, f"Expected mode 'optimistic', got '{data['mode']}'", data)
+                    return
+                
+                config = data["config"]
+                
+                # Check required configuration fields
+                required_fields = ["name", "description", "autoconsumption_rate", "optimization_coefficient", "annual_rate_increase"]
+                missing_fields = [field for field in required_fields if field not in config]
+                if missing_fields:
+                    self.log_test("Optimistic Mode Config", False, f"Missing config fields: {missing_fields}", data)
+                    return
+                
+                # Check specific optimistic mode values
+                if config["autoconsumption_rate"] != 0.98:
+                    self.log_test("Optimistic Mode Config", False, f"Expected autoconsumption_rate 0.98 (98%), got {config['autoconsumption_rate']}", data)
+                    return
+                
+                if config["optimization_coefficient"] != 1.24:
+                    self.log_test("Optimistic Mode Config", False, f"Expected optimization_coefficient 1.24, got {config['optimization_coefficient']}", data)
+                    return
+                
+                if config["annual_rate_increase"] != 0.05:
+                    self.log_test("Optimistic Mode Config", False, f"Expected annual_rate_increase 0.05 (5%), got {config['annual_rate_increase']}", data)
+                    return
+                
+                self.log_test("Optimistic Mode Config", True, 
+                            f"✅ Optimistic mode config working. Autoconsumption: {config['autoconsumption_rate']*100}%, Coefficient: {config['optimization_coefficient']}, EDF increase: {config['annual_rate_increase']*100}%/year", 
+                            data)
+            else:
+                self.log_test("Optimistic Mode Config", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Optimistic Mode Config", False, f"Error: {str(e)}")
+
+    def test_calculation_with_realistic_mode(self):
+        """Test POST /api/calculate/{client_id}?region=france&calculation_mode=realistic"""
+        if not self.client_id:
+            self.log_test("Calculation Realistic Mode", False, "No client ID available from previous test")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=france&calculation_mode=realistic")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check that calculation_mode is realistic
+                if calculation.get("calculation_mode") != "realistic":
+                    self.log_test("Calculation Realistic Mode", False, f"Expected calculation_mode 'realistic', got '{calculation.get('calculation_mode')}'", calculation)
+                    return
+                
+                # Check that calculation_config is present and matches realistic mode
+                calculation_config = calculation.get("calculation_config")
+                if not calculation_config:
+                    self.log_test("Calculation Realistic Mode", False, "Missing calculation_config in response", calculation)
+                    return
+                
+                # Verify realistic mode parameters
+                if calculation_config.get("autoconsumption_rate") != 0.85:
+                    self.log_test("Calculation Realistic Mode", False, f"Expected autoconsumption_rate 0.85, got {calculation_config.get('autoconsumption_rate')}", calculation)
+                    return
+                
+                if calculation_config.get("optimization_coefficient") != 1.0:
+                    self.log_test("Calculation Realistic Mode", False, f"Expected optimization_coefficient 1.0, got {calculation_config.get('optimization_coefficient')}", calculation)
+                    return
+                
+                if calculation_config.get("annual_rate_increase") != 0.03:
+                    self.log_test("Calculation Realistic Mode", False, f"Expected annual_rate_increase 0.03, got {calculation_config.get('annual_rate_increase')}", calculation)
+                    return
+                
+                # Check that autoconsumption_rate is correctly applied
+                autoconsumption_rate = calculation.get("autoconsumption_rate")
+                if autoconsumption_rate != 0.85:
+                    self.log_test("Calculation Realistic Mode", False, f"Expected applied autoconsumption_rate 0.85, got {autoconsumption_rate}", calculation)
+                    return
+                
+                # Check that real_savings_percentage is calculated
+                real_savings_percentage = calculation.get("real_savings_percentage")
+                if real_savings_percentage is None:
+                    self.log_test("Calculation Realistic Mode", False, "Missing real_savings_percentage in response", calculation)
+                    return
+                
+                # Store realistic calculation for comparison
+                self.realistic_calculation = calculation
+                
+                self.log_test("Calculation Realistic Mode", True, 
+                            f"✅ Realistic mode calculation working. Autoconsumption: {autoconsumption_rate*100}%, Coefficient: {calculation_config['optimization_coefficient']}, Real savings: {real_savings_percentage:.1f}%, Monthly savings: {calculation.get('monthly_savings', 0):.2f}€", 
+                            {"calculation_mode": calculation["calculation_mode"], "monthly_savings": calculation.get("monthly_savings"), "real_savings_percentage": real_savings_percentage})
+            else:
+                self.log_test("Calculation Realistic Mode", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Calculation Realistic Mode", False, f"Error: {str(e)}")
+
+    def test_calculation_with_optimistic_mode(self):
+        """Test POST /api/calculate/{client_id}?region=france&calculation_mode=optimistic"""
+        if not self.client_id:
+            self.log_test("Calculation Optimistic Mode", False, "No client ID available from previous test")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=france&calculation_mode=optimistic")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check that calculation_mode is optimistic
+                if calculation.get("calculation_mode") != "optimistic":
+                    self.log_test("Calculation Optimistic Mode", False, f"Expected calculation_mode 'optimistic', got '{calculation.get('calculation_mode')}'", calculation)
+                    return
+                
+                # Check that calculation_config is present and matches optimistic mode
+                calculation_config = calculation.get("calculation_config")
+                if not calculation_config:
+                    self.log_test("Calculation Optimistic Mode", False, "Missing calculation_config in response", calculation)
+                    return
+                
+                # Verify optimistic mode parameters
+                if calculation_config.get("autoconsumption_rate") != 0.98:
+                    self.log_test("Calculation Optimistic Mode", False, f"Expected autoconsumption_rate 0.98, got {calculation_config.get('autoconsumption_rate')}", calculation)
+                    return
+                
+                if calculation_config.get("optimization_coefficient") != 1.24:
+                    self.log_test("Calculation Optimistic Mode", False, f"Expected optimization_coefficient 1.24, got {calculation_config.get('optimization_coefficient')}", calculation)
+                    return
+                
+                if calculation_config.get("annual_rate_increase") != 0.05:
+                    self.log_test("Calculation Optimistic Mode", False, f"Expected annual_rate_increase 0.05, got {calculation_config.get('annual_rate_increase')}", calculation)
+                    return
+                
+                # Check that autoconsumption_rate is correctly applied
+                autoconsumption_rate = calculation.get("autoconsumption_rate")
+                if autoconsumption_rate != 0.98:
+                    self.log_test("Calculation Optimistic Mode", False, f"Expected applied autoconsumption_rate 0.98, got {autoconsumption_rate}", calculation)
+                    return
+                
+                # Check that real_savings_percentage is calculated
+                real_savings_percentage = calculation.get("real_savings_percentage")
+                if real_savings_percentage is None:
+                    self.log_test("Calculation Optimistic Mode", False, "Missing real_savings_percentage in response", calculation)
+                    return
+                
+                # Store optimistic calculation for comparison
+                self.optimistic_calculation = calculation
+                
+                self.log_test("Calculation Optimistic Mode", True, 
+                            f"✅ Optimistic mode calculation working. Autoconsumption: {autoconsumption_rate*100}%, Coefficient: {calculation_config['optimization_coefficient']}, Real savings: {real_savings_percentage:.1f}%, Monthly savings: {calculation.get('monthly_savings', 0):.2f}€", 
+                            {"calculation_mode": calculation["calculation_mode"], "monthly_savings": calculation.get("monthly_savings"), "real_savings_percentage": real_savings_percentage})
+            else:
+                self.log_test("Calculation Optimistic Mode", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Calculation Optimistic Mode", False, f"Error: {str(e)}")
+
+    def test_calculation_modes_comparison(self):
+        """Compare results between realistic and optimistic calculation modes"""
+        if not hasattr(self, 'realistic_calculation') or not hasattr(self, 'optimistic_calculation'):
+            self.log_test("Calculation Modes Comparison", False, "Missing realistic or optimistic calculation results from previous tests")
+            return
+            
+        try:
+            realistic = self.realistic_calculation
+            optimistic = self.optimistic_calculation
+            
+            # Compare monthly savings (optimistic should be higher)
+            realistic_savings = realistic.get("monthly_savings", 0)
+            optimistic_savings = optimistic.get("monthly_savings", 0)
+            
+            if optimistic_savings <= realistic_savings:
+                self.log_test("Calculation Modes Comparison", False, f"Optimistic savings {optimistic_savings:.2f}€ should be higher than realistic savings {realistic_savings:.2f}€")
+                return
+            
+            # Compare autoconsumption rates
+            realistic_autoconsumption = realistic.get("autoconsumption_rate", 0)
+            optimistic_autoconsumption = optimistic.get("autoconsumption_rate", 0)
+            
+            if realistic_autoconsumption != 0.85:
+                self.log_test("Calculation Modes Comparison", False, f"Realistic autoconsumption should be 85%, got {realistic_autoconsumption*100}%")
+                return
+            
+            if optimistic_autoconsumption != 0.98:
+                self.log_test("Calculation Modes Comparison", False, f"Optimistic autoconsumption should be 98%, got {optimistic_autoconsumption*100}%")
+                return
+            
+            # Compare real savings percentages
+            realistic_real_savings = realistic.get("real_savings_percentage", 0)
+            optimistic_real_savings = optimistic.get("real_savings_percentage", 0)
+            
+            if optimistic_real_savings <= realistic_real_savings:
+                self.log_test("Calculation Modes Comparison", False, f"Optimistic real savings {optimistic_real_savings:.1f}% should be higher than realistic {realistic_real_savings:.1f}%")
+                return
+            
+            # Calculate differences
+            savings_difference = optimistic_savings - realistic_savings
+            savings_increase_percentage = (savings_difference / realistic_savings) * 100 if realistic_savings > 0 else 0
+            
+            real_savings_difference = optimistic_real_savings - realistic_real_savings
+            
+            # Verify significant difference (should be substantial due to 98% vs 85% autoconsumption and 1.24 vs 1.0 coefficient)
+            if savings_increase_percentage < 10:
+                self.log_test("Calculation Modes Comparison", False, f"Savings increase {savings_increase_percentage:.1f}% seems too small (expected >10% due to mode differences)")
+                return
+            
+            self.log_test("Calculation Modes Comparison", True, 
+                        f"✅ Calculation modes comparison successful. Realistic: {realistic_savings:.2f}€/month ({realistic_real_savings:.1f}% real savings), Optimistic: {optimistic_savings:.2f}€/month ({optimistic_real_savings:.1f}% real savings). Difference: +{savings_difference:.2f}€/month (+{savings_increase_percentage:.1f}%), +{real_savings_difference:.1f}% real savings", 
+                        {
+                            "realistic_monthly_savings": realistic_savings,
+                            "optimistic_monthly_savings": optimistic_savings,
+                            "savings_difference": savings_difference,
+                            "savings_increase_percentage": savings_increase_percentage,
+                            "realistic_real_savings": realistic_real_savings,
+                            "optimistic_real_savings": optimistic_real_savings,
+                            "real_savings_difference": real_savings_difference
+                        })
+        except Exception as e:
+            self.log_test("Calculation Modes Comparison", False, f"Error: {str(e)}")
+
+    def test_calculation_invalid_mode(self):
+        """Test POST /api/calculate/{client_id}?calculation_mode=invalid - should return error"""
+        if not self.client_id:
+            self.log_test("Calculation Invalid Mode", False, "No client ID available from previous test")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?calculation_mode=invalid")
+            if response.status_code == 400:
+                # Should return 400 Bad Request for invalid mode
+                error_data = response.json() if response.headers.get('content-type', '').startswith('application/json') else {"detail": response.text}
+                
+                # Check error message mentions calculation mode
+                error_detail = error_data.get("detail", "")
+                if "calculation mode" not in error_detail.lower() or "invalid" not in error_detail.lower():
+                    self.log_test("Calculation Invalid Mode", False, f"Error message should mention invalid calculation mode, got: {error_detail}")
+                    return
+                
+                self.log_test("Calculation Invalid Mode", True, 
+                            f"✅ Invalid calculation mode correctly rejected with HTTP 400. Error: {error_detail}", 
+                            error_data)
+            else:
+                self.log_test("Calculation Invalid Mode", False, f"Expected HTTP 400 for invalid mode, got {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Calculation Invalid Mode", False, f"Error: {str(e)}")
+    
     def run_all_tests(self):
         """Run all tests in order"""
         print("🚀 Starting Solar Calculator Backend Tests")
