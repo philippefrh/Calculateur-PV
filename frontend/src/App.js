@@ -718,12 +718,16 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious, selectedRe
             surface: surfaceTotal,
             autoconsumptionAid,
             tvaRefund: Math.round(tvaRefund),
-          totalAids: Math.round(totalAids),
-          priceWithAids: Math.round(priceWithAids)
-        };
-      });
+            totalAids: Math.round(totalAids),
+            priceWithAids: Math.round(priceWithAids)
+          };
+        });
+        
+        setAvailableKits(kitsWithDetails);
+      }
       
-      setAvailableKits(kitsWithDetails.sort((a, b) => a.power - b.power));
+      // Trier les kits par puissance
+      setAvailableKits(prev => [...prev].sort((a, b) => a.power - b.power));
     } catch (error) {
       console.error('Erreur lors du chargement des kits:', error);
       alert('Erreur lors du chargement des kits. Veuillez réessayer.');
