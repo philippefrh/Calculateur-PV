@@ -664,6 +664,14 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious, selectedRe
   const [selectedKit, setSelectedKit] = useState(null);
   const [loadingKits, setLoadingKits] = useState(false);
 
+  // Recharger les kits quand la région change
+  useEffect(() => {
+    if (showKitSelection) {
+      setAvailableKits([]);
+      fetchAvailableKits();
+    }
+  }, [selectedRegion]);
+
   // Récupérer les kits solaires disponibles selon la région
   const fetchAvailableKits = async () => {
     if (availableKits.length > 0) return; // Déjà chargés
