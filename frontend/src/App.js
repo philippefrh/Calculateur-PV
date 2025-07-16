@@ -21,8 +21,30 @@ const AutonomyLogo = () => (
   </div>
 );
 
+// Composant sélecteur de région
+const RegionSelector = ({ selectedRegion, onRegionChange, regionConfig }) => {
+  return (
+    <div className="region-selector">
+      <div className="region-options">
+        <button 
+          className={`region-btn ${selectedRegion === 'france' ? 'active' : ''}`}
+          onClick={() => onRegionChange('france')}
+        >
+          🇫🇷 France
+        </button>
+        <button 
+          className={`region-btn ${selectedRegion === 'martinique' ? 'active' : ''}`}
+          onClick={() => onRegionChange('martinique')}
+        >
+          🇲🇶 Martinique
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Écran de démarrage amélioré avec vrais logos
-const StartScreen = ({ onStart }) => {
+const StartScreen = ({ onStart, regionConfig }) => {
   
   const handleClick = () => {
     console.log("Button clicked!");
