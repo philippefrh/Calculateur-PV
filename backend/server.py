@@ -1183,6 +1183,35 @@ async def get_region_kits(region_name: str):
             
         return {"kits": kits_list}
 
+# Endpoints pour la gestion des modes de calcul
+@api_router.get("/calculation-modes")
+async def get_calculation_modes():
+    """
+    Récupère la liste des modes de calcul disponibles
+    """
+    return {
+        "modes": {
+            mode: {
+                "name": config["name"],
+                "description": config["description"]
+            }
+            for mode, config in CALCULATION_MODES.items()
+        }
+    }
+
+@api_router.get("/calculation-modes/{mode_name}")
+async def get_calculation_mode_config(mode_name: str):
+    """
+    Récupère la configuration complète d'un mode de calcul
+    """
+    if mode_name not in CALCULATION_MODES:
+        raise HTTPException(status_code=404, detail=f"Calculation mode '{mode_name}' not found")
+    
+    return {
+        "mode": mode_name,
+        "config": CALCULATION_MODES[mode_name]
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
