@@ -360,19 +360,23 @@ def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_s
         "difference_vs_savings": round(monthly_payment_with_interests - monthly_savings, 2)
     }
 
-def calculate_all_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float) -> List[Dict]:
+def calculate_all_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france") -> List[Dict]:
     """
-    Calculate financing options with aids deducted for all durations (6-15 years) - WITH INTERESTS
+    Calculate financing options with aids deducted for all durations (3-15 years) - WITH INTERESTS
     """
-    taeg = 0.0396  # 3.96% TAEG (taux réduit avec aides)
+    region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG["france"])
+    taeg = region_config["interest_rates"]["with_aids"]
     monthly_rate = taeg / 12
+    
+    min_duration = region_config["financing"]["min_duration"]
+    max_duration = region_config["financing"]["max_duration"]
     
     # Amount to finance after aids
     financed_amount = kit_price - total_aids
     
     options = []
     
-    for years in range(6, 16):  # 6 to 15 years
+    for years in range(min_duration, max_duration + 1):
         months = years * 12
         
         if monthly_rate > 0:
@@ -386,7 +390,8 @@ def calculate_all_financing_with_aids(kit_price: float, total_aids: float, month
             "duration_months": months,
             "monthly_payment": round(monthly_payment_with_interests, 2),
             "total_interests": round((monthly_payment_with_interests * months) - financed_amount, 2),
-            "difference_vs_savings": round(monthly_payment_with_interests - monthly_savings, 2)
+            "difference_vs_savings": round(monthly_payment_with_interests - monthly_savings, 2),
+            "taeg": taeg
         })
     
     return options
