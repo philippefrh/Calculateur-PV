@@ -2108,7 +2108,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
               stroke="url(#gradient)"
               strokeWidth="8"
               fill="none"
-              strokeDasharray={`${progressPercentage * 6.91} 691`}
+              strokeDasharray={`${progressPercentage * 8.17} 817`}
               strokeLinecap="round"
               className="progress-circle"
             />
