@@ -2102,9 +2102,9 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
               fill="none"
             />
             <circle
-              cx="125"
-              cy="125"
-              r="110"
+              cx="150"
+              cy="150"
+              r="130"
               stroke="url(#gradient)"
               strokeWidth="8"
               fill="none"
