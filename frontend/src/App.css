@@ -268,23 +268,26 @@ body::after {
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
+  padding: 4px; /* Petit padding pour créer l'espacement */
+  background-color: #f0f0f0; /* Couleur de fond pour voir l'espacement */
 }
 
 .summary-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border: none;
+  gap: 4px; /* Espacement entre les cellules */
+  margin-bottom: 4px; /* Espacement entre les lignes */
+}
+
+.summary-row:last-child {
+  margin-bottom: 0;
 }
 
 .summary-cell {
   padding: 20px;
   text-align: center;
-  border-right: 1px solid #ffffff20;
+  border-radius: 4px; /* Coins arrondis pour chaque cellule */
   position: relative;
-}
-
-.summary-cell:last-child {
-  border-right: none;
 }
 
 .summary-cell.dark {
