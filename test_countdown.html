@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Horloge Agrandie</title>
+    <title>Test Horloge Corrigée</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -112,6 +112,27 @@
             font-size: 1.1rem;
             color: #2c5530;
         }
+        
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .test-btn {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .test-btn:hover {
+            background: #1976d2;
+        }
     </style>
 </head>
 <body>
@@ -121,12 +142,19 @@
             <p>Analyse PVGIS Commission Européenne - Données officielles</p>
             
             <button class="demo-toggle">
-                ⚡ Mode Démo ON
+                ⚡ Mode Normal
             </button>
         </div>
         
         <div class="size-info">
-            ✅ <strong>Horloge agrandie à 8 cm de diamètre</strong> (300px × 300px)
+            ✅ <strong>Problème corrigé :</strong> Le trait vert suit maintenant le cercle !
+        </div>
+        
+        <div class="test-buttons">
+            <button class="test-btn" onclick="setProgress(25)">25%</button>
+            <button class="test-btn" onclick="setProgress(50)">50%</button>
+            <button class="test-btn" onclick="setProgress(75)">75%</button>
+            <button class="test-btn" onclick="setProgress(100)">100%</button>
         </div>
         
         <div class="countdown-section">
@@ -141,13 +169,14 @@
                         fill="none"
                     />
                     <circle
+                        id="progress-circle"
                         cx="150"
                         cy="150"
                         r="130"
                         stroke="url(#gradient)"
                         stroke-width="8"
                         fill="none"
-                        stroke-dasharray="490 817"
+                        stroke-dasharray="408 817"
                         stroke-linecap="round"
                         class="progress-circle"
                     />
@@ -159,18 +188,50 @@
                     </defs>
                 </svg>
                 <div class="countdown-text">
-                    <div class="countdown-number">1:30</div>
+                    <div class="countdown-number" id="countdown-time">1:00</div>
                     <div class="countdown-label">restantes</div>
-                    <div class="countdown-progress">60%</div>
+                    <div class="countdown-progress" id="countdown-percent">50%</div>
                 </div>
             </div>
         </div>
         
         <div class="size-info">
             📏 <strong>Diamètre</strong> : 8 cm (300px)<br>
-            📝 <strong>Modifications</strong> : Emoji fusée retiré, temps réduit à 2 minutes<br>
-            🎨 <strong>Polices</strong> : Agrandies proportionnellement
+            🔧 <strong>Correction</strong> : Coordonnées du cercle de progression alignées (cx="150", cy="150", r="130")<br>
+            🎯 <strong>Test</strong> : Utilisez les boutons pour tester différents pourcentages
         </div>
     </div>
+
+    <script>
+        function setProgress(percentage) {
+            const progressCircle = document.getElementById('progress-circle');
+            const timeElement = document.getElementById('countdown-time');
+            const percentElement = document.getElementById('countdown-percent');
+            
+            // Calcul de la circonférence: 2π × 130 = 816.81 ≈ 817
+            const circumference = 817;
+            const dashArray = (percentage / 100) * circumference;
+            
+            progressCircle.setAttribute('stroke-dasharray', `${dashArray} ${circumference}`);
+            
+            // Mise à jour du temps (simulation)
+            const remainingTime = Math.round(120 * (1 - percentage / 100));
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+            timeElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            percentElement.textContent = `${percentage}%`;
+        }
+        
+        // Animation automatique au chargement
+        let currentProgress = 0;
+        const interval = setInterval(() => {
+            currentProgress += 1;
+            setProgress(currentProgress);
+            if (currentProgress >= 100) {
+                clearInterval(interval);
+            }
+        }, 50);
+    </script>
 </body>
 </html>
