@@ -1017,7 +1017,7 @@ body::after {
 }
 
 .countdown-number {
-  font-size: 3.2rem;
+  font-size: 3.6rem;
   font-weight: bold;
   color: #ff6b35;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
