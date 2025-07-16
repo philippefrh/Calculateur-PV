@@ -2231,7 +2231,7 @@ function App() {
   };
 
   const handlePrevious = () => {
-    const steps = ['start', 'personal', 'technical', 'heating', 'consumption', 'calculation'];
+    const steps = ['start', 'personal', 'technical', 'heating', 'consumption', 'calculation', 'results'];
     const currentIndex = steps.indexOf(currentStep);
     if (currentIndex > 0) {
       setIsLoading(true);
