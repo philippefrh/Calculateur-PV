@@ -57,7 +57,6 @@ const CalculationModeSelector = ({ selectedMode, onModeChange, calculationModes 
             onClick={() => onModeChange(modeKey)}
           >
             <div className="mode-title">{modeInfo.name}</div>
-            <div className="mode-description">{modeInfo.description}</div>
           </button>
         ))}
       </div>
