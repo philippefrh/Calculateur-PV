@@ -1180,10 +1180,7 @@ Cordialement`);
             <div className="calculation-mode-indicator">
               <span className="mode-icon">📊</span>
               <span className="mode-text">
-                Mode de calcul: {results.calculation_config?.name || 'Optimiste'}
-              </span>
-              <span className="mode-description">
-                {results.calculation_config?.description || 'Calculs optimisés pour objectifs commerciaux'}
+                SYNTHESE et RESULTAT FINAL DES CALCULS
               </span>
             </div>
           )}
