@@ -101,7 +101,6 @@ class ClientInfoCreate(BaseModel):
     annual_consumption_kwh: float
     monthly_edf_payment: float
     annual_edf_payment: float
-    client_mode: str = "particuliers"  # Nouveau champ pour le mode client
 
 class SolarCalculation(BaseModel):
     client_id: str
