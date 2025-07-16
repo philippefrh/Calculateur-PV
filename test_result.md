@@ -393,7 +393,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Region Selector System Implementation - Successfully tested and working perfectly"
+    - "Calculation Modes Frontend Selection and Display - Fixed default mode issue, needs retesting"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
