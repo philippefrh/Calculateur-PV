@@ -43,6 +43,32 @@ const RegionSelector = ({ selectedRegion, onRegionChange, regionConfig }) => {
   );
 };
 
+// Composant sélecteur de mode de calcul
+const CalculationModeSelector = ({ selectedMode, onModeChange, calculationModes }) => {
+  if (!calculationModes) return null;
+  
+  return (
+    <div className="calculation-mode-selector">
+      <div className="mode-header">
+        <h3>Mode de calcul</h3>
+        <p>Choisissez le mode de calcul des économies</p>
+      </div>
+      <div className="mode-options">
+        {Object.entries(calculationModes).map(([modeKey, modeInfo]) => (
+          <button 
+            key={modeKey}
+            className={`mode-btn ${selectedMode === modeKey ? 'active' : ''}`}
+            onClick={() => onModeChange(modeKey)}
+          >
+            <div className="mode-title">{modeInfo.name}</div>
+            <div className="mode-description">{modeInfo.description}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // Écran de démarrage amélioré avec vrais logos
 const StartScreen = ({ onStart, regionConfig }) => {
   
