@@ -1913,7 +1913,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   const [currentAnimation, setCurrentAnimation] = useState(0);
   const [isDemoMode, setIsDemoMode] = useState(false);
 
-  // Phases d'explication pendant les 4 minutes avec animations
+  // Phases d'explication pendant les 2 minutes avec animations
   const phases = [
     {
       title: "🌍 Géolocalisation de votre adresse",
