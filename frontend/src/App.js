@@ -2298,6 +2298,11 @@ function App() {
   if (currentStep === 'heating') {
     return (
       <div className="App">
+        <RegionSelector 
+          selectedRegion={selectedRegion} 
+          onRegionChange={handleRegionChange}
+          regionConfig={regionConfig}
+        />
         <HeatingSystemForm 
           formData={formData} 
           setFormData={setFormData} 
@@ -2311,11 +2316,17 @@ function App() {
   if (currentStep === 'consumption') {
     return (
       <div className="App">
+        <RegionSelector 
+          selectedRegion={selectedRegion} 
+          onRegionChange={handleRegionChange}
+          regionConfig={regionConfig}
+        />
         <ConsumptionForm 
           formData={formData} 
           setFormData={setFormData} 
           onNext={handleNext} 
           onPrevious={handlePrevious} 
+          selectedRegion={selectedRegion}
         />
       </div>
     );
@@ -2324,10 +2335,16 @@ function App() {
   if (currentStep === 'calculation') {
     return (
       <div className="App">
+        <RegionSelector 
+          selectedRegion={selectedRegion} 
+          onRegionChange={handleRegionChange}
+          regionConfig={regionConfig}
+        />
         <CalculationScreen 
           formData={formData} 
           onComplete={handleCalculationComplete}
           onPrevious={handlePrevious}
+          selectedRegion={selectedRegion}
         />
       </div>
     );
@@ -2336,10 +2353,16 @@ function App() {
   if (currentStep === 'results') {
     return (
       <div className="App">
+        <RegionSelector 
+          selectedRegion={selectedRegion} 
+          onRegionChange={handleRegionChange}
+          regionConfig={regionConfig}
+        />
         <ResultsScreen 
           results={calculationResults}
           onPrevious={handlePrevious}
           onNewCalculation={handleNewCalculation}
+          selectedRegion={selectedRegion}
         />
       </div>
     );
