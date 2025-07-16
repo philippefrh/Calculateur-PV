@@ -47,6 +47,76 @@ api_router = APIRouter(prefix="/api")
 # PVGIS Configuration
 PVGIS_BASE_URL = "https://re.jrc.ec.europa.eu/api/v5_2"
 
+# Configuration des régions
+REGIONS_CONFIG = {
+    "france": {
+        "name": "France",
+        "logo_subtitle": None,
+        "company_info": {
+            "name": "FRH ENVIRONNEMENT",
+            "address": "Adresse France (actuelle)",  # À mettre à jour avec la vraie adresse
+            "subtitle": "FRH ENVIRONNEMENT - Énergie Solaire Professionnel"
+        },
+        "interest_rates": {
+            "standard": 0.0396,  # 3.96% TAEG
+            "with_aids": 0.0396  # 3.96% TAEG
+        },
+        "kits": {
+            # Configuration actuelle France - à récupérer depuis la base
+        },
+        "financing": {
+            "min_duration": 3,
+            "max_duration": 15,
+            "aids_recovery_months": 7  # Récupération entre 7-12 mois
+        },
+        "autoconsumption_rate": 0.98,
+        "optimization_coefficient": 1.24
+    },
+    "martinique": {
+        "name": "Martinique",
+        "logo_subtitle": "Région Martinique",
+        "company_info": {
+            "name": "FRH ENVIRONNEMENT",
+            "address": "F.R.H Environnement SAS\n11 rue des Arts et Métiers, Fort-de-France",
+            "subtitle": "FRH ENVIRONNEMENT - Énergie Solaire Professionnel"
+        },
+        "interest_rates": {
+            "standard": 0.08,  # 8% TAEG
+            "with_aids": 0.08  # 8% TAEG
+        },
+        "kits": {
+            "kit_3kw": {
+                "power": 3,
+                "price_ttc": 9900,
+                "aid_amount": 5340,
+                "surface": 15,  # m² estimée
+                "description": "Kit 3kW - Résidentiel"
+            },
+            "kit_6kw": {
+                "power": 6,
+                "price_ttc": 13900,
+                "aid_amount": 6480,
+                "surface": 30,  # m² estimée
+                "description": "Kit 6kW - Résidentiel+"
+            },
+            "kit_9kw": {
+                "power": 9,
+                "price_ttc": 16900,
+                "aid_amount": 9720,
+                "surface": 45,  # m² estimée
+                "description": "Kit 9kW - Grande résidence"
+            }
+        },
+        "financing": {
+            "min_duration": 3,
+            "max_duration": 15,
+            "aids_recovery_months": 3  # Récupération 3-4 mois après installation
+        },
+        "autoconsumption_rate": 0.98,
+        "optimization_coefficient": 1.24
+    }
+}
+
 # Define Models for Solar Calculator
 class ClientInfo(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
