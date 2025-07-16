@@ -555,11 +555,15 @@ async def get_client(client_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/calculate/{client_id}")
-async def calculate_solar_solution(client_id: str, region: str = "france"):
+async def calculate_solar_solution(client_id: str, region: str = "france", calculation_mode: str = "optimistic"):
     try:
         # Vérifier que la région existe
         if region not in REGIONS_CONFIG:
             raise HTTPException(status_code=400, detail=f"Region '{region}' not supported")
+        
+        # Vérifier que le mode de calcul existe
+        if calculation_mode not in CALCULATION_MODES:
+            raise HTTPException(status_code=400, detail=f"Calculation mode '{calculation_mode}' not supported")
         
         client = await db.clients.find_one({"id": client_id})
         if not client:
