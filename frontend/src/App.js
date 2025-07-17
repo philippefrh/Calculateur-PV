@@ -1070,10 +1070,11 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious, selectedRe
 };
 
 // Écran de résultats - Version Premium avec génération PDF
-const ResultsScreen = ({ results, onPrevious }) => {
+const ResultsScreen = ({ results, onPrevious, selectedRegion }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [showFinancing, setShowFinancing] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isGeneratingDevis, setIsGeneratingDevis] = useState(false);
 
   const generatePDF = async () => {
     try {
@@ -1120,10 +1121,80 @@ const ResultsScreen = ({ results, onPrevious }) => {
         throw new Error('Erreur lors de la génération du PDF');
       }
     } catch (error) {
-      console.error('Erreur PDF:', error);
-      alert(`❌ Erreur lors de la génération du PDF: ${error.message}\n\nVeuillez réessayer ou contacter le support.`);
+      console.error('Erreur génération PDF:', error);
+      // Message d'erreur
+      const notification = document.querySelector('.pdf-notification');
+      if (notification) {
+        notification.innerHTML = '❌ Erreur lors de la génération du PDF';
+        notification.style.backgroundColor = '#f44336';
+        
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 3000);
+      }
     } finally {
       setIsGeneratingPDF(false);
+    }
+  };
+
+  const generateDevis = async () => {
+    try {
+      setIsGeneratingDevis(true);
+      
+      // Afficher un message de génération
+      const notification = document.createElement('div');
+      notification.className = 'devis-notification';
+      notification.innerHTML = '📄 Génération du devis en cours...';
+      document.body.appendChild(notification);
+      
+      // Appel à l'API pour générer le devis
+      const response = await fetch(`${API}/generate-devis/${results.client_id}?region=${selectedRegion}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/pdf',
+        },
+      });
+      
+      if (response.ok) {
+        // Créer un blob et télécharger le fichier
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Nom du fichier avec date
+        const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        link.download = `devis_FRH_${today}.pdf`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        // Message de succès
+        notification.innerHTML = '✅ Devis PDF téléchargé avec succès !';
+        notification.style.backgroundColor = '#4caf50';
+        
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 3000);
+      } else {
+        throw new Error('Erreur lors de la génération du devis');
+      }
+    } catch (error) {
+      console.error('Erreur génération devis:', error);
+      // Message d'erreur
+      const notification = document.querySelector('.devis-notification');
+      if (notification) {
+        notification.innerHTML = '❌ Erreur lors de la génération du devis';
+        notification.style.backgroundColor = '#f44336';
+        
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 3000);
+      }
+    } finally {
+      setIsGeneratingDevis(false);
     }
   };
 
