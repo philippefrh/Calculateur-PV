@@ -2184,6 +2184,14 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
               <span className="info-value">{formData.address}</span>
             </div>
             <div className="info-item">
+              <span className="info-label">📞 Téléphone :</span>
+              <span className="info-value">{formData.phone}</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">📧 Email :</span>
+              <span className="info-value">{formData.email}</span>
+            </div>
+            <div className="info-item">
               <span className="info-label">🏠 Surface :</span>
               <span className="info-value">{formData.roofSurface} m²</span>
             </div>
