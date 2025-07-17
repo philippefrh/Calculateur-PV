@@ -116,6 +116,8 @@ class SolarCalculatorTester:
                 "first_name": "Jean",
                 "last_name": "Dupont",
                 "address": "10 Avenue des Champs-Élysées, 75008 Paris",
+                "phone": "0123456789",  # Added required phone field
+                "email": "jean.dupont@example.com",  # Added required email field
                 "roof_surface": 60.0,
                 "roof_orientation": "Sud",
                 "velux_count": 2,
@@ -147,10 +149,41 @@ class SolarCalculatorTester:
                                     client)
                 else:
                     self.log_test("Create Client", False, "Missing latitude, longitude, or id in response", client)
+            elif response.status_code == 400:
+                # If geocoding fails, try to use an existing client instead
+                self.log_test("Create Client", False, f"Geocoding failed: {response.text}. Will try to use existing client.")
+                self.use_existing_client()
             else:
                 self.log_test("Create Client", False, f"HTTP {response.status_code}: {response.text}")
+                # Try to use existing client as fallback
+                self.use_existing_client()
         except Exception as e:
             self.log_test("Create Client", False, f"Error: {str(e)}")
+            # Try to use existing client as fallback
+            self.use_existing_client()
+    
+    def use_existing_client(self):
+        """Use an existing client from the database as fallback"""
+        try:
+            response = self.session.get(f"{self.base_url}/clients")
+            if response.status_code == 200:
+                clients = response.json()
+                if isinstance(clients, list) and len(clients) > 0:
+                    # Use the first client
+                    client = clients[0]
+                    self.client_id = client.get("id")
+                    if self.client_id:
+                        self.log_test("Use Existing Client", True, 
+                                    f"Using existing client: {client.get('first_name')} {client.get('last_name')} (ID: {self.client_id})", 
+                                    client)
+                    else:
+                        self.log_test("Use Existing Client", False, "No ID found in existing client")
+                else:
+                    self.log_test("Use Existing Client", False, "No existing clients found")
+            else:
+                self.log_test("Use Existing Client", False, f"Failed to get existing clients: {response.status_code}")
+        except Exception as e:
+            self.log_test("Use Existing Client", False, f"Error getting existing client: {str(e)}")
     
     def test_get_clients(self):
         """Test getting all clients"""
