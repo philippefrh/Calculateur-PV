@@ -1104,7 +1104,7 @@ async def generate_solar_report_pdf(client_id: str, calculation_data: dict) -> b
         raise HTTPException(status_code=500, detail=f"Error generating PDF: {str(e)}")
 
 def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = "france"):
-    """Generate devis PDF in the exact format shown in the example"""
+    """Generate devis PDF exactly matching the original format"""
     try:
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=15, leftMargin=15, topMargin=15, bottomMargin=15)
@@ -1113,87 +1113,130 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
         # Styles
         styles = getSampleStyleSheet()
         
-        # En-tête avec logo FRH et numéro de devis
-        # Créer une image du logo FRH (utiliser l'URL du logo existant)
-        logo_url = "https://cdn-dhoin.nitrocdn.com/EuBhgITwlcEgvZudhGdVBYWQskHAaTgE/assets/images/optimized/rev-a144ac5/france-renovhabitat.fr/contenu/2021/uploads/2021/05/FRH2-logo-HORIZONTALE.png"
-        
-        header_table_data = [
-            ['■ FRH ENVIRONNEMENT', '', f'DEVIS N° : {generate_devis_number()}'],
-            ['', '', ''],
-            ['', '', '┌─────────────────────────────────────┐'],
-            ['', '', f'│ PAGE     DATE        CLIENT         │'],
-            ['', '', f'│ 1/15   {datetime.now().strftime("%d/%m/%Y")}     {client_data["id"][:5]}           │'],
-            ['', '', '└─────────────────────────────────────┘']
+        # En-tête avec logo FRH et numéro de devis - format original
+        header_data = [
+            ['■ FRH ENVIRONNEMENT', f'DEVIS N° : {generate_devis_number()}']
         ]
         
-        header_table = Table(header_table_data, colWidths=[6*cm, 6*cm, 6*cm])
+        header_table = Table(header_data, colWidths=[10*cm, 8*cm])
         header_table.setStyle(TableStyle([
             ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (0, 0), 14),
-            ('FONTNAME', (2, 0), (2, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (2, 0), (2, 0), 12),
-            ('FONTNAME', (2, 3), (2, 5), 'Helvetica'),
-            ('FONTSIZE', (2, 3), (2, 5), 10),
+            ('FONTNAME', (1, 0), (1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (1, 0), (1, 0), 12),
             ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
+            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ]))
         story.append(header_table)
         story.append(Spacer(1, 10))
         
+        # Tableau PAGE/DATE/CLIENT avec bordures noires comme l'original
+        page_info_data = [
+            ['PAGE', 'DATE', 'CLIENT'],
+            ['1/15', datetime.now().strftime("%d/%m/%Y"), client_data["id"][:5]]
+        ]
+        
+        page_info_table = Table(page_info_data, colWidths=[3*cm, 3*cm, 3*cm])
+        page_info_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.black),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('BACKGROUND', (0, 1), (-1, 1), colors.white),
+            ('TEXTCOLOR', (0, 1), (-1, 1), colors.black),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('GRID', (0, 0), (-1, -1), 2, colors.black),
+            ('LEFTPADDING', (0, 0), (-1, -1), 5),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+            ('TOPPADDING', (0, 0), (-1, -1), 5),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+        ]))
+        
+        # Centrer le tableau à droite
+        page_info_container = Table([['', page_info_table]], colWidths=[9*cm, 9*cm])
+        page_info_container.setStyle(TableStyle([
+            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ]))
+        story.append(page_info_container)
+        story.append(Spacer(1, 15))
+        
         # Section entreprise et client
         region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG['france'])
         company_info = region_config['company_info']
         
-        # Tableau entreprise/client avec fond gris pour "CLIENT"
-        company_client_data = [
-            [f"{company_info['name']}", '┌─────────────────────────────────────┐'],
-            [f"{company_info['address']}", f'│                CLIENT               │'],
-            [f"Tel.: {company_info['phone']}", '└─────────────────────────────────────┘'],
-            [f"Email : {company_info['email']}", f"{client_data['first_name']} {client_data['last_name']}"],
-            [f"N° TVA Intra : {company_info['tva']}", f"{client_data['address']}"],
-            [f"Votre interlocuteur : Maarek Philippe", f"Tel.: {client_data.get('phone', 'N/A')}"],
-            [f"Type de logement : Maison individuelle", f"E-mail: {client_data.get('email', 'N/A')}"],
-            [f"Bâtiment existant de plus de 2 ans", f"Délai de livraison : 3 mois"],
-            ['', f"Offre valable jusqu'au : 16/10/2025"]
+        # Section CLIENT avec fond noir comme l'original
+        client_header_data = [
+            ['CLIENT']
         ]
         
-        company_client_table = Table(company_client_data, colWidths=[9*cm, 9*cm])
+        client_header_table = Table(client_header_data, colWidths=[18*cm])
+        client_header_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, 0), colors.black),
+            ('TEXTCOLOR', (0, 0), (0, 0), colors.white),
+            ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (0, 0), 12),
+            ('ALIGN', (0, 0), (0, 0), 'CENTER'),
+            ('VALIGN', (0, 0), (0, 0), 'MIDDLE'),
+            ('GRID', (0, 0), (0, 0), 2, colors.black),
+            ('LEFTPADDING', (0, 0), (0, 0), 5),
+            ('RIGHTPADDING', (0, 0), (0, 0), 5),
+            ('TOPPADDING', (0, 0), (0, 0), 5),
+            ('BOTTOMPADDING', (0, 0), (0, 0), 5),
+        ]))
+        story.append(client_header_table)
+        
+        # Informations entreprise et client côte à côte
+        company_client_info = [
+            [f"{company_info['name']}", f"{client_data['first_name']} {client_data['last_name']}"],
+            [f"{company_info['address']}", f"{client_data['address']}"],
+            [f"Tel.: {company_info['phone']}", f"Tel.: {client_data.get('phone', 'N/A')}"],
+            [f"Email : {company_info['email']}", f"E-mail: {client_data.get('email', 'N/A')}"],
+            [f"N° TVA Intra : {company_info['tva']}", f"Délai de livraison : 3 mois"],
+            [f"Votre interlocuteur : Maarek Philippe", f"Offre valable jusqu'au : 16/10/2025"],
+            [f"Type de logement : Maison individuelle", ""],
+            [f"Bâtiment existant de plus de 2 ans", ""]
+        ]
+        
+        company_client_table = Table(company_client_info, colWidths=[9*cm, 9*cm])
         company_client_table.setStyle(TableStyle([
             ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
             ('FONTSIZE', (0, 0), (-1, -1), 10),
             ('ALIGN', (0, 0), (0, -1), 'LEFT'),
             ('ALIGN', (1, 0), (1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('BACKGROUND', (1, 1), (1, 1), colors.HexColor('#e0e0e0')),
-            ('FONTNAME', (1, 1), (1, 1), 'Helvetica-Bold'),
-            ('ALIGN', (1, 1), (1, 1), 'CENTER'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 5),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+            ('TOPPADDING', (0, 0), (-1, -1), 3),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
         ]))
         story.append(company_client_table)
         story.append(Spacer(1, 15))
         
-        # Titre principal centré et en couleur
+        # Titre DEVIS PV MARTINIQUE en vert
         title_style = ParagraphStyle(
             'DevisTitle',
             parent=styles['Heading1'],
             fontSize=16,
             fontName='Helvetica-Bold',
-            textColor=colors.HexColor('#2e7d32'),
-            alignment=1,  # Center
+            textColor=colors.HexColor('#4CAF50'),
+            alignment=1,
             spaceAfter=15
         )
         story.append(Paragraph(f"DEVIS PV {region.upper()}", title_style))
         
-        # Tableau des spécifications techniques
+        # Tableau des spécifications techniques - format original
         kit_power = calculation_data.get('recommended_kit_power', 6) or 6
         panel_count = calculation_data.get('panel_count', 12)
         kit_price = calculation_data.get('kit_price', 13900)
         
-        # Calcul des prix selon la région
+        # Calcul des prix
         tva_rate = 0.021 if region == 'martinique' else 0.20
         prix_ht = kit_price / (1 + tva_rate)
         
-        # Spécifications techniques détaillées
+        # Spécifications techniques complètes
         tech_description = f"""- Centrale en surimposition à la toiture de {panel_count} panneaux
 photovoltaïques de la marque POWERNITY représentant une
 puissance totale de {kit_power * 1000} Watt Crêtes pour de
@@ -1232,16 +1275,16 @@ par la centrale photovoltaïque avec le système
 Powernity Solar Logiciel
 Garantie constructeur Micro Onduleur : 15 ans"""
         
-        # Tableau principal avec en-têtes
+        # Tableau principal avec format original
         main_table_data = [
             ['DESIGNATION', 'QUANTITE', 'UNITE', 'P.U. HT', 'TVA', 'PRIX TTC'],
             [tech_description, '1.00', '12', f'{prix_ht:.2f} €', '2.10', f'{kit_price:.2f} €']
         ]
         
-        main_table = Table(main_table_data, colWidths=[11*cm, 1.5*cm, 1.5*cm, 2*cm, 1*cm, 2*cm])
+        main_table = Table(main_table_data, colWidths=[10*cm, 1.5*cm, 1.5*cm, 2.5*cm, 1.5*cm, 2*cm])
         main_table.setStyle(TableStyle([
-            # En-tête
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f0f0f0')),
+            # En-tête avec fond gris
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#E0E0E0')),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 10),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
@@ -1252,14 +1295,14 @@ Garantie constructeur Micro Onduleur : 15 ans"""
             ('ALIGN', (0, 1), (0, 1), 'LEFT'),
             ('ALIGN', (1, 1), (-1, 1), 'CENTER'),
             ('VALIGN', (0, 1), (-1, 1), 'TOP'),
-            # Bordures
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('LINEWIDTH', (0, 0), (-1, -1), 1),
+            # Bordures épaisses comme l'original
+            ('GRID', (0, 0), (-1, -1), 2, colors.black),
+            ('LINEWIDTH', (0, 0), (-1, -1), 2),
             # Padding
             ('LEFTPADDING', (0, 0), (-1, -1), 5),
             ('RIGHTPADDING', (0, 0), (-1, -1), 5),
-            ('TOPPADDING', (0, 0), (-1, -1), 5),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
         ]))
         
         story.append(main_table)
@@ -1276,7 +1319,7 @@ Garantie constructeur Micro Onduleur : 15 ans"""
             'Footer',
             parent=styles['Normal'],
             fontSize=8,
-            alignment=1,  # Center
+            alignment=1,
             textColor=colors.black
         )
         story.append(Paragraph(footer_info, footer_style))
