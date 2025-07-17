@@ -2469,6 +2469,19 @@ function App() {
   if (currentStep === 'start') {
     return (
       <div className="App">
+        {/* Particules flottantes animées */}
+        <div className="particles">
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+        </div>
+        
         <RegionSelector 
           selectedRegion={selectedRegion} 
           onRegionChange={handleRegionChange}
