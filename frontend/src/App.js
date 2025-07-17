@@ -2578,7 +2578,6 @@ function App() {
         <ResultsScreen 
           results={calculationResults}
           onPrevious={handlePrevious}
-          onNewCalculation={handleNewCalculation}
           selectedRegion={selectedRegion}
         />
       </div>
