@@ -1343,10 +1343,21 @@ Garantie constructeur Micro Onduleur : 15 ans"""
         story.append(Spacer(1, 5))
         
         # Section footer avec adresse centrée comme l'original et logo FRH en bas à droite
+        try:
+            # Utiliser le même logo que dans l'en-tête
+            logo_response = requests.get(logo_url)
+            if logo_response.status_code == 200:
+                footer_logo_image = ImageReader(io.BytesIO(logo_response.content))
+                footer_logo_img = Image(footer_logo_image, width=2*cm, height=0.7*cm)
+            else:
+                footer_logo_img = Paragraph('<font color="#7CB342" size="10">🌳 FRH</font>', styles['Normal'])
+        except Exception as e:
+            footer_logo_img = Paragraph('<font color="#7CB342" size="10">🌳 FRH</font>', styles['Normal'])
+        
         footer_data = [
-            [f'FRH {region.upper()}', '🌳'],
-            [f'{company_info["address"]}', 'FRH'],
-            ['CAPITAL: 30 000 € - SIRET : 890 493 737 00013 RCS: 89049373-7- NAF: 4322B', 'ENVIRONNEMENT']
+            [f'FRH {region.upper()}', ''],
+            [f'{company_info["address"]}', ''],
+            ['CAPITAL: 30 000 € - SIRET : 890 493 737 00013 RCS: 89049373-7- NAF: 4322B', footer_logo_img]
         ]
         
         footer_table = Table(footer_data, colWidths=[16*cm, 3*cm])
