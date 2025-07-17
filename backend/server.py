@@ -1128,9 +1128,23 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
             alignment=2  # Right align
         )
         
-        # En-tête avec vrai logo FRH (simulation textuelle avec emoji arbre)
+        # Récupérer le logo FRH depuis l'URL
+        logo_url = "https://cdn-dhoin.nitrocdn.com/EuBhgITwlcEgvZudhGdVBYWQskHAaTgE/assets/images/optimized/rev-a144ac5/france-renovhabitat.fr/contenu/2021/uploads/2021/05/FRH2-logo-HORIZONTALE.png"
+        try:
+            logo_response = requests.get(logo_url)
+            if logo_response.status_code == 200:
+                logo_image = ImageReader(io.BytesIO(logo_response.content))
+                logo_img = Image(logo_image, width=3*cm, height=1*cm)
+            else:
+                # Fallback si l'image ne peut pas être chargée
+                logo_img = Paragraph("🌳 FRH ENVIRONNEMENT", styles['Normal'])
+        except Exception as e:
+            # Fallback si l'image ne peut pas être chargée
+            logo_img = Paragraph("🌳 FRH ENVIRONNEMENT", styles['Normal'])
+        
+        # En-tête avec vrai logo FRH
         header_data = [
-            ['🌳 FRH ENVIRONNEMENT', f'▲ DEVIS N° : {generate_devis_number()}']
+            [logo_img, f'▲ DEVIS N° : {generate_devis_number()}']
         ]
         
         header_table = Table(header_data, colWidths=[10*cm, 8*cm])
