@@ -504,7 +504,8 @@ metadata:
 
 test_plan:
   current_focus: []
-  stuck_tasks: []
+  stuck_tasks:
+    - "Erreur TVA région France dans PDF devis"
   test_all: false
   test_priority: "high_first"
 
