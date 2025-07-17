@@ -650,10 +650,9 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
             autoconsumption_aid_total = total_aids
             tva_refund = 0  # Pas de récupération TVA en Martinique
         else:
-            # Pour France, calcul existant avec TVA régionale
-            region_tva_rate = 0.10  # 10% TVA pour panneaux solaires en France
+            # Pour France, calcul existant
             autoconsumption_aid_total = best_kit * AUTOCONSUMPTION_AID  # 80€/kW
-            tva_refund = kit_info['price'] * region_tva_rate if best_kit > 3 else 0  # No TVA refund for 3kW
+            tva_refund = kit_info['price'] * TVA_RATE if best_kit > 3 else 0  # No TVA refund for 3kW
             total_aids = autoconsumption_aid_total + tva_refund
         
         # Calculate financing options with aids deducted (same duration as optimal financing)
