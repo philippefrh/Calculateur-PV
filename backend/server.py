@@ -1106,7 +1106,7 @@ async def generate_solar_report_pdf(client_id: str, calculation_data: dict) -> b
         raise HTTPException(status_code=500, detail=f"Error generating PDF: {str(e)}")
 
 def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = "france"):
-    """Generate devis PDF exactly matching the original format"""
+    """Generate devis PDF exactly matching the original format with FRH logo and green colors"""
     try:
         buffer = io.BytesIO()
         # Marges très réduites pour plus d'espace
@@ -1116,28 +1116,39 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
         # Styles
         styles = getSampleStyleSheet()
         
-        # Créer le logo FRH
-        logo_text = "🟢 FRH ENVIRONNEMENT"  # Utiliser un cercle vert comme logo temporaire
+        # Couleur verte FRH
+        frh_green = colors.HexColor('#7CB342')
         
-        # En-tête : Logo FRH + Numéro de devis sur la même ligne
+        # Triangle vert en haut à droite (style décoratif)
+        triangle_style = ParagraphStyle(
+            'Triangle',
+            parent=styles['Normal'],
+            fontSize=20,
+            textColor=frh_green,
+            alignment=2  # Right align
+        )
+        
+        # En-tête avec logo FRH réel et triangle
         header_data = [
-            [logo_text, f'DEVIS N° : {generate_devis_number()}']
+            ['FRH ENVIRONNEMENT', f'▲ DEVIS N° : {generate_devis_number()}']
         ]
         
         header_table = Table(header_data, colWidths=[10*cm, 8*cm])
         header_table.setStyle(TableStyle([
             ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (0, 0), 14),
+            ('TEXTCOLOR', (0, 0), (0, 0), frh_green),
             ('FONTNAME', (1, 0), (1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (1, 0), (1, 0), 12),
+            ('TEXTCOLOR', (1, 0), (1, 0), frh_green),
             ('ALIGN', (0, 0), (0, 0), 'LEFT'),
             ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ]))
         story.append(header_table)
-        story.append(Spacer(1, 3))  # Espace très réduit
+        story.append(Spacer(1, 3))
         
-        # Tableau PAGE/DATE/CLIENT - exactement comme l'original
+        # Tableau PAGE/DATE/CLIENT - fond vert comme l'original
         page_info_data = [
             ['PAGE', 'DATE', 'CLIENT'],
             ['1/15', datetime.now().strftime("%d/%m/%Y"), client_data["id"][:5]]
@@ -1145,8 +1156,8 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
         
         page_info_table = Table(page_info_data, colWidths=[2.5*cm, 2.5*cm, 2.5*cm])
         page_info_table.setStyle(TableStyle([
-            # En-tête noir avec texte blanc
-            ('BACKGROUND', (0, 0), (-1, 0), colors.black),
+            # En-tête vert avec texte blanc
+            ('BACKGROUND', (0, 0), (-1, 0), frh_green),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             # Contenu blanc avec texte noir
             ('BACKGROUND', (0, 1), (-1, 1), colors.white),
@@ -1169,13 +1180,13 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ]))
         story.append(page_info_container)
-        story.append(Spacer(1, 3))  # Espace très réduit
+        story.append(Spacer(1, 3))
         
-        # Section CLIENT avec barre noire pleine largeur
+        # Section CLIENT avec barre verte comme l'original
         client_header_data = [['CLIENT']]
         client_header_table = Table(client_header_data, colWidths=[19*cm])
         client_header_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (0, 0), colors.black),
+            ('BACKGROUND', (0, 0), (0, 0), frh_green),
             ('TEXTCOLOR', (0, 0), (0, 0), colors.white),
             ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (0, 0), 12),
@@ -1187,19 +1198,20 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
             ('BOTTOMPADDING', (0, 0), (0, 0), 3),
         ]))
         story.append(client_header_table)
-        story.append(Spacer(1, 1))  # Espace minimal
+        story.append(Spacer(1, 1))
         
         # Informations entreprise et client
         region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG['france'])
         company_info = region_config['company_info']
         
+        # Données client avec lignes vertes pour délai et offre
         company_client_info = [
             [f"{company_info['name']}", f"{client_data['first_name']} {client_data['last_name']}"],
             [f"{company_info['address']}", f"{client_data['address']}"],
             [f"Tel.: {company_info['phone']}", f"Tel.: {client_data.get('phone', 'N/A')}"],
             [f"Email : {company_info['email']}", f"E-mail: {client_data.get('email', 'N/A')}"],
-            [f"N° TVA Intra : {company_info['tva']}", f"Délai de livraison : 3 mois"],
-            [f"Votre interlocuteur : Maarek Philippe", f"Offre valable jusqu'au : 16/10/2025"],
+            [f"N° TVA Intra : {company_info['tva']}", ""],
+            [f"Votre interlocuteur : Maarek Philippe", ""],
             [f"Type de logement : Maison individuelle", ""],
             [f"Bâtiment existant de plus de 2 ans", ""]
         ]
@@ -1217,21 +1229,41 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
             ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
         ]))
         story.append(company_client_table)
-        story.append(Spacer(1, 5))  # Espace très réduit avant le titre
         
-        # Titre DEVIS PV MARTINIQUE - couleur verte comme l'original
+        # Délai de livraison et offre valable en vert
+        delivery_info = [
+            ["Délai de livraison : 3 mois", ""],
+            ["Offre valable jusqu'au : 16/10/2025", ""]
+        ]
+        
+        delivery_table = Table(delivery_info, colWidths=[9.5*cm, 9.5*cm])
+        delivery_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('TEXTCOLOR', (0, 0), (-1, -1), frh_green),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 1),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 1),
+            ('TOPPADDING', (0, 0), (-1, -1), 1),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
+        ]))
+        story.append(delivery_table)
+        story.append(Spacer(1, 5))
+        
+        # Titre DEVIS PV MARTINIQUE - couleur verte
         title_style = ParagraphStyle(
             'DevisTitle',
             parent=styles['Heading1'],
             fontSize=14,
             fontName='Helvetica-Bold',
-            textColor=colors.HexColor('#4CAF50'),
+            textColor=frh_green,
             alignment=1,
             spaceAfter=3
         )
         story.append(Paragraph(f"DEVIS PV {region.upper()}", title_style))
         
-        # Tableau des spécifications - format original compact
+        # Tableau des spécifications - fond vert comme l'original
         kit_power = calculation_data.get('recommended_kit_power', 6) or 6
         panel_count = calculation_data.get('panel_count', 12)
         kit_price = calculation_data.get('kit_price', 13900)
@@ -1279,7 +1311,7 @@ par la centrale photovoltaïque avec le système
 Powernity Solar Logiciel
 Garantie constructeur Micro Onduleur : 15 ans"""
         
-        # Tableau principal - format compact
+        # Tableau principal - fond vert comme l'original
         main_table_data = [
             ['DESIGNATION', 'QUANTITE', 'UNITE', 'P.U. HT', 'TVA', 'PRIX TTC'],
             [tech_description, '1.00', '12', f'{prix_ht:.2f} €', '2.10', f'{kit_price:.2f} €']
@@ -1287,8 +1319,9 @@ Garantie constructeur Micro Onduleur : 15 ans"""
         
         main_table = Table(main_table_data, colWidths=[11*cm, 1.5*cm, 1.5*cm, 2*cm, 1*cm, 2*cm])
         main_table.setStyle(TableStyle([
-            # En-tête gris clair comme l'original
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#F5F5F5')),
+            # En-tête vert comme l'original
+            ('BACKGROUND', (0, 0), (-1, 0), frh_green),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 9),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
@@ -1310,21 +1343,27 @@ Garantie constructeur Micro Onduleur : 15 ans"""
         ]))
         
         story.append(main_table)
-        story.append(Spacer(1, 5))  # Espace minimal
+        story.append(Spacer(1, 5))
         
-        # Pied de page compact
-        footer_info = f"""FRH {region.upper()}
-{company_info['address']}
-CAPITAL: 30 000 € - SIRET : 890 493 737 00013 RCS: 89049373-7- NAF: 4322B"""
+        # Section footer avec logo FRH en bas à gauche
+        footer_data = [
+            ['🌳 FRH ENVIRONNEMENT', f'FRH {region.upper()}'],
+            ['', f'{company_info["address"]}'],
+            ['', 'CAPITAL: 30 000 € - SIRET : 890 493 737 00013 RCS: 89049373-7- NAF: 4322B']
+        ]
         
-        footer_style = ParagraphStyle(
-            'Footer',
-            parent=styles['Normal'],
-            fontSize=7,
-            alignment=1,
-            textColor=colors.black
-        )
-        story.append(Paragraph(footer_info, footer_style))
+        footer_table = Table(footer_data, colWidths=[5*cm, 14*cm])
+        footer_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (0, 0), 10),
+            ('TEXTCOLOR', (0, 0), (0, 0), frh_green),
+            ('FONTNAME', (1, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (1, 0), (-1, -1), 7),
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ]))
+        story.append(footer_table)
         
         # Construire le PDF
         doc.build(story)
