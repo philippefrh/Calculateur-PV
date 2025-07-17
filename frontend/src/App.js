@@ -2445,6 +2445,19 @@ function App() {
   if (isLoading) {
     return (
       <div className="App">
+        {/* Particules flottantes animées */}
+        <div className="particles">
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+          <div className="particle"></div>
+        </div>
+        
         <div className="loading-screen">
           <div className="loading-spinner"></div>
           <p>Chargement...</p>
