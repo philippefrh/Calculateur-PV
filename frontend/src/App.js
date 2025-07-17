@@ -2062,7 +2062,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       description: "Calcul des économies, du financement optimal et du retour sur investissement...",
       duration: 59,
       tips: [
-        "💳 Mensualité actuelle: " + formData.monthlyEdfPayment + " €/mois",
+        "💳 Mensualité actuelle: " + (formData.monthlyEdfPayment || '0') + " €/mois",
         "🏦 Simulation sur 6 à 15 ans",
         "🎁 Calcul des aides (Prime + TVA)"
       ]
