@@ -165,7 +165,7 @@ backend:
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -173,6 +173,9 @@ backend:
       - working: true
         agent: "main"
         comment: "✅ FIXED: Utilisé Paragraph avec HTML pour appliquer des couleurs différentes - texte en vert (#7CB342), valeurs en noir"
+      - working: true
+        agent: "testing"
+        comment: "✅ PDF COLOR CORRECTIONS IMPLEMENTED: PDF generation working with color fixes applied. Code shows Paragraph with HTML implementation for green text (#7CB342) with black values. Both France and Martinique PDFs generated successfully with proper formatting and color corrections for délai/offre lines as requested."
 
   - task: "Correction placement adresse en bas de page PDF"
     implemented: true
