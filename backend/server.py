@@ -1204,14 +1204,18 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
         region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG['france'])
         company_info = region_config['company_info']
         
+        # Créer du texte avec couleurs différentes pour délai et offre
+        delai_text = Paragraph('<font color="#7CB342">Délai de livraison : </font><font color="black">3 mois</font>', styles['Normal'])
+        offre_text = Paragraph('<font color="#7CB342">Offre valable jusqu\'au : </font><font color="black">16/10/2025</font>', styles['Normal'])
+        
         # Données client - informations de base
         company_client_info = [
             [f"{company_info['name']}", f"{client_data['first_name']} {client_data['last_name']}"],
             [f"{company_info['address']}", f"{client_data['address']}"],
             [f"Tel.: {company_info['phone']}", f"Tel.: {client_data.get('phone', 'N/A')}"],
             [f"Email : {company_info['email']}", f"E-mail: {client_data.get('email', 'N/A')}"],
-            [f"N° TVA Intra : {company_info['tva']}", "Délai de livraison : 3 mois"],
-            [f"Votre interlocuteur : Maarek Philippe", "Offre valable jusqu'au : 16/10/2025"],
+            [f"N° TVA Intra : {company_info['tva']}", delai_text],
+            [f"Votre interlocuteur : Maarek Philippe", offre_text],
             [f"Type de logement : Maison individuelle", ""],
             [f"Bâtiment existant de plus de 2 ans", ""]
         ]
