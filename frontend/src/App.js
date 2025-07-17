@@ -1580,6 +1580,14 @@ Cordialement`);
           >
             {isGeneratingPDF ? '⏳ Génération...' : '📄 Télécharger le Rapport PDF Complet'}
           </button>
+          <button 
+            type="button" 
+            onClick={generateDevis} 
+            className={`devis-button ${isGeneratingDevis ? 'generating' : ''}`}
+            disabled={isGeneratingDevis}
+          >
+            {isGeneratingDevis ? '⏳ Génération...' : '📋 Générer le Devis PDF'}
+          </button>
           <button type="button" onClick={sendToExpert} className="expert-button">
             👨‍💼 Prendre RDV avec un Expert
           </button>
