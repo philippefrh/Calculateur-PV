@@ -1251,8 +1251,9 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
         kit_price = calculation_data.get('kit_price', 13900)
         
         # Calcul des prix
-        tva_rate = 0.021 if region == 'martinique' else 0.20
+        tva_rate = 0.021 if region == 'martinique' else 0.10  # 2.1% pour Martinique, 10% pour France
         prix_ht = kit_price / (1 + tva_rate)
+        tva_display = "2.10" if region == 'martinique' else "10.00"
         
         # Description technique - version compacte
         tech_description = f"""- Centrale en surimposition à la toiture de {panel_count} panneaux
