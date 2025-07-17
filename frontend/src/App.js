@@ -2041,6 +2041,8 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
         first_name: formData.firstName,
         last_name: formData.lastName,
         address: formData.address,
+        phone: formData.phone,
+        email: formData.email,
         roof_surface: parseFloat(formData.roofSurface),
         roof_orientation: formData.roofOrientation,
         velux_count: parseInt(formData.veluxCount) || 0,
