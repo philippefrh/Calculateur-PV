@@ -1128,15 +1128,15 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
             alignment=2  # Right align
         )
         
-        # En-tête avec logo FRH réel et triangle
+        # En-tête avec vrai logo FRH (simulation textuelle avec emoji arbre)
         header_data = [
-            ['FRH ENVIRONNEMENT', f'▲ DEVIS N° : {generate_devis_number()}']
+            ['🌳 FRH ENVIRONNEMENT', f'▲ DEVIS N° : {generate_devis_number()}']
         ]
         
         header_table = Table(header_data, colWidths=[10*cm, 8*cm])
         header_table.setStyle(TableStyle([
             ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (0, 0), 14),
+            ('FONTSIZE', (0, 0), (0, 0), 16),
             ('TEXTCOLOR', (0, 0), (0, 0), frh_green),
             ('FONTNAME', (1, 0), (1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (1, 0), (1, 0), 12),
