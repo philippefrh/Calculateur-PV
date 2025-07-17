@@ -1787,11 +1787,363 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Devis PDF Generation Modifications", False, f"Error: {str(e)}")
     
+    def test_tva_consistency_france_martinique(self):
+        """Test TVA consistency between France (10%) and Martinique (2.1%) - CRITICAL FIX VERIFICATION"""
+        if not self.client_id:
+            self.log_test("TVA Consistency France vs Martinique", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test France calculation
+            france_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=france")
+            if france_response.status_code != 200:
+                self.log_test("TVA Consistency France vs Martinique", False, f"Failed to get France calculation: {france_response.status_code}")
+                return
+            
+            france_calc = france_response.json()
+            
+            # Test Martinique calculation
+            martinique_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique")
+            if martinique_response.status_code != 200:
+                self.log_test("TVA Consistency France vs Martinique", False, f"Failed to get Martinique calculation: {martinique_response.status_code}")
+                return
+            
+            martinique_calc = martinique_response.json()
+            
+            issues = []
+            
+            # Extract key values for France
+            france_kit_power = france_calc.get("kit_power", 0)
+            france_kit_price = france_calc.get("kit_price", 0)
+            france_tva_refund = france_calc.get("tva_refund", 0)
+            france_total_aids = france_calc.get("total_aids", 0)
+            france_autoconsumption_aid = france_calc.get("autoconsumption_aid", 0)
+            
+            # Extract key values for Martinique
+            martinique_kit_power = martinique_calc.get("kit_power", 0)
+            martinique_kit_price = martinique_calc.get("kit_price", 0)
+            martinique_tva_refund = martinique_calc.get("tva_refund", 0)
+            martinique_total_aids = martinique_calc.get("total_aids", 0)
+            martinique_autoconsumption_aid = martinique_calc.get("autoconsumption_aid", 0)
+            
+            # CRITICAL TEST 1: France should use 10% TVA rate for solar panels
+            if france_kit_power > 3 and france_tva_refund > 0:
+                expected_france_tva = france_kit_price * 0.10  # 10% TVA for solar panels in France
+                if abs(france_tva_refund - expected_france_tva) > 1:  # Allow 1€ tolerance
+                    issues.append(f"France TVA incorrect: got {france_tva_refund}€, expected {expected_france_tva:.2f}€ (10% of {france_kit_price}€)")
+            
+            # CRITICAL TEST 2: Martinique should use 2.1% TVA rate
+            # For Martinique, TVA is typically included in the pricing structure differently
+            # Check that Martinique doesn't use the old 20% TVA rate
+            if martinique_tva_refund > 0:
+                # Martinique shouldn't have significant TVA refund like France
+                max_expected_martinique_tva = martinique_kit_price * 0.05  # Should be much lower than France
+                if martinique_tva_refund > max_expected_martinique_tva:
+                    issues.append(f"Martinique TVA seems too high: {martinique_tva_refund}€ (should be minimal for Martinique)")
+            
+            # CRITICAL TEST 3: Check that France doesn't use the old 20% TVA rate
+            if france_kit_power > 3 and france_tva_refund > 0:
+                old_tva_20_percent = france_kit_price * 0.20  # Old incorrect 20% rate
+                if abs(france_tva_refund - old_tva_20_percent) < 10:  # If it's close to 20% rate
+                    issues.append(f"France TVA appears to use old 20% rate: {france_tva_refund}€ ≈ {old_tva_20_percent:.2f}€ (20%). Should be 10%.")
+            
+            # CRITICAL TEST 4: Verify total aids calculation includes correct TVA
+            if france_kit_power > 3:
+                expected_france_total_aids = france_autoconsumption_aid + (france_kit_price * 0.10)
+                if abs(france_total_aids - expected_france_total_aids) > 1:
+                    issues.append(f"France total aids incorrect: got {france_total_aids}€, expected {expected_france_total_aids:.2f}€ (autoconsumption {france_autoconsumption_aid}€ + TVA 10%)")
+            
+            # TEST 5: Regional pricing differences should be significant
+            if france_kit_power == martinique_kit_power:
+                # Same power, but prices should be very different
+                price_ratio = france_kit_price / martinique_kit_price if martinique_kit_price > 0 else 0
+                if price_ratio < 1.3:  # France should be significantly more expensive
+                    issues.append(f"Price difference seems too small: France {france_kit_price}€ vs Martinique {martinique_kit_price}€ (ratio: {price_ratio:.2f})")
+            
+            # TEST 6: Check effective TVA rates in the calculation
+            if france_kit_power > 3 and france_kit_price > 0:
+                effective_france_tva_rate = france_tva_refund / france_kit_price
+                if effective_france_tva_rate > 0.15:  # Should not exceed 15% (definitely not 20%)
+                    issues.append(f"France effective TVA rate {effective_france_tva_rate:.1%} seems too high (expected ~10%)")
+                elif effective_france_tva_rate < 0.08:  # Should not be below 8%
+                    issues.append(f"France effective TVA rate {effective_france_tva_rate:.1%} seems too low (expected ~10%)")
+            
+            if issues:
+                self.log_test("TVA Consistency France vs Martinique", False, f"TVA calculation issues: {'; '.join(issues)}", {
+                    "france": {"kit_power": france_kit_power, "kit_price": france_kit_price, "tva_refund": france_tva_refund, "total_aids": france_total_aids},
+                    "martinique": {"kit_power": martinique_kit_power, "kit_price": martinique_kit_price, "tva_refund": martinique_tva_refund, "total_aids": martinique_total_aids}
+                })
+            else:
+                france_tva_rate = (france_tva_refund / france_kit_price * 100) if france_kit_price > 0 else 0
+                martinique_tva_rate = (martinique_tva_refund / martinique_kit_price * 100) if martinique_kit_price > 0 else 0
+                
+                self.log_test("TVA Consistency France vs Martinique", True, 
+                            f"✅ TVA CORRECTION VERIFIED: France uses {france_tva_rate:.1f}% TVA ({france_tva_refund}€ on {france_kit_price}€), Martinique uses {martinique_tva_rate:.1f}% TVA ({martinique_tva_refund}€ on {martinique_kit_price}€). No more 20% TVA error.", 
+                            {
+                                "france_tva_rate": f"{france_tva_rate:.1f}%",
+                                "france_tva_amount": france_tva_refund,
+                                "martinique_tva_rate": f"{martinique_tva_rate:.1f}%", 
+                                "martinique_tva_amount": martinique_tva_refund,
+                                "france_total_aids": france_total_aids,
+                                "martinique_total_aids": martinique_total_aids
+                            })
+                
+        except Exception as e:
+            self.log_test("TVA Consistency France vs Martinique", False, f"Error: {str(e)}")
+
+    def test_pdf_devis_generation_both_regions(self):
+        """Test PDF devis generation for both France and Martinique with FRH logos"""
+        if not self.client_id:
+            self.log_test("PDF Devis Generation Both Regions", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test France devis generation
+            france_pdf_response = self.session.get(f"{self.base_url}/generate-devis/{self.client_id}?region=france")
+            martinique_pdf_response = self.session.get(f"{self.base_url}/generate-devis/{self.client_id}?region=martinique")
+            
+            issues = []
+            
+            # Test France PDF
+            if france_pdf_response.status_code != 200:
+                issues.append(f"France PDF generation failed: HTTP {france_pdf_response.status_code}")
+            else:
+                if not france_pdf_response.headers.get('content-type', '').startswith('application/pdf'):
+                    issues.append(f"France response not PDF: {france_pdf_response.headers.get('content-type')}")
+                else:
+                    france_pdf_size = len(france_pdf_response.content)
+                    if france_pdf_size < 1000:
+                        issues.append(f"France PDF too small: {france_pdf_size} bytes")
+            
+            # Test Martinique PDF
+            if martinique_pdf_response.status_code != 200:
+                issues.append(f"Martinique PDF generation failed: HTTP {martinique_pdf_response.status_code}")
+            else:
+                if not martinique_pdf_response.headers.get('content-type', '').startswith('application/pdf'):
+                    issues.append(f"Martinique response not PDF: {martinique_pdf_response.headers.get('content-type')}")
+                else:
+                    martinique_pdf_size = len(martinique_pdf_response.content)
+                    if martinique_pdf_size < 1000:
+                        issues.append(f"Martinique PDF too small: {martinique_pdf_size} bytes")
+            
+            # Test filename format
+            france_filename = france_pdf_response.headers.get('content-disposition', '')
+            martinique_filename = martinique_pdf_response.headers.get('content-disposition', '')
+            
+            if 'devis_' not in france_filename:
+                issues.append("France PDF missing proper filename format")
+            if 'devis_' not in martinique_filename:
+                issues.append("Martinique PDF missing proper filename format")
+            
+            if issues:
+                self.log_test("PDF Devis Generation Both Regions", False, f"PDF generation issues: {'; '.join(issues)}")
+            else:
+                france_size = len(france_pdf_response.content)
+                martinique_size = len(martinique_pdf_response.content)
+                
+                self.log_test("PDF Devis Generation Both Regions", True, 
+                            f"✅ PDF DEVIS GENERATION WORKING: France PDF ({france_size} bytes), Martinique PDF ({martinique_size} bytes). Both regions generate proper PDF files with correct content-type and filenames.", 
+                            {
+                                "france_pdf_size": france_size,
+                                "martinique_pdf_size": martinique_size,
+                                "france_filename": france_filename,
+                                "martinique_filename": martinique_filename
+                            })
+                
+        except Exception as e:
+            self.log_test("PDF Devis Generation Both Regions", False, f"Error: {str(e)}")
+
+    def test_regional_calculation_consistency(self):
+        """Test that regional calculations are mathematically consistent and use correct parameters"""
+        if not self.client_id:
+            self.log_test("Regional Calculation Consistency", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Get calculations for both regions
+            france_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=france")
+            martinique_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique")
+            
+            if france_response.status_code != 200 or martinique_response.status_code != 200:
+                self.log_test("Regional Calculation Consistency", False, f"Failed to get calculations: France {france_response.status_code}, Martinique {martinique_response.status_code}")
+                return
+            
+            france_calc = france_response.json()
+            martinique_calc = martinique_response.json()
+            
+            issues = []
+            
+            # Test 1: Both calculations should have all required fields
+            required_fields = ["kit_power", "estimated_production", "monthly_savings", "autonomy_percentage", "financing_options", "total_aids"]
+            
+            for field in required_fields:
+                if field not in france_calc:
+                    issues.append(f"France calculation missing {field}")
+                if field not in martinique_calc:
+                    issues.append(f"Martinique calculation missing {field}")
+            
+            # Test 2: Production values should be reasonable for both regions
+            france_production = france_calc.get("estimated_production", 0)
+            martinique_production = martinique_calc.get("estimated_production", 0)
+            
+            if france_production < 5000 or france_production > 10000:
+                issues.append(f"France production {france_production} kWh seems unrealistic")
+            if martinique_production < 5000 or martinique_production > 12000:
+                issues.append(f"Martinique production {martinique_production} kWh seems unrealistic")
+            
+            # Test 3: Autonomy should be reasonable for both
+            france_autonomy = france_calc.get("autonomy_percentage", 0)
+            martinique_autonomy = martinique_calc.get("autonomy_percentage", 0)
+            
+            if france_autonomy < 80 or france_autonomy > 100:
+                issues.append(f"France autonomy {france_autonomy}% seems unrealistic")
+            if martinique_autonomy < 80 or martinique_autonomy > 100:
+                issues.append(f"Martinique autonomy {martinique_autonomy}% seems unrealistic")
+            
+            # Test 4: Interest rates should be different
+            france_financing = france_calc.get("financing_options", [])
+            martinique_financing = martinique_calc.get("financing_options", [])
+            
+            if france_financing and martinique_financing:
+                france_taeg = france_financing[0].get("taeg", 0)
+                martinique_taeg = martinique_financing[0].get("taeg", 0)
+                
+                if france_taeg == martinique_taeg:
+                    issues.append(f"Interest rates should be different: France {france_taeg}, Martinique {martinique_taeg}")
+                elif martinique_taeg != 0.08:
+                    issues.append(f"Martinique TAEG should be 8% (0.08), got {martinique_taeg}")
+            
+            # Test 5: Monthly savings should be positive for both
+            france_monthly_savings = france_calc.get("monthly_savings", 0)
+            martinique_monthly_savings = martinique_calc.get("monthly_savings", 0)
+            
+            if france_monthly_savings <= 0:
+                issues.append(f"France monthly savings should be positive, got {france_monthly_savings}")
+            if martinique_monthly_savings <= 0:
+                issues.append(f"Martinique monthly savings should be positive, got {martinique_monthly_savings}")
+            
+            # Test 6: Kit power should be within expected ranges
+            france_kit_power = france_calc.get("kit_power", 0)
+            martinique_kit_power = martinique_calc.get("kit_power", 0)
+            
+            if france_kit_power not in [3, 4, 5, 6, 7, 8, 9]:
+                issues.append(f"France kit power {france_kit_power} not in expected range")
+            if martinique_kit_power not in [3, 6, 9]:
+                issues.append(f"Martinique kit power {martinique_kit_power} not in expected range [3, 6, 9]")
+            
+            if issues:
+                self.log_test("Regional Calculation Consistency", False, f"Consistency issues: {'; '.join(issues)}", {
+                    "france_summary": {
+                        "kit_power": france_calc.get("kit_power"),
+                        "production": france_calc.get("estimated_production"),
+                        "monthly_savings": france_calc.get("monthly_savings"),
+                        "autonomy": france_calc.get("autonomy_percentage")
+                    },
+                    "martinique_summary": {
+                        "kit_power": martinique_calc.get("kit_power"),
+                        "production": martinique_calc.get("estimated_production"),
+                        "monthly_savings": martinique_calc.get("monthly_savings"),
+                        "autonomy": martinique_calc.get("autonomy_percentage")
+                    }
+                })
+            else:
+                self.log_test("Regional Calculation Consistency", True, 
+                            f"✅ REGIONAL CALCULATIONS CONSISTENT: France ({france_kit_power}kW, {france_production:.0f} kWh, {france_monthly_savings:.0f}€/month, {france_autonomy:.1f}% autonomy) vs Martinique ({martinique_kit_power}kW, {martinique_production:.0f} kWh, {martinique_monthly_savings:.0f}€/month, {martinique_autonomy:.1f}% autonomy). Both regions working correctly.", 
+                            {
+                                "france": {
+                                    "kit_power": france_kit_power,
+                                    "production": france_production,
+                                    "monthly_savings": france_monthly_savings,
+                                    "autonomy": france_autonomy
+                                },
+                                "martinique": {
+                                    "kit_power": martinique_kit_power,
+                                    "production": martinique_production,
+                                    "monthly_savings": martinique_monthly_savings,
+                                    "autonomy": martinique_autonomy
+                                }
+                            })
+                
+        except Exception as e:
+            self.log_test("Regional Calculation Consistency", False, f"Error: {str(e)}")
+
+    def test_devis_endpoint_both_regions(self):
+        """Test /api/generate-devis/{client_id} endpoint for both France and Martinique"""
+        if not self.client_id:
+            self.log_test("Devis Endpoint Both Regions", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test default region (should be France)
+            default_response = self.session.get(f"{self.base_url}/generate-devis/{self.client_id}")
+            
+            # Test explicit France region
+            france_response = self.session.get(f"{self.base_url}/generate-devis/{self.client_id}?region=france")
+            
+            # Test Martinique region
+            martinique_response = self.session.get(f"{self.base_url}/generate-devis/{self.client_id}?region=martinique")
+            
+            issues = []
+            results = {}
+            
+            # Test each response
+            for name, response in [("default", default_response), ("france", france_response), ("martinique", martinique_response)]:
+                if response.status_code != 200:
+                    issues.append(f"{name} devis failed: HTTP {response.status_code}")
+                    continue
+                
+                # Check content type
+                content_type = response.headers.get('content-type', '')
+                if not content_type.startswith('application/pdf'):
+                    issues.append(f"{name} devis not PDF: {content_type}")
+                    continue
+                
+                # Check size
+                pdf_size = len(response.content)
+                if pdf_size < 1000:
+                    issues.append(f"{name} devis too small: {pdf_size} bytes")
+                    continue
+                
+                # Check filename
+                content_disposition = response.headers.get('content-disposition', '')
+                if 'devis_' not in content_disposition:
+                    issues.append(f"{name} devis missing proper filename")
+                    continue
+                
+                results[name] = {
+                    "size": pdf_size,
+                    "filename": content_disposition,
+                    "success": True
+                }
+            
+            # Test that default and france are the same
+            if "default" in results and "france" in results:
+                if abs(results["default"]["size"] - results["france"]["size"]) > 100:  # Allow small differences
+                    issues.append(f"Default and France devis should be similar size: {results['default']['size']} vs {results['france']['size']}")
+            
+            # Test that Martinique is different from France
+            if "france" in results and "martinique" in results:
+                if abs(results["france"]["size"] - results["martinique"]["size"]) < 100:  # Should be different
+                    issues.append(f"France and Martinique devis should be different: {results['france']['size']} vs {results['martinique']['size']}")
+            
+            if issues:
+                self.log_test("Devis Endpoint Both Regions", False, f"Devis endpoint issues: {'; '.join(issues)}", results)
+            else:
+                success_count = len([r for r in results.values() if r.get("success")])
+                sizes = {name: r["size"] for name, r in results.items()}
+                
+                self.log_test("Devis Endpoint Both Regions", True, 
+                            f"✅ DEVIS ENDPOINT WORKING: {success_count}/3 regions successful. Sizes: Default {sizes.get('default', 0)} bytes, France {sizes.get('france', 0)} bytes, Martinique {sizes.get('martinique', 0)} bytes. All generate proper PDF files with correct headers.", 
+                            results)
+                
+        except Exception as e:
+            self.log_test("Devis Endpoint Both Regions", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
-        """Run all tests in order"""
-        print("🚀 Starting Solar Calculator Backend Tests")
-        print(f"Backend URL: {self.base_url}")
-        print("=" * 60)
+        """Run all backend tests with focus on TVA correction verification"""
+        print("🚀 Starting Comprehensive Backend Testing for Solar Calculator")
+        print("🎯 FOCUS: TVA Correction Verification (France 10% vs Martinique 2.1%)")
+        print("=" * 80)
         
         # Priority 1 tests
         print("\n📋 PRIORITY 1 - Main Endpoints")
