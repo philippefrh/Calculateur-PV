@@ -49,18 +49,18 @@ body::after {
   width: 200%;
   height: 200%;
   background: 
-    conic-gradient(from 0deg at 50% 50%, 
-      transparent 0deg, 
-      rgba(255, 255, 255, 0.03) 60deg, 
-      transparent 120deg,
-      rgba(255, 255, 255, 0.03) 180deg,
-      transparent 240deg,
-      rgba(255, 255, 255, 0.03) 300deg,
-      transparent 360deg
-    );
-  animation: rotate 60s linear infinite;
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%),
+    radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 70%),
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.09) 0%, transparent 65%);
+  animation: shimmer 8s ease-in-out infinite;
   pointer-events: none;
   z-index: 2;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
 }
 
 @keyframes rotate {
