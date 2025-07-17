@@ -1204,14 +1204,14 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
         region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG['france'])
         company_info = region_config['company_info']
         
-        # Données client avec lignes vertes pour délai et offre
+        # Données client - informations de base
         company_client_info = [
             [f"{company_info['name']}", f"{client_data['first_name']} {client_data['last_name']}"],
             [f"{company_info['address']}", f"{client_data['address']}"],
             [f"Tel.: {company_info['phone']}", f"Tel.: {client_data.get('phone', 'N/A')}"],
             [f"Email : {company_info['email']}", f"E-mail: {client_data.get('email', 'N/A')}"],
-            [f"N° TVA Intra : {company_info['tva']}", ""],
-            [f"Votre interlocuteur : Maarek Philippe", ""],
+            [f"N° TVA Intra : {company_info['tva']}", "Délai de livraison : 3 mois"],
+            [f"Votre interlocuteur : Maarek Philippe", "Offre valable jusqu'au : 16/10/2025"],
             [f"Type de logement : Maison individuelle", ""],
             [f"Bâtiment existant de plus de 2 ans", ""]
         ]
@@ -1227,28 +1227,10 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
             ('RIGHTPADDING', (0, 0), (-1, -1), 1),
             ('TOPPADDING', (0, 0), (-1, -1), 1),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
+            # Lignes délai et offre en vert
+            ('TEXTCOLOR', (1, 4), (1, 5), frh_green),
         ]))
         story.append(company_client_table)
-        
-        # Délai de livraison et offre valable en vert
-        delivery_info = [
-            ["Délai de livraison : 3 mois", ""],
-            ["Offre valable jusqu'au : 16/10/2025", ""]
-        ]
-        
-        delivery_table = Table(delivery_info, colWidths=[9.5*cm, 9.5*cm])
-        delivery_table.setStyle(TableStyle([
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 9),
-            ('TEXTCOLOR', (0, 0), (-1, -1), frh_green),
-            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 1),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 1),
-            ('TOPPADDING', (0, 0), (-1, -1), 1),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
-        ]))
-        story.append(delivery_table)
         story.append(Spacer(1, 5))
         
         # Titre DEVIS PV MARTINIQUE - couleur verte
