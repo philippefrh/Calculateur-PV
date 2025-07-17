@@ -79,6 +79,9 @@ REGIONS_CONFIG = {
         "company_info": {
             "name": "FRH ENVIRONNEMENT",
             "address": "Adresse France (actuelle)",  # À mettre à jour avec la vraie adresse
+            "phone": "09 85 60 50 51",
+            "email": "direction@francerenovhabitat.com",
+            "tva": "FR52890493737",
             "subtitle": "FRH ENVIRONNEMENT - Énergie Solaire Professionnel"
         },
         "interest_rates": {
