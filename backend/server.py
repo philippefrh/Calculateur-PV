@@ -1367,13 +1367,6 @@ Garantie constructeur Micro Onduleur : 15 ans"""
             ('ALIGN', (0, 0), (0, -1), 'CENTER'),
             ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            # Logo FRH en bas à droite en vert
-            ('FONTNAME', (1, 0), (1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (1, 0), (1, 0), 16),
-            ('TEXTCOLOR', (1, 0), (1, 0), frh_green),
-            ('FONTNAME', (1, 1), (1, 2), 'Helvetica-Bold'),
-            ('FONTSIZE', (1, 1), (1, 2), 10),
-            ('TEXTCOLOR', (1, 1), (1, 2), frh_green),
         ]))
         story.append(footer_table)
         
