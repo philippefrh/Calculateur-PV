@@ -1289,6 +1289,34 @@ async def generate_pdf_report(client_id: str):
         logging.error(f"PDF generation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/generate-devis/{client_id}")
+async def generate_devis(client_id: str, region: str = "france"):
+    """Generate and download devis PDF for client"""
+    try:
+        # Get client
+        client = await db.clients.find_one({"id": client_id})
+        if not client:
+            raise HTTPException(status_code=404, detail="Client not found")
+        
+        # Get calculation data
+        calculation_response = await calculate_solar_solution(client_id, region)
+        
+        # Generate devis PDF
+        pdf_bytes = generate_devis_pdf(client, calculation_response, region)
+        
+        # Return PDF as response
+        filename = f"devis_{client['first_name']}_{client['last_name']}_{datetime.now().strftime('%Y%m%d')}.pdf"
+        
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+        
+    except Exception as e:
+        logging.error(f"Devis generation error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/test-pvgis/{lat}/{lon}")
 async def test_pvgis(lat: float, lon: float, orientation: str = "Sud", power: int = 6):
     """Test endpoint for PVGIS API"""
