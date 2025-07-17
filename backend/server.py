@@ -1113,9 +1113,12 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
         # Styles
         styles = getSampleStyleSheet()
         
-        # En-tête avec logo et numéro de devis
+        # En-tête avec logo FRH et numéro de devis
+        # Créer une image du logo FRH (utiliser l'URL du logo existant)
+        logo_url = "https://cdn-dhoin.nitrocdn.com/EuBhgITwlcEgvZudhGdVBYWQskHAaTgE/assets/images/optimized/rev-a144ac5/france-renovhabitat.fr/contenu/2021/uploads/2021/05/FRH2-logo-HORIZONTALE.png"
+        
         header_table_data = [
-            ['🌳 FRH ENVIRONNEMENT', '', f'DEVIS N° : {generate_devis_number()}'],
+            ['■ FRH ENVIRONNEMENT', '', f'DEVIS N° : {generate_devis_number()}'],
             ['', '', ''],
             ['', '', '┌─────────────────────────────────────┐'],
             ['', '', f'│ PAGE     DATE        CLIENT         │'],
