@@ -144,6 +144,8 @@ class ClientInfo(BaseModel):
     first_name: str
     last_name: str
     address: str
+    phone: str
+    email: str
     
     # Technical Info
     roof_surface: float
