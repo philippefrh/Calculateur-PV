@@ -1149,9 +1149,6 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
         
         header_table = Table(header_data, colWidths=[10*cm, 8*cm])
         header_table.setStyle(TableStyle([
-            ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (0, 0), 16),
-            ('TEXTCOLOR', (0, 0), (0, 0), frh_green),
             ('FONTNAME', (1, 0), (1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (1, 0), (1, 0), 12),
             ('TEXTCOLOR', (1, 0), (1, 0), frh_green),
