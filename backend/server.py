@@ -1140,47 +1140,60 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
         story.append(header_table)
         story.append(Spacer(1, 20))
         
-        # Company and client info section
+        # Section entreprise et client
         region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG['france'])
         company_info = region_config['company_info']
         
-        info_data = [
-            [f"{company_info['name']}", 'CLIENT'],
-            [f"{company_info['address']}", f"{client_data['first_name']} {client_data['last_name']}"],
-            [f"Tel.: {company_info['phone']}", f"{client_data['address']}"],
-            [f"Email : {company_info['email']}", f"Tel.: {client_data.get('phone', 'N/A')}"],
-            [f"N° TVA Intra : {company_info['tva']}", f"E-mail: {client_data.get('email', 'N/A')}"],
-            ['Votre interlocuteur : Maarek Philippe', 'Délai de livraison : 3 mois'],
-            ['Type de logement : Maison individuelle | Bâtiment existant de plus de 2 ans', 'Offre valable jusqu\'au : 16/10/2025']
+        # Tableau entreprise/client avec fond gris pour "CLIENT"
+        company_client_data = [
+            [f"{company_info['name']}", '┌─────────────────────────────────────┐'],
+            [f"{company_info['address']}", f'│                CLIENT               │'],
+            [f"Tel.: {company_info['phone']}", '└─────────────────────────────────────┘'],
+            [f"Email : {company_info['email']}", f"{client_data['first_name']} {client_data['last_name']}"],
+            [f"N° TVA Intra : {company_info['tva']}", f"{client_data['address']}"],
+            [f"Votre interlocuteur : Maarek Philippe", f"Tel.: {client_data.get('phone', 'N/A')}"],
+            [f"Type de logement : Maison individuelle", f"E-mail: {client_data.get('email', 'N/A')}"],
+            [f"Bâtiment existant de plus de 2 ans", f"Délai de livraison : 3 mois"],
+            ['', f"Offre valable jusqu'au : 16/10/2025"]
         ]
         
-        info_table = Table(info_data, colWidths=[9*cm, 9*cm])
-        info_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+        company_client_table = Table(company_client_data, colWidths=[9*cm, 9*cm])
+        company_client_table.setStyle(TableStyle([
             ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
             ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('BACKGROUND', (1, 0), (1, 0), colors.HexColor('#f0f0f0')),
-            ('FONTNAME', (1, 0), (1, 0), 'Helvetica-Bold'),
+            ('BACKGROUND', (1, 1), (1, 1), colors.HexColor('#e0e0e0')),
+            ('FONTNAME', (1, 1), (1, 1), 'Helvetica-Bold'),
+            ('ALIGN', (1, 1), (1, 1), 'CENTER'),
         ]))
-        story.append(info_table)
-        story.append(Spacer(1, 20))
+        story.append(company_client_table)
+        story.append(Spacer(1, 15))
         
-        # Main title
+        # Titre principal centré et en couleur
+        title_style = ParagraphStyle(
+            'DevisTitle',
+            parent=styles['Heading1'],
+            fontSize=16,
+            fontName='Helvetica-Bold',
+            textColor=colors.HexColor('#2e7d32'),
+            alignment=1,  # Center
+            spaceAfter=15
+        )
         story.append(Paragraph(f"DEVIS PV {region.upper()}", title_style))
-        story.append(Spacer(1, 20))
         
-        # Technical specifications table
-        kit_power = calculation_data.get('recommended_kit_power', 6)
+        # Tableau des spécifications techniques
+        kit_power = calculation_data.get('recommended_kit_power', 6) or 6
         panel_count = calculation_data.get('panel_count', 12)
         kit_price = calculation_data.get('kit_price', 13900)
         
-        # Calculate prices
+        # Calcul des prix selon la région
         tva_rate = 0.021 if region == 'martinique' else 0.20
         prix_ht = kit_price / (1 + tva_rate)
         
-        tech_specs = f"""- Centrale en surimposition à la toiture de {panel_count} panneaux
+        # Spécifications techniques détaillées
+        tech_description = f"""- Centrale en surimposition à la toiture de {panel_count} panneaux
 photovoltaïques de la marque POWERNITY représentant une
 puissance totale de {kit_power * 1000} Watt Crêtes pour de
 l'autoconsommation
@@ -1218,39 +1231,54 @@ par la centrale photovoltaïque avec le système
 Powernity Solar Logiciel
 Garantie constructeur Micro Onduleur : 15 ans"""
         
-        specs_data = [
+        # Tableau principal avec en-têtes
+        main_table_data = [
             ['DESIGNATION', 'QUANTITE', 'UNITE', 'P.U. HT', 'TVA', 'PRIX TTC'],
-            [tech_specs, '1.00', '12', f'{prix_ht:.2f} €', f'{tva_rate*100:.2f}', f'{kit_price:.2f} €']
+            [tech_description, '1.00', '12', f'{prix_ht:.2f} €', '2.10', f'{kit_price:.2f} €']
         ]
         
-        specs_table = Table(specs_data, colWidths=[10*cm, 2*cm, 2*cm, 2*cm, 1*cm, 2*cm])
-        specs_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e0e0e0')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('ALIGN', (0, 1), (0, 1), 'LEFT'),
+        main_table = Table(main_table_data, colWidths=[11*cm, 1.5*cm, 1.5*cm, 2*cm, 1*cm, 2*cm])
+        main_table.setStyle(TableStyle([
+            # En-tête
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f0f0f0')),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+            # Contenu
             ('FONTNAME', (0, 1), (-1, 1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('FONTSIZE', (0, 1), (-1, 1), 9),
+            ('ALIGN', (0, 1), (0, 1), 'LEFT'),
+            ('ALIGN', (1, 1), (-1, 1), 'CENTER'),
+            ('VALIGN', (0, 1), (-1, 1), 'TOP'),
+            # Bordures
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LINEWIDTH', (0, 0), (-1, -1), 1),
+            # Padding
             ('LEFTPADDING', (0, 0), (-1, -1), 5),
             ('RIGHTPADDING', (0, 0), (-1, -1), 5),
-            ('TOPPADDING', (0, 0), (-1, -1), 8),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 5),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
         ]))
         
-        story.append(specs_table)
-        story.append(Spacer(1, 30))
+        story.append(main_table)
+        story.append(Spacer(1, 20))
         
-        # Footer
-        footer_text = f"""
+        # Pied de page
+        footer_info = f"""
         FRH {region.upper()}
         {company_info['address']}
         CAPITAL: 30 000 € - SIRET : 890 493 737 00013 RCS: 89049373-7- NAF: 4322B
         """
         
-        story.append(Paragraph(footer_text, styles['Normal']))
+        footer_style = ParagraphStyle(
+            'Footer',
+            parent=styles['Normal'],
+            fontSize=8,
+            alignment=1,  # Center
+            textColor=colors.black
+        )
+        story.append(Paragraph(footer_info, footer_style))
         
         # Build PDF
         doc.build(story)
