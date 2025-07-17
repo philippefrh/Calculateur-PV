@@ -1887,6 +1887,25 @@ body::after {
   opacity: 0.7;
 }
 
+.pdf-notification, .devis-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #2196f3;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
 .expert-button {
   background: linear-gradient(135deg, #2196f3, #1976d2);
   color: white;
