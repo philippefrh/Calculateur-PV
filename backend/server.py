@@ -1107,38 +1107,36 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
     """Generate devis PDF in the exact format shown in the example"""
     try:
         buffer = io.BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=20, leftMargin=20, topMargin=20, bottomMargin=20)
+        doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=15, leftMargin=15, topMargin=15, bottomMargin=15)
         story = []
         
         # Styles
         styles = getSampleStyleSheet()
-        title_style = ParagraphStyle(
-            'CustomTitle',
-            parent=styles['Heading1'],
-            fontSize=16,
-            spaceAfter=30,
-            textColor=colors.HexColor('#2e7d32'),
-            alignment=1  # Center
-        )
         
-        # Header section with logo and company info
-        header_data = [
-            ['🌳 FRH ENVIRONNEMENT', f'DEVIS N° : {generate_devis_number()}'],
-            ['', f'PAGE    DATE       CLIENT'],
-            ['', f'1/15    {datetime.now().strftime("%d/%m/%Y")}    {client_data["id"][:5]}']
+        # En-tête avec logo et numéro de devis
+        header_table_data = [
+            ['🌳 FRH ENVIRONNEMENT', '', f'DEVIS N° : {generate_devis_number()}'],
+            ['', '', ''],
+            ['', '', '┌─────────────────────────────────────┐'],
+            ['', '', f'│ PAGE     DATE        CLIENT         │'],
+            ['', '', f'│ 1/15   {datetime.now().strftime("%d/%m/%Y")}     {client_data["id"][:5]}           │'],
+            ['', '', '└─────────────────────────────────────┘']
         ]
         
-        header_table = Table(header_data, colWidths=[10*cm, 8*cm])
+        header_table = Table(header_table_data, colWidths=[6*cm, 6*cm, 6*cm])
         header_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
             ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
-            ('FONTNAME', (1, 0), (1, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 12),
+            ('FONTSIZE', (0, 0), (0, 0), 14),
+            ('FONTNAME', (2, 0), (2, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (2, 0), (2, 0), 12),
+            ('FONTNAME', (2, 3), (2, 5), 'Helvetica'),
+            ('FONTSIZE', (2, 3), (2, 5), 10),
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ]))
         story.append(header_table)
-        story.append(Spacer(1, 20))
+        story.append(Spacer(1, 10))
         
         # Section entreprise et client
         region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG['france'])
