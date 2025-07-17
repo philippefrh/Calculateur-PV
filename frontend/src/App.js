@@ -1054,6 +1054,8 @@ const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious, selectedRe
           <h4>📋 Résumé de votre profil :</h4>
           <p><strong>🏠</strong> {formData.firstName} {formData.lastName}</p>
           <p><strong>📍</strong> {formData.address}</p>
+          <p><strong>📞</strong> {formData.phone}</p>
+          <p><strong>📧</strong> {formData.email}</p>
           <p><strong>📐</strong> {formData.roofSurface} m² - {formData.roofOrientation}</p>
           <p><strong>⚡</strong> {formData.annualConsumption} kWh/an</p>
         </div>
