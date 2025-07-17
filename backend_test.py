@@ -1799,6 +1799,7 @@ class SolarCalculatorTester:
         # Priority 6 - PDF Generation with Financing Tables
         print("\n📋 PRIORITY 6 - PDF Generation with Financing Tables")
         self.test_pdf_generation_financing_tables()
+        self.test_devis_pdf_generation_modifications()  # NEW TEST for review request
         
         # NEW: Priority 7 - Calculation Modes Tests
         print("\n📋 PRIORITY 7 - NEW Calculation Modes System")
