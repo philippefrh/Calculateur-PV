@@ -1327,23 +1327,27 @@ Garantie constructeur Micro Onduleur : 15 ans"""
         story.append(main_table)
         story.append(Spacer(1, 5))
         
-        # Section footer avec logo FRH en bas à gauche
+        # Section footer avec adresse centrée comme l'original et logo FRH en bas à droite
         footer_data = [
-            ['🌳 FRH ENVIRONNEMENT', f'FRH {region.upper()}'],
-            ['', f'{company_info["address"]}'],
-            ['', 'CAPITAL: 30 000 € - SIRET : 890 493 737 00013 RCS: 89049373-7- NAF: 4322B']
+            [f'FRH {region.upper()}', '🌳'],
+            [f'{company_info["address"]}', 'FRH'],
+            ['CAPITAL: 30 000 € - SIRET : 890 493 737 00013 RCS: 89049373-7- NAF: 4322B', 'ENVIRONNEMENT']
         ]
         
-        footer_table = Table(footer_data, colWidths=[5*cm, 14*cm])
+        footer_table = Table(footer_data, colWidths=[16*cm, 3*cm])
         footer_table.setStyle(TableStyle([
-            ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (0, 0), 10),
-            ('TEXTCOLOR', (0, 0), (0, 0), frh_green),
-            ('FONTNAME', (1, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (1, 0), (-1, -1), 7),
-            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-            ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 7),
+            ('ALIGN', (0, 0), (0, -1), 'CENTER'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            # Logo FRH en bas à droite en vert
+            ('FONTNAME', (1, 0), (1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (1, 0), (1, 0), 16),
+            ('TEXTCOLOR', (1, 0), (1, 0), frh_green),
+            ('FONTNAME', (1, 1), (1, 2), 'Helvetica-Bold'),
+            ('FONTSIZE', (1, 1), (1, 2), 10),
+            ('TEXTCOLOR', (1, 1), (1, 2), frh_green),
         ]))
         story.append(footer_table)
         
