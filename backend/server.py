@@ -1297,7 +1297,7 @@ Garantie constructeur Micro Onduleur : 15 ans"""
         # Tableau principal - fond vert comme l'original
         main_table_data = [
             ['DESIGNATION', 'QUANTITE', 'UNITE', 'P.U. HT', 'TVA', 'PRIX TTC'],
-            [tech_description, '1.00', '12', f'{prix_ht:.2f} €', '2.10', f'{kit_price:.2f} €']
+            [tech_description, '1.00', '12', f'{prix_ht:.2f} €', tva_display, f'{kit_price:.2f} €']
         ]
         
         main_table = Table(main_table_data, colWidths=[11*cm, 1.5*cm, 1.5*cm, 2*cm, 1*cm, 2*cm])
