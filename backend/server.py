@@ -180,6 +180,8 @@ class ClientInfoCreate(BaseModel):
     first_name: str
     last_name: str
     address: str
+    phone: str
+    email: str
     roof_surface: float
     roof_orientation: str
     velux_count: int
