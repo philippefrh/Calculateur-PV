@@ -186,6 +186,9 @@ const PersonalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
     if (!formData.firstName.trim()) newErrors.firstName = "Le prénom est obligatoire";
     if (!formData.lastName.trim()) newErrors.lastName = "Le nom est obligatoire";
     if (!formData.address.trim()) newErrors.address = "L'adresse est obligatoire";
+    if (!formData.phone.trim()) newErrors.phone = "Le téléphone est obligatoire";
+    if (!formData.email.trim()) newErrors.email = "L'email est obligatoire";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Format email invalide";
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
