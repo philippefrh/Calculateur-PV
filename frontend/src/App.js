@@ -248,6 +248,34 @@ const PersonalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
           <small>💡 Cette adresse sera utilisée pour calculer précisément votre potentiel solaire</small>
         </div>
         
+        <div className="form-group">
+          <label>📞 Téléphone *</label>
+          <input
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => setFormData({...formData, phone: e.target.value})}
+            placeholder="0659597690"
+            className={errors.phone ? 'error' : ''}
+            required
+          />
+          {errors.phone && <span className="error-message">{errors.phone}</span>}
+          <small>💡 Votre numéro de téléphone pour vous contacter</small>
+        </div>
+        
+        <div className="form-group">
+          <label>📧 Email *</label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            placeholder="votre.email@example.com"
+            className={errors.email ? 'error' : ''}
+            required
+          />
+          {errors.email && <span className="error-message">{errors.email}</span>}
+          <small>💡 Votre email pour recevoir le devis et la documentation</small>
+        </div>
+        
         <div className="form-buttons">
           <button type="button" onClick={onPrevious} className="prev-button">⬅️ Précédent</button>
           <button type="submit" className="next-button">Suivant ➡️</button>
