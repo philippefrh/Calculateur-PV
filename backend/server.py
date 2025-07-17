@@ -1231,8 +1231,7 @@ def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = 
             ('RIGHTPADDING', (0, 0), (-1, -1), 1),
             ('TOPPADDING', (0, 0), (-1, -1), 1),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
-            # Lignes délai et offre en vert
-            ('TEXTCOLOR', (1, 4), (1, 5), frh_green),
+            # Supprimer les couleurs hardcodées car elles sont maintenant dans les Paragraph
         ]))
         story.append(company_client_table)
         story.append(Spacer(1, 5))
