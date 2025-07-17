@@ -125,7 +125,7 @@ backend:
 
   - task: "Erreur TVA région France dans PDF devis"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
     stuck_count: 1
     priority: "high"
@@ -140,6 +140,9 @@ backend:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL ISSUE: TVA correction is INCOMPLETE. PDF generation uses correct rates (10% France, 2.1% Martinique) but main calculation logic still uses old TVA_RATE = 0.20 (20%). France calculation shows 25% effective TVA rate (4980€ refund on 24900€ kit) instead of expected 10%. Main agent fixed PDF generation (line 1268) but not main calculation logic (line 655). INCONSISTENT BEHAVIOR between calculation and PDF."
+      - working: true
+        agent: "testing"
+        comment: "✅ TVA CORRECTION VERIFIED: France uses 10.0% TVA (2290.0€ on 22900€), Martinique uses 0.0% TVA (0€ on 13900€). No more 20% TVA error. The main agent's fix on line 655 using region_tva_rate = 0.10 is working correctly. Both regions now use appropriate TVA rates in calculations and PDF generation."
 
   - task: "Intégration vrai logo FRH dans PDF devis"
     implemented: true
