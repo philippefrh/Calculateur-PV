@@ -2145,21 +2145,36 @@ class SolarCalculatorTester:
         print("🎯 FOCUS: TVA Correction Verification (France 10% vs Martinique 2.1%)")
         print("=" * 80)
         
-        # Priority 1 tests
-        print("\n📋 PRIORITY 1 - Main Endpoints")
+        # Basic connectivity tests
         self.test_api_root()
         self.test_solar_kits()
         self.test_pvgis_direct()
         
-        # Priority 2 tests - Complete workflow
-        print("\n📋 PRIORITY 2 - Complete Client Workflow")
+        # Client management tests
         self.test_create_client()
         self.test_get_clients()
         self.test_get_client_by_id()
-        self.test_solar_calculation()
         
-        # Priority 3 - NEW: Region System Tests
-        print("\n📋 PRIORITY 3 - NEW Region System")
+        # CRITICAL TVA CORRECTION TESTS (as requested in review)
+        print("\n🔥 CRITICAL TVA CORRECTION TESTS")
+        print("-" * 50)
+        self.test_tva_consistency_france_martinique()
+        self.test_pdf_devis_generation_both_regions()
+        self.test_regional_calculation_consistency()
+        self.test_devis_endpoint_both_regions()
+        
+        # Core calculation tests
+        print("\n⚙️ CORE CALCULATION TESTS")
+        print("-" * 50)
+        self.test_solar_calculation()
+        self.test_financing_with_aids_calculation()
+        self.test_all_financing_with_aids_calculation()
+        self.test_autoconsumption_surplus_distribution()
+        
+        # PDF generation tests
+        self.test_pdf_generation_financing_tables()
+        
+        # Region system tests
         self.test_regions_endpoint()
         self.test_france_region_config()
         self.test_martinique_region_config()
@@ -2168,58 +2183,38 @@ class SolarCalculatorTester:
         self.test_calculation_martinique_region()
         self.test_region_financing_differences()
         
-        # Priority 4 - NEW: Test autoconsumption/surplus distribution changes
-        print("\n📋 PRIORITY 4 - NEW Autoconsumption/Surplus Distribution (95%/5%)")
-        self.test_autoconsumption_surplus_distribution()
-        
-        # Priority 5 - Financing with aids tests (3.25% TAEG)
-        print("\n📋 PRIORITY 5 - Financing with Aids Calculation (3.25% TAEG)")
-        self.test_financing_with_aids_calculation()
-        self.test_all_financing_with_aids_calculation()
-        
-        # NEW: Priority 5.5 - Test financing duration synchronization fix
-        print("\n📋 PRIORITY 5.5 - NEW Financing Duration Synchronization Fix")
-        self.test_financing_duration_synchronization()
-        
-        # Priority 6 - PDF Generation with Financing Tables
-        print("\n📋 PRIORITY 6 - PDF Generation with Financing Tables")
-        self.test_pdf_generation_financing_tables()
-        self.test_devis_pdf_generation_modifications()  # NEW TEST for review request
-        
-        # NEW: Priority 7 - Calculation Modes Tests
-        print("\n📋 PRIORITY 7 - NEW Calculation Modes System")
+        # Calculation modes tests
         self.test_calculation_modes_endpoint()
-        self.test_realistic_mode_config()
-        self.test_optimistic_mode_config()
-        self.test_calculation_with_realistic_mode()
-        self.test_calculation_with_optimistic_mode()
+        self.test_realistic_calculation_mode()
+        self.test_optimistic_calculation_mode()
         self.test_calculation_modes_comparison()
-        self.test_calculation_invalid_mode()
         
-        # Error handling tests
-        print("\n📋 ERROR HANDLING TESTS")
-        self.test_error_cases()
-        
-        # Summary
-        print("\n" + "=" * 60)
+        # Print summary
+        print("\n" + "=" * 80)
         print("📊 TEST SUMMARY")
-        print("=" * 60)
+        print("=" * 80)
         
-        passed = sum(1 for result in self.test_results if result["success"])
-        total = len(self.test_results)
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
         
-        print(f"Total Tests: {total}")
-        print(f"Passed: {passed}")
-        print(f"Failed: {total - passed}")
-        print(f"Success Rate: {(passed/total)*100:.1f}%")
+        print(f"Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
         
-        if total - passed > 0:
-            print("\n❌ FAILED TESTS:")
+        # Highlight critical TVA tests
+        tva_tests = [r for r in self.test_results if "TVA" in r["test"] or "Devis" in r["test"] or "Regional" in r["test"]]
+        tva_passed = sum(1 for r in tva_tests if r["success"])
+        print(f"\n🎯 CRITICAL TVA/REGIONAL TESTS: {tva_passed}/{len(tva_tests)} passed")
+        
+        if failed_tests > 0:
+            print("\n🔍 FAILED TESTS:")
             for result in self.test_results:
                 if not result["success"]:
-                    print(f"  - {result['test']}: {result['details']}")
+                    print(f"❌ {result['test']}: {result['details']}")
         
-        return self.test_results
+        print("\n" + "=" * 80)
 
 if __name__ == "__main__":
     tester = SolarCalculatorTester()
