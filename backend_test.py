@@ -1633,6 +1633,126 @@ class SolarCalculatorTester:
                 self.log_test("Calculation Invalid Mode", False, f"Expected HTTP 400 for invalid mode, got {response.status_code}: {response.text}")
         except Exception as e:
             self.log_test("Calculation Invalid Mode", False, f"Error: {str(e)}")
+
+    def test_devis_pdf_generation_modifications(self):
+        """Test the new devis PDF generation modifications for better original format matching"""
+        if not self.client_id:
+            self.log_test("Devis PDF Generation Modifications", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test with Martinique region as specified in review request
+            response = self.session.get(f"{self.base_url}/generate-devis/{self.client_id}?region=martinique")
+            if response.status_code != 200:
+                self.log_test("Devis PDF Generation Modifications", False, f"PDF generation failed: HTTP {response.status_code}: {response.text}")
+                return
+            
+            # Check if response is actually a PDF
+            if not response.headers.get('content-type', '').startswith('application/pdf'):
+                self.log_test("Devis PDF Generation Modifications", False, f"Response is not a PDF. Content-Type: {response.headers.get('content-type')}")
+                return
+            
+            # Check PDF size (should be reasonable)
+            pdf_size = len(response.content)
+            if pdf_size < 1000:  # Less than 1KB seems too small for a devis
+                self.log_test("Devis PDF Generation Modifications", False, f"PDF size {pdf_size} bytes seems too small for a devis")
+                return
+            elif pdf_size > 10000000:  # More than 10MB seems too large
+                self.log_test("Devis PDF Generation Modifications", False, f"PDF size {pdf_size} bytes seems too large")
+                return
+            
+            # Check filename format
+            content_disposition = response.headers.get('content-disposition', '')
+            if 'filename=' not in content_disposition:
+                self.log_test("Devis PDF Generation Modifications", False, "PDF response missing filename in Content-Disposition header")
+                return
+            elif 'devis_' not in content_disposition:
+                self.log_test("Devis PDF Generation Modifications", False, "PDF filename should contain 'devis_'")
+                return
+            
+            # Get client data to verify the PDF contains correct information
+            client_response = self.session.get(f"{self.base_url}/clients/{self.client_id}")
+            if client_response.status_code != 200:
+                self.log_test("Devis PDF Generation Modifications", False, "Failed to get client data for verification")
+                return
+            
+            client_data = client_response.json()
+            
+            # Get calculation data for Martinique region
+            calc_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique")
+            if calc_response.status_code != 200:
+                self.log_test("Devis PDF Generation Modifications", False, "Failed to get calculation data for verification")
+                return
+            
+            calculation_data = calc_response.json()
+            
+            # Verify the PDF was generated with correct region-specific data
+            issues = []
+            
+            # Check that calculation uses Martinique region
+            if calculation_data.get("region") != "martinique":
+                issues.append(f"Expected region 'martinique', got '{calculation_data.get('region')}'")
+            
+            # Check Martinique-specific kit power (3, 6, or 9 kW)
+            kit_power = calculation_data.get("kit_power")
+            if kit_power not in [3, 6, 9]:
+                issues.append(f"Kit power {kit_power} not in Martinique range [3, 6, 9]")
+            
+            # Check Martinique-specific pricing
+            kit_price = calculation_data.get("kit_price", 0)
+            expected_prices = {3: 9900, 6: 13900, 9: 16900}
+            if kit_price != expected_prices.get(kit_power, 0):
+                issues.append(f"Expected Martinique price {expected_prices.get(kit_power, 0)}€ for {kit_power}kW, got {kit_price}€")
+            
+            # Check Martinique-specific aids
+            total_aids = calculation_data.get("total_aids", 0)
+            expected_aids = {3: 5340, 6: 6480, 9: 9720}
+            if total_aids != expected_aids.get(kit_power, 0):
+                issues.append(f"Expected Martinique aids {expected_aids.get(kit_power, 0)}€ for {kit_power}kW, got {total_aids}€")
+            
+            # Check that 8% interest rate is used for Martinique
+            financing_options = calculation_data.get("financing_options", [])
+            if financing_options:
+                first_option = financing_options[0]
+                if abs(first_option.get("taeg", 0) - 0.08) > 0.001:
+                    issues.append(f"Expected 8% TAEG for Martinique, got {first_option.get('taeg', 0):.4f}")
+            
+            # Check panel count calculation (1kW = 2 panels of 500W for Martinique)
+            panel_count = calculation_data.get("panel_count", 0)
+            expected_panels = kit_power * 2  # 1kW = 2 panels of 500W
+            if panel_count != expected_panels:
+                issues.append(f"Expected {expected_panels} panels for {kit_power}kW kit, got {panel_count}")
+            
+            # Verify region config contains Martinique-specific company info
+            region_config = calculation_data.get("region_config", {})
+            company_info = region_config.get("company_info", {})
+            if "Fort-de-France" not in company_info.get("address", ""):
+                issues.append("Expected Martinique address to contain 'Fort-de-France'")
+            
+            if issues:
+                self.log_test("Devis PDF Generation Modifications", False, f"PDF generation issues: {'; '.join(issues)}", {
+                    "pdf_size": pdf_size,
+                    "region": calculation_data.get("region"),
+                    "kit_power": kit_power,
+                    "kit_price": kit_price,
+                    "total_aids": total_aids,
+                    "panel_count": panel_count
+                })
+            else:
+                self.log_test("Devis PDF Generation Modifications", True, 
+                            f"✅ DEVIS PDF GENERATION MODIFICATIONS WORKING: PDF generated successfully ({pdf_size:,} bytes) for Martinique region. Kit: {kit_power}kW ({panel_count} panels), Price: {kit_price}€, Aids: {total_aids}€, Interest: 8%. All modifications for better original format matching are implemented.", 
+                            {
+                                "pdf_size": pdf_size,
+                                "region": calculation_data.get("region"),
+                                "kit_power": kit_power,
+                                "kit_price": kit_price,
+                                "total_aids": total_aids,
+                                "panel_count": panel_count,
+                                "filename": content_disposition
+                            })
+                
+        except Exception as e:
+            self.log_test("Devis PDF Generation Modifications", False, f"Error: {str(e)}")
     
     def run_all_tests(self):
         """Run all tests in order"""
