@@ -1097,6 +1097,169 @@ async def generate_solar_report_pdf(client_id: str, calculation_data: dict) -> b
         logging.error(f"Error generating PDF: {e}")
         raise HTTPException(status_code=500, detail=f"Error generating PDF: {str(e)}")
 
+def generate_devis_pdf(client_data: dict, calculation_data: dict, region: str = "france"):
+    """Generate devis PDF in the exact format shown in the example"""
+    try:
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=20, leftMargin=20, topMargin=20, bottomMargin=20)
+        story = []
+        
+        # Styles
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=16,
+            spaceAfter=30,
+            textColor=colors.HexColor('#2e7d32'),
+            alignment=1  # Center
+        )
+        
+        # Header section with logo and company info
+        header_data = [
+            ['🌳 FRH ENVIRONNEMENT', f'DEVIS N° : {generate_devis_number()}'],
+            ['', f'PAGE    DATE       CLIENT'],
+            ['', f'1/15    {datetime.now().strftime("%d/%m/%Y")}    {client_data["id"][:5]}']
+        ]
+        
+        header_table = Table(header_data, colWidths=[10*cm, 8*cm])
+        header_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 12),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ]))
+        story.append(header_table)
+        story.append(Spacer(1, 20))
+        
+        # Company and client info section
+        region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG['france'])
+        company_info = region_config['company_info']
+        
+        info_data = [
+            [f"{company_info['name']}", 'CLIENT'],
+            [f"{company_info['address']}", f"{client_data['first_name']} {client_data['last_name']}"],
+            [f"Tel.: {company_info['phone']}", f"{client_data['address']}"],
+            [f"Email : {company_info['email']}", f"Tel.: {client_data.get('phone', 'N/A')}"],
+            [f"N° TVA Intra : {company_info['tva']}", f"E-mail: {client_data.get('email', 'N/A')}"],
+            ['Votre interlocuteur : Maarek Philippe', 'Délai de livraison : 3 mois'],
+            ['Type de logement : Maison individuelle | Bâtiment existant de plus de 2 ans', 'Offre valable jusqu\'au : 16/10/2025']
+        ]
+        
+        info_table = Table(info_data, colWidths=[9*cm, 9*cm])
+        info_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('BACKGROUND', (1, 0), (1, 0), colors.HexColor('#f0f0f0')),
+            ('FONTNAME', (1, 0), (1, 0), 'Helvetica-Bold'),
+        ]))
+        story.append(info_table)
+        story.append(Spacer(1, 20))
+        
+        # Main title
+        story.append(Paragraph(f"DEVIS PV {region.upper()}", title_style))
+        story.append(Spacer(1, 20))
+        
+        # Technical specifications table
+        kit_power = calculation_data.get('recommended_kit_power', 6)
+        panel_count = calculation_data.get('panel_count', 12)
+        kit_price = calculation_data.get('kit_price', 13900)
+        
+        # Calculate prices
+        tva_rate = 0.021 if region == 'martinique' else 0.20
+        prix_ht = kit_price / (1 + tva_rate)
+        
+        tech_specs = f"""- Centrale en surimposition à la toiture de {panel_count} panneaux
+photovoltaïques de la marque POWERNITY représentant une
+puissance totale de {kit_power * 1000} Watt Crêtes pour de
+l'autoconsommation
+Modèle : JKL132-B-MH
+Référence : POW500
+- Puissance d'un panneau 500W
+- Module solaire monocristallin haute efficacité.
+Certifications
+CEI: 61215, CEI 61730, CE, CQC
+ISO90012015système de gestion de la qualité
+ISO14001201système de management environnemental
+ISO45001201système de management de la santé et de la
+sécurité au travail
+- La technologie SE améliore efficacement l'efficacité
+de la conversion cellulaire.
+- Film anti reflet optimisé, matériau d'encapsulation
+pour obtenir d'excellentes performances anti-PID.
+Conception MBB et demi-cellule pour réduire les effets
+d'ombre, améliorer la fiabilité du module et réduire
+les pertes.
+
+- Dimensions (L*W*H) (mm)
+2094×1134×30mm par panneau
+- Poids (kg) : 26 par panneau
+25 ans de garantie constructeur sur la puissance
+linéaire
+12 ans garantie constructeur-
+Structure des panneaux : K2 solitrail
+
+
+- 6 Micro-onduleur de la marque POWERNITY Ref : PW1000
+- Boîtier AC/DC, parafoudre
+- Gestion, programmation de la production d'énergie
+par la centrale photovoltaïque avec le système
+Powernity Solar Logiciel
+Garantie constructeur Micro Onduleur : 15 ans"""
+        
+        specs_data = [
+            ['DESIGNATION', 'QUANTITE', 'UNITE', 'P.U. HT', 'TVA', 'PRIX TTC'],
+            [tech_specs, '1.00', '12', f'{prix_ht:.2f} €', f'{tva_rate*100:.2f}', f'{kit_price:.2f} €']
+        ]
+        
+        specs_table = Table(specs_data, colWidths=[10*cm, 2*cm, 2*cm, 2*cm, 1*cm, 2*cm])
+        specs_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e0e0e0')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('ALIGN', (0, 1), (0, 1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (0, 1), (-1, 1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 5),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ]))
+        
+        story.append(specs_table)
+        story.append(Spacer(1, 30))
+        
+        # Footer
+        footer_text = f"""
+        FRH {region.upper()}
+        {company_info['address']}
+        CAPITAL: 30 000 € - SIRET : 890 493 737 00013 RCS: 89049373-7- NAF: 4322B
+        """
+        
+        story.append(Paragraph(footer_text, styles['Normal']))
+        
+        # Build PDF
+        doc.build(story)
+        buffer.seek(0)
+        
+        return buffer.getvalue()
+        
+    except Exception as e:
+        logging.error(f"Error generating devis PDF: {e}")
+        raise HTTPException(status_code=500, detail=f"Error generating devis PDF: {str(e)}")
+
+def generate_devis_number():
+    """Generate unique devis number"""
+    return f"{datetime.now().strftime('%Y%m%d')}-{datetime.now().strftime('%H%M%S')}"
+
 @api_router.get("/generate-pdf/{client_id}")
 async def generate_pdf_report(client_id: str):
     """Generate and download PDF report for client"""
