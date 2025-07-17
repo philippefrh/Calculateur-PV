@@ -101,8 +101,11 @@ REGIONS_CONFIG = {
         "name": "Martinique",
         "logo_subtitle": "Région Martinique",
         "company_info": {
-            "name": "FRH ENVIRONNEMENT",
-            "address": "F.R.H Environnement SAS\n11 rue des Arts et Métiers, Fort-de-France",
+            "name": "FRH MARTINIQUE",
+            "address": "11 rue des Arts et Métiers\n97200 Fort-de-France",
+            "phone": "09 85 60 50 51",
+            "email": "direction@francerenovhabitat.com",
+            "tva": "FR52890493737",
             "subtitle": "FRH ENVIRONNEMENT - Énergie Solaire Professionnel"
         },
         "interest_rates": {
