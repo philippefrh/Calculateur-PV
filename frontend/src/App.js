@@ -2334,6 +2334,8 @@ function App() {
       firstName: '',
       lastName: '',
       address: '',
+      phone: '',
+      email: '',
       roofSurface: '',
       roofOrientation: '',
       veluxCount: 0,
