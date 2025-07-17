@@ -102,7 +102,83 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "L'utilisateur a signalé un problème avec les modes de calcul : même en sélectionnant le mode 'Réaliste', les résultats affichés (3249€ annuels, 271€/mois) semblaient être ceux du mode 'Optimiste'. Le problème était que la valeur par défaut du mode de calcul était 'optimistic' à la fois dans le frontend et le backend. Ce problème a été corrigé en changeant la valeur par défaut vers 'realistic' dans les deux parties de l'application."
+user_problem_statement: "L'utilisateur a signalé plusieurs problèmes critiques : 1) Erreur en mode démo lors du calcul automatique (formData.monthlyEdfPayment undefined), 2) Erreur sur la TVA en région France (la TVA de Martinique était utilisée au lieu de celle de France), 3) Demande d'intégration du vrai logo FRH dans le PDF devis (en haut à gauche et en bas à droite) comme dans l'interface principale, 4) Correction des couleurs pour les lignes 'délai de livraison' et 'offre valable' (texte en vert, valeurs en noir), 5) Correction du placement de l'adresse en bas de page selon le devis original. Tous ces problèmes ont été identifiés et corrigés."
+
+backend:
+  - task: "Erreur mode démo - formData.monthlyEdfPayment undefined"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "❌ USER FEEDBACK: Erreur en mode démo lors du calcul automatique - formData.monthlyEdfPayment est undefined"
+      - working: true
+        agent: "main"
+        comment: "✅ FIXED: Ajouté une vérification pour formData.monthlyEdfPayment avec fallback à '0' si undefined dans les tips du calcul PVGIS"
+
+  - task: "Erreur TVA région France dans PDF devis"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "❌ USER FEEDBACK: Erreur TVA - quand je fais un devis région FRANCE, la TVA de Martinique est utilisée au lieu de celle de France"
+      - working: true
+        agent: "main"
+        comment: "✅ FIXED: Corrigé la TVA pour France de 20% à 10% (taux spécial panneaux solaires) et rendu l'affichage TVA dynamique selon la région (2.10% Martinique, 10.00% France)"
+
+  - task: "Intégration vrai logo FRH dans PDF devis"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "❌ USER FEEDBACK: Je veux absolument que tu m'intègres le vrai logo fourni dans le devis en haut à gauche et en bas à droite comme dans l'interface principale"
+      - working: true
+        agent: "main"
+        comment: "✅ FIXED: Intégré le vrai logo FRH depuis l'URL officielle dans le header et footer du PDF avec gestion des erreurs et fallback"
+
+  - task: "Correction couleurs lignes délai/offre dans PDF"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "❌ USER FEEDBACK: Pour les lignes 'délai de livraison : 3 mois' et 'Offre valable jusqu'au : 09/10/2025', il faut garder la couleur verte et mettre en noir '3 mois' et '09/10/2025'"
+      - working: true
+        agent: "main"
+        comment: "✅ FIXED: Utilisé Paragraph avec HTML pour appliquer des couleurs différentes - texte en vert (#7CB342), valeurs en noir"
+
+  - task: "Correction placement adresse en bas de page PDF"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "❌ USER FEEDBACK: En bas de page du devis l'adresse doit être placée comme sur le devis original"
+      - working: true
+        agent: "main"
+        comment: "✅ FIXED: Revu la structure du footer pour centrer l'adresse et placer le logo FRH en bas à droite selon le modèle original"
 
 backend:
   - task: "API Root Endpoint"
