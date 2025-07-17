@@ -27,8 +27,10 @@ from reportlab.pdfgen import canvas
 from reportlab.graphics.shapes import Drawing
 from reportlab.graphics.charts.piecharts import Pie
 from reportlab.graphics.charts.linecharts import HorizontalLineChart
+from reportlab.lib.utils import ImageReader
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import requests
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
