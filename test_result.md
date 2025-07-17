@@ -147,7 +147,7 @@ backend:
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -155,6 +155,9 @@ backend:
       - working: true
         agent: "main"
         comment: "✅ FIXED: Intégré le vrai logo FRH depuis l'URL officielle dans le header et footer du PDF avec gestion des erreurs et fallback"
+      - working: true
+        agent: "testing"
+        comment: "✅ PDF LOGO INTEGRATION WORKING: PDF generation successful for both regions (France: 4329 bytes, Martinique: 4367 bytes). Logo integration implemented with proper error handling and fallback. PDF files generated with correct content-type (application/pdf) and proper filenames (devis_[name]_YYYYMMDD.pdf). FRH logo integration in header/footer functioning as requested."
 
   - task: "Correction couleurs lignes délai/offre dans PDF"
     implemented: true
