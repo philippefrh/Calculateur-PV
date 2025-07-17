@@ -1280,7 +1280,7 @@ Garantie constructeur Micro Onduleur : 15 ans"""
         )
         story.append(Paragraph(footer_info, footer_style))
         
-        # Build PDF
+        # Construire le PDF
         doc.build(story)
         buffer.seek(0)
         
