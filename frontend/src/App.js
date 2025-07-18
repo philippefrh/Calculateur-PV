@@ -2161,18 +2161,16 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     setIsDemoMode(!isDemoMode);
   };
 
-  // Déclencher le passage automatique aux résultats après 20 secondes
-  useEffect(() => {
-    if (!isCalculating && calculationResults) {
+  if (!isCalculating && calculationResults) {
+    // Déclencher le passage automatique aux résultats après 20 secondes
+    useEffect(() => {
       const timer = setTimeout(() => {
         onComplete(calculationResults);
       }, 20000);
       
       return () => clearTimeout(timer);
-    }
-  }, [isCalculating, calculationResults, onComplete]);
-
-  if (!isCalculating && calculationResults) {
+    }, []);
+    
     return (
       <div className="calculation-screen success">
         <div className="success-animation">
