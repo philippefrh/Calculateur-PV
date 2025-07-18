@@ -2176,20 +2176,20 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
             <p>Votre solution solaire personnalisée est prête</p>
             <p className="commission-text">Ce % d'économie de couleur verte permet le dépôt de votre dossier aux différentes commissions pour qu'il puisse être validé</p>
           </div>
-          
-          <div className="quick-results">
-            <div className="quick-result-item">
-              <span className="quick-number">{calculationResults.kit_power} kW</span>
-              <span className="quick-label">Kit recommandé</span>
-            </div>
-            <div className="quick-result-item">
-              <span className="quick-number">{Math.round(calculationResults.autonomy_percentage)}%</span>
-              <span className="quick-label">Autonomie</span>
-            </div>
-            <div className="quick-result-item">
-              <span className="quick-number">{Math.round(calculationResults.estimated_savings)} €</span>
-              <span className="quick-label">Économies/an</span>
-            </div>
+        </div>
+        
+        <div className="quick-results">
+          <div className="quick-result-item">
+            <span className="quick-number">{calculationResults.kit_power} kW</span>
+            <span className="quick-label">Kit recommandé</span>
+          </div>
+          <div className="quick-result-item">
+            <span className="quick-number">{Math.round(calculationResults.autonomy_percentage)}%</span>
+            <span className="quick-label">Autonomie</span>
+          </div>
+          <div className="quick-result-item">
+            <span className="quick-number">{Math.round(calculationResults.estimated_savings)} €</span>
+            <span className="quick-label">Économies/an</span>
           </div>
         </div>
       </div>
