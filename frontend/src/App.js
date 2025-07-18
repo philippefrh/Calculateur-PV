@@ -2174,7 +2174,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
           <div className="success-text">
             <h2>🎉 Calcul terminé avec succès !</h2>
             <p>Votre solution solaire personnalisée est prête</p>
-            <p className="commission-text">Ce % d'économie de couleur verte permet le dépôt de votre dossier aux différentes commissions pour qu'il puisse être validé</p>
+            <p className="commission-text">Ce % d'économie et d'autonomie de couleur verte permet le dépôt de votre dossier aux différentes commissions pour qu'il puisse être validé</p>
           </div>
         </div>
         
