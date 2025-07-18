@@ -408,6 +408,8 @@ body::after {
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.9rem;
+  height: 44px;
+  min-width: 120px;
 }
 
 .region-btn:hover {
