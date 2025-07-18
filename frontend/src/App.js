@@ -2162,12 +2162,20 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   };
 
   if (!isCalculating && calculationResults) {
+    // Passage automatique aux résultats après 20 secondes
+    setTimeout(() => {
+      setCurrentStep('results');
+    }, 20000);
+    
     return (
       <div className="calculation-screen success">
         <div className="success-animation">
           <div className="success-circle">✅</div>
-          <h2>🎉 Calcul terminé avec succès !</h2>
-          <p>Votre solution solaire personnalisée est prête</p>
+          <div className="success-text">
+            <h2>🎉 Calcul terminé avec succès !</h2>
+            <p>Votre solution solaire personnalisée est prête</p>
+            <p className="commission-text">Ce % d'économie de couleur verte permet le dépôt de votre dossier aux différentes commissions pour qu'il puisse être validé</p>
+          </div>
           
           <div className="quick-results">
             <div className="quick-result-item">
