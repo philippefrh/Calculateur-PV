@@ -2164,7 +2164,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   if (!isCalculating && calculationResults) {
     // Passage automatique aux résultats après 20 secondes
     setTimeout(() => {
-      setCurrentStep('results');
+      onComplete(calculationResults);
     }, 20000);
     
     return (
