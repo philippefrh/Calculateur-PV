@@ -476,8 +476,10 @@ body::after {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-align: left;
+  text-align: center;
   border: 2px solid transparent;
+  flex: 1;
+  min-width: 0;
 }
 
 .mode-btn:hover {
