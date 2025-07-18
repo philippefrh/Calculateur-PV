@@ -1107,6 +1107,12 @@ body::after {
 /* Animation de succès */
 .success-animation {
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .success-circle {
@@ -1118,8 +1124,34 @@ body::after {
   align-items: center;
   justify-content: center;
   font-size: 4rem;
-  margin: 0 auto 30px;
   animation: bounceIn 0.6s ease-out;
+  flex-shrink: 0;
+}
+
+.success-text {
+  text-align: left;
+  flex-grow: 1;
+}
+
+.success-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: white;
+}
+
+.success-text p {
+  font-size: 1.3rem;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.commission-text {
+  font-size: 1.1rem !important;
+  color: #e8f5e8 !important;
+  font-style: italic;
+  border-left: 4px solid rgba(255,255,255,0.3);
+  padding-left: 15px;
+  margin-top: 20px !important;
 }
 
 @keyframes bounceIn {
