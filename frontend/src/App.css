@@ -501,7 +501,7 @@ body::after {
 .mode-title {
   font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 0px;
 }
 
 .mode-description {
