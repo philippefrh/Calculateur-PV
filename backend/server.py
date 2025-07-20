@@ -1475,49 +1475,56 @@ class PanelPosition(BaseModel):
 
 def generate_simple_grid_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
     """
-    Génère des positions UNIQUEMENT SUR LE TOIT - version corrigée
+    Génère des positions EXACTEMENT SUR LE TOIT - ajusté pour la photo de l'utilisateur
     """
     positions = []
     
-    # ZONE DU TOIT CORRIGÉE - basée sur une maison typique
-    # Le toit occupe généralement la partie HAUTE ET CENTRALE de l'image
+    # ZONE DU TOIT AJUSTÉE pour la photo de l'utilisateur
+    # En regardant sa photo : toit occupe le tiers supérieur, centré horizontalement
     roof_bounds = {
-        'x_min': 0.25,  # 25% depuis la gauche
-        'x_max': 0.75,  # Jusqu'à 75% de la largeur  
-        'y_min': 0.25,  # 25% depuis le haut (milieu du toit)
-        'y_max': 0.45,  # Jusqu'à 45% de la hauteur (bas du toit)
+        'x_min': 0.30,  # 30% depuis la gauche (évite les bords)
+        'x_max': 0.70,  # Jusqu'à 70% de la largeur (évite les bords)
+        'y_min': 0.15,  # 15% depuis le haut (début du toit) 
+        'y_max': 0.35,  # Jusqu'à 35% de la hauteur (fin du toit avant les fenêtres)
     }
     
-    # Calculer la disposition en grille DANS LE TOIT
+    # Calculer la disposition en grille DANS LE TOIT UNIQUEMENT
     panels_per_row = min(3, panel_count)  # Max 3 panneaux par rangée
     rows = (panel_count + panels_per_row - 1) // panels_per_row
     
-    # Espacement dans la zone du toit
-    roof_width = roof_bounds['x_max'] - roof_bounds['x_min']
-    roof_height = roof_bounds['y_max'] - roof_bounds['y_min']
+    # Espacement dans la zone du toit RÉDUITE
+    roof_width = roof_bounds['x_max'] - roof_bounds['x_min']  # 40% de largeur
+    roof_height = roof_bounds['y_max'] - roof_bounds['y_min']  # 20% de hauteur
     
     x_step = roof_width / panels_per_row if panels_per_row > 1 else 0
     y_step = roof_height / rows if rows > 1 else 0
     
-    logging.info(f"🏠 ZONE TOIT FIXE: X=[{roof_bounds['x_min']}-{roof_bounds['x_max']}], Y=[{roof_bounds['y_min']}-{roof_bounds['y_max']}]")
+    logging.info(f"🏠 ZONE TOIT AJUSTÉE: X=[{roof_bounds['x_min']}-{roof_bounds['x_max']}], Y=[{roof_bounds['y_min']}-{roof_bounds['y_max']}]")
     
     for i in range(panel_count):
         row = i // panels_per_row
         col = i % panels_per_row
         
-        # Centrer les panneaux dans chaque cellule de la grille
-        x = roof_bounds['x_min'] + (col + 0.5) * x_step if panels_per_row > 1 else (roof_bounds['x_min'] + roof_bounds['x_max']) / 2
-        y = roof_bounds['y_min'] + (row + 0.5) * y_step if rows > 1 else (roof_bounds['y_min'] + roof_bounds['y_max']) / 2
+        # Centrer les panneaux dans chaque cellule
+        if panels_per_row == 1:
+            x = (roof_bounds['x_min'] + roof_bounds['x_max']) / 2
+        else:
+            x = roof_bounds['x_min'] + (col + 0.5) * x_step
+            
+        if rows == 1:
+            y = (roof_bounds['y_min'] + roof_bounds['y_max']) / 2
+        else:
+            y = roof_bounds['y_min'] + (row + 0.5) * y_step
         
         positions.append({
             'x': x,
             'y': y, 
-            'width': 0.10,   # Plus petit pour rester sur le toit
-            'height': 0.05,  # Plus petit pour rester sur le toit
+            'width': 0.08,   # Plus petit pour s'adapter au toit réel
+            'height': 0.04,  # Plus petit pour s'adapter au toit réel
             'angle': 0
         })
         
-        logging.info(f"📍 Panneau {i+1}: FORCÉ sur toit à ({x:.3f}, {y:.3f})")
+        logging.info(f"📍 Panneau {i+1}: AJUSTÉ sur toit réel à ({x:.3f}, {y:.3f})")
     
     return positions
 
