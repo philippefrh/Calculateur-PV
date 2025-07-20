@@ -1732,6 +1732,71 @@ def generate_intelligent_roof_positions(panel_count: int, img_width: int, img_he
     
     return positions
 
+def generate_intelligent_roof_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
+    """
+    Génère des positions intelligentes et réalistes adaptées parfaitement à la géométrie d'une toiture
+    """
+    positions = []
+    
+    # Zone du toit optimisée (zone réellement utilisable d'un toit)
+    roof_top_y = 0.18      # Début zone exploitable (évite faîtage)
+    roof_bottom_y = 0.58   # Fin zone exploitable (évite gouttières)
+    roof_left_x = 0.15     # Marge gauche de sécurité
+    roof_right_x = 0.85    # Marge droite de sécurité
+    
+    # Calculer la disposition optimale selon le nombre de panneaux
+    if panel_count <= 6:
+        # Petite installation : 2 rangées de 3 max
+        panels_per_row = min(3, panel_count)
+        rows = (panel_count + panels_per_row - 1) // panels_per_row
+    elif panel_count <= 12:
+        # Installation moyenne : 3 rangées de 4 max
+        panels_per_row = min(4, (panel_count + 2) // 3)
+        rows = (panel_count + panels_per_row - 1) // panels_per_row
+    else:
+        # Grande installation : jusqu'à 4 rangées
+        panels_per_row = min(5, (panel_count + 3) // 4)
+        rows = min(4, (panel_count + panels_per_row - 1) // panels_per_row)
+    
+    # Espacement intelligent avec marge de sécurité
+    usable_width = roof_right_x - roof_left_x
+    usable_height = roof_bottom_y - roof_top_y
+    
+    panel_spacing_x = usable_width / max(1, panels_per_row)
+    panel_spacing_y = usable_height / max(1, rows)
+    
+    panel_idx = 0
+    for row in range(rows):
+        # Calculer le nombre de panneaux sur cette rangée
+        panels_in_this_row = min(panels_per_row, panel_count - panel_idx)
+        
+        # Centrer la rangée si elle n'est pas complète
+        row_start_x = roof_left_x
+        if panels_in_this_row < panels_per_row:
+            row_start_x += (panels_per_row - panels_in_this_row) * panel_spacing_x / 2
+        
+        for col in range(panels_in_this_row):
+            # Position centrée dans l'espace disponible
+            x = row_start_x + col * panel_spacing_x + panel_spacing_x * 0.2
+            y = roof_top_y + row * panel_spacing_y + panel_spacing_y * 0.15
+            
+            # S'assurer que les positions restent dans les limites
+            x = max(roof_left_x + 0.02, min(x, roof_right_x - 0.12))
+            y = max(roof_top_y + 0.02, min(y, roof_bottom_y - 0.08))
+            
+            positions.append({
+                'x': x,
+                'y': y,
+                'width': 0.12,
+                'height': 0.07,
+                'angle': 15  # Inclinaison standard du toit
+            })
+            
+            panel_idx += 1
+    
+    logging.info(f"Generated {len(positions)} intelligent roof positions in {rows} rows")
+    return positions
+
 def generate_roof_adapted_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
     """
     Génère des positions adaptées à la géométrie du toit
