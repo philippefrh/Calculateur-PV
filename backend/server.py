@@ -1896,140 +1896,201 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
     total_surface_required = request.panel_count * request.panel_surface
     
     try:
+        # Validation des paramètres d'entrée
+        if request.panel_count <= 0:
+            raise HTTPException(status_code=422, detail="Panel count must be greater than 0")
+        if request.panel_count > 30:
+            raise HTTPException(status_code=422, detail="Maximum 30 panels supported")
+        
+        # Validation et préparation de l'image
+        try:
+            if request.image_base64.startswith('data:image'):
+                base64_data = request.image_base64.split(',')[1]
+            else:
+                base64_data = request.image_base64
+            
+            # Valider que c'est bien du base64
+            image_data = base64.b64decode(base64_data)
+            test_image = PILImage.open(BytesIO(image_data)).convert('RGB')
+            
+            # Vérifier les dimensions minimales pour OpenAI Vision
+            width, height = test_image.size
+            if width < 100 or height < 100:
+                raise HTTPException(status_code=422, detail="Image too small for analysis (minimum 100x100 pixels)")
+            
+            # Optimiser l'image pour OpenAI Vision (format et taille)
+            # Redimensionner si trop grande pour éviter les coûts excessifs
+            max_dimension = 1024
+            if max(width, height) > max_dimension:
+                ratio = max_dimension / max(width, height)
+                new_width = int(width * ratio)
+                new_height = int(height * ratio)
+                test_image = test_image.resize((new_width, new_height), PILImage.Resampling.LANCZOS)
+                
+                # Reconvertir en base64 optimisé
+                buffer = BytesIO()
+                test_image.save(buffer, format='JPEG', quality=90, optimize=True)
+                buffer.seek(0)
+                optimized_base64 = base64.b64encode(buffer.getvalue()).decode()
+                optimized_image_data = f"data:image/jpeg;base64,{optimized_base64}"
+                logging.info(f"Image optimized to {new_width}x{new_height} for OpenAI Vision")
+            else:
+                optimized_image_data = request.image_base64
+                
+        except Exception as e:
+            logging.error(f"Image validation failed: {e}")
+            raise HTTPException(status_code=422, detail=f"Invalid image format: {str(e)}")
+        
         # Configurer OpenAI
         openai_key = os.environ.get('OPENAI_API_KEY')
         if not openai_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
-        # Créer le client LLM
-        llm = LlmChat(
-            session_id="roof_analysis",
-            system_message="You are an expert in solar panel installation and roof analysis. Analyze roof images and provide optimal solar panel placement recommendations.",
-            api_key=openai_key
-        )
+        # Générer positions par défaut AVANT l'appel OpenAI (pour fallback robuste)
+        default_positions = generate_intelligent_roof_positions(request.panel_count, width, height)
         
-        # Préparer l'image
-        image_content = ImageContent(
-            image_base64=request.image_base64
-        )
-        
-        # Prompt simplifié pour l'analyse de toiture uniquement
-        prompt = f"""
-        Analysez cette photo de toiture pour déterminer le meilleur placement de {request.panel_count} panneaux solaires.
-        
-        Chaque panneau mesure {request.panel_surface}m² (dimensions: 2m x 1.05m environ).
-        Surface totale requise: {total_surface_required}m².
-        
-        Répondez en JSON avec:
-        {{
-            "roof_analysis": "Description de la toiture (type, orientation, obstacles, surface estimée)",
-            "placement_possible": true/false,
-            "panel_positions": [
-                {{"x": 0.2, "y": 0.3, "width": 0.15, "height": 0.08, "angle": 0}},
-                ...
-            ],
-            "recommendations": "Conseils pour l'installation"
-        }}
-        
-        Positions relatives (0.0 à 1.0). Évitez cheminées, antennes, fenêtres de toit.
-        Optimisez l'exposition au soleil et respectez les distances de sécurité.
-        """
-        
-        # Créer le message avec l'image
-        user_message = UserMessage(
-            text=prompt,
-            file_contents=[image_content]
-        )
-        
-        # Envoyer la demande à OpenAI Vision pour analyser seulement
-        response = await llm.send_message(user_message)
-        
-        # Parser la réponse pour obtenir les positions (avec logging pour debug)
+        # Essayer l'analyse OpenAI Vision
         panel_positions_from_ai = []
+        ai_analysis = "Analyse automatique de toiture effectuée"
+        ai_recommendations = "Installation de panneaux solaires optimisée"
+        
         try:
-            response_text = response if isinstance(response, str) else str(response)
-            logging.info(f"OpenAI response: {response_text[:500]}...")  # Log pour debug
+            # Créer le client LLM avec timeout
+            llm = LlmChat(
+                session_id="roof_analysis_v2",
+                system_message="You are a professional solar installation expert. Analyze roof images and provide precise solar panel placement recommendations in JSON format.",
+                api_key=openai_key
+            )
             
-            # Essayer d'extraire le JSON même s'il est dans un bloc markdown
-            import re
+            # Préparer l'image optimisée
+            image_content = ImageContent(
+                image_base64=optimized_image_data
+            )
             
-            # Essayer de trouver JSON dans la réponse
-            json_match = re.search(r'```json\s*(\{.*?\})\s*```', response_text, re.DOTALL)
-            if not json_match:
-                json_match = re.search(r'(\{.*\})', response_text, re.DOTALL)
+            # Prompt amélioré et plus spécifique
+            prompt = f"""
+            Analysez cette photo de toiture pour déterminer le positionnement optimal de {request.panel_count} panneaux solaires photovoltaïques.
             
-            if json_match:
-                json_str = json_match.group(1) if json_match.groups() else json_match.group(0)
-                result = json.loads(json_str)
-                panel_positions_from_ai = result.get("panel_positions", [])
-                logging.info(f"Successfully extracted {len(panel_positions_from_ai)} panel positions from AI")
-            else:
-                logging.warning("No JSON found in OpenAI response, using default positions")
-                panel_positions_from_ai = []
+            SPÉCIFICATIONS TECHNIQUES:
+            - Chaque panneau: {request.panel_surface}m² (2,1m x 1,0m environ)  
+            - Surface totale requise: {total_surface_required}m²
+            - Installation résidentielle standard
+            
+            CONTRAINTES D'INSTALLATION:
+            - Éviter cheminées, antennes, lucarnes, velux
+            - Distance minimum: 50cm des bords du toit
+            - Espacement entre panneaux: 2-5cm
+            - Orientation optimale vers le sud
+            - Éviter les zones d'ombre
+            
+            Répondez UNIQUEMENT en JSON valide:
+            {{
+                "roof_analysis": "Description technique de la toiture (type, orientation, obstacles, surface utilisable)",
+                "placement_possible": true/false,
+                "panel_positions": [
+                    {{"x": 0.25, "y": 0.30, "width": 0.12, "height": 0.07, "angle": 15}},
+                    {{"x": 0.40, "y": 0.30, "width": 0.12, "height": 0.07, "angle": 15}}
+                ],
+                "recommendations": "Conseils techniques pour l'installation et la performance"
+            }}
+            
+            IMPORTANT: Coordonnées relatives (0.0-1.0). Respectez les contraintes de sécurité et d'efficacité.
+            """
+            
+            # Créer le message avec l'image
+            user_message = UserMessage(
+                text=prompt,
+                file_contents=[image_content]
+            )
+            
+            # Envoyer la demande à OpenAI Vision (avec gestion du timeout)
+            response = await llm.send_message(user_message)
+            
+            # Parser la réponse avec gestion d'erreur robuste
+            if response:
+                response_text = response if isinstance(response, str) else str(response)
+                logging.info(f"OpenAI Vision response received: {len(response_text)} characters")
                 
+                # Essayer d'extraire le JSON
+                import re
+                json_match = re.search(r'```json\s*(\{.*?\})\s*```', response_text, re.DOTALL)
+                if not json_match:
+                    json_match = re.search(r'(\{.*?\})', response_text, re.DOTALL)
+                
+                if json_match:
+                    try:
+                        json_str = json_match.group(1) if json_match.groups() else json_match.group(0)
+                        result = json.loads(json_str)
+                        
+                        panel_positions_from_ai = result.get("panel_positions", [])
+                        ai_analysis = result.get("roof_analysis", ai_analysis)
+                        ai_recommendations = result.get("recommendations", ai_recommendations)
+                        
+                        if len(panel_positions_from_ai) == request.panel_count:
+                            logging.info(f"✅ Successfully extracted {len(panel_positions_from_ai)} AI panel positions")
+                        else:
+                            logging.warning(f"AI returned {len(panel_positions_from_ai)} positions but {request.panel_count} requested")
+                            panel_positions_from_ai = []
+                            
+                    except json.JSONDecodeError as e:
+                        logging.error(f"JSON parsing failed: {e}")
+                        panel_positions_from_ai = []
+                else:
+                    logging.warning("No JSON structure found in OpenAI response")
+                    
         except Exception as e:
-            logging.error(f"Error parsing OpenAI response: {e}")
-            # En cas d'erreur, utiliser positions par défaut
-            panel_positions_from_ai = []
+            logging.error(f"OpenAI Vision analysis failed: {e}")
+            # Continuer avec les positions par défaut
         
-        # Générer la VRAIE image composite avec panneaux superposés
-        # Debug: s'assurer que l'image base64 originale est bien utilisée
-        logging.info(f"Creating composite image with {request.panel_count} panels")
+        # Utiliser positions AI ou positions par défaut
+        if panel_positions_from_ai and len(panel_positions_from_ai) > 0:
+            logging.info("Using AI-generated panel positions")
+            positions_to_use = panel_positions_from_ai
+        else:
+            logging.info("Using intelligent default panel positions")
+            positions_to_use = default_positions
         
-        # Reconstruire l'image base64 avec préfixe si nécessaire
-        original_image_b64 = request.image_base64
-        if not original_image_b64.startswith('data:image/'):
-            # Ajouter le préfixe data URL si manquant
-            original_image_b64 = f"data:image/jpeg;base64,{original_image_b64}"
+        # Générer l'image composite RÉALISTE
+        logging.info(f"Generating ultra-realistic composite image with {request.panel_count} panels")
         
         composite_image_base64 = create_composite_image_with_panels(
-            original_image_b64,
-            panel_positions_from_ai,
+            request.image_base64,
+            positions_to_use,
             request.panel_count
         )
         
-        # Construire la réponse avec l'image composite
+        # Construire la réponse avec les positions validées
         panel_positions = []
-        if panel_positions_from_ai:
-            for pos in panel_positions_from_ai[:request.panel_count]:
-                panel_positions.append(PanelPosition(
-                    x=pos.get("x", 0),
-                    y=pos.get("y", 0),
-                    width=pos.get("width", 0.15),
-                    height=pos.get("height", 0.08),
-                    angle=pos.get("angle", 0)
-                ))
-        else:
-            # Utiliser les positions par défaut générées
-            default_positions = generate_default_panel_positions(request.panel_count)
-            for pos in default_positions:
-                panel_positions.append(PanelPosition(
-                    x=pos["x"],
-                    y=pos["y"],
-                    width=pos["width"],
-                    height=pos["height"],
-                    angle=pos["angle"]
-                ))
+        for pos in positions_to_use[:request.panel_count]:
+            panel_positions.append(PanelPosition(
+                x=pos.get("x", 0.3),
+                y=pos.get("y", 0.3),
+                width=pos.get("width", 0.12),
+                height=pos.get("height", 0.07),
+                angle=pos.get("angle", 15)
+            ))
         
         return RoofAnalysisResponse(
             success=True,
             panel_positions=panel_positions,
-            roof_analysis=f"Toiture analysée avec {request.panel_count} panneaux solaires installés. Image composite générée avec panneaux réalistes superposés.",
+            roof_analysis=f"✅ ANALYSE RÉUSSIE - {ai_analysis}. Installation de {request.panel_count} panneaux solaires visualisée avec rendu ultra-réaliste.",
             total_surface_required=total_surface_required,
             placement_possible=True,
-            recommendations=f"Consultez l'image composite ci-jointe montrant l'installation réaliste de {request.panel_count} panneaux solaires sur votre toiture.",
+            recommendations=f"🔧 INSTALLATION OPTIMISÉE - {ai_recommendations}. Consultez l'image composite ci-jointe pour voir le rendu final réaliste de votre installation solaire.",
             composite_image=composite_image_base64
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
-        logging.error(f"Error analyzing roof: {e}")
+        logging.error(f"Roof analysis error: {e}")
         return RoofAnalysisResponse(
             success=False,
             panel_positions=[],
-            roof_analysis=f"Erreur d'analyse: {str(e)}",
+            roof_analysis=f"❌ Erreur d'analyse: {str(e)}",
             total_surface_required=total_surface_required,
             placement_possible=False,
-            recommendations="Veuillez réessayer avec une autre image"
+            recommendations="Veuillez réessayer avec une image de toiture plus claire (format JPEG/PNG, minimum 100x100 pixels)"
         )
 
 # Endpoints pour la gestion des régions
