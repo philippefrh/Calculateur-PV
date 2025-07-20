@@ -1475,10 +1475,10 @@ class PanelPosition(BaseModel):
 
 def create_composite_image_with_panels(base64_image: str, panel_positions: List[Dict], panel_count: int) -> str:
     """
-    Génère une vraie image composite avec des panneaux solaires superposés
+    Génère une vraie image composite avec des panneaux solaires ULTRA-réalistes
     """
     try:
-        logging.info(f"Starting composite image creation with {panel_count} panels")
+        logging.info(f"Creating REALISTIC composite image with {panel_count} panels")
         
         # Décoder l'image base64
         if base64_image.startswith('data:image'):
@@ -1486,12 +1486,8 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
         else:
             base64_data = base64_image
         
-        logging.info(f"Base64 image data length: {len(base64_data)}")
-        
         image_data = base64.b64decode(base64_data)
         original_image = PILImage.open(BytesIO(image_data)).convert('RGB')
-        
-        logging.info(f"Original image size: {original_image.size}")
         
         # Créer une copie pour dessiner dessus
         composite_image = original_image.copy()
@@ -1500,73 +1496,142 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
         # Dimensions de l'image
         img_width, img_height = composite_image.size
         
-        # Si on n'a pas de positions, créer des positions par défaut
+        # Si on n'a pas de positions, créer des positions par défaut sur le TOIT
         if not panel_positions or len(panel_positions) == 0:
-            panel_positions = generate_default_panel_positions(panel_count)
-            logging.info("Using default panel positions")
-        else:
-            logging.info(f"Using AI-generated positions: {len(panel_positions)} positions")
+            panel_positions = generate_roof_specific_positions(panel_count, img_width, img_height)
         
-        # Dessiner les panneaux solaires de façon plus visible
+        # Dessiner des panneaux solaires ULTRA-RÉALISTES
         panels_drawn = 0
         for i, pos in enumerate(panel_positions[:panel_count]):
-            # Convertir les positions relatives en pixels
-            x = int(pos.get('x', 0.1 + (i % 3) * 0.3) * img_width)
-            y = int(pos.get('y', 0.2 + (i // 3) * 0.2) * img_height)
+            # Position sur le toit (plus haut dans l'image)
+            x = int(pos.get('x', 0.15 + (i % 4) * 0.18) * img_width)
+            y = int(pos.get('y', 0.25 + (i // 4) * 0.12) * img_height)
             
-            # Dimensions du panneau (plus visibles)
-            panel_width = int(img_width * 0.12)  # 12% de la largeur
-            panel_height = int(img_height * 0.07)  # 7% de la hauteur
+            # Dimensions réalistes des panneaux
+            panel_width = int(img_width * 0.16)  
+            panel_height = int(img_height * 0.09) 
             
-            # Couleur du panneau solaire (noir mat)
-            panel_color = (20, 20, 30)  # Noir très foncé
-            border_color = (100, 100, 100)  # Gris métallique
+            # === PANNEAU SOLAIRE ULTRA-RÉALISTE ===
             
-            # Dessiner le panneau principal avec bordure épaisse
+            # 1. Ombre portée (effet 3D)
+            shadow_offset = 3
+            shadow_rect = [x + shadow_offset, y + shadow_offset, 
+                          x + panel_width + shadow_offset, y + panel_height + shadow_offset]
+            draw.rectangle(shadow_rect, fill=(50, 50, 50, 100))
+            
+            # 2. Cadre métallique argenté épais
+            frame_rect = [x-2, y-2, x + panel_width+2, y + panel_height+2]
+            draw.rectangle(frame_rect, fill=(180, 180, 180), outline=(160, 160, 160), width=1)
+            
+            # 3. Surface du panneau bleu foncé brillant
             panel_rect = [x, y, x + panel_width, y + panel_height]
-            draw.rectangle(panel_rect, fill=panel_color, outline=border_color, width=3)
+            draw.rectangle(panel_rect, fill=(15, 25, 45), outline=(120, 120, 120), width=2)
             
-            # Ajouter des lignes pour simuler les cellules solaires
-            cell_rows = 6
-            cell_cols = 10
+            # 4. Grille de cellules solaires très détaillée (6x10 cellules)
+            cell_width = panel_width // 10
+            cell_height = panel_height // 6
             
-            # Lignes horizontales (cellules)
-            for j in range(1, cell_rows):
-                line_y = y + (j * panel_height // cell_rows)
-                draw.line([x + 3, line_y, x + panel_width - 3, line_y], 
-                         fill=(50, 50, 70), width=1)
+            for row in range(6):
+                for col in range(10):
+                    cell_x = x + col * cell_width
+                    cell_y = y + row * cell_height
+                    
+                    # Cellule individuelle avec bordure
+                    cell_rect = [cell_x + 1, cell_y + 1, 
+                               cell_x + cell_width - 1, cell_y + cell_height - 1]
+                    draw.rectangle(cell_rect, fill=(18, 28, 50), outline=(35, 45, 65), width=1)
+                    
+                    # Petit reflet sur chaque cellule
+                    highlight = [cell_x + 2, cell_y + 2, 
+                               cell_x + cell_width//3, cell_y + cell_height//3]
+                    draw.rectangle(highlight, fill=(60, 80, 120))
             
-            # Lignes verticales (cellules)
-            for j in range(1, cell_cols):
-                line_x = x + (j * panel_width // cell_cols)
-                draw.line([line_x, y + 3, line_x, y + panel_height - 3], 
-                         fill=(50, 50, 70), width=1)
+            # 5. Reflet global réaliste (simulation vitre)
+            gradient_steps = 5
+            for step in range(gradient_steps):
+                alpha = 80 - (step * 15)
+                reflect_y = y + (step * panel_height // gradient_steps)
+                reflect_height = panel_height // gradient_steps
+                reflect_rect = [x + 5, reflect_y, x + panel_width//2, reflect_y + reflect_height]
+                
+                # Créer effet de reflet dégradé
+                overlay = PILImage.new('RGBA', (panel_width//2, reflect_height), (255, 255, 255, alpha))
+                composite_image.paste(overlay, (x + 5, reflect_y), overlay)
             
-            # Cadre métallique plus visible
-            frame_color = (120, 120, 120)
-            draw.rectangle([x-1, y-1, x + panel_width+1, y + panel_height+1], 
-                         outline=frame_color, width=2)
+            # 6. Fixations visibles
+            # Fixation coin supérieur gauche
+            fix_size = 8
+            draw.rectangle([x + 10, y + 8, x + 10 + fix_size, y + 8 + fix_size], 
+                         fill=(100, 100, 100), outline=(80, 80, 80), width=1)
+            
+            # Fixation coin supérieur droit  
+            draw.rectangle([x + panel_width - 20, y + 8, x + panel_width - 12, y + 16], 
+                         fill=(100, 100, 100), outline=(80, 80, 80), width=1)
+            
+            # Fixation coin inférieur
+            draw.rectangle([x + panel_width//2 - 4, y + panel_height - 15, 
+                          x + panel_width//2 + 4, y + panel_height - 7], 
+                         fill=(100, 100, 100), outline=(80, 80, 80), width=1)
+            
+            # 7. Numéro du panneau (optionnel)
+            # draw.text((x + panel_width//2, y + panel_height//2), str(i+1), 
+            #          fill=(255, 255, 255), anchor="mm")
             
             panels_drawn += 1
         
-        logging.info(f"Successfully drew {panels_drawn} panels on composite image")
+        logging.info(f"Successfully drew {panels_drawn} REALISTIC panels")
         
-        # Convertir l'image composite en base64
+        # Convertir en base64
         buffer = BytesIO()
         composite_image.save(buffer, format='JPEG', quality=95)
         buffer.seek(0)
         
         composite_base64 = base64.b64encode(buffer.getvalue()).decode()
-        result_image = f"data:image/jpeg;base64,{composite_base64}"
-        
-        logging.info("Composite image successfully created and encoded")
-        return result_image
+        return f"data:image/jpeg;base64,{composite_base64}"
         
     except Exception as e:
-        logging.error(f"Error creating composite image: {e}")
-        import traceback
-        logging.error(f"Traceback: {traceback.format_exc()}")
-        return base64_image  # Retourner l'image originale en cas d'erreur
+        logging.error(f"Error creating realistic composite: {e}")
+        return base64_image
+
+def generate_roof_specific_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
+    """
+    Génère des positions spécifiques pour les panneaux sur la zone TOIT de l'image
+    """
+    positions = []
+    
+    # Déterminer la zone de toit (généralement le tiers supérieur de l'image)
+    roof_start_y = 0.2  # 20% du haut
+    roof_end_y = 0.6    # Jusqu'à 60% de l'image
+    roof_start_x = 0.1  # 10% du bord gauche
+    roof_end_x = 0.9    # Jusqu'à 90% du bord droit
+    
+    # Calculer la disposition optimale
+    panels_per_row = min(4, panel_count)  # Max 4 panneaux par rangée
+    rows = (panel_count + panels_per_row - 1) // panels_per_row
+    
+    panel_width = 0.16
+    panel_height = 0.09
+    
+    for i in range(panel_count):
+        row = i // panels_per_row
+        col = i % panels_per_row
+        
+        # Espacement équilibré
+        x_spacing = (roof_end_x - roof_start_x - panel_width) / max(1, panels_per_row - 1)
+        y_spacing = (roof_end_y - roof_start_y - panel_height) / max(1, rows - 1)
+        
+        x = roof_start_x + col * x_spacing
+        y = roof_start_y + row * y_spacing
+        
+        positions.append({
+            'x': min(max(x, roof_start_x), roof_end_x - panel_width),
+            'y': min(max(y, roof_start_y), roof_end_y - panel_height),
+            'width': panel_width,
+            'height': panel_height,
+            'angle': 0
+        })
+    
+    return positions
 
 def generate_default_panel_positions(panel_count: int) -> List[Dict]:
     """
