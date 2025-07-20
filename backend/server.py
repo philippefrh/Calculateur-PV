@@ -1473,85 +1473,51 @@ class PanelPosition(BaseModel):
     height: float  # Hauteur relative (0-1)
     angle: float  # Angle de rotation en degrés
 
-def detect_roof_area_simple(base64_image: str, img_width: int, img_height: int) -> Dict:
-    """
-    Détecte SIMPLEMENT la zone du toit dans l'image - version basique mais efficace
-    """
-    try:
-        # Pour cette photo simple, le toit est dans la partie HAUTE de l'image
-        # On va définir une zone de toit approximative mais RÉALISTE
-        
-        # Zone du toit approximative (en pourcentages de l'image)
-        # Basé sur une maison typique où le toit occupe le tiers supérieur
-        roof_bounds = {
-            'x_min': 0.15,  # 15% depuis la gauche
-            'x_max': 0.85,  # Jusqu'à 85% de la largeur  
-            'y_min': 0.10,  # 10% depuis le haut (début du toit)
-            'y_max': 0.45,  # Jusqu'à 45% de la hauteur (fin du toit)
-        }
-        
-        logging.info(f"🏠 Zone du toit détectée: X=[{roof_bounds['x_min']}-{roof_bounds['x_max']}], Y=[{roof_bounds['y_min']}-{roof_bounds['y_max']}]")
-        
-        return roof_bounds
-        
-    except Exception as e:
-        logging.error(f"❌ Erreur détection toit: {e}")
-        # Zone de sécurité par défaut
-        return {
-            'x_min': 0.2, 'x_max': 0.8,
-            'y_min': 0.15, 'y_max': 0.5
-        }
-
 def generate_simple_grid_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
     """
-    Génère des positions DANS LA ZONE DU TOIT UNIQUEMENT
+    Génère des positions UNIQUEMENT SUR LE TOIT - version corrigée
     """
     positions = []
     
-    # Détecter où est le toit dans l'image
-    roof_area = detect_roof_area_simple("", img_width, img_height)
+    # ZONE DU TOIT CORRIGÉE - basée sur une maison typique
+    # Le toit occupe généralement la partie HAUTE ET CENTRALE de l'image
+    roof_bounds = {
+        'x_min': 0.25,  # 25% depuis la gauche
+        'x_max': 0.75,  # Jusqu'à 75% de la largeur  
+        'y_min': 0.25,  # 25% depuis le haut (milieu du toit)
+        'y_max': 0.45,  # Jusqu'à 45% de la hauteur (bas du toit)
+    }
     
-    # Calculer la disposition en grille DANS LA ZONE DU TOIT
+    # Calculer la disposition en grille DANS LE TOIT
     panels_per_row = min(3, panel_count)  # Max 3 panneaux par rangée
     rows = (panel_count + panels_per_row - 1) // panels_per_row
     
-    # Calculer l'espace disponible sur le toit
-    roof_width = roof_area['x_max'] - roof_area['x_min']  # Largeur du toit
-    roof_height = roof_area['y_max'] - roof_area['y_min']  # Hauteur du toit
+    # Espacement dans la zone du toit
+    roof_width = roof_bounds['x_max'] - roof_bounds['x_min']
+    roof_height = roof_bounds['y_max'] - roof_bounds['y_min']
     
-    # Espacement entre panneaux
-    x_spacing = roof_width / (panels_per_row + 1) if panels_per_row > 1 else roof_width / 2
-    y_spacing = roof_height / (rows + 1) if rows > 1 else roof_height / 2
+    x_step = roof_width / panels_per_row if panels_per_row > 1 else 0
+    y_step = roof_height / rows if rows > 1 else 0
     
-    logging.info(f"📐 Disposition: {panels_per_row} panneaux/rangée × {rows} rangées sur toit [{roof_area['x_min']}-{roof_area['x_max']}, {roof_area['y_min']}-{roof_area['y_max']}]")
+    logging.info(f"🏠 ZONE TOIT FIXE: X=[{roof_bounds['x_min']}-{roof_bounds['x_max']}], Y=[{roof_bounds['y_min']}-{roof_bounds['y_max']}]")
     
     for i in range(panel_count):
         row = i // panels_per_row
         col = i % panels_per_row
         
-        # Position DANS la zone du toit
-        x = roof_area['x_min'] + (col + 1) * x_spacing
-        y = roof_area['y_min'] + (row + 1) * y_spacing
+        # Centrer les panneaux dans chaque cellule de la grille
+        x = roof_bounds['x_min'] + (col + 0.5) * x_step if panels_per_row > 1 else (roof_bounds['x_min'] + roof_bounds['x_max']) / 2
+        y = roof_bounds['y_min'] + (row + 0.5) * y_step if rows > 1 else (roof_bounds['y_min'] + roof_bounds['y_max']) / 2
         
-        # Vérifier que le panneau reste dans la zone du toit
-        panel_width = 0.12  # Largeur panneau
-        panel_height = 0.06  # Hauteur panneau
-        
-        # Ajuster si le panneau déborde
-        if x + panel_width/2 > roof_area['x_max']:
-            x = roof_area['x_max'] - panel_width/2
-        if y + panel_height/2 > roof_area['y_max']:
-            y = roof_area['y_max'] - panel_height/2
-            
         positions.append({
             'x': x,
             'y': y, 
-            'width': panel_width,
-            'height': panel_height,
+            'width': 0.10,   # Plus petit pour rester sur le toit
+            'height': 0.05,  # Plus petit pour rester sur le toit
             'angle': 0
         })
         
-        logging.info(f"📍 Panneau {i+1}: position ({x:.3f}, {y:.3f}) sur le TOIT")
+        logging.info(f"📍 Panneau {i+1}: FORCÉ sur toit à ({x:.3f}, {y:.3f})")
     
     return positions
 
