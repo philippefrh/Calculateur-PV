@@ -1658,8 +1658,17 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
             panel_positions_from_ai = []
         
         # Générer la VRAIE image composite avec panneaux superposés
+        # Debug: s'assurer que l'image base64 originale est bien utilisée
+        logging.info(f"Creating composite image with {request.panel_count} panels")
+        
+        # Reconstruire l'image base64 avec préfixe si nécessaire
+        original_image_b64 = request.image_base64
+        if not original_image_b64.startswith('data:image/'):
+            # Ajouter le préfixe data URL si manquant
+            original_image_b64 = f"data:image/jpeg;base64,{original_image_b64}"
+        
         composite_image_base64 = create_composite_image_with_panels(
-            request.image_base64,
+            original_image_b64,
             panel_positions_from_ai,
             request.panel_count
         )
