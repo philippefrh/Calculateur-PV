@@ -2191,6 +2191,13 @@ class SolarCalculatorTester:
         self.test_calculation_with_optimistic_mode()
         self.test_calculation_modes_comparison()
         
+        # NEW: Roof Analysis with OpenAI Vision tests
+        print("\n🤖 ROOF ANALYSIS WITH OPENAI VISION TESTS")
+        print("-" * 50)
+        self.test_roof_analysis_openai_vision()
+        self.test_roof_analysis_with_different_panel_counts()
+        self.test_roof_analysis_error_handling()
+        
         # Print summary
         print("\n" + "=" * 80)
         print("📊 TEST SUMMARY")
