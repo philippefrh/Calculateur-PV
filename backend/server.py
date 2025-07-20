@@ -1680,57 +1680,444 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
         logging.error(f"Error creating ultra-realistic roof-adapted composite: {e}")
         return base64_image
 
-def generate_intelligent_roof_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
+def analyze_roof_geometry_and_obstacles(base64_image: str) -> Dict:
     """
-    Génère des positions intelligentes et optimisées pour les panneaux solaires sur le toit
+    Analyse INTELLIGENTE de la géométrie réelle du toit et détection des obstacles
     """
-    positions = []
-    
-    # Zone du toit optimisée (plus réaliste)
-    roof_top_y = 0.15      # Début de la zone toit
-    roof_bottom_y = 0.60   # Fin de la zone toit
-    roof_left_x = 0.10     # Bord gauche du toit
-    roof_right_x = 0.90    # Bord droit du toit
-    
-    # Calculer la disposition optimale selon le nombre de panneaux
-    if panel_count <= 6:
-        panels_per_row = 3
-        rows = 2
-    elif panel_count <= 12:
-        panels_per_row = 4
-        rows = 3
-    else:
-        panels_per_row = 6
-        rows = 3
+    try:
+        # Décoder l'image
+        if base64_image.startswith('data:image'):
+            base64_data = base64_image.split(',')[1]
+        else:
+            base64_data = base64_image
         
-    # Espacement intelligent avec marges
-    available_width = roof_right_x - roof_left_x
-    available_height = roof_bottom_y - roof_top_y
-    
-    panel_spacing_x = available_width / (panels_per_row + 1)
-    panel_spacing_y = available_height / (rows + 1)
-    
-    panel_idx = 0
-    for row in range(rows):
-        for col in range(panels_per_row):
-            if panel_idx >= panel_count:
-                break
+        image_data = base64.b64decode(base64_data)
+        original_image = PILImage.open(BytesIO(image_data)).convert('RGB')
+        img_width, img_height = original_image.size
+        
+        # Convertir en numpy pour l'analyse
+        import numpy as np
+        img_array = np.array(original_image)
+        
+        logging.info(f"Analyzing roof geometry for {img_width}x{img_height} image")
+        
+        # === DÉTECTION DE L'INCLINAISON RÉELLE DU TOIT ===
+        # Analyser les lignes de toit (arêtes, gouttières)
+        roof_inclination = detect_roof_slope_from_image(img_array)
+        
+        # === DÉTECTION DES OBSTACLES (VELUX, CHEMINÉES, ETC.) ===
+        obstacles = detect_roof_obstacles(img_array, img_width, img_height)
+        
+        # === ZONES EXPLOITABLES POUR PANNEAUX ===
+        usable_zones = calculate_usable_roof_zones(obstacles, img_width, img_height, roof_inclination)
+        
+        return {
+            'roof_inclination': roof_inclination,
+            'obstacles': obstacles,
+            'usable_zones': usable_zones,
+            'roof_type': determine_roof_type(img_array),
+            'optimal_orientation': calculate_optimal_orientation(img_array)
+        }
+        
+    except Exception as e:
+        logging.error(f"Error in roof geometry analysis: {e}")
+        return {
+            'roof_inclination': 30.0,
+            'obstacles': [],
+            'usable_zones': [{'x1': 0.15, 'y1': 0.18, 'x2': 0.85, 'y2': 0.58}],
+            'roof_type': 'standard',
+            'optimal_orientation': 'south'
+        }
+
+def detect_roof_slope_from_image(img_array) -> float:
+    """
+    Détecte l'inclinaison RÉELLE du toit depuis l'image
+    """
+    try:
+        import numpy as np
+        
+        # Convertir en niveaux de gris
+        gray = np.mean(img_array, axis=2).astype(np.uint8)
+        
+        # Détecter les lignes horizontales et diagonales du toit
+        height, width = gray.shape
+        
+        # Chercher les lignes de gouttière et d'arête
+        roof_lines = []
+        
+        # Analyser les rangées horizontales pour trouver les changements de luminosité
+        for y in range(int(height * 0.1), int(height * 0.7)):
+            row_data = gray[y, :]
+            
+            # Détecter les variations importantes (bords de toit)
+            gradient = np.abs(np.diff(row_data.astype(float)))
+            if np.max(gradient) > 30:  # Seuil de détection de bord
+                roof_lines.append(y)
+        
+        # Calculer l'inclinaison moyenne
+        if len(roof_lines) >= 2:
+            # Analyser la pente entre les lignes détectées
+            top_line = min(roof_lines)
+            bottom_line = max(roof_lines)
+            
+            # Estimer l'angle basé sur la perspective
+            perspective_ratio = (bottom_line - top_line) / height
+            inclination = min(45.0, max(15.0, perspective_ratio * 90))
+        else:
+            inclination = 30.0  # Inclinaison standard
+        
+        logging.info(f"Detected roof slope: {inclination:.1f}°")
+        return inclination
+        
+    except Exception as e:
+        logging.error(f"Error detecting roof slope: {e}")
+        return 30.0
+
+def detect_roof_obstacles(img_array, img_width: int, img_height: int) -> List[Dict]:
+    """
+    Détecte les obstacles sur le toit (velux, cheminées, antennes, etc.)
+    """
+    try:
+        import numpy as np
+        obstacles = []
+        
+        # Convertir en HSV pour une meilleure détection
+        from colorsys import rgb_to_hsv
+        
+        # Analyser l'image par zones
+        zone_size = 32  # Taille des zones d'analyse
+        
+        for y in range(0, img_height - zone_size, zone_size):
+            for x in range(0, img_width - zone_size, zone_size):
+                # Extraire la zone
+                zone = img_array[y:y+zone_size, x:x+zone_size]
                 
-            # Position avec espacement intelligent
-            x = roof_left_x + (col + 1) * panel_spacing_x - 0.06  # Centré
-            y = roof_top_y + (row + 1) * panel_spacing_y - 0.035  # Centré
-            
-            positions.append({
-                'x': max(0.05, min(x, 0.85)),  # Limites sécurisées
-                'y': max(0.10, min(y, 0.65)),  # Limites sécurisées
-                'width': 0.12,
-                'height': 0.07,
-                'angle': 15  # Angle d'inclinaison du toit
-            })
-            
-            panel_idx += 1
+                # Calculer les statistiques de la zone
+                zone_mean = np.mean(zone, axis=(0, 1))
+                zone_std = np.std(zone, axis=(0, 1))
+                
+                # Détecter les anomalies (obstacles potentiels)
+                is_obstacle = False
+                obstacle_type = "unknown"
+                
+                # DÉTECTION VELUX (zones très claires/réfléchissantes)
+                brightness = np.mean(zone_mean)
+                if brightness > 200 and np.mean(zone_std) < 20:
+                    is_obstacle = True
+                    obstacle_type = "velux"
+                
+                # DÉTECTION CHEMINÉE (zones sombres verticales)
+                elif brightness < 80 and zone_std[0] > 30:
+                    is_obstacle = True
+                    obstacle_type = "cheminee"
+                
+                # DÉTECTION ANTENNE (petites zones contrastées)
+                elif np.max(zone_std) > 50 and zone_size < img_width * 0.05:
+                    is_obstacle = True
+                    obstacle_type = "antenne"
+                
+                if is_obstacle:
+                    # Convertir en coordonnées relatives
+                    rel_x1 = x / img_width
+                    rel_y1 = y / img_height
+                    rel_x2 = (x + zone_size) / img_width
+                    rel_y2 = (y + zone_size) / img_height
+                    
+                    obstacles.append({
+                        'type': obstacle_type,
+                        'x1': rel_x1,
+                        'y1': rel_y1,
+                        'x2': rel_x2,
+                        'y2': rel_y2,
+                        'confidence': min(1.0, np.mean(zone_std) / 100.0)
+                    })
+        
+        # Fusionner les obstacles proches
+        merged_obstacles = merge_nearby_obstacles(obstacles)
+        
+        logging.info(f"Detected {len(merged_obstacles)} obstacles: {[obs['type'] for obs in merged_obstacles]}")
+        return merged_obstacles
+        
+    except Exception as e:
+        logging.error(f"Error detecting obstacles: {e}")
+        return []
+
+def merge_nearby_obstacles(obstacles: List[Dict]) -> List[Dict]:
+    """
+    Fusionne les obstacles détectés qui sont proches les uns des autres
+    """
+    if not obstacles:
+        return []
     
-    return positions
+    merged = []
+    used = set()
+    
+    for i, obs1 in enumerate(obstacles):
+        if i in used:
+            continue
+            
+        # Créer un nouvel obstacle fusionné
+        merged_obs = obs1.copy()
+        used.add(i)
+        
+        # Chercher les obstacles proches à fusionner
+        for j, obs2 in enumerate(obstacles[i+1:], i+1):
+            if j in used:
+                continue
+                
+            # Calculer la distance entre obstacles
+            center1_x = (obs1['x1'] + obs1['x2']) / 2
+            center1_y = (obs1['y1'] + obs1['y2']) / 2
+            center2_x = (obs2['x1'] + obs2['x2']) / 2
+            center2_y = (obs2['y1'] + obs2['y2']) / 2
+            
+            distance = ((center2_x - center1_x) ** 2 + (center2_y - center1_y) ** 2) ** 0.5
+            
+            # Si les obstacles sont proches (< 0.1), les fusionner
+            if distance < 0.1 and obs1['type'] == obs2['type']:
+                merged_obs['x1'] = min(merged_obs['x1'], obs2['x1'])
+                merged_obs['y1'] = min(merged_obs['y1'], obs2['y1'])
+                merged_obs['x2'] = max(merged_obs['x2'], obs2['x2'])
+                merged_obs['y2'] = max(merged_obs['y2'], obs2['y2'])
+                used.add(j)
+        
+        merged.append(merged_obs)
+    
+    return merged
+
+def calculate_usable_roof_zones(obstacles: List[Dict], img_width: int, img_height: int, roof_inclination: float) -> List[Dict]:
+    """
+    Calcule les zones exploitables du toit en évitant les obstacles
+    """
+    try:
+        # Zone de toit de base (marges de sécurité)
+        base_zone = {
+            'x1': 0.12, 'y1': 0.15,  # Marges de sécurité 
+            'x2': 0.88, 'y2': 0.65   # Zone exploitable
+        }
+        
+        # Si pas d'obstacles, retourner la zone entière
+        if not obstacles:
+            return [base_zone]
+        
+        # Diviser la zone en sous-zones en évitant les obstacles
+        usable_zones = []
+        
+        # Trier les obstacles par position horizontale
+        obstacles_sorted = sorted(obstacles, key=lambda x: x['x1'])
+        
+        # Créer des zones entre les obstacles
+        current_x = base_zone['x1']
+        
+        for obstacle in obstacles_sorted:
+            # Zone avant l'obstacle
+            if obstacle['x1'] - current_x > 0.15:  # Zone assez large pour panneaux
+                zone_before = {
+                    'x1': current_x,
+                    'y1': max(base_zone['y1'], obstacle['y1'] - 0.05),  # Marge au-dessus
+                    'x2': obstacle['x1'] - 0.02,  # Marge avant obstacle
+                    'y2': min(base_zone['y2'], obstacle['y2'] + 0.05),  # Marge en-dessous
+                    'type': f'zone_before_{obstacle["type"]}'
+                }
+                
+                # Vérifier que la zone est viable
+                if (zone_before['x2'] - zone_before['x1']) > 0.1 and (zone_before['y2'] - zone_before['y1']) > 0.08:
+                    usable_zones.append(zone_before)
+            
+            # Zone après l'obstacle
+            current_x = obstacle['x2'] + 0.02
+        
+        # Zone finale après le dernier obstacle
+        if base_zone['x2'] - current_x > 0.15:
+            final_zone = {
+                'x1': current_x,
+                'y1': base_zone['y1'],
+                'x2': base_zone['x2'],
+                'y2': base_zone['y2'],
+                'type': 'zone_finale'
+            }
+            usable_zones.append(final_zone)
+        
+        # Si aucune zone viable, créer des zones au-dessus et en-dessous des obstacles
+        if not usable_zones:
+            # Zone au-dessus des obstacles
+            min_obstacle_y = min(obs['y1'] for obs in obstacles)
+            if min_obstacle_y - base_zone['y1'] > 0.1:
+                zone_above = {
+                    'x1': base_zone['x1'],
+                    'y1': base_zone['y1'],
+                    'x2': base_zone['x2'],
+                    'y2': min_obstacle_y - 0.02,
+                    'type': 'zone_au_dessus'
+                }
+                usable_zones.append(zone_above)
+            
+            # Zone en-dessous des obstacles
+            max_obstacle_y = max(obs['y2'] for obs in obstacles)
+            if base_zone['y2'] - max_obstacle_y > 0.1:
+                zone_below = {
+                    'x1': base_zone['x1'],
+                    'y1': max_obstacle_y + 0.02,
+                    'x2': base_zone['x2'],
+                    'y2': base_zone['y2'],
+                    'type': 'zone_en_dessous'
+                }
+                usable_zones.append(zone_below)
+        
+        logging.info(f"Calculated {len(usable_zones)} usable roof zones avoiding {len(obstacles)} obstacles")
+        return usable_zones if usable_zones else [base_zone]
+        
+    except Exception as e:
+        logging.error(f"Error calculating usable zones: {e}")
+        return [base_zone]
+
+def determine_roof_type(img_array) -> str:
+    """
+    Détermine le type de toiture depuis l'image
+    """
+    try:
+        import numpy as np
+        
+        # Analyser les couleurs dominantes pour déterminer le type
+        colors_mean = np.mean(img_array, axis=(0, 1))
+        
+        # Rouge dominant = tuiles
+        if colors_mean[0] > colors_mean[1] and colors_mean[0] > colors_mean[2]:
+            return "tuiles"
+        # Gris dominant = ardoise
+        elif np.all(np.abs(colors_mean - np.mean(colors_mean)) < 20):
+            return "ardoise"
+        # Autres
+        else:
+            return "standard"
+            
+    except Exception:
+        return "standard"
+
+def calculate_optimal_orientation(img_array) -> str:
+    """
+    Calcule l'orientation optimale basée sur l'analyse de l'image
+    """
+    # Pour l'instant, retourner sud par défaut
+    # Pourrait être amélioré avec analyse des ombres/luminosité
+    return "sud"
+
+def generate_obstacle_aware_panel_positions(panel_count: int, img_width: int, img_height: int, roof_geometry: Dict) -> List[Dict]:
+    """
+    Génère des positions de panneaux INTELLIGENTES qui évitent les obstacles
+    """
+    try:
+        positions = []
+        usable_zones = roof_geometry.get('usable_zones', [])
+        roof_inclination = roof_geometry.get('roof_inclination', 30.0)
+        
+        if not usable_zones:
+            # Fallback vers positions par défaut
+            return generate_intelligent_roof_positions(panel_count, img_width, img_height)
+        
+        logging.info(f"Positioning {panel_count} panels in {len(usable_zones)} usable zones")
+        
+        # Répartir les panneaux entre les zones utilisables
+        panels_per_zone = distribute_panels_across_zones(panel_count, usable_zones)
+        
+        panel_idx = 0
+        for zone_idx, zone in enumerate(usable_zones):
+            panels_in_zone = panels_per_zone[zone_idx]
+            if panels_in_zone == 0:
+                continue
+            
+            # Calculer la disposition optimale dans cette zone
+            zone_width = zone['x2'] - zone['x1']
+            zone_height = zone['y2'] - zone['y1']
+            
+            # Déterminer grille optimale pour cette zone
+            if zone_width > zone_height:
+                # Zone horizontale - priorité aux rangées
+                cols = min(panels_in_zone, max(1, int(zone_width / 0.13)))
+                rows = (panels_in_zone + cols - 1) // cols
+            else:
+                # Zone verticale - priorité aux colonnes
+                rows = min(panels_in_zone, max(1, int(zone_height / 0.08)))
+                cols = (panels_in_zone + rows - 1) // rows
+            
+            # Espacement dans la zone
+            if cols > 1:
+                spacing_x = zone_width / cols
+            else:
+                spacing_x = zone_width
+                
+            if rows > 1:
+                spacing_y = zone_height / rows
+            else:
+                spacing_y = zone_height
+            
+            # Placer les panneaux dans cette zone
+            for row in range(rows):
+                for col in range(cols):
+                    if panel_idx >= panel_count:
+                        break
+                        
+                    # Position dans la zone avec centrage
+                    x = zone['x1'] + (col + 0.5) * spacing_x - 0.06  # Centrer le panneau
+                    y = zone['y1'] + (row + 0.5) * spacing_y - 0.035  # Centrer le panneau
+                    
+                    # S'assurer que le panneau reste dans la zone
+                    x = max(zone['x1'] + 0.01, min(x, zone['x2'] - 0.12))
+                    y = max(zone['y1'] + 0.01, min(y, zone['y2'] - 0.07))
+                    
+                    positions.append({
+                        'x': x,
+                        'y': y,
+                        'width': 0.11,
+                        'height': 0.065,
+                        'angle': roof_inclination,
+                        'zone': zone.get('type', f'zone_{zone_idx}')
+                    })
+                    
+                    panel_idx += 1
+                    
+                if panel_idx >= panel_count:
+                    break
+        
+        logging.info(f"Successfully positioned {len(positions)} panels avoiding obstacles")
+        return positions[:panel_count]
+        
+    except Exception as e:
+        logging.error(f"Error in obstacle-aware positioning: {e}")
+        return generate_intelligent_roof_positions(panel_count, img_width, img_height)
+
+def distribute_panels_across_zones(panel_count: int, usable_zones: List[Dict]) -> List[int]:
+    """
+    Répartit intelligemment les panneaux entre les zones utilisables
+    """
+    if not usable_zones:
+        return []
+    
+    # Calculer la capacité de chaque zone
+    zone_capacities = []
+    for zone in usable_zones:
+        zone_area = (zone['x2'] - zone['x1']) * (zone['y2'] - zone['y1'])
+        # Capacité approximative (1 panneau = 0.11 x 0.065 = 0.007)
+        capacity = max(1, int(zone_area / 0.008))
+        zone_capacities.append(capacity)
+    
+    total_capacity = sum(zone_capacities)
+    
+    # Répartition proportionnelle
+    distribution = []
+    assigned_panels = 0
+    
+    for i, capacity in enumerate(zone_capacities):
+        if i == len(zone_capacities) - 1:
+            # Dernière zone - assigner tous les panneaux restants
+            distribution.append(panel_count - assigned_panels)
+        else:
+            # Répartition proportionnelle
+            panels_for_zone = min(capacity, max(0, int(panel_count * capacity / total_capacity)))
+            distribution.append(panels_for_zone)
+            assigned_panels += panels_for_zone
+    
+    return distribution
 
 def generate_intelligent_roof_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
     """
