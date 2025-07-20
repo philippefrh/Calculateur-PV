@@ -1542,149 +1542,54 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
         
         # Dessiner chaque panneau SIMPLEMENT et CLAIREMENT
         for i, pos in enumerate(roof_positions):
-            # Position de base sur le toit avec validation
-            base_x = max(10, min(int(pos['x'] * img_width), img_width - 100))
-            base_y = max(10, min(int(pos['y'] * img_height), img_height - 80))
+            # Position simple sur l'image
+            x = max(20, min(int(pos['x'] * img_width), img_width - 120))
+            y = max(20, min(int(pos['y'] * img_height), img_height - 80))
             
-            # Calculer les dimensions du panneau selon la position dans l'image (perspective)
-            # Plus haut dans l'image = plus petit (perspective)
-            distance_factor = (pos['y'] - 0.15) / 0.4  # Normaliser entre 0 et 1
-            perspective_scale = 1.0 - (distance_factor * 0.35)  # Réduction progressive de 35%
+            # Dimensions fixes pour tous les panneaux
+            panel_width = int(img_width * pos.get('width', 0.15))
+            panel_height = int(img_height * pos.get('height', 0.08))
             
-            # Dimensions de base d'un panneau solaire réel (proportions correctes)
-            base_panel_width = int(img_width * 0.12 * perspective_scale)
-            base_panel_height = int(img_height * 0.07 * perspective_scale)
+            logging.info(f"✏️ Drawing panel {i+1} at ({x}, {y}) size {panel_width}x{panel_height}")
             
-            # CALCUL DE L'INCLINAISON DU TOIT (effet parallélogramme)
-            # Simuler une inclinaison de toit réaliste (30-45° standard)
-            roof_inclination_factor = 0.25  # Facteur d'inclinaison visuelle
-            skew_x = int(base_panel_height * roof_inclination_factor)
+            # 1. Ombre simple
+            shadow_offset = 3
+            draw.rectangle([x + shadow_offset, y + shadow_offset, 
+                          x + panel_width + shadow_offset, y + panel_height + shadow_offset], 
+                         fill=(100, 100, 100))
             
-            # Créer les 4 coins du panneau avec perspective et inclinaison correctes
-            points = [
-                (base_x, base_y),                                             # Coin supérieur gauche
-                (base_x + base_panel_width + skew_x, base_y),                # Coin supérieur droit (décalé)
-                (base_x + base_panel_width, base_y + base_panel_height),     # Coin inférieur droit
-                (base_x - skew_x, base_y + base_panel_height)                # Coin inférieur gauche (décalé)
-            ]
+            # 2. Panneau principal - BLEU FONCÉ VISIBLE
+            draw.rectangle([x, y, x + panel_width, y + panel_height], 
+                         fill=(20, 40, 80), outline=(255, 255, 0), width=3)  # Bordure JAUNE visible
             
-            # RENDU ULTRA-RÉALISTE DU PANNEAU SOLAIRE
+            # 3. Grille simple de cellules
+            cells_x = 3
+            cells_y = 2
+            cell_width = panel_width // cells_x
+            cell_height = panel_height // cells_y
             
-            # 1. OMBRE PORTÉE SUR LE TOIT (réalisme +++)
-            shadow_offset = max(2, int(base_panel_height * 0.05))
-            shadow_points = [(x + shadow_offset, y + shadow_offset) for x, y in points]
-            draw.polygon(shadow_points, fill=(60, 60, 60, 120))  # Ombre semi-transparente
+            for row in range(cells_y):
+                for col in range(cells_x):
+                    cell_x = x + col * cell_width
+                    cell_y = y + row * cell_height
+                    draw.rectangle([cell_x, cell_y, cell_x + cell_width, cell_y + cell_height],
+                                 outline=(60, 80, 120), width=1)
             
-            # 2. CORPS PRINCIPAL DU PANNEAU (couleur photovoltaïque authentique)
-            main_color = (15, 25, 45)  # Bleu très foncé typique des panneaux
-            draw.polygon(points, fill=main_color, outline=(140, 140, 140), width=2)
-            
-            # 3. CADRE ALUMINIUM ÉPAIS (très visible)
-            frame_width = max(2, int(min(base_panel_width, base_panel_height) * 0.04))
-            for offset in range(frame_width):
-                frame_points = [
-                    (x - offset, y - offset) if j < 2 else (x + offset, y + offset) 
-                    for j, (x, y) in enumerate(points)
-                ]
-                draw.polygon(points, outline=(180, 180, 180), width=frame_width - offset)
-            
-            # 4. GRILLE DE CELLULES PHOTOVOLTAÏQUES (très détaillée)
-            cells_h = 6  # Cellules horizontales
-            cells_v = 10  # Cellules verticales
-            
-            for row in range(cells_v):
-                for col in range(cells_h):
-                    # Calculer la position exacte de chaque cellule avec perspective
-                    h_ratio = col / cells_h
-                    v_ratio = row / cells_v
-                    
-                    # Interpolation linéaire entre les coins pour suivre la forme exacte
-                    # Côté supérieur
-                    top_left = (
-                        points[0][0] + h_ratio * (points[1][0] - points[0][0]),
-                        points[0][1] + h_ratio * (points[1][1] - points[0][1])
-                    )
-                    top_right = (
-                        points[0][0] + (h_ratio + 1/cells_h) * (points[1][0] - points[0][0]),
-                        points[0][1] + (h_ratio + 1/cells_h) * (points[1][1] - points[0][1])
-                    )
-                    
-                    # Côté inférieur  
-                    bottom_left = (
-                        points[3][0] + h_ratio * (points[2][0] - points[3][0]),
-                        points[3][1] + h_ratio * (points[2][1] - points[3][1])
-                    )
-                    bottom_right = (
-                        points[3][0] + (h_ratio + 1/cells_h) * (points[2][0] - points[3][0]),
-                        points[3][1] + (h_ratio + 1/cells_h) * (points[2][1] - points[3][1])
-                    )
-                    
-                    # Interpolation verticale pour cette cellule
-                    cell_tl = (
-                        top_left[0] + v_ratio * (bottom_left[0] - top_left[0]),
-                        top_left[1] + v_ratio * (bottom_left[1] - top_left[1])
-                    )
-                    cell_tr = (
-                        top_right[0] + v_ratio * (bottom_right[0] - top_right[0]),
-                        top_right[1] + v_ratio * (bottom_right[1] - top_right[1])
-                    )
-                    cell_bl = (
-                        top_left[0] + (v_ratio + 1/cells_v) * (bottom_left[0] - top_left[0]),
-                        top_left[1] + (v_ratio + 1/cells_v) * (bottom_left[1] - top_left[1])
-                    )
-                    cell_br = (
-                        top_right[0] + (v_ratio + 1/cells_v) * (bottom_right[0] - top_right[0]),
-                        top_right[1] + (v_ratio + 1/cells_v) * (bottom_right[1] - top_right[1])
-                    )
-                    
-                    cell_points = [cell_tl, cell_tr, cell_br, cell_bl]
-                    
-                    # Couleur alternée pour les cellules (réalisme)
-                    cell_color = (20, 30, 50) if (row + col) % 2 == 0 else (25, 35, 55)
-                    draw.polygon(cell_points, fill=cell_color, outline=(40, 50, 70), width=1)
-            
-            # 5. REFLET LUMINEUX SUR LE VERRE (effet très réaliste)
-            highlight_intensity = max(0.3, 1.0 - distance_factor)  # Plus fort au premier plan
-            highlight_points = [
-                points[0],
-                (points[0][0] + (points[1][0] - points[0][0]) * 0.7, 
-                 points[0][1] + (points[1][1] - points[0][1]) * 0.7),
-                (points[3][0] + (points[2][0] - points[3][0]) * 0.7, 
-                 points[3][1] + (points[2][1] - points[3][1]) * 0.3),
-                (points[3][0], points[3][1] + (points[0][1] - points[3][1]) * 0.3)
-            ]
-            highlight_color = (int(120 * highlight_intensity), 
-                             int(150 * highlight_intensity), 
-                             int(180 * highlight_intensity))
-            
-            # Créer un overlay semi-transparent pour le reflet
-            overlay = PILImage.new('RGBA', composite_image.size, (0, 0, 0, 0))
-            overlay_draw = ImageDraw.Draw(overlay)
-            overlay_draw.polygon(highlight_points, fill=(*highlight_color, 80))
-            composite_image = PILImage.alpha_composite(composite_image.convert('RGBA'), overlay).convert('RGB')
-            draw = ImageDraw.Draw(composite_image)
-            
-            # 6. POINTS DE FIXATION (boulons de montage)
-            fixation_size = max(3, int(min(base_panel_width, base_panel_height) * 0.02))
-            
-            # 4 points de fixation aux coins (décalés vers l'intérieur)
-            margin = int(min(base_panel_width, base_panel_height) * 0.12)
-            fixation_points = [
-                (points[0][0] + margin, points[0][1] + margin),         # Coin supérieur gauche
-                (points[1][0] - margin, points[1][1] + margin),         # Coin supérieur droit  
-                (points[2][0] - margin, points[2][1] - margin),         # Coin inférieur droit
-                (points[3][0] + margin, points[3][1] - margin)          # Coin inférieur gauche
-            ]
-            
-            for fx, fy in fixation_points:
-                # Dessin du boulon avec effet 3D
-                draw.ellipse([fx-fixation_size, fy-fixation_size, 
-                             fx+fixation_size, fy+fixation_size], 
-                            fill=(120, 120, 120), outline=(80, 80, 80), width=1)
-                # Centre du boulon
-                draw.ellipse([fx-fixation_size//2, fy-fixation_size//2, 
-                             fx+fixation_size//2, fy+fixation_size//2], 
-                            fill=(90, 90, 90))
+            # 4. Numéro du panneau au centre
+            try:
+                from PIL import ImageFont
+                font = ImageFont.load_default()
+                text = str(i + 1)
+                text_bbox = draw.textbbox((0, 0), text, font=font)
+                text_width = text_bbox[2] - text_bbox[0]
+                text_height = text_bbox[3] - text_bbox[1]
+                text_x = x + (panel_width - text_width) // 2
+                text_y = y + (panel_height - text_height) // 2
+                draw.text((text_x, text_y), text, fill=(255, 255, 255), font=font)
+            except:
+                # Fallback simple si problème avec la police
+                draw.text((x + panel_width//2 - 5, y + panel_height//2 - 5), 
+                         str(i + 1), fill=(255, 255, 255))
         
         logging.info(f"Successfully created ultra-realistic composite with {len(roof_positions)} panels with perfect roof perspective")
         
