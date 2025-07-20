@@ -1135,106 +1135,32 @@ const ConsumptionForm = ({
                 </div>
               ) : (
                 <div className="image-analysis-section">
-                  <div className="roof-area-selection">
-                    <h5>🎯 Délimitez la zone du toit en cliquant</h5>
-                    <p><strong>Instructions:</strong> Cliquez sur les 4 coins du toit pour définir la zone où placer les panneaux</p>
-                    
-                    <div className="interactive-image-container" style={{ position: 'relative', display: 'inline-block', border: '2px solid #007bff', borderRadius: '8px', overflow: 'hidden' }}>
-                      <img 
-                        src={roofImage.preview} 
-                        alt="Cliquez pour délimiter le toit"
-                        style={{ width: '100%', maxWidth: '500px', display: 'block', cursor: 'crosshair' }}
-                        onClick={handleImageClick}
-                        id="roof-click-image"
-                      />
-                      
-                      {/* Afficher les points de clic */}
-                      {roofCorners.map((corner, index) => (
-                        <div
-                          key={index}
-                          style={{
-                            position: 'absolute',
-                            left: `${corner.x * 100}%`,
-                            top: `${corner.y * 100}%`,
-                            width: '12px',
-                            height: '12px',
-                            backgroundColor: '#ff4444',
-                            border: '2px solid white',
-                            borderRadius: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            zIndex: 10,
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
-                          }}
-                        />
-                      ))}
-                      
-                      {/* Afficher la zone délimitée si 4 points */}
-                      {roofCorners.length === 4 && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            left: `${Math.min(...roofCorners.map(c => c.x)) * 100}%`,
-                            top: `${Math.min(...roofCorners.map(c => c.y)) * 100}%`,
-                            width: `${(Math.max(...roofCorners.map(c => c.x)) - Math.min(...roofCorners.map(c => c.x))) * 100}%`,
-                            height: `${(Math.max(...roofCorners.map(c => c.y)) - Math.min(...roofCorners.map(c => c.y))) * 100}%`,
-                            backgroundColor: 'rgba(0, 123, 255, 0.2)',
-                            border: '2px dashed #007bff',
-                            pointerEvents: 'none'
-                          }}
-                        />
-                      )}
-                    </div>
-                    
-                    <div className="click-status">
-                      <p><strong>Points cliqués:</strong> {roofCorners.length}/4</p>
-                      {roofCorners.length < 4 && (
-                        <p style={{ color: '#666' }}>Cliquez sur {4 - roofCorners.length} point(s) supplémentaire(s) pour définir la zone du toit</p>
-                      )}
-                      {roofCorners.length === 4 && (
-                        <p style={{ color: '#28a745', fontWeight: 'bold' }}>✅ Zone du toit définie ! Vous pouvez maintenant analyser.</p>
-                      )}
-                    </div>
-                    
-                    <div className="area-controls">
-                      {roofCorners.length > 0 && (
-                        <button 
-                          type="button" 
-                          className="reset-area-button"
-                          onClick={resetRoofArea}
-                          style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', marginRight: '10px' }}
-                        >
-                          🗑️ Recommencer la sélection
-                        </button>
-                      )}
-                      
-                      {roofCorners.length === 4 && (
-                        <button 
-                          type="button" 
-                          className="analyze-custom-area-button"
-                          onClick={analyzeRoofWithCustomArea}
-                          disabled={isAnalyzingRoof}
-                          style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px' }}
-                        >
-                          {isAnalyzingRoof ? '🔄 Placement en cours...' : '🎯 Placer les panneaux dans cette zone'}
-                        </button>
-                      )}
+                  <div className="uploaded-image">
+                    <img src={roofImage.preview} alt="Toiture uploadée" />
+                    <div className="image-info">
+                      <p><strong>Image sélectionnée:</strong> {roofImage.file.name}</p>
+                      <p><strong>Taille:</strong> {(roofImage.file.size / 1024 / 1024).toFixed(2)} MB</p>
                     </div>
                   </div>
                   
-                  {!roofAnalysisResult && roofCorners.length < 4 && (
-                    <div className="image-info" style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                      <p><strong>Image sélectionnée:</strong> {roofImage.file.name}</p>
-                      <p><strong>Taille:</strong> {(roofImage.file.size / 1024 / 1024).toFixed(2)} MB</p>
+                  {!roofAnalysisResult ? (
+                    <div className="analysis-controls">
+                      <button 
+                        type="button" 
+                        className="analyze-button"
+                        onClick={analyzeRoofWithAI}
+                        disabled={isAnalyzingRoof}
+                      >
+                        {isAnalyzingRoof ? '🔄 Placement en cours...' : '🎯 Placer les panneaux sur le toit'}
+                      </button>
                       <button 
                         type="button" 
                         className="change-image-button"
                         onClick={() => setRoofImage(null)}
-                        style={{ backgroundColor: '#6c757d', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px' }}
                       >
                         🔄 Changer d'image
                       </button>
                     </div>
-                  )}
                   ) : (
                     <div className="analysis-results">
                       <h5>✅ Analyse terminée</h5>
