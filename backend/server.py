@@ -1583,6 +1583,7 @@ class RoofAnalysisResponse(BaseModel):
     total_surface_required: float  # Surface totale requise
     placement_possible: bool  # Si le placement est possible
     recommendations: str  # Recommandations
+    composite_image: Optional[str] = None  # Image composite avec panneaux (base64)
 
 @api_router.post("/analyze-roof", response_model=RoofAnalysisResponse)
 async def analyze_roof_for_panels(request: RoofAnalysisRequest):
