@@ -1591,18 +1591,18 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
                 draw.text((x + panel_width//2 - 5, y + panel_height//2 - 5), 
                          str(i + 1), fill=(255, 255, 255))
         
-        logging.info(f"Successfully created ultra-realistic composite with {len(roof_positions)} panels with perfect roof perspective")
+        logging.info(f"✅ SIMPLIFIED VERSION: Successfully created composite with {len(roof_positions)} VISIBLE panels")
         
-        # Sauvegarder en haute qualité
+        # Sauvegarder l'image
         buffer = BytesIO()
-        composite_image.save(buffer, format='JPEG', quality=98, optimize=True)
+        composite_image.save(buffer, format='JPEG', quality=95)
         buffer.seek(0)
         
         composite_base64 = base64.b64encode(buffer.getvalue()).decode()
         return f"data:image/jpeg;base64,{composite_base64}"
         
     except Exception as e:
-        logging.error(f"Error creating ultra-realistic roof-adapted composite: {e}")
+        logging.error(f"❌ SIMPLIFIED VERSION: Error creating composite: {e}")
         return base64_image
 
 def analyze_roof_geometry_and_obstacles(base64_image: str) -> Dict:
