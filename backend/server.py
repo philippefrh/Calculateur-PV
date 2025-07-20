@@ -1540,11 +1540,14 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
         
         # Parser la réponse JSON
         try:
-            result = json.loads(response.text)
+            # La réponse de LlmChat est déjà une chaîne, pas un objet avec .text
+            response_text = response if isinstance(response, str) else str(response)
+            result = json.loads(response_text)
         except json.JSONDecodeError:
             # Si ce n'est pas du JSON valide, essayer d'extraire le JSON
             import re
-            json_match = re.search(r'\{.*\}', response.text, re.DOTALL)
+            response_text = response if isinstance(response, str) else str(response)
+            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
             if json_match:
                 result = json.loads(json_match.group())
             else:
