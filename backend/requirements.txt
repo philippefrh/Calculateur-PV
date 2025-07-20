@@ -28,3 +28,4 @@ aiohttp>=3.9.0
 reportlab>=4.0.0
 Pillow>=10.0.0
 matplotlib>=3.7.0
+emergentintegrations
