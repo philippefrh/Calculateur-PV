@@ -1495,7 +1495,6 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
         
         # Créer le client LLM
         llm = LlmChat(
-            provider="openai",
             model="gpt-4o",  # Modèle Vision d'OpenAI
             api_key=openai_key
         )
