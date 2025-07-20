@@ -1604,6 +1604,58 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
         logging.error(f"Error creating roof-adapted composite: {e}")
         return base64_image
 
+def generate_intelligent_roof_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
+    """
+    Génère des positions intelligentes et optimisées pour les panneaux solaires sur le toit
+    """
+    positions = []
+    
+    # Zone du toit optimisée (plus réaliste)
+    roof_top_y = 0.15      # Début de la zone toit
+    roof_bottom_y = 0.60   # Fin de la zone toit
+    roof_left_x = 0.10     # Bord gauche du toit
+    roof_right_x = 0.90    # Bord droit du toit
+    
+    # Calculer la disposition optimale selon le nombre de panneaux
+    if panel_count <= 6:
+        panels_per_row = 3
+        rows = 2
+    elif panel_count <= 12:
+        panels_per_row = 4
+        rows = 3
+    else:
+        panels_per_row = 6
+        rows = 3
+        
+    # Espacement intelligent avec marges
+    available_width = roof_right_x - roof_left_x
+    available_height = roof_bottom_y - roof_top_y
+    
+    panel_spacing_x = available_width / (panels_per_row + 1)
+    panel_spacing_y = available_height / (rows + 1)
+    
+    panel_idx = 0
+    for row in range(rows):
+        for col in range(panels_per_row):
+            if panel_idx >= panel_count:
+                break
+                
+            # Position avec espacement intelligent
+            x = roof_left_x + (col + 1) * panel_spacing_x - 0.06  # Centré
+            y = roof_top_y + (row + 1) * panel_spacing_y - 0.035  # Centré
+            
+            positions.append({
+                'x': max(0.05, min(x, 0.85)),  # Limites sécurisées
+                'y': max(0.10, min(y, 0.65)),  # Limites sécurisées
+                'width': 0.12,
+                'height': 0.07,
+                'angle': 15  # Angle d'inclinaison du toit
+            })
+            
+            panel_idx += 1
+    
+    return positions
+
 def generate_roof_adapted_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
     """
     Génère des positions adaptées à la géométrie du toit
