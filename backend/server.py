@@ -1575,9 +1575,25 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
                           x + panel_width + shadow_offset, y + panel_height + shadow_offset], 
                          fill=(100, 100, 100))
             
-            # 2. Panneau principal - BLEU FONCÉ VISIBLE
-            draw.rectangle([x, y, x + panel_width, y + panel_height], 
-                         fill=(20, 40, 80), outline=(255, 255, 0), width=3)  # Bordure JAUNE visible
+            # 2. Panneau principal - SUIVANT L'INCLINAISON DU TOIT
+            # Créer un parallélogramme pour suivre la pente du toit
+            roof_tilt = 0.3  # Facteur d'inclinaison pour simuler la pente
+            tilt_offset = int(panel_height * roof_tilt)  # Décalage pour la perspective
+            
+            # Points du panneau en parallélogramme (suit l'inclinaison)
+            panel_points = [
+                (x, y + tilt_offset),                              # Coin supérieur gauche
+                (x + panel_width, y),                              # Coin supérieur droit (plus haut)
+                (x + panel_width, y + panel_height - tilt_offset), # Coin inférieur droit
+                (x, y + panel_height)                              # Coin inférieur gauche (plus bas)
+            ]
+            
+            # Ombre qui suit aussi l'inclinaison
+            shadow_points = [(px + shadow_offset, py + shadow_offset) for px, py in panel_points]
+            draw.polygon(shadow_points, fill=(100, 100, 100))
+            
+            # Panneau principal en parallélogramme - BLEU FONCÉ VISIBLE
+            draw.polygon(panel_points, fill=(20, 40, 80), outline=(255, 255, 0), width=3)
             
             # 3. Grille simple de cellules
             cells_x = 3
