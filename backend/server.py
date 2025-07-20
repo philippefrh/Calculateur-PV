@@ -1536,7 +1536,7 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
         )
         
         # Envoyer la demande à OpenAI Vision
-        response = await llm.send_message(user_message, model="gpt-4o")
+        response = await llm.send_message(user_message)
         
         # Parser la réponse JSON
         try:
