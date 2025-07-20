@@ -2425,6 +2425,9 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
         if obstacles_detected > 0:
             ai_recommendations += f", contournement automatique des obstacles pour maximiser la production"
         
+        # Initialize variables for AI response
+        panel_positions_from_ai = []
+        
         try:
             # Créer le client LLM avec timeout
             llm = LlmChat(
