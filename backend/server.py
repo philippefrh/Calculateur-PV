@@ -1458,6 +1458,129 @@ async def test_pvgis(lat: float, lon: float, orientation: str = "Sud", power: in
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# Modèles pour l'analyse de toiture
+class RoofAnalysisRequest(BaseModel):
+    image_base64: str  # Image encodée en base64
+    panel_count: int   # Nombre de panneaux à positionner (6, 12, ou 18)
+    panel_surface: float = 2.11  # Surface d'un panneau en m²
+
+class PanelPosition(BaseModel):
+    x: float  # Position X relative (0-1)
+    y: float  # Position Y relative (0-1) 
+    width: float  # Largeur relative (0-1)
+    height: float  # Hauteur relative (0-1)
+    angle: float  # Angle de rotation en degrés
+
+class RoofAnalysisResponse(BaseModel):
+    success: bool
+    panel_positions: List[PanelPosition]
+    roof_analysis: str  # Description de l'analyse
+    total_surface_required: float  # Surface totale requise
+    placement_possible: bool  # Si le placement est possible
+    recommendations: str  # Recommandations
+
+@api_router.post("/analyze-roof", response_model=RoofAnalysisResponse)
+async def analyze_roof_for_panels(request: RoofAnalysisRequest):
+    """
+    Analyse une photo de toiture et propose le positionnement optimal des panneaux solaires
+    """
+    try:
+        # Configurer OpenAI
+        openai_key = os.environ.get('OPENAI_API_KEY')
+        if not openai_key:
+            raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+        
+        # Créer le client LLM
+        llm = LLMChat(
+            provider="openai",
+            model="gpt-4o",  # Modèle Vision d'OpenAI
+            api_key=openai_key
+        )
+        
+        # Préparer l'image
+        image_content = ImageContent(
+            image_base64=request.image_base64
+        )
+        
+        # Calculer la surface totale requise
+        total_surface_required = request.panel_count * request.panel_surface
+        
+        # Prompt pour l'analyse de toiture
+        prompt = f"""
+        Analysez cette photo de toiture pour le placement de {request.panel_count} panneaux solaires.
+        
+        Chaque panneau mesure {request.panel_surface}m² (dimensions approximatives: 2m x 1.05m).
+        Surface totale requise: {total_surface_required}m².
+        
+        Veuillez fournir une réponse au format JSON avec:
+        1. "roof_analysis": Description détaillée de la toiture (type, orientation, obstacles, surface estimée)
+        2. "placement_possible": true/false si les {request.panel_count} panneaux peuvent être placés
+        3. "panel_positions": Array de {request.panel_count} objets avec:
+           - "x": position X relative (0.0 à 1.0)
+           - "y": position Y relative (0.0 à 1.0) 
+           - "width": largeur relative (0.0 à 1.0)
+           - "height": hauteur relative (0.0 à 1.0)
+           - "angle": angle de rotation en degrés
+        4. "recommendations": Conseils d'optimisation du placement
+        
+        Évitez les obstacles (cheminées, fenêtres de toit, antennes) et optimisez l'exposition au soleil.
+        Respectez les proportions réelles des panneaux et l'architecture de la toiture.
+        
+        Répondez uniquement en JSON valide.
+        """
+        
+        # Créer le message avec l'image
+        user_message = UserMessage(
+            text=prompt,
+            file_contents=[image_content]
+        )
+        
+        # Envoyer la demande à OpenAI Vision
+        response = await llm.send_message(user_message)
+        
+        # Parser la réponse JSON
+        try:
+            result = json.loads(response.text)
+        except json.JSONDecodeError:
+            # Si ce n'est pas du JSON valide, essayer d'extraire le JSON
+            import re
+            json_match = re.search(r'\{.*\}', response.text, re.DOTALL)
+            if json_match:
+                result = json.loads(json_match.group())
+            else:
+                raise HTTPException(status_code=500, detail="Invalid JSON response from AI")
+        
+        # Construire la réponse
+        panel_positions = []
+        for pos in result.get("panel_positions", []):
+            panel_positions.append(PanelPosition(
+                x=pos.get("x", 0),
+                y=pos.get("y", 0),
+                width=pos.get("width", 0.1),
+                height=pos.get("height", 0.05),
+                angle=pos.get("angle", 0)
+            ))
+        
+        return RoofAnalysisResponse(
+            success=True,
+            panel_positions=panel_positions,
+            roof_analysis=result.get("roof_analysis", "Analyse non disponible"),
+            total_surface_required=total_surface_required,
+            placement_possible=result.get("placement_possible", False),
+            recommendations=result.get("recommendations", "Aucune recommandation")
+        )
+        
+    except Exception as e:
+        logging.error(f"Error analyzing roof: {e}")
+        return RoofAnalysisResponse(
+            success=False,
+            panel_positions=[],
+            roof_analysis=f"Erreur d'analyse: {str(e)}",
+            total_surface_required=total_surface_required,
+            placement_possible=False,
+            recommendations="Veuillez réessayer avec une autre image"
+        )
+
 # Endpoints pour la gestion des régions
 @api_router.get("/regions")
 async def get_regions():
