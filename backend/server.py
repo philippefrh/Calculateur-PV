@@ -1475,133 +1475,209 @@ class PanelPosition(BaseModel):
 
 def create_composite_image_with_panels(base64_image: str, panel_positions: List[Dict], panel_count: int) -> str:
     """
-    Génère une image composite avec des panneaux solaires qui suivent la pente du toit
+    Génère une image composite RÉALISTE avec des panneaux solaires qui suivent PARFAITEMENT la pente et la perspective du toit
     """
     try:
-        logging.info(f"Creating ROOF-ADAPTED composite with {panel_count} panels")
+        logging.info(f"Creating HIGH-QUALITY roof-adapted composite with {panel_count} panels")
         
-        # Décoder l'image base64
-        if base64_image.startswith('data:image'):
-            base64_data = base64_image.split(',')[1]
-        else:
-            base64_data = base64_image
+        # Décoder et valider l'image base64
+        try:
+            if base64_image.startswith('data:image'):
+                base64_data = base64_image.split(',')[1]
+            else:
+                base64_data = base64_image
+            
+            image_data = base64.b64decode(base64_data)
+            original_image = PILImage.open(BytesIO(image_data)).convert('RGB')
+            logging.info(f"Successfully loaded image: {original_image.size}")
+            
+        except Exception as e:
+            logging.error(f"Error decoding base64 image: {e}")
+            return base64_image
         
-        image_data = base64.b64decode(base64_data)
-        original_image = PILImage.open(BytesIO(image_data)).convert('RGB')
-        
-        # Créer une copie pour dessiner dessus
+        # Créer une copie de haute qualité pour dessiner dessus
         composite_image = original_image.copy()
         draw = ImageDraw.Draw(composite_image)
         
         # Dimensions de l'image
         img_width, img_height = composite_image.size
+        logging.info(f"Image dimensions: {img_width}x{img_height}")
         
-        # Détecter l'inclinaison approximative du toit (estimation basée sur l'image type maison)
-        # Pour une maison typique, le toit a une inclinaison de 30-45°
-        roof_angle = 15  # Angle d'inclinaison visuel pour la perspective
+        # Si l'OpenAI n'a pas retourné de positions, utiliser notre algorithme optimisé
+        if not panel_positions or len(panel_positions) == 0:
+            logging.info("No AI positions provided, using optimized roof-adapted algorithm")
+            roof_positions = generate_intelligent_roof_positions(panel_count, img_width, img_height)
+        else:
+            # Convertir les positions AI en format utilisable
+            roof_positions = []
+            for pos in panel_positions[:panel_count]:
+                roof_positions.append({
+                    'x': pos.get('x', 0.3),
+                    'y': pos.get('y', 0.3),
+                    'width': pos.get('width', 0.12),
+                    'height': pos.get('height', 0.07),
+                    'angle': pos.get('angle', 15)
+                })
+            logging.info(f"Using {len(roof_positions)} AI-provided positions")
         
-        # Positions optimisées pour suivre la pente du toit
-        roof_positions = generate_roof_adapted_positions(panel_count, img_width, img_height)
-        
-        # Dessiner les panneaux qui suivent la géométrie du toit
+        # DESSINER CHAQUE PANNEAU AVEC PERSPECTIVE ET INCLINAISON RÉALISTES
         for i, pos in enumerate(roof_positions):
-            # Position de base sur le toit
-            base_x = int(pos['x'] * img_width)
-            base_y = int(pos['y'] * img_height)
+            # Position de base sur le toit avec validation
+            base_x = max(10, min(int(pos['x'] * img_width), img_width - 100))
+            base_y = max(10, min(int(pos['y'] * img_height), img_height - 80))
             
-            # Dimensions adaptées à la perspective du toit
-            panel_width_base = int(img_width * 0.11)  # Plus petit pour s'adapter
-            panel_height_base = int(img_height * 0.06)  # Plus petit pour s'adapter
+            # Calculer les dimensions du panneau selon la position dans l'image (perspective)
+            # Plus haut dans l'image = plus petit (perspective)
+            distance_factor = (pos['y'] - 0.15) / 0.4  # Normaliser entre 0 et 1
+            perspective_scale = 1.0 - (distance_factor * 0.35)  # Réduction progressive de 35%
             
-            # Calculer la transformation pour suivre l'inclinaison du toit
-            # Les panneaux du haut semblent plus petits (perspective)
-            perspective_factor = 1.0 - (pos['y'] - 0.15) * 0.3  # Réduction progressive vers le haut
+            # Dimensions de base d'un panneau solaire réel (proportions correctes)
+            base_panel_width = int(img_width * 0.12 * perspective_scale)
+            base_panel_height = int(img_height * 0.07 * perspective_scale)
             
-            panel_width = int(panel_width_base * perspective_factor)
-            panel_height = int(panel_height_base * perspective_factor)
+            # CALCUL DE L'INCLINAISON DU TOIT (effet parallélogramme)
+            # Simuler une inclinaison de toit réaliste (30-45° standard)
+            roof_inclination_factor = 0.25  # Facteur d'inclinaison visuelle
+            skew_x = int(base_panel_height * roof_inclination_factor)
             
-            # Créer les points du panneau incliné selon la pente du toit
-            # Points pour un parallélogramme qui suit l'inclinaison
-            skew_offset = int(panel_height * 0.2)  # Inclinaison visuelle
-            
+            # Créer les 4 coins du panneau avec perspective et inclinaison correctes
             points = [
-                (base_x, base_y),                                    # Coin supérieur gauche
-                (base_x + panel_width, base_y - skew_offset),        # Coin supérieur droit (incliné)
-                (base_x + panel_width, base_y + panel_height - skew_offset),  # Coin inférieur droit
-                (base_x, base_y + panel_height)                      # Coin inférieur gauche
+                (base_x, base_y),                                             # Coin supérieur gauche
+                (base_x + base_panel_width + skew_x, base_y),                # Coin supérieur droit (décalé)
+                (base_x + base_panel_width, base_y + base_panel_height),     # Coin inférieur droit
+                (base_x - skew_x, base_y + base_panel_height)                # Coin inférieur gauche (décalé)
             ]
             
-            # === PANNEAU SOLAIRE ADAPTÉ AU TOIT ===
+            # RENDU ULTRA-RÉALISTE DU PANNEAU SOLAIRE
             
-            # 1. Ombre du panneau sur le toit
-            shadow_points = [(x+2, y+2) for x, y in points]
-            draw.polygon(shadow_points, fill=(80, 80, 80))
+            # 1. OMBRE PORTÉE SUR LE TOIT (réalisme +++)
+            shadow_offset = max(2, int(base_panel_height * 0.05))
+            shadow_points = [(x + shadow_offset, y + shadow_offset) for x, y in points]
+            draw.polygon(shadow_points, fill=(60, 60, 60, 120))  # Ombre semi-transparente
             
-            # 2. Corps principal du panneau (couleur bleu foncé typique)
-            draw.polygon(points, fill=(25, 35, 55), outline=(120, 120, 120), width=2)
+            # 2. CORPS PRINCIPAL DU PANNEAU (couleur photovoltaïque authentique)
+            main_color = (15, 25, 45)  # Bleu très foncé typique des panneaux
+            draw.polygon(points, fill=main_color, outline=(140, 140, 140), width=2)
             
-            # 3. Cadre métallique argenté
-            frame_points = [(x-1, y-1) for x, y in points] + [(x+1, y+1) for x, y in points[::-1]]
-            draw.polygon(points, outline=(160, 160, 160), width=3)
+            # 3. CADRE ALUMINIUM ÉPAIS (très visible)
+            frame_width = max(2, int(min(base_panel_width, base_panel_height) * 0.04))
+            for offset in range(frame_width):
+                frame_points = [
+                    (x - offset, y - offset) if j < 2 else (x + offset, y + offset) 
+                    for j, (x, y) in enumerate(points)
+                ]
+                draw.polygon(points, outline=(180, 180, 180), width=frame_width - offset)
             
-            # 4. Grille de cellules adaptée à la perspective
-            cells_horizontal = 10
-            cells_vertical = 6
+            # 4. GRILLE DE CELLULES PHOTOVOLTAÏQUES (très détaillée)
+            cells_h = 6  # Cellules horizontales
+            cells_v = 10  # Cellules verticales
             
-            for row in range(cells_vertical):
-                for col in range(cells_horizontal):
-                    # Calculer la position de chaque cellule
-                    h_ratio = col / cells_horizontal
-                    v_ratio = row / cells_vertical
+            for row in range(cells_v):
+                for col in range(cells_h):
+                    # Calculer la position exacte de chaque cellule avec perspective
+                    h_ratio = col / cells_h
+                    v_ratio = row / cells_v
                     
-                    # Interpolation des points pour suivre la forme du panneau
-                    top_left_x = base_x + h_ratio * panel_width
-                    top_left_y = base_y + v_ratio * panel_height - (h_ratio * skew_offset)
+                    # Interpolation linéaire entre les coins pour suivre la forme exacte
+                    # Côté supérieur
+                    top_left = (
+                        points[0][0] + h_ratio * (points[1][0] - points[0][0]),
+                        points[0][1] + h_ratio * (points[1][1] - points[0][1])
+                    )
+                    top_right = (
+                        points[0][0] + (h_ratio + 1/cells_h) * (points[1][0] - points[0][0]),
+                        points[0][1] + (h_ratio + 1/cells_h) * (points[1][1] - points[0][1])
+                    )
                     
-                    cell_width = panel_width // cells_horizontal
-                    cell_height = panel_height // cells_vertical
+                    # Côté inférieur  
+                    bottom_left = (
+                        points[3][0] + h_ratio * (points[2][0] - points[3][0]),
+                        points[3][1] + h_ratio * (points[2][1] - points[3][1])
+                    )
+                    bottom_right = (
+                        points[3][0] + (h_ratio + 1/cells_h) * (points[2][0] - points[3][0]),
+                        points[3][1] + (h_ratio + 1/cells_h) * (points[2][1] - points[3][1])
+                    )
                     
-                    # Cellule individuelle
-                    cell_points = [
-                        (top_left_x, top_left_y),
-                        (top_left_x + cell_width, top_left_y - int(cell_width * 0.2)),
-                        (top_left_x + cell_width, top_left_y + cell_height - int(cell_width * 0.2)),
-                        (top_left_x, top_left_y + cell_height)
-                    ]
+                    # Interpolation verticale pour cette cellule
+                    cell_tl = (
+                        top_left[0] + v_ratio * (bottom_left[0] - top_left[0]),
+                        top_left[1] + v_ratio * (bottom_left[1] - top_left[1])
+                    )
+                    cell_tr = (
+                        top_right[0] + v_ratio * (bottom_right[0] - top_right[0]),
+                        top_right[1] + v_ratio * (bottom_right[1] - top_right[1])
+                    )
+                    cell_bl = (
+                        top_left[0] + (v_ratio + 1/cells_v) * (bottom_left[0] - top_left[0]),
+                        top_left[1] + (v_ratio + 1/cells_v) * (bottom_left[1] - top_left[1])
+                    )
+                    cell_br = (
+                        top_right[0] + (v_ratio + 1/cells_v) * (bottom_right[0] - top_right[0]),
+                        top_right[1] + (v_ratio + 1/cells_v) * (bottom_right[1] - top_right[1])
+                    )
                     
-                    # Dessiner la cellule avec une couleur légèrement différente
-                    draw.polygon(cell_points, fill=(30, 40, 60), outline=(45, 55, 75), width=1)
+                    cell_points = [cell_tl, cell_tr, cell_br, cell_bl]
+                    
+                    # Couleur alternée pour les cellules (réalisme)
+                    cell_color = (20, 30, 50) if (row + col) % 2 == 0 else (25, 35, 55)
+                    draw.polygon(cell_points, fill=cell_color, outline=(40, 50, 70), width=1)
             
-            # 5. Reflet sur la partie haute du panneau (effet vitre)
+            # 5. REFLET LUMINEUX SUR LE VERRE (effet très réaliste)
+            highlight_intensity = max(0.3, 1.0 - distance_factor)  # Plus fort au premier plan
             highlight_points = [
                 points[0],
-                points[1], 
-                (points[1][0], points[1][1] + panel_height//3),
-                (points[0][0], points[0][1] + panel_height//3)
+                (points[0][0] + (points[1][0] - points[0][0]) * 0.7, 
+                 points[0][1] + (points[1][1] - points[0][1]) * 0.7),
+                (points[3][0] + (points[2][0] - points[3][0]) * 0.7, 
+                 points[3][1] + (points[2][1] - points[3][1]) * 0.3),
+                (points[3][0], points[3][1] + (points[0][1] - points[3][1]) * 0.3)
             ]
-            draw.polygon(highlight_points, fill=(100, 130, 160, 100))  # Semi-transparent
+            highlight_color = (int(120 * highlight_intensity), 
+                             int(150 * highlight_intensity), 
+                             int(180 * highlight_intensity))
             
-            # 6. Fixations aux angles
-            # Fixation coin supérieur gauche
-            fix_x, fix_y = points[0][0] + 8, points[0][1] + 6
-            draw.ellipse([fix_x-3, fix_y-3, fix_x+3, fix_y+3], fill=(100, 100, 100))
+            # Créer un overlay semi-transparent pour le reflet
+            overlay = PILImage.new('RGBA', composite_image.size, (0, 0, 0, 0))
+            overlay_draw = ImageDraw.Draw(overlay)
+            overlay_draw.polygon(highlight_points, fill=(*highlight_color, 80))
+            composite_image = PILImage.alpha_composite(composite_image.convert('RGBA'), overlay).convert('RGB')
+            draw = ImageDraw.Draw(composite_image)
             
-            # Fixation coin supérieur droit
-            fix_x, fix_y = points[1][0] - 8, points[1][1] + 6
-            draw.ellipse([fix_x-3, fix_y-3, fix_x+3, fix_y+3], fill=(100, 100, 100))
+            # 6. POINTS DE FIXATION (boulons de montage)
+            fixation_size = max(3, int(min(base_panel_width, base_panel_height) * 0.02))
+            
+            # 4 points de fixation aux coins (décalés vers l'intérieur)
+            margin = int(min(base_panel_width, base_panel_height) * 0.12)
+            fixation_points = [
+                (points[0][0] + margin, points[0][1] + margin),         # Coin supérieur gauche
+                (points[1][0] - margin, points[1][1] + margin),         # Coin supérieur droit  
+                (points[2][0] - margin, points[2][1] - margin),         # Coin inférieur droit
+                (points[3][0] + margin, points[3][1] - margin)          # Coin inférieur gauche
+            ]
+            
+            for fx, fy in fixation_points:
+                # Dessin du boulon avec effet 3D
+                draw.ellipse([fx-fixation_size, fy-fixation_size, 
+                             fx+fixation_size, fy+fixation_size], 
+                            fill=(120, 120, 120), outline=(80, 80, 80), width=1)
+                # Centre du boulon
+                draw.ellipse([fx-fixation_size//2, fy-fixation_size//2, 
+                             fx+fixation_size//2, fy+fixation_size//2], 
+                            fill=(90, 90, 90))
         
-        logging.info(f"Successfully drew {len(roof_positions)} roof-adapted panels")
+        logging.info(f"Successfully created ultra-realistic composite with {len(roof_positions)} panels with perfect roof perspective")
         
-        # Convertir en base64
+        # Sauvegarder en haute qualité
         buffer = BytesIO()
-        composite_image.save(buffer, format='JPEG', quality=95)
+        composite_image.save(buffer, format='JPEG', quality=98, optimize=True)
         buffer.seek(0)
         
         composite_base64 = base64.b64encode(buffer.getvalue()).decode()
         return f"data:image/jpeg;base64,{composite_base64}"
         
     except Exception as e:
-        logging.error(f"Error creating roof-adapted composite: {e}")
+        logging.error(f"Error creating ultra-realistic roof-adapted composite: {e}")
         return base64_image
 
 def generate_intelligent_roof_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
