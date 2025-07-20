@@ -33,7 +33,7 @@ import matplotlib.patches as mpatches
 import requests
 
 # OpenAI Vision imports 
-from emergentintegrations.llm.chat import ImageContent, UserMessage, LLMChat
+from emergentintegrations.llm.chat import ImageContent, UserMessage, LlmChat
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -1491,7 +1491,7 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
         # Créer le client LLM
-        llm = LLMChat(
+        llm = LlmChat(
             provider="openai",
             model="gpt-4o",  # Modèle Vision d'OpenAI
             api_key=openai_key
