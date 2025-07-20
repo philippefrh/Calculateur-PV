@@ -2333,13 +2333,31 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
         if not openai_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
-        # Générer positions par défaut AVANT l'appel OpenAI (pour fallback robuste)
-        default_positions = generate_intelligent_roof_positions(request.panel_count, width, height)
+        # Analyser la géométrie réelle du toit et détecter les obstacles
+        roof_geometry = analyze_roof_geometry_and_obstacles(optimized_image_data)
         
-        # Essayer l'analyse OpenAI Vision
-        panel_positions_from_ai = []
-        ai_analysis = "Analyse automatique de toiture effectuée"
-        ai_recommendations = "Installation de panneaux solaires optimisée"
+        # Générer positions intelligentes basées sur l'analyse de la toiture réelle
+        intelligent_positions = generate_obstacle_aware_panel_positions(
+            request.panel_count, 
+            width, 
+            height, 
+            roof_geometry
+        )
+        
+        # Construire l'analyse basée sur la détection réelle
+        obstacles_detected = len(roof_geometry.get('obstacles', []))
+        usable_zones_count = len(roof_geometry.get('usable_zones', []))
+        roof_inclination = roof_geometry.get('roof_inclination', 30)
+        roof_type = roof_geometry.get('roof_type', 'standard')
+        
+        ai_analysis = f"🏠 ANALYSE INTELLIGENTE - Toiture {roof_type} détectée avec inclinaison {roof_inclination:.1f}°"
+        if obstacles_detected > 0:
+            obstacle_types = [obs['type'] for obs in roof_geometry.get('obstacles', [])]
+            ai_analysis += f" • {obstacles_detected} obstacle(s): {', '.join(set(obstacle_types))}"
+        
+        ai_recommendations = f"⚡ OPTIMISATION AVANCÉE - Installation répartie en {usable_zones_count} zone(s) exploitable(s)"
+        if obstacles_detected > 0:
+            ai_recommendations += f", contournement automatique des obstacles pour maximiser la production"
         
         try:
             # Créer le client LLM avec timeout
@@ -2435,7 +2453,7 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
             positions_to_use = panel_positions_from_ai
         else:
             logging.info("Using intelligent default panel positions")
-            positions_to_use = default_positions
+            positions_to_use = intelligent_positions
         
         # Générer l'image composite RÉALISTE
         logging.info(f"Generating ultra-realistic composite image with {request.panel_count} panels")
