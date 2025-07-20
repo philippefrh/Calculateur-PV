@@ -1775,71 +1775,281 @@ def detect_roof_slope_from_image(img_array) -> float:
 
 def detect_roof_obstacles(img_array, img_width: int, img_height: int) -> List[Dict]:
     """
-    Détecte les obstacles sur le toit (velux, cheminées, antennes, etc.)
+    NOUVEAU : Détection RÉELLE et INTELLIGENTE des obstacles sur une vraie photo de toit
     """
     try:
         import numpy as np
         obstacles = []
         
-        # Convertir en HSV pour une meilleure détection
-        from colorsys import rgb_to_hsv
+        # Convertir l'image pour analyse avancée
+        if len(img_array.shape) == 3:
+            # Image couleur - analyser chaque canal séparément
+            r_channel = img_array[:, :, 0]
+            g_channel = img_array[:, :, 1]
+            b_channel = img_array[:, :, 2]
+            gray = np.mean(img_array, axis=2).astype(np.uint8)
+        else:
+            gray = img_array
+            r_channel = g_channel = b_channel = gray
         
-        # Analyser l'image par zones
-        zone_size = 32  # Taille des zones d'analyse
+        height, width = gray.shape
         
-        for y in range(0, img_height - zone_size, zone_size):
-            for x in range(0, img_width - zone_size, zone_size):
-                # Extraire la zone
-                zone = img_array[y:y+zone_size, x:x+zone_size]
+        # === DÉTECTION AVANCÉE DES VELUX ===
+        logging.info("🔍 Détection avancée des velux...")
+        
+        # Les velux sont généralement :
+        # 1. Plus clairs que le toit (réfléchissent la lumière)
+        # 2. Rectangulaires avec des bords nets
+        # 3. Contraste élevé avec l'environnement
+        
+        # Détecter les zones très claires (velux)
+        bright_threshold = np.percentile(gray, 85)  # Top 15% des pixels les plus clairs
+        bright_mask = gray > bright_threshold
+        
+        # Détecter les zones rectangulaires claires
+        from scipy import ndimage
+        
+        # Structuring element pour détecter des formes rectangulaires
+        struct_elem = np.ones((20, 20))  # Zone de 20x20 pixels minimum
+        
+        # Appliquer la morphologie pour détecter des zones compactes
+        bright_regions = ndimage.binary_opening(bright_mask, structure=struct_elem)
+        
+        # Labéliser les régions connectées
+        labeled_regions, num_features = ndimage.label(bright_regions)
+        
+        # Analyser chaque région pour déterminer si c'est un velux
+        for region_id in range(1, num_features + 1):
+            # Extraire la région
+            region_mask = (labeled_regions == region_id)
+            region_coords = np.where(region_mask)
+            
+            if len(region_coords[0]) < 400:  # Trop petit pour être un velux
+                continue
                 
-                # Calculer les statistiques de la zone
-                zone_mean = np.mean(zone, axis=(0, 1))
-                zone_std = np.std(zone, axis=(0, 1))
+            # Calculer les dimensions de la région
+            min_y, max_y = np.min(region_coords[0]), np.max(region_coords[0])
+            min_x, max_x = np.min(region_coords[1]), np.max(region_coords[1])
+            
+            region_width = max_x - min_x
+            region_height = max_y - min_y
+            
+            # Vérifier si c'est de forme rectangulaire (ratio largeur/hauteur)
+            aspect_ratio = region_width / region_height if region_height > 0 else 0
+            
+            # Les velux ont généralement un aspect ratio entre 0.7 et 1.5
+            if 0.7 <= aspect_ratio <= 1.5:
+                # Vérifier l'uniformité de la luminosité dans la région
+                region_pixels = gray[region_mask]
+                region_std = np.std(region_pixels)
                 
-                # Détecter les anomalies (obstacles potentiels)
-                is_obstacle = False
-                obstacle_type = "unknown"
-                
-                # DÉTECTION VELUX (zones très claires/réfléchissantes)
-                brightness = np.mean(zone_mean)
-                if brightness > 200 and np.mean(zone_std) < 20:
-                    is_obstacle = True
-                    obstacle_type = "velux"
-                
-                # DÉTECTION CHEMINÉE (zones sombres verticales)
-                elif brightness < 80 and zone_std[0] > 30:
-                    is_obstacle = True
-                    obstacle_type = "cheminee"
-                
-                # DÉTECTION ANTENNE (petites zones contrastées)
-                elif np.max(zone_std) > 50 and zone_size < img_width * 0.05:
-                    is_obstacle = True
-                    obstacle_type = "antenne"
-                
-                if is_obstacle:
+                # Les velux ont une luminosité relativement uniforme
+                if region_std < 30:  # Luminosité uniforme
                     # Convertir en coordonnées relatives
-                    rel_x1 = x / img_width
-                    rel_y1 = y / img_height
-                    rel_x2 = (x + zone_size) / img_width
-                    rel_y2 = (y + zone_size) / img_height
+                    rel_x1 = min_x / width
+                    rel_y1 = min_y / height
+                    rel_x2 = max_x / width
+                    rel_y2 = max_y / height
                     
+                    # Vérifier que c'est dans une zone de toit plausible
+                    if 0.1 < rel_x1 < 0.9 and 0.1 < rel_y1 < 0.8:
+                        obstacles.append({
+                            'type': 'velux',
+                            'x1': rel_x1,
+                            'y1': rel_y1,
+                            'x2': rel_x2,
+                            'y2': rel_y2,
+                            'confidence': min(1.0, (np.mean(region_pixels) - bright_threshold) / 50.0),
+                            'area': region_width * region_height
+                        })
+                        logging.info(f"✅ Velux détecté: ({rel_x1:.3f}, {rel_y1:.3f}) - ({rel_x2:.3f}, {rel_y2:.3f})")
+        
+        # === DÉTECTION AVANCÉE DES CHEMINÉES ===
+        logging.info("🔍 Détection avancée des cheminées...")
+        
+        # Les cheminées sont généralement :
+        # 1. Plus sombres que le toit
+        # 2. Verticales et rectangulaires
+        # 3. Situées sur le faîtage ou près du faîtage
+        
+        # Détecter les zones sombres
+        dark_threshold = np.percentile(gray, 25)  # Bottom 25% des pixels les plus sombres
+        dark_mask = gray < dark_threshold
+        
+        # Détecter les formes verticales (cheminées)
+        vertical_struct = np.ones((30, 15))  # Structure verticale
+        dark_regions = ndimage.binary_opening(dark_mask, structure=vertical_struct)
+        
+        # Labéliser les régions sombres
+        dark_labeled, dark_features = ndimage.label(dark_regions)
+        
+        for region_id in range(1, dark_features + 1):
+            region_mask = (dark_labeled == region_id)
+            region_coords = np.where(region_mask)
+            
+            if len(region_coords[0]) < 200:  # Trop petit pour être une cheminée
+                continue
+                
+            # Calculer les dimensions
+            min_y, max_y = np.min(region_coords[0]), np.max(region_coords[0])
+            min_x, max_x = np.min(region_coords[1]), np.max(region_coords[1])
+            
+            region_width = max_x - min_x
+            region_height = max_y - min_y
+            
+            # Les cheminées sont plus hautes que larges
+            aspect_ratio = region_height / region_width if region_width > 0 else 0
+            
+            if aspect_ratio >= 1.2:  # Plus haut que large
+                rel_x1 = min_x / width
+                rel_y1 = min_y / height
+                rel_x2 = max_x / width
+                rel_y2 = max_y / height
+                
+                # Les cheminées sont généralement dans la partie haute du toit
+                if rel_y1 < 0.4:  # Dans la partie haute
                     obstacles.append({
-                        'type': obstacle_type,
+                        'type': 'cheminee',
                         'x1': rel_x1,
                         'y1': rel_y1,
                         'x2': rel_x2,
                         'y2': rel_y2,
-                        'confidence': min(1.0, np.mean(zone_std) / 100.0)
+                        'confidence': 0.8,
+                        'area': region_width * region_height
+                    })
+                    logging.info(f"✅ Cheminée détectée: ({rel_x1:.3f}, {rel_y1:.3f}) - ({rel_x2:.3f}, {rel_y2:.3f})")
+        
+        # === DÉTECTION DES ANTENNES ET AUTRES ===
+        logging.info("🔍 Détection d'autres obstacles...")
+        
+        # Détecter des objets avec un contraste élevé (antennes, etc.)
+        # Calculer le gradient pour détecter les bords nets
+        grad_x = np.abs(np.gradient(gray, axis=1))
+        grad_y = np.abs(np.gradient(gray, axis=0))
+        gradient_magnitude = np.sqrt(grad_x**2 + grad_y**2)
+        
+        # Zones avec des bords très nets
+        high_gradient = gradient_magnitude > np.percentile(gradient_magnitude, 95)
+        
+        # Nettoyer et analyser les régions de haute gradient
+        clean_grad = ndimage.binary_opening(high_gradient, structure=np.ones((5, 5)))
+        grad_labeled, grad_features = ndimage.label(clean_grad)
+        
+        for region_id in range(1, min(grad_features + 1, 10)):  # Limiter à 10 pour performance
+            region_mask = (grad_labeled == region_id)
+            region_coords = np.where(region_mask)
+            
+            if 50 < len(region_coords[0]) < 1000:  # Taille raisonnable
+                min_y, max_y = np.min(region_coords[0]), np.max(region_coords[0])
+                min_x, max_x = np.min(region_coords[1]), np.max(region_coords[1])
+                
+                rel_x1 = min_x / width
+                rel_y1 = min_y / height
+                rel_x2 = max_x / width
+                rel_y2 = max_y / height
+                
+                # Éviter les bords de l'image
+                if 0.1 < rel_x1 < 0.9 and 0.1 < rel_y1 < 0.8:
+                    obstacles.append({
+                        'type': 'antenne',
+                        'x1': rel_x1,
+                        'y1': rel_y1,
+                        'x2': rel_x2,
+                        'y2': rel_y2,
+                        'confidence': 0.6,
+                        'area': (max_x - min_x) * (max_y - min_y)
                     })
         
-        # Fusionner les obstacles proches
-        merged_obstacles = merge_nearby_obstacles(obstacles)
+        # Trier par superficie (plus gros obstacles en premier)
+        obstacles.sort(key=lambda x: x.get('area', 0), reverse=True)
         
-        logging.info(f"Detected {len(merged_obstacles)} obstacles: {[obs['type'] for obs in merged_obstacles]}")
-        return merged_obstacles
+        # Limiter le nombre d'obstacles pour éviter le sur-détection
+        obstacles = obstacles[:10]
+        
+        logging.info(f"🎯 DÉTECTION TERMINÉE: {len(obstacles)} obstacles détectés")
+        for obs in obstacles:
+            logging.info(f"   - {obs['type']}: confiance {obs['confidence']:.2f}, zone ({obs['x1']:.3f},{obs['y1']:.3f})-({obs['x2']:.3f},{obs['y2']:.3f})")
+        
+        return obstacles
+        
+    except ImportError:
+        logging.error("scipy not available - using fallback detection")
+        return detect_roof_obstacles_fallback(img_array, img_width, img_height)
+    except Exception as e:
+        logging.error(f"Error in advanced obstacle detection: {e}")
+        return detect_roof_obstacles_fallback(img_array, img_width, img_height)
+
+def detect_roof_obstacles_fallback(img_array, img_width: int, img_height: int) -> List[Dict]:
+    """
+    Version fallback sans scipy pour la détection d'obstacles
+    """
+    try:
+        import numpy as np
+        obstacles = []
+        
+        # Analyse basique sans scipy
+        if len(img_array.shape) == 3:
+            gray = np.mean(img_array, axis=2).astype(np.uint8)
+        else:
+            gray = img_array
+            
+        height, width = gray.shape
+        
+        # Analyse par zones de 50x50 pixels
+        zone_size = 50
+        
+        for y in range(0, height - zone_size, zone_size // 2):
+            for x in range(0, width - zone_size, zone_size // 2):
+                # Extraire la zone
+                zone = gray[y:y+zone_size, x:x+zone_size]
+                
+                if zone.size == 0:
+                    continue
+                
+                zone_mean = np.mean(zone)
+                zone_std = np.std(zone)
+                
+                # Détecter velux (zones très claires avec faible variation)
+                if zone_mean > 180 and zone_std < 25:
+                    rel_x1 = x / width
+                    rel_y1 = y / height
+                    rel_x2 = (x + zone_size) / width
+                    rel_y2 = (y + zone_size) / height
+                    
+                    if 0.1 < rel_x1 < 0.9 and 0.1 < rel_y1 < 0.8:
+                        obstacles.append({
+                            'type': 'velux',
+                            'x1': rel_x1,
+                            'y1': rel_y1,
+                            'x2': rel_x2,
+                            'y2': rel_y2,
+                            'confidence': 0.7,
+                            'area': zone_size * zone_size
+                        })
+                
+                # Détecter cheminées (zones sombres dans la partie haute)
+                elif zone_mean < 80 and y < height * 0.4:
+                    rel_x1 = x / width
+                    rel_y1 = y / height
+                    rel_x2 = (x + zone_size) / width
+                    rel_y2 = (y + zone_size) / height
+                    
+                    obstacles.append({
+                        'type': 'cheminee',
+                        'x1': rel_x1,
+                        'y1': rel_y1,
+                        'x2': rel_x2,
+                        'y2': rel_y2,
+                        'confidence': 0.6,
+                        'area': zone_size * zone_size
+                    })
+        
+        # Fusionner les obstacles proches et limiter le nombre
+        merged_obstacles = merge_nearby_obstacles(obstacles)
+        return merged_obstacles[:8]  # Limiter à 8 obstacles max
         
     except Exception as e:
-        logging.error(f"Error detecting obstacles: {e}")
+        logging.error(f"Error in fallback obstacle detection: {e}")
         return []
 
 def merge_nearby_obstacles(obstacles: List[Dict]) -> List[Dict]:
