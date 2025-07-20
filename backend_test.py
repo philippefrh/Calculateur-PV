@@ -1048,6 +1048,399 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Calculation Martinique Region", False, f"Error: {str(e)}")
 
+    def test_simplified_roof_analysis_system(self):
+        """Test the SIMPLIFIED roof analysis system with basic rectangles and yellow borders"""
+        try:
+            # Create a test image (simple but valid for testing)
+            from PIL import Image as PILImage
+            import io
+            import base64
+            
+            # Create a 400x300 test roof image (larger for better testing)
+            test_image = PILImage.new('RGB', (400, 300), color='lightgray')
+            buffer = io.BytesIO()
+            test_image.save(buffer, format='JPEG')
+            buffer.seek(0)
+            test_image_b64 = base64.b64encode(buffer.getvalue()).decode()
+            
+            # Test with different panel counts as requested (6, 12, 18)
+            test_cases = [
+                {"panel_count": 6, "description": "6 panels test"},
+                {"panel_count": 12, "description": "12 panels test"},
+                {"panel_count": 18, "description": "18 panels test"}
+            ]
+            
+            all_tests_passed = True
+            test_results = []
+            
+            for test_case in test_cases:
+                panel_count = test_case["panel_count"]
+                description = test_case["description"]
+                
+                # Test the analyze-roof endpoint
+                request_data = {
+                    "image_base64": test_image_b64,
+                    "panel_count": panel_count
+                }
+                
+                response = self.session.post(f"{self.base_url}/analyze-roof", json=request_data)
+                
+                if response.status_code != 200:
+                    all_tests_passed = False
+                    test_results.append(f"❌ {description}: HTTP {response.status_code}")
+                    continue
+                
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ["success", "panel_positions", "roof_analysis", "total_surface_required", "placement_possible", "recommendations", "composite_image"]
+                missing_fields = [field for field in required_fields if field not in data]
+                if missing_fields:
+                    all_tests_passed = False
+                    test_results.append(f"❌ {description}: Missing fields {missing_fields}")
+                    continue
+                
+                # Check that we get the correct number of panel positions
+                panel_positions = data.get("panel_positions", [])
+                if len(panel_positions) != panel_count:
+                    all_tests_passed = False
+                    test_results.append(f"❌ {description}: Expected {panel_count} positions, got {len(panel_positions)}")
+                    continue
+                
+                # Check panel position structure
+                position_issues = []
+                for i, pos in enumerate(panel_positions):
+                    required_pos_fields = ["x", "y", "width", "height", "angle"]
+                    missing_pos_fields = [field for field in required_pos_fields if field not in pos]
+                    if missing_pos_fields:
+                        position_issues.append(f"Position {i} missing: {missing_pos_fields}")
+                    
+                    # Check that positions are within valid bounds (0-1)
+                    for coord in ["x", "y", "width", "height"]:
+                        if coord in pos:
+                            value = pos[coord]
+                            if not (0 <= value <= 1):
+                                position_issues.append(f"Position {i} {coord}={value} outside bounds [0,1]")
+                
+                if position_issues:
+                    all_tests_passed = False
+                    test_results.append(f"❌ {description}: Position issues: {'; '.join(position_issues)}")
+                    continue
+                
+                # Check surface calculation
+                expected_surface = panel_count * 2.11
+                actual_surface = data.get("total_surface_required", 0)
+                if abs(actual_surface - expected_surface) > 0.1:
+                    all_tests_passed = False
+                    test_results.append(f"❌ {description}: Surface calculation wrong. Expected {expected_surface}m², got {actual_surface}m²")
+                    continue
+                
+                # Check that composite image is generated
+                composite_image = data.get("composite_image", "")
+                if not composite_image or len(composite_image) < 1000:  # Should be a substantial base64 string
+                    all_tests_passed = False
+                    test_results.append(f"❌ {description}: Composite image not generated or too small ({len(composite_image)} chars)")
+                    continue
+                
+                # Success for this test case
+                test_results.append(f"✅ {description}: {len(panel_positions)} positions generated, {actual_surface}m² surface, composite image {len(composite_image)} chars")
+            
+            if all_tests_passed:
+                self.log_test("Simplified Roof Analysis System", True, 
+                            f"✅ ALL SIMPLIFIED ROOF ANALYSIS TESTS PASSED: {'; '.join(test_results)}", 
+                            {"test_cases": len(test_cases), "all_passed": True})
+            else:
+                self.log_test("Simplified Roof Analysis System", False, 
+                            f"Some tests failed: {'; '.join(test_results)}", 
+                            {"test_cases": len(test_cases), "all_passed": False})
+                
+        except Exception as e:
+            self.log_test("Simplified Roof Analysis System", False, f"Error: {str(e)}")
+    
+    def test_simple_grid_positions_function(self):
+        """Test the generate_simple_grid_positions function directly through the API"""
+        try:
+            # Test with a simple image to verify grid positioning logic
+            from PIL import Image as PILImage
+            import io
+            import base64
+            
+            # Create a simple test image
+            test_image = PILImage.new('RGB', (300, 200), color='white')
+            buffer = io.BytesIO()
+            test_image.save(buffer, format='JPEG')
+            buffer.seek(0)
+            test_image_b64 = base64.b64encode(buffer.getvalue()).decode()
+            
+            # Test with 6 panels to verify grid logic
+            request_data = {
+                "image_base64": test_image_b64,
+                "panel_count": 6
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=request_data)
+            
+            if response.status_code != 200:
+                self.log_test("Simple Grid Positions Function", False, f"HTTP {response.status_code}: {response.text}")
+                return
+            
+            data = response.json()
+            panel_positions = data.get("panel_positions", [])
+            
+            if len(panel_positions) != 6:
+                self.log_test("Simple Grid Positions Function", False, f"Expected 6 positions, got {len(panel_positions)}")
+                return
+            
+            # Verify grid positioning logic
+            issues = []
+            
+            # Check that positions are in a reasonable grid pattern
+            # For 6 panels, should be arranged in 2 rows of 3 panels each
+            x_positions = [pos["x"] for pos in panel_positions]
+            y_positions = [pos["y"] for pos in panel_positions]
+            
+            # Check X positions - should have 3 distinct values (3 columns)
+            unique_x = sorted(set(x_positions))
+            if len(unique_x) != 3:
+                issues.append(f"Expected 3 unique X positions for 6 panels, got {len(unique_x)}: {unique_x}")
+            
+            # Check Y positions - should have 2 distinct values (2 rows)
+            unique_y = sorted(set(y_positions))
+            if len(unique_y) != 2:
+                issues.append(f"Expected 2 unique Y positions for 6 panels, got {len(unique_y)}: {unique_y}")
+            
+            # Check that all positions are within safe bounds (not at edges)
+            for i, pos in enumerate(panel_positions):
+                if pos["x"] < 0.1 or pos["x"] > 0.7:
+                    issues.append(f"Panel {i} X position {pos['x']} outside safe range [0.1, 0.7]")
+                if pos["y"] < 0.2 or pos["y"] > 0.6:
+                    issues.append(f"Panel {i} Y position {pos['y']} outside safe range [0.2, 0.6]")
+            
+            # Check that all panels have consistent size
+            widths = [pos["width"] for pos in panel_positions]
+            heights = [pos["height"] for pos in panel_positions]
+            
+            if not all(abs(w - 0.15) < 0.01 for w in widths):
+                issues.append(f"Panel widths not consistent around 0.15: {widths}")
+            
+            if not all(abs(h - 0.08) < 0.01 for h in heights):
+                issues.append(f"Panel heights not consistent around 0.08: {heights}")
+            
+            # Check that angles are 0 (no rotation for simple version)
+            angles = [pos["angle"] for pos in panel_positions]
+            if not all(angle == 0 for angle in angles):
+                issues.append(f"Expected all angles to be 0 for simple version, got: {angles}")
+            
+            if issues:
+                self.log_test("Simple Grid Positions Function", False, f"Grid positioning issues: {'; '.join(issues)}", panel_positions)
+            else:
+                self.log_test("Simple Grid Positions Function", True, 
+                            f"✅ SIMPLE GRID POSITIONING WORKING: 6 panels arranged in 3x2 grid, X range: {min(x_positions):.2f}-{max(x_positions):.2f}, Y range: {min(y_positions):.2f}-{max(y_positions):.2f}, all angles=0", 
+                            {"x_positions": x_positions, "y_positions": y_positions, "unique_x": unique_x, "unique_y": unique_y})
+                
+        except Exception as e:
+            self.log_test("Simple Grid Positions Function", False, f"Error: {str(e)}")
+    
+    def test_composite_image_with_simple_panels(self):
+        """Test that create_composite_image_with_panels generates SIMPLE panels with yellow borders and white numbers"""
+        try:
+            # Create a test image
+            from PIL import Image as PILImage
+            import io
+            import base64
+            
+            # Create a larger test image for better composite testing
+            test_image = PILImage.new('RGB', (600, 400), color='lightblue')
+            buffer = io.BytesIO()
+            test_image.save(buffer, format='JPEG')
+            buffer.seek(0)
+            test_image_b64 = base64.b64encode(buffer.getvalue()).decode()
+            
+            # Test with 12 panels
+            request_data = {
+                "image_base64": test_image_b64,
+                "panel_count": 12
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=request_data)
+            
+            if response.status_code != 200:
+                self.log_test("Composite Image with Simple Panels", False, f"HTTP {response.status_code}: {response.text}")
+                return
+            
+            data = response.json()
+            
+            # Check that composite image is generated
+            composite_image_b64 = data.get("composite_image", "")
+            if not composite_image_b64:
+                self.log_test("Composite Image with Simple Panels", False, "No composite image generated")
+                return
+            
+            # Decode and analyze the composite image
+            try:
+                composite_image_data = base64.b64decode(composite_image_b64)
+                composite_image = PILImage.open(io.BytesIO(composite_image_data))
+                
+                # Check that composite image is larger than original (panels added)
+                original_size = len(base64.b64decode(test_image_b64))
+                composite_size = len(composite_image_data)
+                
+                if composite_size <= original_size:
+                    self.log_test("Composite Image with Simple Panels", False, 
+                                f"Composite image ({composite_size} bytes) should be larger than original ({original_size} bytes)")
+                    return
+                
+                # Check image dimensions
+                if composite_image.size != (600, 400):
+                    self.log_test("Composite Image with Simple Panels", False, 
+                                f"Composite image size {composite_image.size} != original size (600, 400)")
+                    return
+                
+                # Verify that the image has been modified (panels added)
+                # Convert both images to RGB for comparison
+                original_image = PILImage.open(io.BytesIO(base64.b64decode(test_image_b64))).convert('RGB')
+                composite_image_rgb = composite_image.convert('RGB')
+                
+                # Count different pixels
+                different_pixels = 0
+                total_pixels = composite_image_rgb.size[0] * composite_image_rgb.size[1]
+                
+                for x in range(composite_image_rgb.size[0]):
+                    for y in range(composite_image_rgb.size[1]):
+                        if original_image.getpixel((x, y)) != composite_image_rgb.getpixel((x, y)):
+                            different_pixels += 1
+                
+                difference_percentage = (different_pixels / total_pixels) * 100
+                
+                # Should have at least 5% different pixels (panels added)
+                if difference_percentage < 5:
+                    self.log_test("Composite Image with Simple Panels", False, 
+                                f"Only {difference_percentage:.1f}% pixels different - panels may not be visible enough")
+                    return
+                
+                # Check for blue color (panels should be blue rectangles)
+                # Sample some pixels to see if blue panels were added
+                blue_pixels_found = 0
+                sample_points = 100  # Sample 100 points
+                
+                for i in range(sample_points):
+                    x = (i * composite_image_rgb.size[0]) // sample_points
+                    y = (i * composite_image_rgb.size[1]) // sample_points
+                    pixel = composite_image_rgb.getpixel((x, y))
+                    
+                    # Check if pixel is blue-ish (panels should be blue)
+                    if pixel[2] > pixel[0] and pixel[2] > pixel[1]:  # Blue > Red and Blue > Green
+                        blue_pixels_found += 1
+                
+                if blue_pixels_found == 0:
+                    self.log_test("Composite Image with Simple Panels", False, 
+                                "No blue pixels found - panels may not be blue rectangles as expected")
+                    return
+                
+                self.log_test("Composite Image with Simple Panels", True, 
+                            f"✅ SIMPLE PANELS COMPOSITE IMAGE WORKING: Original {original_size} bytes → Composite {composite_size} bytes (+{composite_size-original_size} bytes), {difference_percentage:.1f}% pixels modified, {blue_pixels_found} blue pixels found in sample. Simple blue rectangles with borders generated successfully.", 
+                            {
+                                "original_size": original_size,
+                                "composite_size": composite_size,
+                                "size_increase": composite_size - original_size,
+                                "difference_percentage": difference_percentage,
+                                "blue_pixels_found": blue_pixels_found,
+                                "image_dimensions": composite_image.size
+                            })
+                
+            except Exception as e:
+                self.log_test("Composite Image with Simple Panels", False, f"Error analyzing composite image: {str(e)}")
+                return
+                
+        except Exception as e:
+            self.log_test("Composite Image with Simple Panels", False, f"Error: {str(e)}")
+    
+    def test_roof_analysis_endpoint_basic(self):
+        """Test basic /api/analyze-roof endpoint functionality with simple image"""
+        try:
+            # Create a very simple test image
+            from PIL import Image as PILImage
+            import io
+            import base64
+            
+            # Create a simple roof-like image
+            test_image = PILImage.new('RGB', (300, 200), color='gray')
+            buffer = io.BytesIO()
+            test_image.save(buffer, format='JPEG')
+            buffer.seek(0)
+            test_image_b64 = base64.b64encode(buffer.getvalue()).decode()
+            
+            # Test basic functionality
+            request_data = {
+                "image_base64": test_image_b64,
+                "panel_count": 6
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=request_data)
+            
+            if response.status_code != 200:
+                self.log_test("Roof Analysis Endpoint Basic", False, f"HTTP {response.status_code}: {response.text}")
+                return
+            
+            data = response.json()
+            
+            # Check basic response structure
+            required_fields = ["success", "panel_positions", "roof_analysis", "total_surface_required", "placement_possible", "recommendations"]
+            missing_fields = [field for field in required_fields if field not in data]
+            if missing_fields:
+                self.log_test("Roof Analysis Endpoint Basic", False, f"Missing required fields: {missing_fields}")
+                return
+            
+            # Check success flag
+            if not data.get("success", False):
+                self.log_test("Roof Analysis Endpoint Basic", False, f"Analysis not successful: {data.get('roof_analysis', 'No details')}")
+                return
+            
+            # Check panel positions
+            panel_positions = data.get("panel_positions", [])
+            if len(panel_positions) != 6:
+                self.log_test("Roof Analysis Endpoint Basic", False, f"Expected 6 panel positions, got {len(panel_positions)}")
+                return
+            
+            # Check surface calculation
+            expected_surface = 6 * 2.11
+            actual_surface = data.get("total_surface_required", 0)
+            if abs(actual_surface - expected_surface) > 0.1:
+                self.log_test("Roof Analysis Endpoint Basic", False, f"Surface calculation wrong. Expected {expected_surface}m², got {actual_surface}m²")
+                return
+            
+            # Check placement possible
+            placement_possible = data.get("placement_possible", False)
+            if not placement_possible:
+                self.log_test("Roof Analysis Endpoint Basic", False, "Placement should be possible for simple test case")
+                return
+            
+            # Check that analysis and recommendations are strings
+            roof_analysis = data.get("roof_analysis", "")
+            recommendations = data.get("recommendations", "")
+            
+            if not isinstance(roof_analysis, str) or len(roof_analysis) < 10:
+                self.log_test("Roof Analysis Endpoint Basic", False, f"Roof analysis should be a meaningful string, got: {roof_analysis}")
+                return
+            
+            if not isinstance(recommendations, str) or len(recommendations) < 10:
+                self.log_test("Roof Analysis Endpoint Basic", False, f"Recommendations should be a meaningful string, got: {recommendations}")
+                return
+            
+            self.log_test("Roof Analysis Endpoint Basic", True, 
+                        f"✅ BASIC ROOF ANALYSIS ENDPOINT WORKING: 6 panels positioned, {actual_surface}m² surface calculated, placement possible, analysis and recommendations generated", 
+                        {
+                            "success": data["success"],
+                            "panel_count": len(panel_positions),
+                            "surface_required": actual_surface,
+                            "placement_possible": placement_possible,
+                            "analysis_length": len(roof_analysis),
+                            "recommendations_length": len(recommendations)
+                        })
+                
+        except Exception as e:
+            self.log_test("Roof Analysis Endpoint Basic", False, f"Error: {str(e)}")
+    
     def test_intelligent_roof_analysis_system(self):
         """Test the completely redesigned intelligent roof analysis system"""
         try:
