@@ -16,6 +16,8 @@ from geopy.geocoders import Nominatim
 import json
 import io
 import base64
+from io import BytesIO
+from PIL import Image, ImageDraw
 
 # PDF Generation imports
 from reportlab.lib import colors
