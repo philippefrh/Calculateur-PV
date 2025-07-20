@@ -2139,6 +2139,226 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Devis Endpoint Both Regions", False, f"Error: {str(e)}")
 
+    def test_roof_analysis_openai_vision(self):
+        """Test the new roof analysis endpoint with OpenAI Vision API"""
+        try:
+            # Create a simple test image (base64 encoded 1x1 pixel PNG)
+            # This is a minimal valid PNG image for testing
+            test_image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg=="
+            
+            # Test data for roof analysis
+            test_data = {
+                "image_base64": test_image_base64,
+                "panel_count": 12,
+                "panel_surface": 2.11
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=test_data)
+            
+            if response.status_code == 200:
+                analysis = response.json()
+                
+                # Check required response fields
+                required_fields = [
+                    "success", "panel_positions", "roof_analysis", 
+                    "total_surface_required", "placement_possible", "recommendations"
+                ]
+                
+                missing_fields = [field for field in required_fields if field not in analysis]
+                if missing_fields:
+                    self.log_test("Roof Analysis OpenAI Vision", False, f"Missing response fields: {missing_fields}", analysis)
+                    return
+                
+                # Validate response structure
+                issues = []
+                
+                # Check success field
+                if not isinstance(analysis.get("success"), bool):
+                    issues.append("'success' field should be boolean")
+                
+                # Check panel_positions is a list
+                panel_positions = analysis.get("panel_positions", [])
+                if not isinstance(panel_positions, list):
+                    issues.append("'panel_positions' should be a list")
+                elif len(panel_positions) != test_data["panel_count"]:
+                    issues.append(f"Expected {test_data['panel_count']} panel positions, got {len(panel_positions)}")
+                else:
+                    # Check each panel position structure
+                    for i, position in enumerate(panel_positions):
+                        required_pos_fields = ["x", "y", "width", "height", "angle"]
+                        missing_pos_fields = [field for field in required_pos_fields if field not in position]
+                        if missing_pos_fields:
+                            issues.append(f"Panel position {i} missing fields: {missing_pos_fields}")
+                            break
+                        
+                        # Check that coordinates are between 0 and 1
+                        for coord in ["x", "y", "width", "height"]:
+                            value = position.get(coord, -1)
+                            if not isinstance(value, (int, float)) or value < 0 or value > 1:
+                                issues.append(f"Panel position {i} {coord} should be between 0 and 1, got {value}")
+                                break
+                
+                # Check total_surface_required calculation
+                expected_surface = test_data["panel_count"] * test_data["panel_surface"]
+                actual_surface = analysis.get("total_surface_required", 0)
+                if abs(actual_surface - expected_surface) > 0.1:
+                    issues.append(f"Total surface required {actual_surface}m² != expected {expected_surface}m²")
+                
+                # Check placement_possible is boolean
+                if not isinstance(analysis.get("placement_possible"), bool):
+                    issues.append("'placement_possible' field should be boolean")
+                
+                # Check that roof_analysis and recommendations are strings
+                if not isinstance(analysis.get("roof_analysis"), str):
+                    issues.append("'roof_analysis' should be a string")
+                elif len(analysis.get("roof_analysis", "")) < 10:
+                    issues.append("'roof_analysis' seems too short (should contain detailed analysis)")
+                
+                if not isinstance(analysis.get("recommendations"), str):
+                    issues.append("'recommendations' should be a string")
+                elif len(analysis.get("recommendations", "")) < 10:
+                    issues.append("'recommendations' seems too short (should contain recommendations)")
+                
+                if issues:
+                    self.log_test("Roof Analysis OpenAI Vision", False, f"Response validation issues: {'; '.join(issues)}", analysis)
+                else:
+                    self.log_test("Roof Analysis OpenAI Vision", True, 
+                                f"✅ OpenAI Vision roof analysis working. Success: {analysis['success']}, {len(panel_positions)} panel positions generated, {actual_surface}m² total surface, Placement possible: {analysis['placement_possible']}", 
+                                {
+                                    "success": analysis["success"],
+                                    "panel_count": len(panel_positions),
+                                    "total_surface": actual_surface,
+                                    "placement_possible": analysis["placement_possible"],
+                                    "analysis_length": len(analysis.get("roof_analysis", "")),
+                                    "recommendations_length": len(analysis.get("recommendations", ""))
+                                })
+            
+            elif response.status_code == 500:
+                # Check if it's an OpenAI API key issue
+                error_text = response.text.lower()
+                if "openai" in error_text and ("key" in error_text or "api" in error_text):
+                    self.log_test("Roof Analysis OpenAI Vision", False, "OpenAI API key configuration issue - endpoint exists but API key may be invalid or missing")
+                else:
+                    self.log_test("Roof Analysis OpenAI Vision", False, f"Server error: HTTP {response.status_code}: {response.text}")
+            
+            elif response.status_code == 422:
+                # Validation error - check if endpoint exists but has validation issues
+                self.log_test("Roof Analysis OpenAI Vision", False, f"Request validation error: {response.text}")
+            
+            else:
+                self.log_test("Roof Analysis OpenAI Vision", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Roof Analysis OpenAI Vision", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_with_different_panel_counts(self):
+        """Test roof analysis with different panel counts (6, 12, 18)"""
+        try:
+            # Simple test image
+            test_image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg=="
+            
+            test_cases = [
+                {"panel_count": 6, "expected_surface": 12.66},
+                {"panel_count": 12, "expected_surface": 25.32},
+                {"panel_count": 18, "expected_surface": 37.98}
+            ]
+            
+            all_passed = True
+            results = []
+            
+            for test_case in test_cases:
+                test_data = {
+                    "image_base64": test_image_base64,
+                    "panel_count": test_case["panel_count"],
+                    "panel_surface": 2.11
+                }
+                
+                response = self.session.post(f"{self.base_url}/analyze-roof", json=test_data)
+                
+                if response.status_code == 200:
+                    analysis = response.json()
+                    
+                    # Check panel count matches
+                    panel_positions = analysis.get("panel_positions", [])
+                    if len(panel_positions) != test_case["panel_count"]:
+                        all_passed = False
+                        results.append(f"{test_case['panel_count']} panels: got {len(panel_positions)} positions")
+                    else:
+                        # Check surface calculation
+                        actual_surface = analysis.get("total_surface_required", 0)
+                        if abs(actual_surface - test_case["expected_surface"]) > 0.1:
+                            all_passed = False
+                            results.append(f"{test_case['panel_count']} panels: surface {actual_surface}m² != {test_case['expected_surface']}m²")
+                        else:
+                            results.append(f"{test_case['panel_count']} panels: ✓ {len(panel_positions)} positions, {actual_surface}m²")
+                else:
+                    all_passed = False
+                    results.append(f"{test_case['panel_count']} panels: HTTP {response.status_code}")
+            
+            if all_passed:
+                self.log_test("Roof Analysis Panel Count Variations", True, 
+                            f"✅ All panel count variations working: {'; '.join(results)}", 
+                            {"test_cases": test_cases, "results": results})
+            else:
+                self.log_test("Roof Analysis Panel Count Variations", False, 
+                            f"Some panel count tests failed: {'; '.join(results)}", 
+                            {"test_cases": test_cases, "results": results})
+                
+        except Exception as e:
+            self.log_test("Roof Analysis Panel Count Variations", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_error_handling(self):
+        """Test roof analysis error handling with invalid inputs"""
+        try:
+            test_cases = [
+                {
+                    "name": "Missing image",
+                    "data": {"panel_count": 12, "panel_surface": 2.11},
+                    "expected_status": 422
+                },
+                {
+                    "name": "Invalid base64",
+                    "data": {"image_base64": "invalid_base64", "panel_count": 12, "panel_surface": 2.11},
+                    "expected_status": [422, 500]  # Could be validation or processing error
+                },
+                {
+                    "name": "Zero panels",
+                    "data": {"image_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==", "panel_count": 0, "panel_surface": 2.11},
+                    "expected_status": 422
+                },
+                {
+                    "name": "Negative panel surface",
+                    "data": {"image_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==", "panel_count": 12, "panel_surface": -1.0},
+                    "expected_status": 422
+                }
+            ]
+            
+            results = []
+            all_passed = True
+            
+            for test_case in test_cases:
+                response = self.session.post(f"{self.base_url}/analyze-roof", json=test_case["data"])
+                
+                expected_statuses = test_case["expected_status"] if isinstance(test_case["expected_status"], list) else [test_case["expected_status"]]
+                
+                if response.status_code in expected_statuses:
+                    results.append(f"{test_case['name']}: ✓ HTTP {response.status_code}")
+                else:
+                    all_passed = False
+                    results.append(f"{test_case['name']}: ✗ HTTP {response.status_code} (expected {expected_statuses})")
+            
+            if all_passed:
+                self.log_test("Roof Analysis Error Handling", True, 
+                            f"✅ Error handling working correctly: {'; '.join(results)}", 
+                            {"test_cases": test_cases, "results": results})
+            else:
+                self.log_test("Roof Analysis Error Handling", False, 
+                            f"Some error handling tests failed: {'; '.join(results)}", 
+                            {"test_cases": test_cases, "results": results})
+                
+        except Exception as e:
+            self.log_test("Roof Analysis Error Handling", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on TVA correction verification"""
         print("🚀 Starting Comprehensive Backend Testing for Solar Calculator")
