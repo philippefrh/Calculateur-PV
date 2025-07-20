@@ -1665,18 +1665,31 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
         # Envoyer la demande à OpenAI Vision pour analyser seulement
         response = await llm.send_message(user_message)
         
-        # Parser la réponse pour obtenir les positions (si disponibles)
+        # Parser la réponse pour obtenir les positions (avec logging pour debug)
         panel_positions_from_ai = []
         try:
             response_text = response if isinstance(response, str) else str(response)
+            logging.info(f"OpenAI response: {response_text[:500]}...")  # Log pour debug
             
-            if response_text.strip().startswith('{'):
-                result = json.loads(response_text)
+            # Essayer d'extraire le JSON même s'il est dans un bloc markdown
+            import re
+            
+            # Essayer de trouver JSON dans la réponse
+            json_match = re.search(r'```json\s*(\{.*?\})\s*```', response_text, re.DOTALL)
+            if not json_match:
+                json_match = re.search(r'(\{.*\})', response_text, re.DOTALL)
+            
+            if json_match:
+                json_str = json_match.group(1) if json_match.groups() else json_match.group(0)
+                result = json.loads(json_str)
                 panel_positions_from_ai = result.get("panel_positions", [])
+                logging.info(f"Successfully extracted {len(panel_positions_from_ai)} panel positions from AI")
             else:
-                # Réponse textuelle, utiliser positions par défaut
+                logging.warning("No JSON found in OpenAI response, using default positions")
                 panel_positions_from_ai = []
-        except:
+                
+        except Exception as e:
+            logging.error(f"Error parsing OpenAI response: {e}")
             # En cas d'erreur, utiliser positions par défaut
             panel_positions_from_ai = []
         
