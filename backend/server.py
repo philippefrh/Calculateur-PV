@@ -1494,10 +1494,7 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
         # Créer le client LLM
-        llm = LlmChat(
-            model="gpt-4o",  # Modèle Vision d'OpenAI
-            api_key=openai_key
-        )
+        llm = LlmChat(api_key=openai_key)
         
         # Préparer l'image
         image_content = ImageContent(
