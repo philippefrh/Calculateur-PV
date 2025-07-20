@@ -711,7 +711,22 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
 };
 
 // Formulaire étape 4 - Consommation amélioré
-const ConsumptionForm = ({ formData, setFormData, onNext, onPrevious, selectedRegion = "france" }) => {
+const ConsumptionForm = ({ 
+  formData, 
+  setFormData, 
+  onNext, 
+  onPrevious, 
+  selectedRegion = "france",
+  showRoofAnalysis,
+  setShowRoofAnalysis,
+  roofImage,
+  setRoofImage,
+  roofAnalysisResult,
+  setRoofAnalysisResult,
+  isAnalyzingRoof,
+  handleRoofImageUpload,
+  analyzeRoofWithAI
+}) => {
   const [errors, setErrors] = useState({});
   const [showKitSelection, setShowKitSelection] = useState(false);
   const [availableKits, setAvailableKits] = useState([]);
