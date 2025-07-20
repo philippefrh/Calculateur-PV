@@ -3699,6 +3699,11 @@ class SolarCalculatorTester:
         # INTELLIGENT ROOF ANALYSIS SYSTEM TESTS - NEW REDESIGNED SYSTEM
         print("\n🏠 INTELLIGENT ROOF ANALYSIS SYSTEM TESTS - COMPLETELY REDESIGNED")
         print("-" * 70)
+        print("🎯 TESTING: analyze_roof_geometry_and_obstacles() & generate_obstacle_aware_panel_positions()")
+        self.test_intelligent_roof_analysis_system()
+        self.test_roof_analysis_obstacle_detection_functions()
+        
+        # Legacy tests for compatibility
         self.test_roof_analysis_endpoint_basic()
         self.test_roof_analysis_parameter_validation()
         self.test_roof_analysis_panel_count_scenarios()
