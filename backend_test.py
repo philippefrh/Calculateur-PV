@@ -10,7 +10,7 @@ import time
 from typing import Dict, Any, Optional
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://572011d6-35bd-490d-ba0c-18bbbb191c89.preview.emergentagent.com/api"
+BACKEND_URL = "https://fd7f853c-5798-4d84-b035-dc899ca0f883.preview.emergentagent.com/api"
 
 class SolarCalculatorTester:
     def __init__(self):

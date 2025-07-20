@@ -11,7 +11,7 @@ import io
 from PIL import Image as PILImage, ImageDraw
 
 # Backend URL
-BACKEND_URL = "https://572011d6-35bd-490d-ba0c-18bbbb191c89.preview.emergentagent.com/api"
+BACKEND_URL = "https://fd7f853c-5798-4d84-b035-dc899ca0f883.preview.emergentagent.com/api"
 
 def create_realistic_roof_image():
     """Create a realistic roof image for testing"""
