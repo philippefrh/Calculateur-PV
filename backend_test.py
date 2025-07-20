@@ -2139,6 +2139,255 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Devis Endpoint Both Regions", False, f"Error: {str(e)}")
 
+    def test_roof_analysis_endpoint_exists(self):
+        """Test that the /api/analyze-roof endpoint exists and responds correctly"""
+        try:
+            # Test with minimal valid data
+            test_request = {
+                "image_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==",  # 1x1 pixel PNG
+                "panel_count": 6
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=test_request)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ["success", "panel_positions", "roof_analysis", "total_surface_required", "placement_possible", "recommendations"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Roof Analysis Endpoint Exists", False, f"Missing response fields: {missing_fields}", data)
+                    return
+                
+                # Check data types
+                if not isinstance(data["success"], bool):
+                    self.log_test("Roof Analysis Endpoint Exists", False, f"'success' should be boolean, got {type(data['success'])}", data)
+                    return
+                
+                if not isinstance(data["panel_positions"], list):
+                    self.log_test("Roof Analysis Endpoint Exists", False, f"'panel_positions' should be list, got {type(data['panel_positions'])}", data)
+                    return
+                
+                if not isinstance(data["roof_analysis"], str):
+                    self.log_test("Roof Analysis Endpoint Exists", False, f"'roof_analysis' should be string, got {type(data['roof_analysis'])}", data)
+                    return
+                
+                # Check total surface calculation
+                expected_surface = test_request["panel_count"] * 2.11  # Default panel surface
+                if abs(data["total_surface_required"] - expected_surface) > 0.1:
+                    self.log_test("Roof Analysis Endpoint Exists", False, f"Surface calculation incorrect: expected {expected_surface}, got {data['total_surface_required']}", data)
+                    return
+                
+                self.log_test("Roof Analysis Endpoint Exists", True, 
+                            f"✅ Endpoint exists and responds correctly. Success: {data['success']}, Panel positions: {len(data['panel_positions'])}, Surface required: {data['total_surface_required']}m²", 
+                            data)
+            else:
+                self.log_test("Roof Analysis Endpoint Exists", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Roof Analysis Endpoint Exists", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_parameters_validation(self):
+        """Test that the endpoint accepts expected parameters (image_base64 and panel_count)"""
+        try:
+            # Test with missing image_base64
+            response = self.session.post(f"{self.base_url}/analyze-roof", json={"panel_count": 6})
+            if response.status_code != 422:  # Should return validation error
+                self.log_test("Roof Analysis Parameters - Missing Image", False, f"Expected 422 for missing image, got {response.status_code}")
+            else:
+                self.log_test("Roof Analysis Parameters - Missing Image", True, "✅ Correctly rejects missing image_base64")
+            
+            # Test with missing panel_count
+            response = self.session.post(f"{self.base_url}/analyze-roof", json={"image_base64": "test"})
+            if response.status_code != 422:  # Should return validation error
+                self.log_test("Roof Analysis Parameters - Missing Panel Count", False, f"Expected 422 for missing panel_count, got {response.status_code}")
+            else:
+                self.log_test("Roof Analysis Parameters - Missing Panel Count", True, "✅ Correctly rejects missing panel_count")
+            
+            # Test with invalid panel_count type
+            response = self.session.post(f"{self.base_url}/analyze-roof", json={"image_base64": "test", "panel_count": "invalid"})
+            if response.status_code != 422:  # Should return validation error
+                self.log_test("Roof Analysis Parameters - Invalid Panel Count", False, f"Expected 422 for invalid panel_count, got {response.status_code}")
+            else:
+                self.log_test("Roof Analysis Parameters - Invalid Panel Count", True, "✅ Correctly rejects invalid panel_count type")
+            
+            # Test with valid parameters
+            valid_request = {
+                "image_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==",
+                "panel_count": 12
+            }
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=valid_request)
+            if response.status_code == 200:
+                self.log_test("Roof Analysis Parameters Validation", True, "✅ Accepts valid parameters correctly")
+            else:
+                self.log_test("Roof Analysis Parameters Validation", False, f"Failed with valid parameters: {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Roof Analysis Parameters Validation", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_response_format(self):
+        """Test that the endpoint returns properly formatted response"""
+        try:
+            test_request = {
+                "image_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==",
+                "panel_count": 12
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=test_request)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                issues = []
+                
+                # Check panel_positions structure
+                panel_positions = data.get("panel_positions", [])
+                if len(panel_positions) != test_request["panel_count"]:
+                    issues.append(f"Expected {test_request['panel_count']} panel positions, got {len(panel_positions)}")
+                
+                # Check each panel position has required fields
+                for i, position in enumerate(panel_positions):
+                    required_fields = ["x", "y", "width", "height", "angle"]
+                    missing_fields = [field for field in required_fields if field not in position]
+                    if missing_fields:
+                        issues.append(f"Panel {i} missing fields: {missing_fields}")
+                    
+                    # Check value ranges (should be 0-1 for relative positions)
+                    for field in ["x", "y", "width", "height"]:
+                        if field in position:
+                            value = position[field]
+                            if not isinstance(value, (int, float)) or value < 0 or value > 1:
+                                issues.append(f"Panel {i} {field} value {value} should be between 0 and 1")
+                    
+                    # Check angle (should be reasonable degrees)
+                    if "angle" in position:
+                        angle = position["angle"]
+                        if not isinstance(angle, (int, float)) or angle < -180 or angle > 180:
+                            issues.append(f"Panel {i} angle {angle} should be between -180 and 180 degrees")
+                
+                # Check boolean fields
+                if not isinstance(data.get("placement_possible"), bool):
+                    issues.append(f"placement_possible should be boolean, got {type(data.get('placement_possible'))}")
+                
+                # Check string fields are not empty
+                if not data.get("roof_analysis") or len(data.get("roof_analysis", "")) < 5:
+                    issues.append("roof_analysis should be a meaningful string")
+                
+                if not data.get("recommendations") or len(data.get("recommendations", "")) < 5:
+                    issues.append("recommendations should be a meaningful string")
+                
+                if issues:
+                    self.log_test("Roof Analysis Response Format", False, f"Format issues: {'; '.join(issues)}", data)
+                else:
+                    self.log_test("Roof Analysis Response Format", True, 
+                                f"✅ Response format correct. {len(panel_positions)} panel positions, placement possible: {data['placement_possible']}", 
+                                {"sample_position": panel_positions[0] if panel_positions else None})
+            else:
+                self.log_test("Roof Analysis Response Format", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Roof Analysis Response Format", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_ai_prompt_working(self):
+        """Test that the AI prompt is working correctly for solar panel placement analysis"""
+        try:
+            # Test with different panel counts to see if AI responds appropriately
+            test_cases = [
+                {"panel_count": 6, "description": "Small installation"},
+                {"panel_count": 12, "description": "Medium installation"},
+                {"panel_count": 18, "description": "Large installation"}
+            ]
+            
+            successful_analyses = 0
+            
+            for test_case in test_cases:
+                test_request = {
+                    "image_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==",
+                    "panel_count": test_case["panel_count"]
+                }
+                
+                response = self.session.post(f"{self.base_url}/analyze-roof", json=test_request)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Check if AI provided meaningful analysis
+                    roof_analysis = data.get("roof_analysis", "")
+                    recommendations = data.get("recommendations", "")
+                    
+                    # Look for solar-related keywords in the analysis
+                    solar_keywords = ["solar", "panel", "roof", "installation", "placement", "orientation", "surface", "kW", "energy"]
+                    analysis_text = (roof_analysis + " " + recommendations).lower()
+                    
+                    keyword_matches = sum(1 for keyword in solar_keywords if keyword in analysis_text)
+                    
+                    if keyword_matches >= 3:  # Should mention at least 3 solar-related terms
+                        successful_analyses += 1
+                        print(f"  ✅ {test_case['description']} ({test_case['panel_count']} panels): AI analysis contains {keyword_matches} solar keywords")
+                    else:
+                        print(f"  ❌ {test_case['description']} ({test_case['panel_count']} panels): AI analysis lacks solar context (only {keyword_matches} keywords)")
+                else:
+                    print(f"  ❌ {test_case['description']}: HTTP {response.status_code}")
+            
+            if successful_analyses == len(test_cases):
+                self.log_test("Roof Analysis AI Prompt Working", True, 
+                            f"✅ AI prompt working correctly. All {len(test_cases)} test cases produced relevant solar panel placement analysis.")
+            elif successful_analyses > 0:
+                self.log_test("Roof Analysis AI Prompt Working", True, 
+                            f"✅ AI prompt partially working. {successful_analyses}/{len(test_cases)} test cases produced relevant analysis.")
+            else:
+                self.log_test("Roof Analysis AI Prompt Working", False, 
+                            f"❌ AI prompt not working properly. No test cases produced relevant solar analysis.")
+                
+        except Exception as e:
+            self.log_test("Roof Analysis AI Prompt Working", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_openai_integration(self):
+        """Test OpenAI Vision API integration via emergentintegrations"""
+        try:
+            # Create a more realistic test image (small house roof)
+            test_request = {
+                "image_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==",
+                "panel_count": 6,
+                "panel_surface": 2.11
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=test_request)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check if OpenAI integration worked
+                if data.get("success"):
+                    # Check if we got meaningful analysis
+                    roof_analysis = data.get("roof_analysis", "")
+                    if len(roof_analysis) > 10:  # Should have substantial analysis
+                        self.log_test("Roof Analysis OpenAI Integration", True, 
+                                    f"✅ OpenAI Vision API integration working. Analysis length: {len(roof_analysis)} chars, Placement possible: {data.get('placement_possible')}", 
+                                    {"analysis_preview": roof_analysis[:100] + "..." if len(roof_analysis) > 100 else roof_analysis})
+                    else:
+                        self.log_test("Roof Analysis OpenAI Integration", False, f"Analysis too short: '{roof_analysis}'", data)
+                else:
+                    # Check if failure is due to API key or other integration issue
+                    error_msg = data.get("roof_analysis", "")
+                    if "API key" in error_msg or "OpenAI" in error_msg:
+                        self.log_test("Roof Analysis OpenAI Integration", False, f"OpenAI API configuration issue: {error_msg}", data)
+                    else:
+                        self.log_test("Roof Analysis OpenAI Integration", False, f"Integration failed: {error_msg}", data)
+            elif response.status_code == 500:
+                # Check if it's an OpenAI API key issue
+                error_text = response.text
+                if "OpenAI API key" in error_text:
+                    self.log_test("Roof Analysis OpenAI Integration", False, "OpenAI API key not configured or invalid")
+                else:
+                    self.log_test("Roof Analysis OpenAI Integration", False, f"Server error: {error_text}")
+            else:
+                self.log_test("Roof Analysis OpenAI Integration", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Roof Analysis OpenAI Integration", False, f"Error: {str(e)}")
+
     def test_roof_analysis_openai_vision(self):
         """Test the new roof analysis endpoint with OpenAI Vision API"""
         try:
