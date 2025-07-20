@@ -1475,10 +1475,10 @@ class PanelPosition(BaseModel):
 
 def create_composite_image_with_panels(base64_image: str, panel_positions: List[Dict], panel_count: int) -> str:
     """
-    Génère une vraie image composite avec des panneaux solaires ULTRA-réalistes
+    Génère une image composite avec des panneaux solaires qui suivent la pente du toit
     """
     try:
-        logging.info(f"Creating REALISTIC composite image with {panel_count} panels")
+        logging.info(f"Creating ROOF-ADAPTED composite with {panel_count} panels")
         
         # Décoder l'image base64
         if base64_image.startswith('data:image'):
@@ -1496,90 +1496,101 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
         # Dimensions de l'image
         img_width, img_height = composite_image.size
         
-        # Si on n'a pas de positions, créer des positions par défaut sur le TOIT
-        if not panel_positions or len(panel_positions) == 0:
-            panel_positions = generate_roof_specific_positions(panel_count, img_width, img_height)
+        # Détecter l'inclinaison approximative du toit (estimation basée sur l'image type maison)
+        # Pour une maison typique, le toit a une inclinaison de 30-45°
+        roof_angle = 15  # Angle d'inclinaison visuel pour la perspective
         
-        # Dessiner des panneaux solaires ULTRA-RÉALISTES
-        panels_drawn = 0
-        for i, pos in enumerate(panel_positions[:panel_count]):
-            # Position sur le toit (plus haut dans l'image)
-            x = int(pos.get('x', 0.15 + (i % 4) * 0.18) * img_width)
-            y = int(pos.get('y', 0.25 + (i // 4) * 0.12) * img_height)
+        # Positions optimisées pour suivre la pente du toit
+        roof_positions = generate_roof_adapted_positions(panel_count, img_width, img_height)
+        
+        # Dessiner les panneaux qui suivent la géométrie du toit
+        for i, pos in enumerate(roof_positions):
+            # Position de base sur le toit
+            base_x = int(pos['x'] * img_width)
+            base_y = int(pos['y'] * img_height)
             
-            # Dimensions réalistes des panneaux
-            panel_width = int(img_width * 0.16)  
-            panel_height = int(img_height * 0.09) 
+            # Dimensions adaptées à la perspective du toit
+            panel_width_base = int(img_width * 0.11)  # Plus petit pour s'adapter
+            panel_height_base = int(img_height * 0.06)  # Plus petit pour s'adapter
             
-            # === PANNEAU SOLAIRE ULTRA-RÉALISTE ===
+            # Calculer la transformation pour suivre l'inclinaison du toit
+            # Les panneaux du haut semblent plus petits (perspective)
+            perspective_factor = 1.0 - (pos['y'] - 0.15) * 0.3  # Réduction progressive vers le haut
             
-            # 1. Ombre portée (effet 3D)
-            shadow_offset = 3
-            shadow_rect = [x + shadow_offset, y + shadow_offset, 
-                          x + panel_width + shadow_offset, y + panel_height + shadow_offset]
-            draw.rectangle(shadow_rect, fill=(50, 50, 50, 100))
+            panel_width = int(panel_width_base * perspective_factor)
+            panel_height = int(panel_height_base * perspective_factor)
             
-            # 2. Cadre métallique argenté épais
-            frame_rect = [x-2, y-2, x + panel_width+2, y + panel_height+2]
-            draw.rectangle(frame_rect, fill=(180, 180, 180), outline=(160, 160, 160), width=1)
+            # Créer les points du panneau incliné selon la pente du toit
+            # Points pour un parallélogramme qui suit l'inclinaison
+            skew_offset = int(panel_height * 0.2)  # Inclinaison visuelle
             
-            # 3. Surface du panneau bleu foncé brillant
-            panel_rect = [x, y, x + panel_width, y + panel_height]
-            draw.rectangle(panel_rect, fill=(15, 25, 45), outline=(120, 120, 120), width=2)
+            points = [
+                (base_x, base_y),                                    # Coin supérieur gauche
+                (base_x + panel_width, base_y - skew_offset),        # Coin supérieur droit (incliné)
+                (base_x + panel_width, base_y + panel_height - skew_offset),  # Coin inférieur droit
+                (base_x, base_y + panel_height)                      # Coin inférieur gauche
+            ]
             
-            # 4. Grille de cellules solaires très détaillée (6x10 cellules)
-            cell_width = panel_width // 10
-            cell_height = panel_height // 6
+            # === PANNEAU SOLAIRE ADAPTÉ AU TOIT ===
             
-            for row in range(6):
-                for col in range(10):
-                    cell_x = x + col * cell_width
-                    cell_y = y + row * cell_height
+            # 1. Ombre du panneau sur le toit
+            shadow_points = [(x+2, y+2) for x, y in points]
+            draw.polygon(shadow_points, fill=(80, 80, 80))
+            
+            # 2. Corps principal du panneau (couleur bleu foncé typique)
+            draw.polygon(points, fill=(25, 35, 55), outline=(120, 120, 120), width=2)
+            
+            # 3. Cadre métallique argenté
+            frame_points = [(x-1, y-1) for x, y in points] + [(x+1, y+1) for x, y in points[::-1]]
+            draw.polygon(points, outline=(160, 160, 160), width=3)
+            
+            # 4. Grille de cellules adaptée à la perspective
+            cells_horizontal = 10
+            cells_vertical = 6
+            
+            for row in range(cells_vertical):
+                for col in range(cells_horizontal):
+                    # Calculer la position de chaque cellule
+                    h_ratio = col / cells_horizontal
+                    v_ratio = row / cells_vertical
                     
-                    # Cellule individuelle avec bordure
-                    cell_rect = [cell_x + 1, cell_y + 1, 
-                               cell_x + cell_width - 1, cell_y + cell_height - 1]
-                    draw.rectangle(cell_rect, fill=(18, 28, 50), outline=(35, 45, 65), width=1)
+                    # Interpolation des points pour suivre la forme du panneau
+                    top_left_x = base_x + h_ratio * panel_width
+                    top_left_y = base_y + v_ratio * panel_height - (h_ratio * skew_offset)
                     
-                    # Petit reflet sur chaque cellule
-                    highlight = [cell_x + 2, cell_y + 2, 
-                               cell_x + cell_width//3, cell_y + cell_height//3]
-                    draw.rectangle(highlight, fill=(60, 80, 120))
+                    cell_width = panel_width // cells_horizontal
+                    cell_height = panel_height // cells_vertical
+                    
+                    # Cellule individuelle
+                    cell_points = [
+                        (top_left_x, top_left_y),
+                        (top_left_x + cell_width, top_left_y - int(cell_width * 0.2)),
+                        (top_left_x + cell_width, top_left_y + cell_height - int(cell_width * 0.2)),
+                        (top_left_x, top_left_y + cell_height)
+                    ]
+                    
+                    # Dessiner la cellule avec une couleur légèrement différente
+                    draw.polygon(cell_points, fill=(30, 40, 60), outline=(45, 55, 75), width=1)
             
-            # 5. Reflet global réaliste (simulation vitre)
-            gradient_steps = 5
-            for step in range(gradient_steps):
-                alpha = 80 - (step * 15)
-                reflect_y = y + (step * panel_height // gradient_steps)
-                reflect_height = panel_height // gradient_steps
-                reflect_rect = [x + 5, reflect_y, x + panel_width//2, reflect_y + reflect_height]
-                
-                # Créer effet de reflet dégradé
-                overlay = PILImage.new('RGBA', (panel_width//2, reflect_height), (255, 255, 255, alpha))
-                composite_image.paste(overlay, (x + 5, reflect_y), overlay)
+            # 5. Reflet sur la partie haute du panneau (effet vitre)
+            highlight_points = [
+                points[0],
+                points[1], 
+                (points[1][0], points[1][1] + panel_height//3),
+                (points[0][0], points[0][1] + panel_height//3)
+            ]
+            draw.polygon(highlight_points, fill=(100, 130, 160, 100))  # Semi-transparent
             
-            # 6. Fixations visibles
+            # 6. Fixations aux angles
             # Fixation coin supérieur gauche
-            fix_size = 8
-            draw.rectangle([x + 10, y + 8, x + 10 + fix_size, y + 8 + fix_size], 
-                         fill=(100, 100, 100), outline=(80, 80, 80), width=1)
+            fix_x, fix_y = points[0][0] + 8, points[0][1] + 6
+            draw.ellipse([fix_x-3, fix_y-3, fix_x+3, fix_y+3], fill=(100, 100, 100))
             
-            # Fixation coin supérieur droit  
-            draw.rectangle([x + panel_width - 20, y + 8, x + panel_width - 12, y + 16], 
-                         fill=(100, 100, 100), outline=(80, 80, 80), width=1)
-            
-            # Fixation coin inférieur
-            draw.rectangle([x + panel_width//2 - 4, y + panel_height - 15, 
-                          x + panel_width//2 + 4, y + panel_height - 7], 
-                         fill=(100, 100, 100), outline=(80, 80, 80), width=1)
-            
-            # 7. Numéro du panneau (optionnel)
-            # draw.text((x + panel_width//2, y + panel_height//2), str(i+1), 
-            #          fill=(255, 255, 255), anchor="mm")
-            
-            panels_drawn += 1
+            # Fixation coin supérieur droit
+            fix_x, fix_y = points[1][0] - 8, points[1][1] + 6
+            draw.ellipse([fix_x-3, fix_y-3, fix_x+3, fix_y+3], fill=(100, 100, 100))
         
-        logging.info(f"Successfully drew {panels_drawn} REALISTIC panels")
+        logging.info(f"Successfully drew {len(roof_positions)} roof-adapted panels")
         
         # Convertir en base64
         buffer = BytesIO()
@@ -1590,46 +1601,56 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
         return f"data:image/jpeg;base64,{composite_base64}"
         
     except Exception as e:
-        logging.error(f"Error creating realistic composite: {e}")
+        logging.error(f"Error creating roof-adapted composite: {e}")
         return base64_image
 
-def generate_roof_specific_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
+def generate_roof_adapted_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
     """
-    Génère des positions spécifiques pour les panneaux sur la zone TOIT de l'image
+    Génère des positions adaptées à la géométrie du toit
     """
     positions = []
     
-    # Déterminer la zone de toit (généralement le tiers supérieur de l'image)
-    roof_start_y = 0.2  # 20% du haut
-    roof_end_y = 0.6    # Jusqu'à 60% de l'image
-    roof_start_x = 0.1  # 10% du bord gauche
-    roof_end_x = 0.9    # Jusqu'à 90% du bord droit
+    # Zone du toit principale (ajustée pour correspondre à une toiture réelle)
+    roof_top_y = 0.18      # Début de la zone toit (plus haut)
+    roof_bottom_y = 0.55   # Fin de la zone toit (partie visible)
+    roof_left_x = 0.12     # Bord gauche du toit
+    roof_right_x = 0.88    # Bord droit du toit
     
-    # Calculer la disposition optimale
-    panels_per_row = min(4, panel_count)  # Max 4 panneaux par rangée
+    # Calculer la disposition optimale pour s'adapter au toit
+    if panel_count <= 4:
+        panels_per_row = 4
+    elif panel_count <= 8:  
+        panels_per_row = 4
+    elif panel_count <= 12:
+        panels_per_row = 4
+    else:
+        panels_per_row = 6
+        
     rows = (panel_count + panels_per_row - 1) // panels_per_row
     
-    panel_width = 0.16
-    panel_height = 0.09
+    # Espacement adapté à la surface de toit disponible
+    panel_spacing_x = (roof_right_x - roof_left_x) / panels_per_row
+    panel_spacing_y = (roof_bottom_y - roof_top_y) / max(1, rows)
     
-    for i in range(panel_count):
-        row = i // panels_per_row
-        col = i % panels_per_row
-        
-        # Espacement équilibré
-        x_spacing = (roof_end_x - roof_start_x - panel_width) / max(1, panels_per_row - 1)
-        y_spacing = (roof_end_y - roof_start_y - panel_height) / max(1, rows - 1)
-        
-        x = roof_start_x + col * x_spacing
-        y = roof_start_y + row * y_spacing
-        
-        positions.append({
-            'x': min(max(x, roof_start_x), roof_end_x - panel_width),
-            'y': min(max(y, roof_start_y), roof_end_y - panel_height),
-            'width': panel_width,
-            'height': panel_height,
-            'angle': 0
-        })
+    panel_idx = 0
+    for row in range(rows):
+        for col in range(panels_per_row):
+            if panel_idx >= panel_count:
+                break
+                
+            # Position centrée dans chaque "case" du toit
+            x = roof_left_x + col * panel_spacing_x + panel_spacing_x * 0.1
+            y = roof_top_y + row * panel_spacing_y + panel_spacing_y * 0.1
+            
+            positions.append({
+                'x': x,
+                'y': y,
+                'width': 0.11,
+                'height': 0.06,
+                'angle': 15  # Angle d'inclinaison du toit
+            })
+            
+            panel_idx += 1
     
     return positions
 
