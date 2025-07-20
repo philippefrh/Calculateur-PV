@@ -17,7 +17,7 @@ import json
 import io
 import base64
 from io import BytesIO
-from PIL import Image, ImageDraw
+from PIL import Image as PILImage, ImageDraw
 
 # PDF Generation imports
 from reportlab.lib import colors
