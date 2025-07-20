@@ -2052,6 +2052,111 @@ def detect_roof_obstacles_fallback(img_array, img_width: int, img_height: int) -
         logging.error(f"Error in fallback obstacle detection: {e}")
         return []
 
+def determine_roof_type(img_array) -> str:
+    """
+    AMÉLIORÉ : Détermine le type de toiture depuis l'image avec plus de précision
+    """
+    try:
+        import numpy as np
+        
+        # Analyser les couleurs dominantes et textures pour déterminer le type
+        if len(img_array.shape) == 3:
+            colors_mean = np.mean(img_array, axis=(0, 1))
+            
+            # Analyser la dominance des couleurs
+            r_dom = colors_mean[0] / (np.sum(colors_mean) + 1e-6)
+            g_dom = colors_mean[1] / (np.sum(colors_mean) + 1e-6)
+            b_dom = colors_mean[2] / (np.sum(colors_mean) + 1e-6)
+            
+            # Tuiles (dominance rouge/orange)
+            if r_dom > 0.4 and r_dom > g_dom and r_dom > b_dom:
+                if g_dom > 0.25:  # Orange/terre cuite
+                    roof_type = "tuiles_terre_cuite"
+                else:
+                    roof_type = "tuiles_rouge"
+            
+            # Ardoise (dominance grise uniforme)  
+            elif abs(r_dom - g_dom) < 0.05 and abs(g_dom - b_dom) < 0.05:
+                if np.mean(colors_mean) < 100:
+                    roof_type = "ardoise_foncee"
+                else:
+                    roof_type = "ardoise_claire"
+            
+            # Métal/zinc (luminosité élevée + dominance bleue/grise)
+            elif np.mean(colors_mean) > 150 and b_dom > 0.35:
+                roof_type = "metal_zinc"
+            
+            # Béton/fibrociment
+            elif 100 < np.mean(colors_mean) < 150:
+                roof_type = "beton_fibrociment"
+            
+            else:
+                roof_type = "mixte"
+        else:
+            # Image en niveaux de gris
+            mean_brightness = np.mean(img_array)
+            if mean_brightness < 80:
+                roof_type = "ardoise_foncee"
+            elif mean_brightness > 180:
+                roof_type = "metal_clair"
+            else:
+                roof_type = "tuiles_standard"
+                
+        logging.info(f"🏠 Type de toit détecté: {roof_type}")
+        return roof_type
+        
+    except Exception as e:
+        logging.error(f"Error determining roof type: {e}")
+        return "standard"
+
+def calculate_optimal_orientation(img_array) -> str:
+    """
+    AMÉLIORÉ : Calcule l'orientation optimale basée sur l'analyse avancée de l'image
+    """
+    try:
+        import numpy as np
+        
+        # Analyse des ombres pour déterminer l'orientation
+        if len(img_array.shape) == 3:
+            gray = np.mean(img_array, axis=2)
+        else:
+            gray = img_array
+            
+        height, width = gray.shape
+        
+        # Analyser les gradients de luminosité pour détecter la direction des ombres
+        grad_x = np.gradient(gray, axis=1)  # Gradient horizontal
+        grad_y = np.gradient(gray, axis=0)  # Gradient vertical
+        
+        # Calculer la direction dominante des gradients
+        mean_grad_x = np.mean(grad_x)
+        mean_grad_y = np.mean(grad_y)
+        
+        # Détecter les zones d'ombre (gradients négatifs)
+        shadow_strength_x = np.sum(grad_x[grad_x < -5])  # Ombres horizontales
+        shadow_strength_y = np.sum(grad_y[grad_y < -5])  # Ombres verticales
+        
+        # Déterminer l'orientation probable basée sur les ombres
+        if abs(shadow_strength_x) > abs(shadow_strength_y) * 1.5:
+            if shadow_strength_x < 0:
+                orientation = "sud_ouest"  # Ombres à droite = soleil à gauche
+            else:
+                orientation = "sud_est"    # Ombres à gauche = soleil à droite
+        elif abs(shadow_strength_y) > abs(shadow_strength_x) * 1.5:
+            if shadow_strength_y < 0:
+                orientation = "sud"        # Ombres en bas = soleil en haut
+            else:
+                orientation = "nord"       # Ombres en haut = soleil en bas
+        else:
+            orientation = "sud"  # Par défaut - orientation optimale en France
+            
+        logging.info(f"🧭 Orientation optimale calculée: {orientation}")
+        return orientation
+        
+    except Exception as e:
+        logging.error(f"Error calculating optimal orientation: {e}")
+        return "sud"  # Fallback vers sud (optimal en France)
+
 def merge_nearby_obstacles(obstacles: List[Dict]) -> List[Dict]:
     """
     Fusionne les obstacles détectés qui sont proches les uns des autres
