@@ -716,16 +716,7 @@ const ConsumptionForm = ({
   setFormData, 
   onNext, 
   onPrevious, 
-  selectedRegion = "france",
-  showRoofAnalysis,
-  setShowRoofAnalysis,
-  roofImage,
-  setRoofImage,
-  roofAnalysisResult,
-  setRoofAnalysisResult,
-  isAnalyzingRoof,
-  handleRoofImageUpload,
-  analyzeRoofWithAI
+  selectedRegion = "france"
 }) => {
   const [errors, setErrors] = useState({});
   const [showKitSelection, setShowKitSelection] = useState(false);
