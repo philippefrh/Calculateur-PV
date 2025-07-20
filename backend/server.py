@@ -1505,28 +1505,34 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
             image_base64=request.image_base64
         )
         
-        # Prompt pour l'analyse de toiture
+        # Prompt pour l'analyse de toiture avec génération d'image composite
         prompt = f"""
-        Analysez cette photo de toiture pour le placement de {request.panel_count} panneaux solaires.
+        MISSION : Générez une image composite réaliste montrant {request.panel_count} panneaux solaires installés sur cette toiture.
+
+        INSTRUCTIONS :
+        1. Analysez la toiture (type, orientation, obstacles, surface disponible)
+        2. Déterminez le placement optimal pour {request.panel_count} panneaux solaires
+        3. GÉNÉREZ UNE IMAGE COMPOSITE montrant les panneaux solaires noirs réalistes installés sur la toiture
+        4. Les panneaux doivent être intégrés de façon réaliste avec perspective, ombres et reflets appropriés
+        5. Respectez l'architecture et l'angle de vue de la photo originale
+
+        SPÉCIFICATIONS TECHNIQUES :
+        - Panneaux solaires noirs/bleu foncé avec bordures métalliques
+        - Dimensions réelles : 2m x 1.05m (surface {request.panel_surface}m² chacun)
+        - Surface totale : {total_surface_required}m²
+        - Installation avec fixations appropriées visibles
+        - Respect des distances de sécurité (bords de toit, cheminées, fenêtres)
+
+        RÉPONSE ATTENDUE :
+        Générez directement l'image composite finale montrant la toiture avec les panneaux installés de façon réaliste.
         
-        Chaque panneau mesure {request.panel_surface}m² (dimensions approximatives: 2m x 1.05m).
-        Surface totale requise: {total_surface_required}m².
-        
-        Veuillez fournir une réponse au format JSON avec:
-        1. "roof_analysis": Description détaillée de la toiture (type, orientation, obstacles, surface estimée)
-        2. "placement_possible": true/false si les {request.panel_count} panneaux peuvent être placés
-        3. "panel_positions": Array de {request.panel_count} objets avec:
-           - "x": position X relative (0.0 à 1.0)
-           - "y": position Y relative (0.0 à 1.0) 
-           - "width": largeur relative (0.0 à 1.0)
-           - "height": hauteur relative (0.0 à 1.0)
-           - "angle": angle de rotation en degrés
-        4. "recommendations": Conseils d'optimisation du placement
-        
-        Évitez les obstacles (cheminées, fenêtres de toit, antennes) et optimisez l'exposition au soleil.
-        Respectez les proportions réelles des panneaux et l'architecture de la toiture.
-        
-        Répondez uniquement en JSON valide.
+        Si vous ne pouvez pas générer d'image, répondez en JSON avec :
+        {{
+            "error": "Image generation not available",
+            "roof_analysis": "Description de l'analyse",
+            "placement_possible": true/false,
+            "recommendations": "Conseils détaillés"
+        }}
         """
         
         # Créer le message avec l'image
