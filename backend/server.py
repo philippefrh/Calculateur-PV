@@ -32,6 +32,9 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import requests
 
+# OpenAI Vision imports 
+from emergentintegrations.llm.chat import ImageContent, UserMessage, LLMChat
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
