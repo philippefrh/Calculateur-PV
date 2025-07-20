@@ -2948,8 +2948,19 @@ class SolarCalculatorTester:
         self.test_calculation_with_optimistic_mode()
         self.test_calculation_modes_comparison()
         
-        # NEW: Roof Analysis with OpenAI Vision tests
-        print("\n🏠 ROOF ANALYSIS AI FEATURE TESTS")
+        # INTELLIGENT ROOF ANALYSIS SYSTEM TESTS - NEW REDESIGNED SYSTEM
+        print("\n🏠 INTELLIGENT ROOF ANALYSIS SYSTEM TESTS - COMPLETELY REDESIGNED")
+        print("-" * 70)
+        self.test_roof_analysis_endpoint_basic()
+        self.test_roof_analysis_parameter_validation()
+        self.test_roof_analysis_panel_count_scenarios()
+        self.test_roof_analysis_obstacle_detection()
+        self.test_roof_analysis_realistic_placement()
+        self.test_roof_analysis_enhanced_messages()
+        self.test_roof_analysis_composite_image_generation()
+        
+        # LEGACY ROOF ANALYSIS TESTS (for compatibility)
+        print("\n🔧 LEGACY ROOF ANALYSIS TESTS")
         print("-" * 50)
         self.test_roof_analysis_endpoint_exists()
         self.test_roof_analysis_parameters_validation()
