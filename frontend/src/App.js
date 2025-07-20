@@ -2342,15 +2342,6 @@ function App() {
   const [selectedCalculationMode, setSelectedCalculationMode] = useState('realistic');
   const [calculationModes, setCalculationModes] = useState(null);
   
-  // États pour l'analyse de toiture 
-  const [showRoofAnalysis, setShowRoofAnalysis] = useState(false);
-  const [roofImage, setRoofImage] = useState(null);
-  const [roofAnalysisResult, setRoofAnalysisResult] = useState(null);
-  const [isAnalyzingRoof, setIsAnalyzingRoof] = useState(false);
-  
-  // États pour la sélection de zone du toit par clic
-  const [roofCorners, setRoofCorners] = useState([]);  // Points cliqués pour délimiter le toit
-  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
