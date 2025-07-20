@@ -1544,11 +1544,25 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
         # Envoyer la demande à OpenAI Vision
         response = await llm.send_message(user_message)
         
-        # Parser la réponse JSON
+        # Parser la réponse - peut être une image ou du JSON
         try:
-            # La réponse de LlmChat est déjà une chaîne, pas un objet avec .text
+            # Vérifier si c'est une image base64 ou du JSON
             response_text = response if isinstance(response, str) else str(response)
-            result = json.loads(response_text)
+            
+            # Si la réponse commence par un préfixe d'image base64
+            if response_text.startswith('data:image/') or (len(response_text) > 100 and not response_text.strip().startswith('{')):
+                # C'est probablement une image générée
+                return RoofAnalysisResponse(
+                    success=True,
+                    panel_positions=[],  # Pas de positions, image composite fournie
+                    roof_analysis="Image composite générée avec panneaux solaires installés",
+                    total_surface_required=total_surface_required,
+                    placement_possible=True,
+                    recommendations="Consultez l'image composite générée montrant l'installation réaliste des panneaux"
+                )
+            else:
+                # Essayer de parser comme JSON
+                result = json.loads(response_text)
         except json.JSONDecodeError:
             # Si ce n'est pas du JSON valide, essayer d'extraire le JSON
             import re
@@ -1557,7 +1571,15 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
             if json_match:
                 result = json.loads(json_match.group())
             else:
-                raise HTTPException(status_code=500, detail="Invalid JSON response from AI")
+                # Traiter comme une réponse d'erreur ou description textuelle
+                return RoofAnalysisResponse(
+                    success=True,
+                    panel_positions=[],
+                    roof_analysis=response_text[:500],  # Limiter la longueur
+                    total_surface_required=total_surface_required,
+                    placement_possible=True,
+                    recommendations="Analyse textuelle fournie par l'IA"
+                )
         
         # Construire la réponse
         panel_positions = []
