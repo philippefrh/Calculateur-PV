@@ -2162,12 +2162,23 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     setIsDemoMode(!isDemoMode);
   };
 
-  if (!isCalculating && calculationResults) {
-    // Déclencher le passage automatique aux résultats après 20 secondes
-    setTimeout(() => {
-      onComplete(calculationResults);
-    }, 20000);
+  // Timer de 20 secondes pour l'écran de succès
+  useEffect(() => {
+    if (!isCalculating && calculationResults && !successTimerRef.current) {
+      successTimerRef.current = setTimeout(() => {
+        onComplete(calculationResults);
+      }, 20000);
+    }
     
+    return () => {
+      if (successTimerRef.current) {
+        clearTimeout(successTimerRef.current);
+        successTimerRef.current = null;
+      }
+    };
+  }, [isCalculating, calculationResults, onComplete]);
+
+  if (!isCalculating && calculationResults) {
     return (
       <div className="calculation-screen success">
         <div className="success-animation">
