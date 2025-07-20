@@ -1595,18 +1595,51 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
             # Panneau principal en parallélogramme - BLEU FONCÉ VISIBLE
             draw.polygon(panel_points, fill=(20, 40, 80), outline=(255, 255, 0), width=3)
             
-            # 3. Grille simple de cellules
+            # 3. Grille simple de cellules QUI SUIT L'INCLINAISON
             cells_x = 3
             cells_y = 2
-            cell_width = panel_width // cells_x
-            cell_height = panel_height // cells_y
             
+            # Dessiner les cellules dans le parallélogramme
             for row in range(cells_y):
                 for col in range(cells_x):
-                    cell_x = x + col * cell_width
-                    cell_y = y + row * cell_height
-                    draw.rectangle([cell_x, cell_y, cell_x + cell_width, cell_y + cell_height],
-                                 outline=(60, 80, 120), width=1)
+                    # Interpoler les positions dans le parallélogramme
+                    h_ratio = col / cells_x
+                    v_ratio = row / cells_y
+                    
+                    # Côté supérieur (interpolation entre coin sup gauche et sup droit)
+                    top_left = (
+                        panel_points[0][0] + h_ratio * (panel_points[1][0] - panel_points[0][0]),
+                        panel_points[0][1] + h_ratio * (panel_points[1][1] - panel_points[0][1])
+                    )
+                    
+                    # Côté inférieur (interpolation entre coin inf gauche et inf droit)  
+                    bottom_left = (
+                        panel_points[3][0] + h_ratio * (panel_points[2][0] - panel_points[3][0]),
+                        panel_points[3][1] + h_ratio * (panel_points[2][1] - panel_points[3][1])
+                    )
+                    
+                    # Position de la cellule (interpolation verticale)
+                    cell_x = top_left[0] + v_ratio * (bottom_left[0] - top_left[0])
+                    cell_y = top_left[1] + v_ratio * (bottom_left[1] - top_left[1])
+                    
+                    # Taille de cellule adaptée à l'inclinaison
+                    next_h_ratio = (col + 1) / cells_x
+                    next_v_ratio = (row + 1) / cells_y
+                    
+                    next_top = (
+                        panel_points[0][0] + next_h_ratio * (panel_points[1][0] - panel_points[0][0]),
+                        panel_points[0][1] + next_h_ratio * (panel_points[1][1] - panel_points[0][1])
+                    )
+                    next_bottom = (
+                        panel_points[3][0] + next_h_ratio * (panel_points[2][0] - panel_points[3][0]),
+                        panel_points[3][1] + next_h_ratio * (panel_points[2][1] - panel_points[3][1])
+                    )
+                    
+                    cell_end_x = next_top[0] + v_ratio * (next_bottom[0] - next_top[0])
+                    cell_end_y = next_top[1] + v_ratio * (next_bottom[1] - next_top[1])
+                    
+                    # Dessiner la bordure de cellule (ligne simple)
+                    draw.line([cell_x, cell_y, cell_end_x, cell_end_y], fill=(60, 80, 120), width=1)
             
             # 4. Numéro du panneau au centre
             try:
