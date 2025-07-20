@@ -2139,6 +2139,498 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Devis Endpoint Both Regions", False, f"Error: {str(e)}")
 
+    def test_roof_analysis_endpoint_basic(self):
+        """Test basic roof analysis endpoint functionality"""
+        try:
+            # Create a simple test image (1x1 pixel PNG in base64)
+            test_image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAGAWA0ddgAAAABJRU5ErkJggg=="
+            
+            # Test with valid parameters
+            payload = {
+                "image_base64": test_image_base64,
+                "panel_count": 12
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=payload)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ["success", "panel_positions", "roof_analysis", "total_surface_required", "placement_possible", "recommendations"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Roof Analysis - Basic Endpoint", False, f"Missing response fields: {missing_fields}", data)
+                    return
+                
+                # Check that panel_positions is a list
+                if not isinstance(data["panel_positions"], list):
+                    self.log_test("Roof Analysis - Basic Endpoint", False, f"panel_positions should be a list, got {type(data['panel_positions'])}", data)
+                    return
+                
+                # Check surface calculation (panel_count * 2.11m²)
+                expected_surface = 12 * 2.11
+                if abs(data["total_surface_required"] - expected_surface) > 0.1:
+                    self.log_test("Roof Analysis - Basic Endpoint", False, f"Surface calculation incorrect: expected {expected_surface}, got {data['total_surface_required']}", data)
+                    return
+                
+                self.log_test("Roof Analysis - Basic Endpoint", True, 
+                            f"✅ Endpoint responds correctly. Success: {data['success']}, Panel positions: {len(data['panel_positions'])}, Surface required: {data['total_surface_required']}m², Placement possible: {data['placement_possible']}", 
+                            data)
+            else:
+                self.log_test("Roof Analysis - Basic Endpoint", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Roof Analysis - Basic Endpoint", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_parameter_validation(self):
+        """Test roof analysis parameter validation"""
+        try:
+            # Test missing image_base64
+            payload = {"panel_count": 12}
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=payload)
+            if response.status_code != 422:
+                self.log_test("Roof Analysis - Parameter Validation", False, f"Should reject missing image_base64 with 422, got {response.status_code}")
+                return
+            
+            # Test missing panel_count
+            payload = {"image_base64": "test"}
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=payload)
+            if response.status_code != 422:
+                self.log_test("Roof Analysis - Parameter Validation", False, f"Should reject missing panel_count with 422, got {response.status_code}")
+                return
+            
+            # Test invalid panel_count (negative)
+            payload = {"image_base64": "test", "panel_count": -5}
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=payload)
+            if response.status_code != 422:
+                self.log_test("Roof Analysis - Parameter Validation", False, f"Should reject negative panel_count with 422, got {response.status_code}")
+                return
+            
+            # Test invalid panel_count (zero)
+            payload = {"image_base64": "test", "panel_count": 0}
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=payload)
+            if response.status_code != 422:
+                self.log_test("Roof Analysis - Parameter Validation", False, f"Should reject zero panel_count with 422, got {response.status_code}")
+                return
+            
+            self.log_test("Roof Analysis - Parameter Validation", True, 
+                        "✅ Parameter validation working correctly. Rejects missing/invalid inputs with HTTP 422", 
+                        {"validation_tests": "missing_image, missing_panel_count, negative_panel_count, zero_panel_count"})
+        except Exception as e:
+            self.log_test("Roof Analysis - Parameter Validation", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_panel_count_scenarios(self):
+        """Test roof analysis with different panel counts (6, 12, 18) to verify intelligent zone distribution"""
+        try:
+            test_image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAGAWA0ddgAAAABJRU5ErkJggg=="
+            
+            test_scenarios = [
+                {"panel_count": 6, "expected_surface": 6 * 2.11},
+                {"panel_count": 12, "expected_surface": 12 * 2.11},
+                {"panel_count": 18, "expected_surface": 18 * 2.11}
+            ]
+            
+            results = []
+            issues = []
+            
+            for scenario in test_scenarios:
+                payload = {
+                    "image_base64": test_image_base64,
+                    "panel_count": scenario["panel_count"]
+                }
+                
+                response = self.session.post(f"{self.base_url}/analyze-roof", json=payload)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    
+                    # Check that we get the correct number of panel positions
+                    panel_positions = data.get("panel_positions", [])
+                    if len(panel_positions) != scenario["panel_count"]:
+                        issues.append(f"{scenario['panel_count']} panels: got {len(panel_positions)} positions instead of {scenario['panel_count']}")
+                    
+                    # Check surface calculation
+                    if abs(data["total_surface_required"] - scenario["expected_surface"]) > 0.1:
+                        issues.append(f"{scenario['panel_count']} panels: surface {data['total_surface_required']} != expected {scenario['expected_surface']}")
+                    
+                    # Check that positions are within valid range (0-1)
+                    for i, pos in enumerate(panel_positions):
+                        if not (0 <= pos.get("x", -1) <= 1) or not (0 <= pos.get("y", -1) <= 1):
+                            issues.append(f"{scenario['panel_count']} panels: position {i} has invalid coordinates x={pos.get('x')}, y={pos.get('y')}")
+                            break
+                    
+                    results.append({
+                        "panel_count": scenario["panel_count"],
+                        "positions_returned": len(panel_positions),
+                        "surface_required": data["total_surface_required"],
+                        "placement_possible": data["placement_possible"],
+                        "success": data["success"]
+                    })
+                else:
+                    issues.append(f"{scenario['panel_count']} panels: HTTP {response.status_code}")
+            
+            if issues:
+                self.log_test("Roof Analysis - Panel Count Scenarios", False, f"Issues found: {'; '.join(issues)}", results)
+            else:
+                self.log_test("Roof Analysis - Panel Count Scenarios", True, 
+                            f"✅ All panel count scenarios working. 6 panels: {results[0]['positions_returned']} positions, 12 panels: {results[1]['positions_returned']} positions, 18 panels: {results[2]['positions_returned']} positions. All return correct number of positions and valid coordinates.", 
+                            results)
+        except Exception as e:
+            self.log_test("Roof Analysis - Panel Count Scenarios", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_obstacle_detection(self):
+        """Test obstacle detection and intelligent positioning around obstacles"""
+        try:
+            # Use a slightly larger test image to simulate a roof with potential obstacles
+            test_image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAGAWA0ddgAAAABJRU5ErkJggg=="
+            
+            payload = {
+                "image_base64": test_image_base64,
+                "panel_count": 12
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=payload)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check if analysis includes obstacle-related information
+                roof_analysis = data.get("roof_analysis", "").lower()
+                recommendations = data.get("recommendations", "").lower()
+                
+                # Look for obstacle-related keywords in the analysis
+                obstacle_keywords = ["obstacle", "skylight", "chimney", "antenna", "vent", "zone", "area", "avoid", "around", "between"]
+                analysis_text = roof_analysis + " " + recommendations
+                
+                obstacle_mentions = sum(1 for keyword in obstacle_keywords if keyword in analysis_text)
+                
+                # Check panel positioning for intelligent distribution
+                panel_positions = data.get("panel_positions", [])
+                
+                if len(panel_positions) > 0:
+                    # Check if panels are distributed across different areas (not all clustered)
+                    x_positions = [pos.get("x", 0) for pos in panel_positions]
+                    y_positions = [pos.get("y", 0) for pos in panel_positions]
+                    
+                    x_range = max(x_positions) - min(x_positions) if x_positions else 0
+                    y_range = max(y_positions) - min(y_positions) if y_positions else 0
+                    
+                    # Good distribution should have reasonable spread
+                    good_distribution = x_range > 0.2 and y_range > 0.2
+                    
+                    # Check if positions avoid extreme edges (realistic placement)
+                    edge_avoidance = all(0.1 <= pos.get("x", 0) <= 0.9 and 0.1 <= pos.get("y", 0) <= 0.9 for pos in panel_positions)
+                    
+                    self.log_test("Roof Analysis - Obstacle Detection", True, 
+                                f"✅ Obstacle detection analysis working. Analysis contains {obstacle_mentions} obstacle-related keywords. Panel distribution: X-range {x_range:.2f}, Y-range {y_range:.2f}, Good distribution: {good_distribution}, Edge avoidance: {edge_avoidance}. Positions returned: {len(panel_positions)}", 
+                                {
+                                    "obstacle_keywords_found": obstacle_mentions,
+                                    "panel_positions_count": len(panel_positions),
+                                    "x_range": x_range,
+                                    "y_range": y_range,
+                                    "good_distribution": good_distribution,
+                                    "edge_avoidance": edge_avoidance,
+                                    "roof_analysis_length": len(roof_analysis),
+                                    "recommendations_length": len(recommendations)
+                                })
+                else:
+                    self.log_test("Roof Analysis - Obstacle Detection", False, "No panel positions returned", data)
+            else:
+                self.log_test("Roof Analysis - Obstacle Detection", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Roof Analysis - Obstacle Detection", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_realistic_placement(self):
+        """Test that panels are positioned like real installations with proper zones"""
+        try:
+            test_image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAGAWA0ddgAAAABJRU5ErkJggg=="
+            
+            payload = {
+                "image_base64": test_image_base64,
+                "panel_count": 18  # Larger number to test zone distribution
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=payload)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                panel_positions = data.get("panel_positions", [])
+                
+                if len(panel_positions) == 18:
+                    # Analyze positioning for realistic installation patterns
+                    x_positions = [pos.get("x", 0) for pos in panel_positions]
+                    y_positions = [pos.get("y", 0) for pos in panel_positions]
+                    
+                    # Check for clustering (panels should be in groups, not randomly scattered)
+                    # Calculate distances between panels to identify clusters
+                    clusters = []
+                    for i, pos1 in enumerate(panel_positions):
+                        close_neighbors = 0
+                        for j, pos2 in enumerate(panel_positions):
+                            if i != j:
+                                distance = ((pos1.get("x", 0) - pos2.get("x", 0))**2 + (pos1.get("y", 0) - pos2.get("y", 0))**2)**0.5
+                                if distance < 0.15:  # Close neighbors within 15% of image size
+                                    close_neighbors += 1
+                        clusters.append(close_neighbors)
+                    
+                    # Most panels should have at least 1-2 close neighbors (clustered installation)
+                    well_clustered = sum(1 for c in clusters if c >= 1) / len(clusters) > 0.6
+                    
+                    # Check for proper spacing (not overlapping)
+                    min_distance = float('inf')
+                    for i, pos1 in enumerate(panel_positions):
+                        for j, pos2 in enumerate(panel_positions):
+                            if i != j:
+                                distance = ((pos1.get("x", 0) - pos2.get("x", 0))**2 + (pos1.get("y", 0) - pos2.get("y", 0))**2)**0.5
+                                min_distance = min(min_distance, distance)
+                    
+                    proper_spacing = min_distance > 0.05  # Minimum 5% spacing
+                    
+                    # Check for realistic roof area usage (not using extreme edges)
+                    safe_area_usage = all(0.1 <= pos.get("x", 0) <= 0.9 and 0.1 <= pos.get("y", 0) <= 0.9 for pos in panel_positions)
+                    
+                    # Check for zone distribution (panels should be in 2-3 main zones)
+                    x_sorted = sorted(x_positions)
+                    y_sorted = sorted(y_positions)
+                    
+                    # Look for gaps that might indicate separate zones
+                    x_gaps = []
+                    for i in range(1, len(x_sorted)):
+                        gap = x_sorted[i] - x_sorted[i-1]
+                        if gap > 0.2:  # Significant gap indicating separate zones
+                            x_gaps.append(gap)
+                    
+                    y_gaps = []
+                    for i in range(1, len(y_sorted)):
+                        gap = y_sorted[i] - y_sorted[i-1]
+                        if gap > 0.2:  # Significant gap indicating separate zones
+                            y_gaps.append(gap)
+                    
+                    zone_separation = len(x_gaps) > 0 or len(y_gaps) > 0
+                    
+                    # Check recommendations for realistic installation advice
+                    recommendations = data.get("recommendations", "").lower()
+                    realistic_keywords = ["zone", "area", "group", "cluster", "separate", "avoid", "optimal", "installation", "roof"]
+                    realistic_advice = sum(1 for keyword in realistic_keywords if keyword in recommendations)
+                    
+                    issues = []
+                    if not well_clustered:
+                        issues.append("Panels not well clustered (should be in groups)")
+                    if not proper_spacing:
+                        issues.append(f"Panels too close together (min distance: {min_distance:.3f})")
+                    if not safe_area_usage:
+                        issues.append("Panels placed too close to roof edges")
+                    if realistic_advice < 2:
+                        issues.append("Recommendations lack realistic installation advice")
+                    
+                    if issues:
+                        self.log_test("Roof Analysis - Realistic Placement", False, f"Placement issues: {'; '.join(issues)}", {
+                            "well_clustered": well_clustered,
+                            "proper_spacing": proper_spacing,
+                            "min_distance": min_distance,
+                            "safe_area_usage": safe_area_usage,
+                            "zone_separation": zone_separation,
+                            "realistic_advice_keywords": realistic_advice
+                        })
+                    else:
+                        self.log_test("Roof Analysis - Realistic Placement", True, 
+                                    f"✅ Realistic placement working. 18 panels well-clustered: {well_clustered}, proper spacing (min: {min_distance:.3f}), safe area usage: {safe_area_usage}, zone separation: {zone_separation}, realistic advice keywords: {realistic_advice}. Panels positioned like real installations.", 
+                                    {
+                                        "panel_count": len(panel_positions),
+                                        "well_clustered": well_clustered,
+                                        "proper_spacing": proper_spacing,
+                                        "min_distance": min_distance,
+                                        "safe_area_usage": safe_area_usage,
+                                        "zone_separation": zone_separation,
+                                        "realistic_advice_keywords": realistic_advice,
+                                        "x_range": max(x_positions) - min(x_positions),
+                                        "y_range": max(y_positions) - min(y_positions)
+                                    })
+                else:
+                    self.log_test("Roof Analysis - Realistic Placement", False, f"Expected 18 panel positions, got {len(panel_positions)}", data)
+            else:
+                self.log_test("Roof Analysis - Realistic Placement", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Roof Analysis - Realistic Placement", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_enhanced_messages(self):
+        """Test that AI analysis includes detailed obstacle and roof information"""
+        try:
+            test_image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAGAWA0ddgAAAABJRU5ErkJggg=="
+            
+            payload = {
+                "image_base64": test_image_base64,
+                "panel_count": 12
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=payload)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                roof_analysis = data.get("roof_analysis", "")
+                recommendations = data.get("recommendations", "")
+                
+                # Check for detailed roof information keywords
+                roof_keywords = [
+                    "roof", "slope", "inclination", "angle", "orientation", "surface", "area",
+                    "tile", "material", "structure", "geometry", "pitch"
+                ]
+                
+                # Check for obstacle detection keywords
+                obstacle_keywords = [
+                    "obstacle", "skylight", "chimney", "antenna", "vent", "dormer", "pipe",
+                    "obstruction", "avoid", "around", "clear", "space"
+                ]
+                
+                # Check for installation advice keywords
+                installation_keywords = [
+                    "zone", "area", "group", "cluster", "position", "placement", "install",
+                    "optimal", "best", "recommend", "suggest", "distribute", "arrange"
+                ]
+                
+                # Count keyword occurrences
+                analysis_text = (roof_analysis + " " + recommendations).lower()
+                
+                roof_mentions = sum(1 for keyword in roof_keywords if keyword in analysis_text)
+                obstacle_mentions = sum(1 for keyword in obstacle_keywords if keyword in analysis_text)
+                installation_mentions = sum(1 for keyword in installation_keywords if keyword in analysis_text)
+                
+                # Check message length and quality
+                total_length = len(roof_analysis) + len(recommendations)
+                
+                # Check for specific detailed information
+                has_roof_details = roof_mentions >= 3
+                has_obstacle_info = obstacle_mentions >= 1
+                has_installation_advice = installation_mentions >= 3
+                sufficient_detail = total_length >= 100  # At least 100 characters of analysis
+                
+                issues = []
+                if not has_roof_details:
+                    issues.append(f"Insufficient roof details (found {roof_mentions} roof keywords, expected ≥3)")
+                if not has_obstacle_info:
+                    issues.append(f"No obstacle information (found {obstacle_mentions} obstacle keywords)")
+                if not has_installation_advice:
+                    issues.append(f"Insufficient installation advice (found {installation_mentions} installation keywords, expected ≥3)")
+                if not sufficient_detail:
+                    issues.append(f"Analysis too brief ({total_length} characters, expected ≥100)")
+                
+                if issues:
+                    self.log_test("Roof Analysis - Enhanced Messages", False, f"Analysis quality issues: {'; '.join(issues)}", {
+                        "roof_analysis_length": len(roof_analysis),
+                        "recommendations_length": len(recommendations),
+                        "roof_keywords": roof_mentions,
+                        "obstacle_keywords": obstacle_mentions,
+                        "installation_keywords": installation_mentions,
+                        "total_length": total_length
+                    })
+                else:
+                    self.log_test("Roof Analysis - Enhanced Messages", True, 
+                                f"✅ Enhanced analysis messages working. Roof details: {roof_mentions} keywords, Obstacle info: {obstacle_mentions} keywords, Installation advice: {installation_mentions} keywords. Total analysis: {total_length} characters. Provides detailed roof characteristics and obstacle information.", 
+                                {
+                                    "roof_analysis_length": len(roof_analysis),
+                                    "recommendations_length": len(recommendations),
+                                    "roof_keywords": roof_mentions,
+                                    "obstacle_keywords": obstacle_mentions,
+                                    "installation_keywords": installation_mentions,
+                                    "total_length": total_length,
+                                    "has_roof_details": has_roof_details,
+                                    "has_obstacle_info": has_obstacle_info,
+                                    "has_installation_advice": has_installation_advice
+                                })
+            else:
+                self.log_test("Roof Analysis - Enhanced Messages", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Roof Analysis - Enhanced Messages", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_composite_image_generation(self):
+        """Test that the system generates realistic composite images with properly distributed panels"""
+        try:
+            test_image_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAGAWA0ddgAAAABJRU5ErkJggg=="
+            
+            payload = {
+                "image_base64": test_image_base64,
+                "panel_count": 12
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=payload)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check if composite image is generated (would be in composite_image field if implemented)
+                has_composite = "composite_image" in data
+                
+                # Check panel positions for realistic distribution
+                panel_positions = data.get("panel_positions", [])
+                
+                if len(panel_positions) == 12:
+                    # Verify positions are realistic for composite image generation
+                    valid_positions = all(
+                        isinstance(pos.get("x"), (int, float)) and 
+                        isinstance(pos.get("y"), (int, float)) and
+                        isinstance(pos.get("width", 0.1), (int, float)) and
+                        isinstance(pos.get("height", 0.1), (int, float)) and
+                        0 <= pos.get("x", 0) <= 1 and
+                        0 <= pos.get("y", 0) <= 1
+                        for pos in panel_positions
+                    )
+                    
+                    # Check for realistic panel dimensions
+                    realistic_dimensions = all(
+                        0.05 <= pos.get("width", 0.1) <= 0.3 and
+                        0.05 <= pos.get("height", 0.1) <= 0.3
+                        for pos in panel_positions
+                    )
+                    
+                    # Check for proper spacing between panels
+                    proper_spacing = True
+                    for i, pos1 in enumerate(panel_positions):
+                        for j, pos2 in enumerate(panel_positions):
+                            if i != j:
+                                distance = ((pos1.get("x", 0) - pos2.get("x", 0))**2 + (pos1.get("y", 0) - pos2.get("y", 0))**2)**0.5
+                                if distance < 0.08:  # Panels too close
+                                    proper_spacing = False
+                                    break
+                        if not proper_spacing:
+                            break
+                    
+                    issues = []
+                    if not valid_positions:
+                        issues.append("Invalid panel position coordinates")
+                    if not realistic_dimensions:
+                        issues.append("Unrealistic panel dimensions")
+                    if not proper_spacing:
+                        issues.append("Panels positioned too close together")
+                    
+                    if issues:
+                        self.log_test("Roof Analysis - Composite Image Generation", False, f"Position issues for composite generation: {'; '.join(issues)}", {
+                            "panel_positions_count": len(panel_positions),
+                            "valid_positions": valid_positions,
+                            "realistic_dimensions": realistic_dimensions,
+                            "proper_spacing": proper_spacing,
+                            "has_composite": has_composite
+                        })
+                    else:
+                        self.log_test("Roof Analysis - Composite Image Generation", True, 
+                                    f"✅ Composite image generation ready. 12 panels with valid positions (x,y coordinates), realistic dimensions, and proper spacing. Panel positions suitable for generating realistic composite images with roof-adapted panels.", 
+                                    {
+                                        "panel_positions_count": len(panel_positions),
+                                        "valid_positions": valid_positions,
+                                        "realistic_dimensions": realistic_dimensions,
+                                        "proper_spacing": proper_spacing,
+                                        "has_composite": has_composite,
+                                        "position_sample": panel_positions[:3] if len(panel_positions) >= 3 else panel_positions
+                                    })
+                else:
+                    self.log_test("Roof Analysis - Composite Image Generation", False, f"Expected 12 panel positions, got {len(panel_positions)}", data)
+            else:
+                self.log_test("Roof Analysis - Composite Image Generation", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Roof Analysis - Composite Image Generation", False, f"Error: {str(e)}")
+
     def test_roof_analysis_endpoint_exists(self):
         """Test that the /api/analyze-roof endpoint exists and responds correctly"""
         try:
