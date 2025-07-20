@@ -1484,6 +1484,9 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
     """
     Analyse une photo de toiture et propose le positionnement optimal des panneaux solaires
     """
+    # Calculer la surface totale requise (en dehors du try/catch)
+    total_surface_required = request.panel_count * request.panel_surface
+    
     try:
         # Configurer OpenAI
         openai_key = os.environ.get('OPENAI_API_KEY')
@@ -1501,9 +1504,6 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
         image_content = ImageContent(
             image_base64=request.image_base64
         )
-        
-        # Calculer la surface totale requise
-        total_surface_required = request.panel_count * request.panel_surface
         
         # Prompt pour l'analyse de toiture
         prompt = f"""
