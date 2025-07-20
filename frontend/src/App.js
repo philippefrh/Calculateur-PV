@@ -2142,7 +2142,6 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       const calculationResponse = await axios.post(`${API}/calculate/${clientId}?region=${selectedRegion}&calculation_mode=${selectedCalculationMode}`);
       
       setCalculationResults(calculationResponse.data);
-      setTimeout(() => onComplete(calculationResponse.data), 2000);
 
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
