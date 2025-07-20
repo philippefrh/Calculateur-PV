@@ -1473,6 +1473,109 @@ class PanelPosition(BaseModel):
     height: float  # Hauteur relative (0-1)
     angle: float  # Angle de rotation en degrés
 
+def create_composite_image_with_panels(base64_image: str, panel_positions: List[Dict], panel_count: int) -> str:
+    """
+    Génère une vraie image composite avec des panneaux solaires superposés
+    """
+    try:
+        # Décoder l'image base64
+        if base64_image.startswith('data:image'):
+            base64_image = base64_image.split(',')[1]
+        
+        image_data = base64.b64decode(base64_image)
+        original_image = Image.open(BytesIO(image_data)).convert('RGB')
+        
+        # Créer une copie pour dessiner dessus
+        composite_image = original_image.copy()
+        draw = ImageDraw.Draw(composite_image)
+        
+        # Dimensions de l'image
+        img_width, img_height = composite_image.size
+        
+        # Si on n'a pas de positions, créer des positions par défaut
+        if not panel_positions or len(panel_positions) == 0:
+            panel_positions = generate_default_panel_positions(panel_count)
+        
+        # Dessiner les panneaux solaires
+        for i, pos in enumerate(panel_positions[:panel_count]):
+            # Convertir les positions relatives en pixels
+            x = int(pos.get('x', 0.1 + (i % 3) * 0.3) * img_width)
+            y = int(pos.get('y', 0.2 + (i // 3) * 0.2) * img_height)
+            
+            # Dimensions du panneau (proportionnelles à l'image)
+            panel_width = int(img_width * 0.15)  # 15% de la largeur
+            panel_height = int(img_height * 0.08)  # 8% de la hauteur
+            
+            # Ajuster selon l'angle si spécifié
+            angle = pos.get('angle', 0)
+            
+            # Couleur du panneau solaire (bleu très foncé/noir)
+            panel_color = (25, 25, 45)  # Bleu très foncé
+            border_color = (150, 150, 150)  # Gris métallique
+            
+            # Dessiner le panneau principal
+            panel_rect = [x, y, x + panel_width, y + panel_height]
+            draw.rectangle(panel_rect, fill=panel_color, outline=border_color, width=2)
+            
+            # Ajouter des lignes pour simuler les cellules solaires
+            cell_lines = 4
+            for j in range(1, cell_lines):
+                line_y = y + (j * panel_height // cell_lines)
+                draw.line([x + 2, line_y, x + panel_width - 2, line_y], 
+                         fill=(40, 40, 60), width=1)
+            
+            for j in range(1, 6):  # Lignes verticales
+                line_x = x + (j * panel_width // 6)
+                draw.line([line_x, y + 2, line_x, y + panel_height - 2], 
+                         fill=(40, 40, 60), width=1)
+            
+            # Ajouter un léger reflet
+            highlight_rect = [x + 2, y + 2, x + panel_width - 2, y + panel_height // 4]
+            draw.rectangle(highlight_rect, fill=(60, 80, 120, 80))
+        
+        # Convertir l'image composite en base64
+        buffer = BytesIO()
+        composite_image.save(buffer, format='JPEG', quality=95)
+        buffer.seek(0)
+        
+        composite_base64 = base64.b64encode(buffer.getvalue()).decode()
+        return f"data:image/jpeg;base64,{composite_base64}"
+        
+    except Exception as e:
+        logging.error(f"Error creating composite image: {e}")
+        return base64_image  # Retourner l'image originale en cas d'erreur
+
+def generate_default_panel_positions(panel_count: int) -> List[Dict]:
+    """
+    Génère des positions par défaut pour les panneaux sur une toiture
+    """
+    positions = []
+    
+    # Calculer la disposition en grille
+    panels_per_row = min(3, panel_count)  # Max 3 panneaux par rangée
+    rows = (panel_count + panels_per_row - 1) // panels_per_row
+    
+    for i in range(panel_count):
+        row = i // panels_per_row
+        col = i % panels_per_row
+        
+        # Centrer la disposition
+        x_offset = 0.1 + (0.8 - panels_per_row * 0.2) / 2
+        y_offset = 0.15
+        
+        x = x_offset + col * 0.25
+        y = y_offset + row * 0.15
+        
+        positions.append({
+            'x': min(max(x, 0.05), 0.75),  # Limiter entre 5% et 75%
+            'y': min(max(y, 0.1), 0.7),   # Limiter entre 10% et 70%
+            'width': 0.15,
+            'height': 0.08,
+            'angle': 0
+        })
+    
+    return positions
+
 class RoofAnalysisResponse(BaseModel):
     success: bool
     panel_positions: List[PanelPosition]
