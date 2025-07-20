@@ -1473,6 +1473,37 @@ class PanelPosition(BaseModel):
     height: float  # Hauteur relative (0-1)
     angle: float  # Angle de rotation en degrés
 
+def generate_simple_grid_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
+    """
+    Génère des positions SIMPLES en grille pour les panneaux solaires
+    """
+    positions = []
+    
+    # Calculer la disposition en grille simple
+    panels_per_row = min(3, panel_count)  # Max 3 panneaux par rangée
+    rows = (panel_count + panels_per_row - 1) // panels_per_row
+    
+    for i in range(panel_count):
+        row = i // panels_per_row
+        col = i % panels_per_row
+        
+        # Centrer la disposition sur le toit
+        x_offset = 0.2  # Commencer à 20% de la largeur
+        y_offset = 0.25  # Commencer à 25% de la hauteur
+        
+        x = x_offset + col * 0.2  # Espacement horizontal de 20%
+        y = y_offset + row * 0.15  # Espacement vertical de 15%
+        
+        positions.append({
+            'x': min(max(x, 0.1), 0.7),   # Limiter entre 10% et 70%
+            'y': min(max(y, 0.2), 0.6),  # Limiter entre 20% et 60%
+            'width': 0.15,   # Largeur fixe
+            'height': 0.08,  # Hauteur fixe
+            'angle': 0       # Pas de rotation
+        })
+    
+    return positions
+
 def create_composite_image_with_panels(base64_image: str, panel_positions: List[Dict], panel_count: int) -> str:
     """
     Génère une image composite RÉALISTE avec des panneaux solaires qui suivent PARFAITEMENT la pente et la perspective du toit
