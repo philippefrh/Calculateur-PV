@@ -1506,12 +1506,12 @@ def generate_simple_grid_positions(panel_count: int, img_width: int, img_height:
 
 def create_composite_image_with_panels(base64_image: str, panel_positions: List[Dict], panel_count: int) -> str:
     """
-    Génère une image composite RÉALISTE avec des panneaux solaires qui suivent PARFAITEMENT la pente et la perspective du toit
+    Version SIMPLIFIÉE - Génère une image composite avec des panneaux solaires SIMPLES et VISIBLES
     """
     try:
-        logging.info(f"Creating HIGH-QUALITY roof-adapted composite with {panel_count} panels")
+        logging.info(f"🔧 SIMPLIFIED VERSION: Creating composite with {panel_count} panels")
         
-        # Décoder et valider l'image base64
+        # Décoder l'image base64
         try:
             if base64_image.startswith('data:image'):
                 base64_data = base64_image.split(',')[1]
@@ -1520,38 +1520,27 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
             
             image_data = base64.b64decode(base64_data)
             original_image = PILImage.open(BytesIO(image_data)).convert('RGB')
-            logging.info(f"Successfully loaded image: {original_image.size}")
+            logging.info(f"✅ Image loaded: {original_image.size}")
             
         except Exception as e:
-            logging.error(f"Error decoding base64 image: {e}")
+            logging.error(f"❌ Error decoding image: {e}")
             return base64_image
         
-        # Créer une copie de haute qualité pour dessiner dessus
+        # Copie de l'image pour dessiner
         composite_image = original_image.copy()
         draw = ImageDraw.Draw(composite_image)
-        
-        # Dimensions de l'image
         img_width, img_height = composite_image.size
-        logging.info(f"Image dimensions: {img_width}x{img_height}")
         
-        # Si l'OpenAI n'a pas retourné de positions, utiliser notre algorithme optimisé
+        # Générer des positions SIMPLES si pas de positions fournies
         if not panel_positions or len(panel_positions) == 0:
-            logging.info("No AI positions provided, using optimized roof-adapted algorithm")
-            roof_positions = generate_intelligent_roof_positions(panel_count, img_width, img_height)
+            logging.info("🎯 Using SIMPLE grid positions")
+            roof_positions = generate_simple_grid_positions(panel_count, img_width, img_height)
         else:
-            # Convertir les positions AI en format utilisable
-            roof_positions = []
-            for pos in panel_positions[:panel_count]:
-                roof_positions.append({
-                    'x': pos.get('x', 0.3),
-                    'y': pos.get('y', 0.3),
-                    'width': pos.get('width', 0.12),
-                    'height': pos.get('height', 0.07),
-                    'angle': pos.get('angle', 15)
-                })
-            logging.info(f"Using {len(roof_positions)} AI-provided positions")
+            roof_positions = panel_positions[:panel_count]
         
-        # DESSINER CHAQUE PANNEAU AVEC PERSPECTIVE ET INCLINAISON RÉALISTES
+        logging.info(f"📍 Drawing {len(roof_positions)} panels")
+        
+        # Dessiner chaque panneau SIMPLEMENT et CLAIREMENT
         for i, pos in enumerate(roof_positions):
             # Position de base sur le toit avec validation
             base_x = max(10, min(int(pos['x'] * img_width), img_width - 100))
