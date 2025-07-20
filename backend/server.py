@@ -2097,89 +2097,184 @@ def merge_nearby_obstacles(obstacles: List[Dict]) -> List[Dict]:
 
 def calculate_usable_roof_zones(obstacles: List[Dict], img_width: int, img_height: int, roof_inclination: float) -> List[Dict]:
     """
-    Calcule les zones exploitables du toit en évitant les obstacles
+    NOUVEAU : Calcule les zones exploitables du toit en créant des ZONES SÉPARÉES autour des obstacles
+    Comme dans les vraies installations que montre l'utilisateur !
     """
     try:
-        # Zone de toit de base (marges de sécurité)
+        # Zone de toit de base avec marges de sécurité RÉELLES
         base_zone = {
-            'x1': 0.12, 'y1': 0.15,  # Marges de sécurité 
-            'x2': 0.88, 'y2': 0.65   # Zone exploitable
+            'x1': 0.08, 'y1': 0.12,  # Marges plus serrées pour plus de surface
+            'x2': 0.92, 'y2': 0.75   # Zone exploitable plus large
         }
         
-        # Si pas d'obstacles, retourner la zone entière
-        if not obstacles:
-            return [base_zone]
+        logging.info(f"🏗️ Calcul des zones exploitables avec {len(obstacles)} obstacles détectés")
         
-        # Diviser la zone en sous-zones en évitant les obstacles
-        usable_zones = []
+        # Si pas d'obstacles significants, retourner une zone avec subdivision intelligente
+        significant_obstacles = [obs for obs in obstacles if obs.get('confidence', 0) > 0.5]
         
-        # Trier les obstacles par position horizontale
-        obstacles_sorted = sorted(obstacles, key=lambda x: x['x1'])
-        
-        # Créer des zones entre les obstacles
-        current_x = base_zone['x1']
-        
-        for obstacle in obstacles_sorted:
-            # Zone avant l'obstacle
-            if obstacle['x1'] - current_x > 0.15:  # Zone assez large pour panneaux
-                zone_before = {
-                    'x1': current_x,
-                    'y1': max(base_zone['y1'], obstacle['y1'] - 0.05),  # Marge au-dessus
-                    'x2': obstacle['x1'] - 0.02,  # Marge avant obstacle
-                    'y2': min(base_zone['y2'], obstacle['y2'] + 0.05),  # Marge en-dessous
-                    'type': f'zone_before_{obstacle["type"]}'
-                }
-                
-                # Vérifier que la zone est viable
-                if (zone_before['x2'] - zone_before['x1']) > 0.1 and (zone_before['y2'] - zone_before['y1']) > 0.08:
-                    usable_zones.append(zone_before)
+        if not significant_obstacles:
+            logging.info("📐 Aucun obstacle significatif - création de zones multiples pour répartition optimale")
+            # Créer 2-3 zones pour répartir les panneaux même sans obstacles
+            zones = []
             
-            # Zone après l'obstacle
-            current_x = obstacle['x2'] + 0.02
-        
-        # Zone finale après le dernier obstacle
-        if base_zone['x2'] - current_x > 0.15:
-            final_zone = {
-                'x1': current_x,
+            # Zone gauche
+            zones.append({
+                'x1': base_zone['x1'],
+                'y1': base_zone['y1'],
+                'x2': (base_zone['x1'] + base_zone['x2']) / 2 - 0.02,
+                'y2': base_zone['y2'],
+                'type': 'zone_gauche',
+                'priority': 1
+            })
+            
+            # Zone droite
+            zones.append({
+                'x1': (base_zone['x1'] + base_zone['x2']) / 2 + 0.02,
                 'y1': base_zone['y1'],
                 'x2': base_zone['x2'],
                 'y2': base_zone['y2'],
-                'type': 'zone_finale'
-            }
-            usable_zones.append(final_zone)
-        
-        # Si aucune zone viable, créer des zones au-dessus et en-dessous des obstacles
-        if not usable_zones:
-            # Zone au-dessus des obstacles
-            min_obstacle_y = min(obs['y1'] for obs in obstacles)
-            if min_obstacle_y - base_zone['y1'] > 0.1:
-                zone_above = {
-                    'x1': base_zone['x1'],
-                    'y1': base_zone['y1'],
-                    'x2': base_zone['x2'],
-                    'y2': min_obstacle_y - 0.02,
-                    'type': 'zone_au_dessus'
-                }
-                usable_zones.append(zone_above)
+                'type': 'zone_droite',
+                'priority': 1
+            })
             
-            # Zone en-dessous des obstacles
-            max_obstacle_y = max(obs['y2'] for obs in obstacles)
-            if base_zone['y2'] - max_obstacle_y > 0.1:
-                zone_below = {
-                    'x1': base_zone['x1'],
-                    'y1': max_obstacle_y + 0.02,
-                    'x2': base_zone['x2'],
-                    'y2': base_zone['y2'],
-                    'type': 'zone_en_dessous'
-                }
-                usable_zones.append(zone_below)
+            return zones
         
-        logging.info(f"Calculated {len(usable_zones)} usable roof zones avoiding {len(obstacles)} obstacles")
-        return usable_zones if usable_zones else [base_zone]
+        logging.info(f"🎯 Traitement de {len(significant_obstacles)} obstacles significatifs")
+        
+        # Trier les obstacles par position (gauche à droite, haut en bas)
+        obstacles_sorted = sorted(significant_obstacles, key=lambda x: (x['y1'], x['x1']))
+        
+        # Créer des zones en évitant chaque obstacle
+        usable_zones = []
+        
+        # STRATÉGIE : Créer des zones DE PART ET D'AUTRE des obstacles
+        # Comme dans les exemples de l'utilisateur
+        
+        current_zones = [base_zone]  # Commencer avec la zone complète
+        
+        for i, obstacle in enumerate(obstacles_sorted):
+            new_zones = []
+            
+            for zone in current_zones:
+                # Vérifier si l'obstacle intersecte avec cette zone
+                if (obstacle['x2'] < zone['x1'] or obstacle['x1'] > zone['x2'] or 
+                    obstacle['y2'] < zone['y1'] or obstacle['y1'] > zone['y2']):
+                    # Pas d'intersection - garder la zone telle quelle
+                    new_zones.append(zone)
+                    continue
+                
+                logging.info(f"✂️ Division de zone autour de l'obstacle {obstacle['type']} à ({obstacle['x1']:.3f}, {obstacle['y1']:.3f})")
+                
+                # L'obstacle intersecte - diviser la zone
+                # Créer des marges de sécurité autour de l'obstacle
+                margin_x = 0.03  # 3% de marge horizontale
+                margin_y = 0.02  # 2% de marge verticale
+                
+                obstacle_x1_safe = max(zone['x1'], obstacle['x1'] - margin_x)
+                obstacle_x2_safe = min(zone['x2'], obstacle['x2'] + margin_x)
+                obstacle_y1_safe = max(zone['y1'], obstacle['y1'] - margin_y)
+                obstacle_y2_safe = min(zone['y2'], obstacle['y2'] + margin_y)
+                
+                # Créer jusqu'à 4 zones autour de l'obstacle
+                potential_zones = []
+                
+                # Zone À GAUCHE de l'obstacle
+                if obstacle_x1_safe > zone['x1'] + 0.15:  # Assez large pour panneaux
+                    left_zone = {
+                        'x1': zone['x1'],
+                        'y1': zone['y1'],
+                        'x2': obstacle_x1_safe,
+                        'y2': zone['y2'],
+                        'type': f'zone_gauche_{obstacle["type"]}_{i}',
+                        'priority': 1
+                    }
+                    potential_zones.append(left_zone)
+                    logging.info(f"  ⬅️ Zone gauche créée: ({left_zone['x1']:.3f}, {left_zone['y1']:.3f}) - ({left_zone['x2']:.3f}, {left_zone['y2']:.3f})")
+                
+                # Zone À DROITE de l'obstacle  
+                if zone['x2'] > obstacle_x2_safe + 0.15:  # Assez large pour panneaux
+                    right_zone = {
+                        'x1': obstacle_x2_safe,
+                        'y1': zone['y1'],
+                        'x2': zone['x2'],
+                        'y2': zone['y2'],
+                        'type': f'zone_droite_{obstacle["type"]}_{i}',
+                        'priority': 1
+                    }
+                    potential_zones.append(right_zone)
+                    logging.info(f"  ➡️ Zone droite créée: ({right_zone['x1']:.3f}, {right_zone['y1']:.3f}) - ({right_zone['x2']:.3f}, {right_zone['y2']:.3f})")
+                
+                # Zone AU-DESSUS de l'obstacle
+                if obstacle_y1_safe > zone['y1'] + 0.10:  # Assez haute pour panneaux
+                    top_zone = {
+                        'x1': zone['x1'],
+                        'y1': zone['y1'],
+                        'x2': zone['x2'],
+                        'y2': obstacle_y1_safe,
+                        'type': f'zone_dessus_{obstacle["type"]}_{i}',
+                        'priority': 2  # Priorité plus faible (plus difficile d'accès)
+                    }
+                    potential_zones.append(top_zone)
+                    logging.info(f"  ⬆️ Zone dessus créée: ({top_zone['x1']:.3f}, {top_zone['y1']:.3f}) - ({top_zone['x2']:.3f}, {top_zone['y2']:.3f})")
+                
+                # Zone EN-DESSOUS de l'obstacle
+                if zone['y2'] > obstacle_y2_safe + 0.10:  # Assez haute pour panneaux
+                    bottom_zone = {
+                        'x1': zone['x1'],
+                        'y1': obstacle_y2_safe,
+                        'x2': zone['x2'],
+                        'y2': zone['y2'],
+                        'type': f'zone_dessous_{obstacle["type"]}_{i}',
+                        'priority': 1
+                    }
+                    potential_zones.append(bottom_zone)
+                    logging.info(f"  ⬇️ Zone dessous créée: ({bottom_zone['x1']:.3f}, {bottom_zone['y1']:.3f}) - ({bottom_zone['x2']:.3f}, {bottom_zone['y2']:.3f})")
+                
+                # Valider et ajouter les zones qui sont assez grandes
+                for pzone in potential_zones:
+                    zone_width = pzone['x2'] - pzone['x1']
+                    zone_height = pzone['y2'] - pzone['y1']
+                    zone_area = zone_width * zone_height
+                    
+                    # Vérifier que la zone est assez grande pour au moins 1 panneau
+                    if zone_width >= 0.12 and zone_height >= 0.08 and zone_area >= 0.01:
+                        new_zones.append(pzone)
+                        logging.info(f"    ✅ Zone validée: {zone_width:.3f} x {zone_height:.3f} (aire: {zone_area:.4f})")
+                    else:
+                        logging.info(f"    ❌ Zone trop petite: {zone_width:.3f} x {zone_height:.3f} (aire: {zone_area:.4f})")
+            
+            current_zones = new_zones
+        
+        # Trier les zones par priorité et superficie
+        final_zones = sorted(current_zones, key=lambda x: (x.get('priority', 1), -(x['x2']-x['x1'])*(x['y2']-x['y1'])))
+        
+        # Limiter à 6 zones maximum pour éviter la fragmentation excessive
+        final_zones = final_zones[:6]
+        
+        logging.info(f"🎯 ZONES FINALES CALCULÉES: {len(final_zones)} zones exploitables")
+        for i, zone in enumerate(final_zones):
+            width = zone['x2'] - zone['x1']
+            height = zone['y2'] - zone['y1']
+            area = width * height
+            logging.info(f"  Zone {i+1}: {zone['type'][:20]:20} | {width:.3f}x{height:.3f} (aire: {area:.4f})")
+        
+        return final_zones if final_zones else [base_zone]
         
     except Exception as e:
         logging.error(f"Error calculating usable zones: {e}")
-        return [base_zone]
+        # Fallback vers zones simples gauche/droite
+        return [
+            {
+                'x1': base_zone['x1'], 'y1': base_zone['y1'],
+                'x2': (base_zone['x1'] + base_zone['x2']) / 2 - 0.02, 'y2': base_zone['y2'],
+                'type': 'zone_gauche_fallback', 'priority': 1
+            },
+            {
+                'x1': (base_zone['x1'] + base_zone['x2']) / 2 + 0.02, 'y1': base_zone['y1'],
+                'x2': base_zone['x2'], 'y2': base_zone['y2'],
+                'type': 'zone_droite_fallback', 'priority': 1
+            }
+        ]
 
 def determine_roof_type(img_array) -> str:
     """
@@ -2214,120 +2309,183 @@ def calculate_optimal_orientation(img_array) -> str:
 
 def generate_obstacle_aware_panel_positions(panel_count: int, img_width: int, img_height: int, roof_geometry: Dict) -> List[Dict]:
     """
-    Génère des positions de panneaux INTELLIGENTES qui évitent les obstacles
+    NOUVEAU : Génère des positions VRAIMENT intelligentes qui évitent les obstacles RÉELS
+    Résultat : panneaux en zones séparées comme dans les vrais exemples !
     """
     try:
         positions = []
         usable_zones = roof_geometry.get('usable_zones', [])
+        obstacles = roof_geometry.get('obstacles', [])
         roof_inclination = roof_geometry.get('roof_inclination', 30.0)
         
         if not usable_zones:
-            # Fallback vers positions par défaut
+            logging.warning("⚠️ Aucune zone exploitable - utilisation fallback")
             return generate_intelligent_roof_positions(panel_count, img_width, img_height)
         
-        logging.info(f"Positioning {panel_count} panels in {len(usable_zones)} usable zones")
+        logging.info(f"🎯 POSITIONNEMENT INTELLIGENT: {panel_count} panneaux dans {len(usable_zones)} zones")
+        logging.info(f"🏗️ Obstacles à éviter: {len(obstacles)} ({[obs['type'] for obs in obstacles]})")
         
-        # Répartir les panneaux entre les zones utilisables
-        panels_per_zone = distribute_panels_across_zones(panel_count, usable_zones)
+        # Calculer la capacité de chaque zone
+        zone_capacities = []
+        total_area = 0
         
+        for i, zone in enumerate(usable_zones):
+            zone_width = zone['x2'] - zone['x1'] 
+            zone_height = zone['y2'] - zone['y1']
+            zone_area = zone_width * zone_height
+            
+            # Capacité basée sur la superficie et la forme
+            # Un panneau nécessite environ 0.12 x 0.08 = 0.0096 en coordonnées relatives
+            panel_area_needed = 0.010  # Légèrement plus pour l'espacement
+            
+            capacity = max(1, int(zone_area / panel_area_needed))
+            # Bonus pour les zones prioritaires (gauche/droite vs dessus/dessous)
+            priority_bonus = 1.5 if zone.get('priority', 1) == 1 else 1.0
+            capacity = int(capacity * priority_bonus)
+            
+            zone_capacities.append(capacity)
+            total_area += zone_area
+            
+            logging.info(f"  Zone {i+1} ({zone['type'][:15]:15}): {zone_width:.3f}x{zone_height:.3f} -> capacité {capacity} panneaux")
+        
+        # Répartir les panneaux proportionnellement à la capacité
+        total_capacity = sum(zone_capacities)
+        panels_per_zone = []
+        assigned_panels = 0
+        
+        for i, capacity in enumerate(zone_capacities):
+            if i == len(zone_capacities) - 1:
+                # Dernière zone - assigner le reste
+                remaining = panel_count - assigned_panels
+                panels_per_zone.append(max(0, remaining))
+            else:
+                # Répartition proportionnelle avec minimum de 1 si la zone est utilisable
+                if total_capacity > 0:
+                    proportion = capacity / total_capacity
+                    panels_in_zone = max(0, min(capacity, int(panel_count * proportion)))
+                else:
+                    panels_in_zone = 0
+                
+                panels_per_zone.append(panels_in_zone)
+                assigned_panels += panels_in_zone
+        
+        logging.info(f"📊 RÉPARTITION: {panels_per_zone} panneaux par zone (total: {sum(panels_per_zone)})")
+        
+        # Positionner les panneaux dans chaque zone
         panel_idx = 0
         for zone_idx, zone in enumerate(usable_zones):
             panels_in_zone = panels_per_zone[zone_idx]
             if panels_in_zone == 0:
                 continue
+                
+            logging.info(f"🔧 Positionnement de {panels_in_zone} panneaux dans la zone {zone_idx+1} ({zone['type']})")
             
-            # Calculer la disposition optimale dans cette zone
             zone_width = zone['x2'] - zone['x1']
             zone_height = zone['y2'] - zone['y1']
             
-            # Déterminer grille optimale pour cette zone
+            # Calculer la grille optimale pour cette zone
             if zone_width > zone_height:
-                # Zone horizontale - priorité aux rangées
+                # Zone horizontale - favoriser les rangées
                 cols = min(panels_in_zone, max(1, int(zone_width / 0.13)))
                 rows = (panels_in_zone + cols - 1) // cols
             else:
-                # Zone verticale - priorité aux colonnes
-                rows = min(panels_in_zone, max(1, int(zone_height / 0.08)))
+                # Zone verticale - favoriser les colonnes
+                rows = min(panels_in_zone, max(1, int(zone_height / 0.09)))
                 cols = (panels_in_zone + rows - 1) // rows
             
-            # Espacement dans la zone
+            # Espacement intelligent avec marges
             if cols > 1:
-                spacing_x = zone_width / cols
+                spacing_x = (zone_width - 0.02) / cols  # Marge de 2%
             else:
                 spacing_x = zone_width
                 
             if rows > 1:
-                spacing_y = zone_height / rows
+                spacing_y = (zone_height - 0.02) / rows  # Marge de 2%  
             else:
                 spacing_y = zone_height
             
-            # Placer les panneaux dans cette zone
+            logging.info(f"  📐 Grille: {rows}x{cols}, espacement: {spacing_x:.3f}x{spacing_y:.3f}")
+            
+            # Placer les panneaux dans cette zone avec espacement optimal
+            panels_placed = 0
             for row in range(rows):
                 for col in range(cols):
-                    if panel_idx >= panel_count:
+                    if panel_idx >= panel_count or panels_placed >= panels_in_zone:
                         break
                         
-                    # Position dans la zone avec centrage
-                    x = zone['x1'] + (col + 0.5) * spacing_x - 0.06  # Centrer le panneau
-                    y = zone['y1'] + (row + 0.5) * spacing_y - 0.035  # Centrer le panneau
+                    # Position centrée dans chaque "cellule" de la grille
+                    x = zone['x1'] + 0.01 + col * spacing_x + spacing_x * 0.1
+                    y = zone['y1'] + 0.01 + row * spacing_y + spacing_y * 0.1
                     
-                    # S'assurer que le panneau reste dans la zone
-                    x = max(zone['x1'] + 0.01, min(x, zone['x2'] - 0.12))
-                    y = max(zone['y1'] + 0.01, min(y, zone['y2'] - 0.07))
+                    # S'assurer que le panneau reste dans la zone avec marge
+                    x = max(zone['x1'] + 0.005, min(x, zone['x2'] - 0.12))
+                    y = max(zone['y1'] + 0.005, min(y, zone['y2'] - 0.08))
                     
-                    positions.append({
-                        'x': x,
-                        'y': y,
-                        'width': 0.11,
-                        'height': 0.065,
-                        'angle': roof_inclination,
-                        'zone': zone.get('type', f'zone_{zone_idx}')
-                    })
+                    # Vérifier qu'on ne chevauche pas un obstacle
+                    panel_conflicts = False
+                    for obstacle in obstacles:
+                        # Vérifier chevauchement panneau-obstacle
+                        if not (x + 0.12 < obstacle['x1'] or x > obstacle['x2'] or 
+                               y + 0.08 < obstacle['y1'] or y > obstacle['y2']):
+                            panel_conflicts = True
+                            logging.info(f"    ⚠️ Panneau {panel_idx+1} évite l'obstacle {obstacle['type']} à ({obstacle['x1']:.3f}, {obstacle['y1']:.3f})")
+                            break
                     
-                    panel_idx += 1
-                    
-                if panel_idx >= panel_count:
+                    if not panel_conflicts:
+                        positions.append({
+                            'x': x,
+                            'y': y,
+                            'width': 0.12,
+                            'height': 0.08,
+                            'angle': roof_inclination,
+                            'zone': zone.get('type', f'zone_{zone_idx}'),
+                            'zone_index': zone_idx
+                        })
+                        
+                        logging.info(f"    ✅ Panneau {panel_idx+1}: ({x:.3f}, {y:.3f}) dans {zone['type'][:20]}")
+                        panel_idx += 1
+                        panels_placed += 1
+                    else:
+                        # Déplacer légèrement le panneau pour éviter l'obstacle
+                        x_alt = x + 0.05
+                        y_alt = y + 0.05
+                        
+                        if (x_alt + 0.12 <= zone['x2'] and y_alt + 0.08 <= zone['y2']):
+                            positions.append({
+                                'x': x_alt,
+                                'y': y_alt, 
+                                'width': 0.12,
+                                'height': 0.08,
+                                'angle': roof_inclination,
+                                'zone': zone.get('type', f'zone_{zone_idx}'),
+                                'zone_index': zone_idx
+                            })
+                            
+                            logging.info(f"    ✅ Panneau {panel_idx+1}: ({x_alt:.3f}, {y_alt:.3f}) déplacé pour éviter obstacle")
+                            panel_idx += 1
+                            panels_placed += 1
+                
+                if panel_idx >= panel_count or panels_placed >= panels_in_zone:
                     break
         
-        logging.info(f"Successfully positioned {len(positions)} panels avoiding obstacles")
+        logging.info(f"🎯 POSITIONNEMENT TERMINÉ: {len(positions)} panneaux positionnés sur {panel_count} demandés")
+        
+        # Statistiques finales
+        if positions:
+            zones_used = set(pos.get('zone_index', -1) for pos in positions)
+            logging.info(f"📊 RÉPARTITION FINALE: {len(zones_used)} zones utilisées")
+            for zone_idx in zones_used:
+                if zone_idx >= 0:
+                    count_in_zone = sum(1 for pos in positions if pos.get('zone_index') == zone_idx)
+                    zone_name = usable_zones[zone_idx]['type'][:20] if zone_idx < len(usable_zones) else 'unknown'
+                    logging.info(f"  Zone {zone_idx+1} ({zone_name}): {count_in_zone} panneaux")
+        
         return positions[:panel_count]
         
     except Exception as e:
         logging.error(f"Error in obstacle-aware positioning: {e}")
+        logging.error(f"Fallback to intelligent positioning")
         return generate_intelligent_roof_positions(panel_count, img_width, img_height)
-
-def distribute_panels_across_zones(panel_count: int, usable_zones: List[Dict]) -> List[int]:
-    """
-    Répartit intelligemment les panneaux entre les zones utilisables
-    """
-    if not usable_zones:
-        return []
-    
-    # Calculer la capacité de chaque zone
-    zone_capacities = []
-    for zone in usable_zones:
-        zone_area = (zone['x2'] - zone['x1']) * (zone['y2'] - zone['y1'])
-        # Capacité approximative (1 panneau = 0.11 x 0.065 = 0.007)
-        capacity = max(1, int(zone_area / 0.008))
-        zone_capacities.append(capacity)
-    
-    total_capacity = sum(zone_capacities)
-    
-    # Répartition proportionnelle
-    distribution = []
-    assigned_panels = 0
-    
-    for i, capacity in enumerate(zone_capacities):
-        if i == len(zone_capacities) - 1:
-            # Dernière zone - assigner tous les panneaux restants
-            distribution.append(panel_count - assigned_panels)
-        else:
-            # Répartition proportionnelle
-            panels_for_zone = min(capacity, max(0, int(panel_count * capacity / total_capacity)))
-            distribution.append(panels_for_zone)
-            assigned_panels += panels_for_zone
-    
-    return distribution
 
 def generate_intelligent_roof_positions(panel_count: int, img_width: int, img_height: int) -> List[Dict]:
     """
