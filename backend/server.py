@@ -2856,31 +2856,17 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
         if not openai_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
-        # Analyser la géométrie réelle du toit et détecter les obstacles
-        roof_geometry = analyze_roof_geometry_and_obstacles(optimized_image_data)
-        
-        # Générer positions intelligentes basées sur l'analyse de la toiture réelle
-        intelligent_positions = generate_obstacle_aware_panel_positions(
+        # Générer positions SIMPLES dans la zone du toit
+        logging.info("🔧 UTILISATION de la logique SIMPLIFIÉE de placement sur le toit")
+        intelligent_positions = generate_simple_grid_positions(
             request.panel_count, 
             width, 
-            height, 
-            roof_geometry
+            height
         )
         
-        # Construire l'analyse basée sur la détection réelle
-        obstacles_detected = len(roof_geometry.get('obstacles', []))
-        usable_zones_count = len(roof_geometry.get('usable_zones', []))
-        roof_inclination = roof_geometry.get('roof_inclination', 30)
-        roof_type = roof_geometry.get('roof_type', 'standard')
-        
-        ai_analysis = f"🏠 ANALYSE INTELLIGENTE - Toiture {roof_type} détectée avec inclinaison {roof_inclination:.1f}°"
-        if obstacles_detected > 0:
-            obstacle_types = [obs['type'] for obs in roof_geometry.get('obstacles', [])]
-            ai_analysis += f" • {obstacles_detected} obstacle(s): {', '.join(set(obstacle_types))}"
-        
-        ai_recommendations = f"⚡ OPTIMISATION AVANCÉE - Installation répartie en {usable_zones_count} zone(s) exploitable(s)"
-        if obstacles_detected > 0:
-            ai_recommendations += f", contournement automatique des obstacles pour maximiser la production"
+        # Construire l'analyse SIMPLIFIÉE
+        ai_analysis = f"🏠 ANALYSE SIMPLIFIÉE - Placement automatique de {request.panel_count} panneaux"
+        ai_recommendations = f"⚡ PLACEMENT STANDARD - Installation en grille régulière sur la zone de toit"
         
         # Initialize variables for AI response
         panel_positions_from_ai = []
