@@ -1641,21 +1641,27 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
                     # Dessiner la bordure de cellule (ligne simple)
                     draw.line([cell_x, cell_y, cell_end_x, cell_end_y], fill=(60, 80, 120), width=1)
             
-            # 4. Numéro du panneau au centre
+            # 4. Numéro du panneau au centre du parallélogramme
             try:
                 from PIL import ImageFont
                 font = ImageFont.load_default()
                 text = str(i + 1)
+                
+                # Centre du parallélogramme
+                center_x = (panel_points[0][0] + panel_points[1][0] + panel_points[2][0] + panel_points[3][0]) // 4
+                center_y = (panel_points[0][1] + panel_points[1][1] + panel_points[2][1] + panel_points[3][1]) // 4
+                
                 text_bbox = draw.textbbox((0, 0), text, font=font)
                 text_width = text_bbox[2] - text_bbox[0]
                 text_height = text_bbox[3] - text_bbox[1]
-                text_x = x + (panel_width - text_width) // 2
-                text_y = y + (panel_height - text_height) // 2
+                text_x = center_x - text_width // 2
+                text_y = center_y - text_height // 2
                 draw.text((text_x, text_y), text, fill=(255, 255, 255), font=font)
             except:
                 # Fallback simple si problème avec la police
-                draw.text((x + panel_width//2 - 5, y + panel_height//2 - 5), 
-                         str(i + 1), fill=(255, 255, 255))
+                center_x = (panel_points[0][0] + panel_points[2][0]) // 2
+                center_y = (panel_points[0][1] + panel_points[2][1]) // 2
+                draw.text((center_x - 5, center_y - 5), str(i + 1), fill=(255, 255, 255))
         
         logging.info(f"✅ SIMPLIFIED VERSION: Successfully created composite with {len(roof_positions)} VISIBLE panels")
         
