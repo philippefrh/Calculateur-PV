@@ -1646,56 +1646,53 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
             file_contents=[image_content]
         )
         
-        # Envoyer la demande à OpenAI Vision
+        # Envoyer la demande à OpenAI Vision pour analyser seulement
         response = await llm.send_message(user_message)
         
-        # Parser la réponse - peut être une image ou du JSON
+        # Parser la réponse pour obtenir les positions (si disponibles)
+        panel_positions_from_ai = []
         try:
-            # Vérifier si c'est une image base64 ou du JSON
             response_text = response if isinstance(response, str) else str(response)
             
-            # Si la réponse commence par un préfixe d'image base64
-            if response_text.startswith('data:image/') or (len(response_text) > 100 and not response_text.strip().startswith('{')):
-                # C'est probablement une image générée
-                return RoofAnalysisResponse(
-                    success=True,
-                    panel_positions=[],  # Pas de positions, image composite fournie
-                    roof_analysis="Image composite générée avec panneaux solaires installés",
-                    total_surface_required=total_surface_required,
-                    placement_possible=True,
-                    recommendations="Consultez l'image composite générée montrant l'installation réaliste des panneaux"
-                )
-            else:
-                # Essayer de parser comme JSON
+            if response_text.strip().startswith('{'):
                 result = json.loads(response_text)
-        except json.JSONDecodeError:
-            # Si ce n'est pas du JSON valide, essayer d'extraire le JSON
-            import re
-            response_text = response if isinstance(response, str) else str(response)
-            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
-            if json_match:
-                result = json.loads(json_match.group())
+                panel_positions_from_ai = result.get("panel_positions", [])
             else:
-                # Traiter comme une réponse d'erreur ou description textuelle
-                return RoofAnalysisResponse(
-                    success=True,
-                    panel_positions=[],
-                    roof_analysis=response_text[:500],  # Limiter la longueur
-                    total_surface_required=total_surface_required,
-                    placement_possible=True,
-                    recommendations="Analyse textuelle fournie par l'IA"
-                )
+                # Réponse textuelle, utiliser positions par défaut
+                panel_positions_from_ai = []
+        except:
+            # En cas d'erreur, utiliser positions par défaut
+            panel_positions_from_ai = []
         
-        # Construire la réponse
+        # Générer la VRAIE image composite avec panneaux superposés
+        composite_image_base64 = create_composite_image_with_panels(
+            request.image_base64,
+            panel_positions_from_ai,
+            request.panel_count
+        )
+        
+        # Construire la réponse avec l'image composite
         panel_positions = []
-        for pos in result.get("panel_positions", []):
-            panel_positions.append(PanelPosition(
-                x=pos.get("x", 0),
-                y=pos.get("y", 0),
-                width=pos.get("width", 0.1),
-                height=pos.get("height", 0.05),
-                angle=pos.get("angle", 0)
-            ))
+        if panel_positions_from_ai:
+            for pos in panel_positions_from_ai[:request.panel_count]:
+                panel_positions.append(PanelPosition(
+                    x=pos.get("x", 0),
+                    y=pos.get("y", 0),
+                    width=pos.get("width", 0.15),
+                    height=pos.get("height", 0.08),
+                    angle=pos.get("angle", 0)
+                ))
+        else:
+            # Utiliser les positions par défaut générées
+            default_positions = generate_default_panel_positions(request.panel_count)
+            for pos in default_positions:
+                panel_positions.append(PanelPosition(
+                    x=pos["x"],
+                    y=pos["y"],
+                    width=pos["width"],
+                    height=pos["height"],
+                    angle=pos["angle"]
+                ))
         
         return RoofAnalysisResponse(
             success=True,
