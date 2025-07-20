@@ -1478,12 +1478,20 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
     Génère une vraie image composite avec des panneaux solaires superposés
     """
     try:
+        logging.info(f"Starting composite image creation with {panel_count} panels")
+        
         # Décoder l'image base64
         if base64_image.startswith('data:image'):
-            base64_image = base64_image.split(',')[1]
+            base64_data = base64_image.split(',')[1]
+        else:
+            base64_data = base64_image
         
-        image_data = base64.b64decode(base64_image)
+        logging.info(f"Base64 image data length: {len(base64_data)}")
+        
+        image_data = base64.b64decode(base64_data)
         original_image = PILImage.open(BytesIO(image_data)).convert('RGB')
+        
+        logging.info(f"Original image size: {original_image.size}")
         
         # Créer une copie pour dessiner dessus
         composite_image = original_image.copy()
@@ -1495,43 +1503,53 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
         # Si on n'a pas de positions, créer des positions par défaut
         if not panel_positions or len(panel_positions) == 0:
             panel_positions = generate_default_panel_positions(panel_count)
+            logging.info("Using default panel positions")
+        else:
+            logging.info(f"Using AI-generated positions: {len(panel_positions)} positions")
         
-        # Dessiner les panneaux solaires
+        # Dessiner les panneaux solaires de façon plus visible
+        panels_drawn = 0
         for i, pos in enumerate(panel_positions[:panel_count]):
             # Convertir les positions relatives en pixels
             x = int(pos.get('x', 0.1 + (i % 3) * 0.3) * img_width)
             y = int(pos.get('y', 0.2 + (i // 3) * 0.2) * img_height)
             
-            # Dimensions du panneau (proportionnelles à l'image)
-            panel_width = int(img_width * 0.15)  # 15% de la largeur
-            panel_height = int(img_height * 0.08)  # 8% de la hauteur
+            # Dimensions du panneau (plus visibles)
+            panel_width = int(img_width * 0.12)  # 12% de la largeur
+            panel_height = int(img_height * 0.07)  # 7% de la hauteur
             
-            # Ajuster selon l'angle si spécifié
-            angle = pos.get('angle', 0)
+            # Couleur du panneau solaire (noir mat)
+            panel_color = (20, 20, 30)  # Noir très foncé
+            border_color = (100, 100, 100)  # Gris métallique
             
-            # Couleur du panneau solaire (bleu très foncé/noir)
-            panel_color = (25, 25, 45)  # Bleu très foncé
-            border_color = (150, 150, 150)  # Gris métallique
-            
-            # Dessiner le panneau principal
+            # Dessiner le panneau principal avec bordure épaisse
             panel_rect = [x, y, x + panel_width, y + panel_height]
-            draw.rectangle(panel_rect, fill=panel_color, outline=border_color, width=2)
+            draw.rectangle(panel_rect, fill=panel_color, outline=border_color, width=3)
             
             # Ajouter des lignes pour simuler les cellules solaires
-            cell_lines = 4
-            for j in range(1, cell_lines):
-                line_y = y + (j * panel_height // cell_lines)
-                draw.line([x + 2, line_y, x + panel_width - 2, line_y], 
-                         fill=(40, 40, 60), width=1)
+            cell_rows = 6
+            cell_cols = 10
             
-            for j in range(1, 6):  # Lignes verticales
-                line_x = x + (j * panel_width // 6)
-                draw.line([line_x, y + 2, line_x, y + panel_height - 2], 
-                         fill=(40, 40, 60), width=1)
+            # Lignes horizontales (cellules)
+            for j in range(1, cell_rows):
+                line_y = y + (j * panel_height // cell_rows)
+                draw.line([x + 3, line_y, x + panel_width - 3, line_y], 
+                         fill=(50, 50, 70), width=1)
             
-            # Ajouter un léger reflet
-            highlight_rect = [x + 2, y + 2, x + panel_width - 2, y + panel_height // 4]
-            draw.rectangle(highlight_rect, fill=(60, 80, 120, 80))
+            # Lignes verticales (cellules)
+            for j in range(1, cell_cols):
+                line_x = x + (j * panel_width // cell_cols)
+                draw.line([line_x, y + 3, line_x, y + panel_height - 3], 
+                         fill=(50, 50, 70), width=1)
+            
+            # Cadre métallique plus visible
+            frame_color = (120, 120, 120)
+            draw.rectangle([x-1, y-1, x + panel_width+1, y + panel_height+1], 
+                         outline=frame_color, width=2)
+            
+            panels_drawn += 1
+        
+        logging.info(f"Successfully drew {panels_drawn} panels on composite image")
         
         # Convertir l'image composite en base64
         buffer = BytesIO()
@@ -1539,10 +1557,15 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
         buffer.seek(0)
         
         composite_base64 = base64.b64encode(buffer.getvalue()).decode()
-        return f"data:image/jpeg;base64,{composite_base64}"
+        result_image = f"data:image/jpeg;base64,{composite_base64}"
+        
+        logging.info("Composite image successfully created and encoded")
+        return result_image
         
     except Exception as e:
         logging.error(f"Error creating composite image: {e}")
+        import traceback
+        logging.error(f"Traceback: {traceback.format_exc()}")
         return base64_image  # Retourner l'image originale en cas d'erreur
 
 def generate_default_panel_positions(panel_count: int) -> List[Dict]:
