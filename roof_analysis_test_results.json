@@ -1,0 +1,29 @@
+{
+  "6": {
+    "success": false,
+    "panel_positions": [],
+    "roof_analysis": "\u274c Erreur d'analyse: cannot access local variable 'panel_positions_from_ai' where it is not associated with a value",
+    "total_surface_required": 12.66,
+    "placement_possible": false,
+    "recommendations": "Veuillez r\u00e9essayer avec une image de toiture plus claire (format JPEG/PNG, minimum 100x100 pixels)",
+    "composite_image": null
+  },
+  "12": {
+    "success": false,
+    "panel_positions": [],
+    "roof_analysis": "\u274c Erreur d'analyse: cannot access local variable 'panel_positions_from_ai' where it is not associated with a value",
+    "total_surface_required": 25.32,
+    "placement_possible": false,
+    "recommendations": "Veuillez r\u00e9essayer avec une image de toiture plus claire (format JPEG/PNG, minimum 100x100 pixels)",
+    "composite_image": null
+  },
+  "18": {
+    "success": false,
+    "panel_positions": [],
+    "roof_analysis": "\u274c Erreur d'analyse: cannot access local variable 'panel_positions_from_ai' where it is not associated with a value",
+    "total_surface_required": 37.98,
+    "placement_possible": false,
+    "recommendations": "Veuillez r\u00e9essayer avec une image de toiture plus claire (format JPEG/PNG, minimum 100x100 pixels)",
+    "composite_image": null
+  }
+}
