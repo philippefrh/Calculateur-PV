@@ -2672,6 +2672,14 @@ class SolarCalculatorTester:
         self.test_roof_analysis_with_different_panel_counts()
         self.test_roof_analysis_error_handling()
         
+        # COMPREHENSIVE ROOF ANALYSIS TESTING (Review Request Focus)
+        print("\n🔧 COMPREHENSIVE ROOF ANALYSIS TESTING - CRITICAL FIXES VERIFICATION")
+        print("-" * 70)
+        self.test_roof_analysis_panel_count_fix()
+        self.test_roof_analysis_intelligent_positioning()
+        self.test_roof_analysis_fallback_mechanism()
+        self.test_roof_analysis_realistic_rendering()
+        
         # Print summary
         print("\n" + "=" * 80)
         print("📊 TEST SUMMARY")
