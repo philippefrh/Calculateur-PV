@@ -1494,7 +1494,11 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
         # Créer le client LLM
-        llm = LlmChat(api_key=openai_key)
+        llm = LlmChat(
+            session_id="roof_analysis",
+            system_message="You are an expert in solar panel installation and roof analysis. Analyze roof images and provide optimal solar panel placement recommendations.",
+            api_key=openai_key
+        )
         
         # Préparer l'image
         image_content = ImageContent(
