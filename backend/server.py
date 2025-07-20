@@ -1483,7 +1483,7 @@ def create_composite_image_with_panels(base64_image: str, panel_positions: List[
             base64_image = base64_image.split(',')[1]
         
         image_data = base64.b64decode(base64_image)
-        original_image = Image.open(BytesIO(image_data)).convert('RGB')
+        original_image = PILImage.open(BytesIO(image_data)).convert('RGB')
         
         # Créer une copie pour dessiner dessus
         composite_image = original_image.copy()
