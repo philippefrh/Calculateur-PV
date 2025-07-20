@@ -1172,34 +1172,46 @@ const ConsumptionForm = ({
                       
                       <div className="roof-visualization">
                         <div className="roof-image-container">
-                          <img src={roofImage.preview} alt="Toiture avec panneaux" />
-                          <div className="panel-overlay">
-                            {roofAnalysisResult.panel_positions.map((panel, index) => (
-                              <div 
-                                key={index}
-                                className="panel-position"
-                                style={{
-                                  position: 'absolute',
-                                  left: `${panel.x * 100}%`,
-                                  top: `${panel.y * 100}%`,
-                                  width: `${panel.width * 100}%`,
-                                  height: `${panel.height * 100}%`,
-                                  transform: `rotate(${panel.angle}deg)`,
-                                  backgroundColor: 'rgba(30, 144, 255, 0.7)',
-                                  border: '2px solid #1E90FF',
-                                  borderRadius: '4px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  fontSize: '12px',
-                                  color: 'white',
-                                  fontWeight: 'bold'
-                                }}
-                              >
-                                {index + 1}
+                          {/* Utiliser l'image composite si disponible, sinon l'image originale avec overlay */}
+                          {roofAnalysisResult.composite_image ? (
+                            <div>
+                              <img src={roofAnalysisResult.composite_image} alt="Toiture avec panneaux solaires installés" style={{width: '100%', borderRadius: '8px'}} />
+                              <p style={{fontSize: '12px', color: '#666', marginTop: '8px', textAlign: 'center'}}>
+                                💡 Image composite générée montrant l'installation réaliste des panneaux solaires
+                              </p>
+                            </div>
+                          ) : (
+                            <div>
+                              <img src={roofImage.preview} alt="Toiture avec panneaux" />
+                              <div className="panel-overlay">
+                                {roofAnalysisResult.panel_positions.map((panel, index) => (
+                                  <div 
+                                    key={index}
+                                    className="panel-position"
+                                    style={{
+                                      position: 'absolute',
+                                      left: `${panel.x * 100}%`,
+                                      top: `${panel.y * 100}%`,
+                                      width: `${panel.width * 100}%`,
+                                      height: `${panel.height * 100}%`,
+                                      transform: `rotate(${panel.angle}deg)`,
+                                      backgroundColor: 'rgba(30, 144, 255, 0.7)',
+                                      border: '2px solid #1E90FF',
+                                      borderRadius: '4px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      fontSize: '12px',
+                                      color: 'white',
+                                      fontWeight: 'bold'
+                                    }}
+                                  >
+                                    {index + 1}
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                       
