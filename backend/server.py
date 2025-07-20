@@ -1567,10 +1567,10 @@ async def analyze_roof_for_panels(request: RoofAnalysisRequest):
         return RoofAnalysisResponse(
             success=True,
             panel_positions=panel_positions,
-            roof_analysis=result.get("roof_analysis", "Analyse non disponible"),
+            roof_analysis=str(result.get("roof_analysis", "Analyse non disponible")),
             total_surface_required=total_surface_required,
-            placement_possible=result.get("placement_possible", False),
-            recommendations=result.get("recommendations", "Aucune recommandation")
+            placement_possible=bool(result.get("placement_possible", False)),
+            recommendations=str(result.get("recommendations", "Aucune recommandation"))
         )
         
     except Exception as e:
