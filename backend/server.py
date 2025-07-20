@@ -2526,14 +2526,23 @@ def generate_obstacle_aware_panel_positions(panel_count: int, img_width: int, im
                     x = max(zone['x1'] + 0.005, min(x, zone['x2'] - 0.12))
                     y = max(zone['y1'] + 0.005, min(y, zone['y2'] - 0.08))
                     
-                    # Vérifier qu'on ne chevauche pas un obstacle
+                    # Vérifier qu'on ne chevauche pas un obstacle avec MARGE DE SÉCURITÉ
                     panel_conflicts = False
+                    panel_x1, panel_y1 = x, y
+                    panel_x2, panel_y2 = x + 0.12, y + 0.08
+                    
                     for obstacle in obstacles:
-                        # Vérifier chevauchement panneau-obstacle
-                        if not (x + 0.12 < obstacle['x1'] or x > obstacle['x2'] or 
-                               y + 0.08 < obstacle['y1'] or y > obstacle['y2']):
+                        # Calculer les zones d'obstacle avec marge de sécurité élargie
+                        obs_x1 = obstacle['x1'] - 0.04  # Marge 4% 
+                        obs_y1 = obstacle['y1'] - 0.03  # Marge 3%
+                        obs_x2 = obstacle['x2'] + 0.04  # Marge 4%
+                        obs_y2 = obstacle['y2'] + 0.03  # Marge 3%
+                        
+                        # Vérifier chevauchement avec marge élargie
+                        if not (panel_x2 < obs_x1 or panel_x1 > obs_x2 or 
+                               panel_y2 < obs_y1 or panel_y1 > obs_y2):
                             panel_conflicts = True
-                            logging.info(f"    ⚠️ Panneau {panel_idx+1} évite l'obstacle {obstacle['type']} à ({obstacle['x1']:.3f}, {obstacle['y1']:.3f})")
+                            logging.info(f"    ⚠️ Panneau {panel_idx+1} évite l'obstacle {obstacle['type']} à ({obstacle['x1']:.3f}, {obstacle['y1']:.3f}) avec marge")
                             break
                     
                     if not panel_conflicts:
@@ -2551,24 +2560,57 @@ def generate_obstacle_aware_panel_positions(panel_count: int, img_width: int, im
                         panel_idx += 1
                         panels_placed += 1
                     else:
-                        # Déplacer légèrement le panneau pour éviter l'obstacle
-                        x_alt = x + 0.05
-                        y_alt = y + 0.05
+                        # Essayer plusieurs positions alternatives pour éviter l'obstacle
+                        alternative_positions = [
+                            (x + 0.08, y),      # Décalage droit
+                            (x - 0.08, y),      # Décalage gauche
+                            (x, y + 0.06),      # Décalage bas
+                            (x, y - 0.06),      # Décalage haut
+                            (x + 0.06, y + 0.04), # Diagonale
+                            (x - 0.06, y - 0.04)  # Diagonale inverse
+                        ]
                         
-                        if (x_alt + 0.12 <= zone['x2'] and y_alt + 0.08 <= zone['y2']):
-                            positions.append({
-                                'x': x_alt,
-                                'y': y_alt, 
-                                'width': 0.12,
-                                'height': 0.08,
-                                'angle': roof_inclination,
-                                'zone': zone.get('type', f'zone_{zone_idx}'),
-                                'zone_index': zone_idx
-                            })
-                            
-                            logging.info(f"    ✅ Panneau {panel_idx+1}: ({x_alt:.3f}, {y_alt:.3f}) déplacé pour éviter obstacle")
-                            panel_idx += 1
-                            panels_placed += 1
+                        placed_alternative = False
+                        for x_alt, y_alt in alternative_positions:
+                            # Vérifier que la position alternative reste dans la zone
+                            if (zone['x1'] + 0.01 <= x_alt and x_alt + 0.12 <= zone['x2'] - 0.01 and
+                                zone['y1'] + 0.01 <= y_alt and y_alt + 0.08 <= zone['y2'] - 0.01):
+                                
+                                # Vérifier qu'elle n'intersecte pas les obstacles
+                                alt_conflicts = False
+                                alt_x1, alt_y1 = x_alt, y_alt
+                                alt_x2, alt_y2 = x_alt + 0.12, y_alt + 0.08
+                                
+                                for obstacle in obstacles:
+                                    obs_x1 = obstacle['x1'] - 0.04
+                                    obs_y1 = obstacle['y1'] - 0.03  
+                                    obs_x2 = obstacle['x2'] + 0.04
+                                    obs_y2 = obstacle['y2'] + 0.03
+                                    
+                                    if not (alt_x2 < obs_x1 or alt_x1 > obs_x2 or 
+                                           alt_y2 < obs_y1 or alt_y1 > obs_y2):
+                                        alt_conflicts = True
+                                        break
+                                
+                                if not alt_conflicts:
+                                    positions.append({
+                                        'x': x_alt,
+                                        'y': y_alt,
+                                        'width': 0.12,
+                                        'height': 0.08,
+                                        'angle': roof_inclination,
+                                        'zone': zone.get('type', f'zone_{zone_idx}'),
+                                        'zone_index': zone_idx
+                                    })
+                                    
+                                    logging.info(f"    ✅ Panneau {panel_idx+1}: ({x_alt:.3f}, {y_alt:.3f}) repositionné pour éviter obstacle")
+                                    panel_idx += 1
+                                    panels_placed += 1
+                                    placed_alternative = True
+                                    break
+                        
+                        if not placed_alternative:
+                            logging.info(f"    ❌ Impossible de positionner le panneau {panel_idx+1} sans conflit dans cette zone")
                 
                 if panel_idx >= panel_count or panels_placed >= panels_in_zone:
                     break
