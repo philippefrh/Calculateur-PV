@@ -2608,6 +2608,294 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Roof Analysis Error Handling", False, f"Error: {str(e)}")
 
+    def test_roof_analysis_panel_count_fix(self):
+        """Test that endpoint returns exact number of panel positions requested (6, 12, 18)"""
+        try:
+            # Create a larger test image (200x200 pixels) to pass OpenAI validation
+            from PIL import Image as PILImage
+            import io
+            import base64
+            
+            # Create a 200x200 test image
+            test_img = PILImage.new('RGB', (200, 200), color='blue')
+            buffer = io.BytesIO()
+            test_img.save(buffer, format='JPEG')
+            buffer.seek(0)
+            test_image_base64 = base64.b64encode(buffer.getvalue()).decode()
+            
+            panel_counts_to_test = [6, 12, 18]
+            
+            for panel_count in panel_counts_to_test:
+                request_data = {
+                    "image_base64": f"data:image/jpeg;base64,{test_image_base64}",
+                    "panel_count": panel_count
+                }
+                
+                response = self.session.post(f"{self.base_url}/analyze-roof", json=request_data)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    panel_positions = data.get("panel_positions", [])
+                    
+                    if len(panel_positions) != panel_count:
+                        self.log_test("Roof Analysis - Panel Count Fix", False, 
+                                    f"❌ PANEL COUNT ISSUE: Requested {panel_count} panels, got {len(panel_positions)} positions", 
+                                    {"requested": panel_count, "received": len(panel_positions)})
+                        return
+                else:
+                    self.log_test("Roof Analysis - Panel Count Fix", False, 
+                                f"Failed to test {panel_count} panels: HTTP {response.status_code}")
+                    return
+            
+            self.log_test("Roof Analysis - Panel Count Fix", True, 
+                        f"✅ PANEL COUNT FIX VERIFIED: All panel counts (6, 12, 18) return exact number of positions requested", 
+                        {"tested_counts": panel_counts_to_test})
+                        
+        except Exception as e:
+            self.log_test("Roof Analysis - Panel Count Fix", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_intelligent_positioning(self):
+        """Test the generate_intelligent_roof_positions function for proper roof-adapted placement"""
+        try:
+            # Create a realistic test image
+            from PIL import Image as PILImage
+            import io
+            import base64
+            
+            # Create a 400x300 test image (realistic roof photo dimensions)
+            test_img = PILImage.new('RGB', (400, 300), color='gray')
+            buffer = io.BytesIO()
+            test_img.save(buffer, format='JPEG')
+            buffer.seek(0)
+            test_image_base64 = base64.b64encode(buffer.getvalue()).decode()
+            
+            request_data = {
+                "image_base64": f"data:image/jpeg;base64,{test_image_base64}",
+                "panel_count": 12
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=request_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                panel_positions = data.get("panel_positions", [])
+                
+                if len(panel_positions) != 12:
+                    self.log_test("Roof Analysis - Intelligent Positioning", False, 
+                                f"Expected 12 positions, got {len(panel_positions)}")
+                    return
+                
+                # Check positioning intelligence
+                issues = []
+                
+                # Check that positions are within roof area (not at edges)
+                for i, pos in enumerate(panel_positions):
+                    x, y = pos.get("x", 0), pos.get("y", 0)
+                    width, height = pos.get("width", 0), pos.get("height", 0)
+                    angle = pos.get("angle", 0)
+                    
+                    # Check positions are within safe roof area (15%-85% x, 18%-58% y)
+                    if x < 0.15 or x > 0.85:
+                        issues.append(f"Panel {i}: x={x:.3f} outside safe roof area (0.15-0.85)")
+                    if y < 0.18 or y > 0.58:
+                        issues.append(f"Panel {i}: y={y:.3f} outside safe roof area (0.18-0.58)")
+                    
+                    # Check reasonable dimensions
+                    if width < 0.08 or width > 0.20:
+                        issues.append(f"Panel {i}: width={width:.3f} unrealistic (expected 0.08-0.20)")
+                    if height < 0.05 or height > 0.15:
+                        issues.append(f"Panel {i}: height={height:.3f} unrealistic (expected 0.05-0.15)")
+                    
+                    # Check angle is reasonable for roof slope
+                    if angle < 0 or angle > 45:
+                        issues.append(f"Panel {i}: angle={angle}° unrealistic (expected 0-45°)")
+                
+                # Check for reasonable spacing (no overlapping)
+                for i in range(len(panel_positions)):
+                    for j in range(i + 1, len(panel_positions)):
+                        pos1, pos2 = panel_positions[i], panel_positions[j]
+                        x1, y1 = pos1.get("x", 0), pos1.get("y", 0)
+                        x2, y2 = pos2.get("x", 0), pos2.get("y", 0)
+                        
+                        # Check minimum distance between panels
+                        distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+                        if distance < 0.05:  # Minimum 5% distance
+                            issues.append(f"Panels {i} and {j} too close: distance={distance:.3f}")
+                
+                if issues:
+                    self.log_test("Roof Analysis - Intelligent Positioning", False, 
+                                f"Positioning issues: {'; '.join(issues[:3])}", 
+                                {"issues_count": len(issues), "sample_issues": issues[:3]})
+                else:
+                    # Calculate positioning statistics
+                    x_positions = [pos.get("x", 0) for pos in panel_positions]
+                    y_positions = [pos.get("y", 0) for pos in panel_positions]
+                    angles = [pos.get("angle", 0) for pos in panel_positions]
+                    
+                    self.log_test("Roof Analysis - Intelligent Positioning", True, 
+                                f"✅ INTELLIGENT POSITIONING WORKING: 12 panels positioned in roof-safe area. X range: {min(x_positions):.2f}-{max(x_positions):.2f}, Y range: {min(y_positions):.2f}-{max(y_positions):.2f}, Angles: {min(angles):.0f}°-{max(angles):.0f}°", 
+                                {"positioning_stats": {
+                                    "x_range": [min(x_positions), max(x_positions)],
+                                    "y_range": [min(y_positions), max(y_positions)],
+                                    "angle_range": [min(angles), max(angles)]
+                                }})
+            else:
+                self.log_test("Roof Analysis - Intelligent Positioning", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Roof Analysis - Intelligent Positioning", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_fallback_mechanism(self):
+        """Test that default intelligent positions work when OpenAI fails"""
+        try:
+            # Create a test image that might cause OpenAI to fail but should still work with fallback
+            from PIL import Image as PILImage
+            import io
+            import base64
+            
+            # Create a 150x150 test image (borderline size)
+            test_img = PILImage.new('RGB', (150, 150), color='red')
+            buffer = io.BytesIO()
+            test_img.save(buffer, format='JPEG')
+            buffer.seek(0)
+            test_image_base64 = base64.b64encode(buffer.getvalue()).decode()
+            
+            request_data = {
+                "image_base64": f"data:image/jpeg;base64,{test_image_base64}",
+                "panel_count": 6
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=request_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check that we got a successful response even if OpenAI failed
+                if not data.get("success", False):
+                    self.log_test("Roof Analysis - Fallback Mechanism", False, 
+                                "Response indicates failure even with fallback", data)
+                    return
+                
+                panel_positions = data.get("panel_positions", [])
+                if len(panel_positions) != 6:
+                    self.log_test("Roof Analysis - Fallback Mechanism", False, 
+                                f"Fallback didn't provide correct panel count: expected 6, got {len(panel_positions)}")
+                    return
+                
+                # Check that positions are reasonable (fallback algorithm should work)
+                valid_positions = 0
+                for pos in panel_positions:
+                    x, y = pos.get("x", 0), pos.get("y", 0)
+                    if 0.1 <= x <= 0.9 and 0.1 <= y <= 0.8:  # Reasonable roof area
+                        valid_positions += 1
+                
+                if valid_positions < 6:
+                    self.log_test("Roof Analysis - Fallback Mechanism", False, 
+                                f"Only {valid_positions}/6 positions are in valid roof area")
+                    return
+                
+                # Check if composite image was generated
+                composite_image = data.get("composite_image")
+                if not composite_image:
+                    self.log_test("Roof Analysis - Fallback Mechanism", False, 
+                                "No composite image generated by fallback")
+                    return
+                
+                self.log_test("Roof Analysis - Fallback Mechanism", True, 
+                            f"✅ FALLBACK MECHANISM WORKING: Generated {len(panel_positions)} valid positions and composite image even when OpenAI might fail", 
+                            {"panel_count": len(panel_positions), "valid_positions": valid_positions, "has_composite": bool(composite_image)})
+            else:
+                self.log_test("Roof Analysis - Fallback Mechanism", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Roof Analysis - Fallback Mechanism", False, f"Error: {str(e)}")
+
+    def test_roof_analysis_realistic_rendering(self):
+        """Test that create_composite_image_with_panels generates realistic panels"""
+        try:
+            # Create a realistic test image
+            from PIL import Image as PILImage
+            import io
+            import base64
+            
+            # Create a 600x400 test image (good quality for rendering)
+            test_img = PILImage.new('RGB', (600, 400), color='darkgray')
+            buffer = io.BytesIO()
+            test_img.save(buffer, format='JPEG')
+            buffer.seek(0)
+            test_image_base64 = base64.b64encode(buffer.getvalue()).decode()
+            
+            request_data = {
+                "image_base64": f"data:image/jpeg;base64,{test_image_base64}",
+                "panel_count": 18
+            }
+            
+            response = self.session.post(f"{self.base_url}/analyze-roof", json=request_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check that analysis succeeded
+                if not data.get("success", False):
+                    self.log_test("Roof Analysis - Realistic Rendering", False, 
+                                "Analysis failed", data)
+                    return
+                
+                panel_positions = data.get("panel_positions", [])
+                if len(panel_positions) != 18:
+                    self.log_test("Roof Analysis - Realistic Rendering", False, 
+                                f"Expected 18 positions, got {len(panel_positions)}")
+                    return
+                
+                # Check that composite image was generated
+                composite_image = data.get("composite_image")
+                if not composite_image:
+                    self.log_test("Roof Analysis - Realistic Rendering", False, 
+                                "No composite image generated")
+                    return
+                
+                # Check that composite image is different from original (panels were added)
+                if composite_image == test_image_base64:
+                    self.log_test("Roof Analysis - Realistic Rendering", False, 
+                                "Composite image identical to original (no panels rendered)")
+                    return
+                
+                # Check composite image size (should be reasonable)
+                try:
+                    if composite_image.startswith('data:image'):
+                        composite_data = composite_image.split(',')[1]
+                    else:
+                        composite_data = composite_image
+                    
+                    composite_bytes = base64.b64decode(composite_data)
+                    composite_size = len(composite_bytes)
+                    
+                    # Should be larger than original (panels added) but not excessively large
+                    original_size = len(base64.b64decode(test_image_base64))
+                    if composite_size <= original_size:
+                        self.log_test("Roof Analysis - Realistic Rendering", False, 
+                                    f"Composite image ({composite_size} bytes) not larger than original ({original_size} bytes)")
+                        return
+                    
+                    if composite_size > original_size * 10:  # Shouldn't be more than 10x larger
+                        self.log_test("Roof Analysis - Realistic Rendering", False, 
+                                    f"Composite image too large ({composite_size} bytes vs {original_size} bytes original)")
+                        return
+                    
+                except Exception as e:
+                    self.log_test("Roof Analysis - Realistic Rendering", False, 
+                                f"Error validating composite image: {e}")
+                    return
+                
+                self.log_test("Roof Analysis - Realistic Rendering", True, 
+                            f"✅ REALISTIC PANEL RENDERING WORKING: Generated composite image with {len(panel_positions)} ultra-realistic panels. Image size: {composite_size:,} bytes (vs {original_size:,} original)", 
+                            {"panel_count": len(panel_positions), "composite_size": composite_size, "original_size": original_size})
+            else:
+                self.log_test("Roof Analysis - Realistic Rendering", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Roof Analysis - Realistic Rendering", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on TVA correction verification"""
         print("🚀 Starting Comprehensive Backend Testing for Solar Calculator")
