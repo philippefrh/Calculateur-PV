@@ -2834,6 +2834,15 @@ function App() {
           onNext={handleNext} 
           onPrevious={handlePrevious} 
           selectedRegion={selectedRegion}
+          showRoofAnalysis={showRoofAnalysis}
+          setShowRoofAnalysis={setShowRoofAnalysis}
+          roofImage={roofImage}
+          setRoofImage={setRoofImage}
+          roofAnalysisResult={roofAnalysisResult}
+          setRoofAnalysisResult={setRoofAnalysisResult}
+          isAnalyzingRoof={isAnalyzingRoof}
+          handleRoofImageUpload={handleRoofImageUpload}
+          analyzeRoofWithAI={analyzeRoofWithAI}
         />
       </div>
     );
