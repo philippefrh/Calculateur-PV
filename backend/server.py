@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import requests
 
-# OpenAI Vision imports 
+# OpenAI Vision imports - Updated LLMChat to LlmChat
 from emergentintegrations.llm.chat import ImageContent, UserMessage, LlmChat
 
 ROOT_DIR = Path(__file__).parent
