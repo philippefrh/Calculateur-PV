@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Animation 3D Solaire - FRH ENVIRONNEMENT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 50%);
+            padding: 20px;
+            color: white;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .overlay h1 {
+            margin: 0;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            color: #2ecc71;
+        }
+        
+        .overlay p {
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            margin: 10px 0;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        .controls button {
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .controls button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.6);
+        }
+        
+        .progress {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <h1>🎬 Votre Installation Solaire 3D</h1>
+        <p id="stage-text">Préparation de l'animation...</p>
+    </div>
+    
+    <div class="progress" id="progress">
+        <span id="progress-text">Initialisation...</span>
+    </div>
+    
+    <div class="controls">
+        <button onclick="restartAnimation()">🔄 Recommencer</button>
+        <button onclick="togglePause()">⏸️ Pause</button>
+        <button onclick="speedUp()">⚡ Accélérer</button>
+    </div>
+
+    <script>
+        let scene, camera, renderer;
+        let panels = [];
+        let inverter = null;
+        let app = null;
+        let animationStage = 'panels';
+        let currentPanelIndex = 0;
+        let isPaused = false;
+        let animationSpeed = 1;
+        const totalPanels = 12;
+
+        function init() {
+            // Scène
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB);
+
+            // Caméra
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 8, 15);
+            camera.lookAt(0, 0, 0);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.body.appendChild(renderer.domElement);
+
+            // Lumières
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            // Sol
+            const groundGeometry = new THREE.PlaneGeometry(50, 50);
+            const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x90EE90 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Démarrer l'animation
+            startAnimation();
+            animate();
+        }
+
+        function createPanelTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            // Fond noir mat comme votre panneau
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, 512, 256);
+
+            // Grille de cellules photovoltaïques
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 3;
+            
+            // 6 colonnes, 3 rangées
+            for (let i = 1; i < 6; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * (512/6), 0);
+                ctx.lineTo(i * (512/6), 256);
+                ctx.stroke();
+            }
+            
+            for (let j = 1; j < 3; j++) {
+                ctx.beginPath();
+                ctx.moveTo(0, j * (256/3));
+                ctx.lineTo(512, j * (256/3));
+                ctx.stroke();
+            }
+
+            // Cadre aluminium
+            ctx.strokeStyle = '#888888';
+            ctx.lineWidth = 8;
+            ctx.strokeRect(4, 4, 504, 248);
+
+            // Reflets
+            ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            ctx.fillRect(20, 20, 200, 50);
+            ctx.fillRect(350, 150, 140, 80);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createInverterTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            // Fond gris clair Hoymiles
+            ctx.fillStyle = '#e8e8e8';
+            ctx.fillRect(0, 0, 256, 256);
+
+            // Logo Hoymiles
+            ctx.fillStyle = '#2ecc71';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Hoymiles', 128, 50);
+
+            // Connecteurs MC4
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(40, 80, 35, 20);
+            ctx.fillRect(181, 80, 35, 20);
+            ctx.fillRect(40, 160, 35, 20);
+            ctx.fillRect(181, 160, 35, 20);
+
+            // Étiquettes
+            ctx.fillStyle = '#555';
+            ctx.font = '12px Arial';
+            ctx.fillText('DC IN', 57, 75);
+            ctx.fillText('DC IN', 198, 75);
+
+            // LED de statut
+            ctx.fillStyle = '#00ff00';
+            ctx.beginPath();
+            ctx.arc(128, 130, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Code-barres
+            ctx.fillStyle = '#000000';
+            for (let i = 0; i < 15; i++) {
+                const x = 50 + i * 8;
+                const height = Math.random() * 20 + 10;
+                ctx.fillRect(x, 200, 3, height);
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createAppTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Écran noir du téléphone
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, 256, 512);
+
+            // Interface de l'app
+            ctx.fillStyle = '#1e3a5f';
+            ctx.fillRect(15, 60, 226, 400);
+
+            // En-tête
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Solar Monitor', 128, 90);
+
+            // Données de production (comme votre capture)
+            ctx.font = 'bold 32px Arial';
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillText('27.32 kWh', 128, 140);
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('Production aujourd\'hui', 128, 160);
+
+            ctx.font = 'bold 32px Arial';
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillText('30.02 kWh', 128, 200);
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('Consommation', 128, 220);
+
+            // Graphique de production
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillRect(40, 260, 176, 80);
+            
+            // Courbe simplifiée
+            ctx.strokeStyle = '#27ae60';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(50, 320);
+            ctx.quadraticCurveTo(128, 270, 206, 300);
+            ctx.stroke();
+
+            // Boutons de contrôle
+            ctx.fillStyle = '#3498db';
+            ctx.fillRect(40, 380, 70, 35);
+            ctx.fillRect(146, 380, 70, 35);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText('Live', 75, 400);
+            ctx.fillText('History', 181, 400);
+
+            // Icônes WiFi et batterie (en haut)
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '14px Arial';
+            ctx.fillText('📶 100%', 200, 25);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function startAnimation() {
+            updateStageText('Installation des panneaux solaires...');
+            
+            const panelTexture = createPanelTexture();
+            const panelsPerRow = 4;
+            const rows = 3;
+
+            for (let i = 0; i < totalPanels; i++) {
+                setTimeout(() => {
+                    if (isPaused) return;
+                    
+                    const row = Math.floor(i / panelsPerRow);
+                    const col = i % panelsPerRow;
+
+                    // Géométrie du panneau
+                    const panelGeometry = new THREE.BoxGeometry(2.5, 0.15, 1.2);
+                    const panelMaterial = new THREE.MeshLambertMaterial({ map: panelTexture });
+                    const panel = new THREE.Mesh(panelGeometry, panelMaterial);
+
+                    // Position initiale (tombant du ciel)
+                    panel.position.set(
+                        (col - panelsPerRow/2 + 0.5) * 3,
+                        15,
+                        (row - rows/2 + 0.5) * 1.8
+                    );
+
+                    panel.castShadow = true;
+                    scene.add(panel);
+                    panels.push(panel);
+
+                    // Animation spectaculaire de chute
+                    animatePanel(panel, {
+                        x: (col - panelsPerRow/2 + 0.5) * 3,
+                        y: 0.1,
+                        z: (row - rows/2 + 0.5) * 1.8
+                    }, i);
+
+                    currentPanelIndex = i;
+                    updateProgress(`Panneau ${i + 1}/${totalPanels}`);
+
+                    if (i === totalPanels - 1) {
+                        setTimeout(() => {
+                            if (!isPaused) showInverter();
+                        }, 2500 / animationSpeed);
+                    }
+                }, (i * 600) / animationSpeed);
+            }
+        }
+
+        function animatePanel(panel, finalPos, index) {
+            const startTime = Date.now();
+            const duration = 2500 / animationSpeed;
+
+            function updatePanel() {
+                if (isPaused) {
+                    setTimeout(updatePanel, 100);
+                    return;
+                }
+
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing avec rebond
+                const easeProgress = progress < 0.7
+                    ? 4 * progress * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+                // Position Y avec rebond
+                panel.position.y = 15 + (finalPos.y - 15) * easeProgress;
+
+                // Rotations spectaculaires pendant la chute
+                panel.rotation.x = Math.sin(progress * Math.PI * 6) * 1.2;
+                panel.rotation.z = Math.sin(progress * Math.PI * 8) * 0.8;
+                panel.rotation.y = progress * Math.PI * 4;
+
+                if (progress < 1) {
+                    requestAnimationFrame(updatePanel);
+                } else {
+                    // Stabilisation finale
+                    panel.rotation.x = 0;
+                    panel.rotation.z = 0;
+                    panel.rotation.y = 0;
+                }
+            }
+            updatePanel();
+        }
+
+        function showInverter() {
+            animationStage = 'inverter';
+            updateStageText('Installation de l\'onduleur Hoymiles...');
+
+            const inverterTexture = createInverterTexture();
+            const inverterGeometry = new THREE.BoxGeometry(2, 1, 0.4);
+            const inverterMaterial = new THREE.MeshLambertMaterial({ map: inverterTexture });
+            inverter = new THREE.Mesh(inverterGeometry, inverterMaterial);
+
+            inverter.position.set(10, 10, 0);
+            inverter.castShadow = true;
+            scene.add(inverter);
+
+            // Animation d'apparition spectaculaire
+            const startTime = Date.now();
+            const duration = 3000 / animationSpeed;
+
+            function updateInverter() {
+                if (isPaused) {
+                    setTimeout(updateInverter, 100);
+                    return;
+                }
+
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                inverter.position.y = 10 + (0.6 - 10) * progress;
+                inverter.rotation.y = progress * Math.PI * 6;
+                inverter.rotation.x = Math.sin(progress * Math.PI * 4) * 0.7;
+
+                updateProgress(`Onduleur: ${Math.round(progress * 100)}%`);
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateInverter);
+                } else {
+                    inverter.rotation.x = 0;
+                    setTimeout(() => {
+                        if (!isPaused) showApp();
+                    }, 1000 / animationSpeed);
+                }
+            }
+            updateInverter();
+        }
+
+        function showApp() {
+            animationStage = 'app';
+            updateStageText('Connexion de l\'application de monitoring...');
+
+            const appTexture = createAppTexture();
+            const phoneGeometry = new THREE.BoxGeometry(0.9, 1.8, 0.1);
+            const phoneMaterial = new THREE.MeshLambertMaterial({ map: appTexture });
+            app = new THREE.Mesh(phoneGeometry, phoneMaterial);
+
+            app.position.set(-10, 8, 0);
+            app.castShadow = true;
+            scene.add(app);
+
+            const startTime = Date.now();
+            const duration = 2500 / animationSpeed;
+
+            function updateApp() {
+                if (isPaused) {
+                    setTimeout(updateApp, 100);
+                    return;
+                }
+
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                app.position.y = 8 + (1.2 - 8) * progress;
+                app.rotation.y = progress * Math.PI * 5;
+                app.rotation.z = Math.sin(progress * Math.PI * 3) * 0.4;
+
+                updateProgress(`Application: ${Math.round(progress * 100)}%`);
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateApp);
+                } else {
+                    app.rotation.z = 0;
+                    animationStage = 'complete';
+                    updateStageText('🎉 Installation terminée ! Votre système solaire est opérationnel !');
+                    updateProgress('✅ Animation terminée');
+                }
+            }
+            updateApp();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (!isPaused) {
+                // Rotations continues des éléments
+                panels.forEach(panel => {
+                    if (panel) panel.rotation.y += 0.005 * animationSpeed;
+                });
+
+                if (inverter && animationStage !== 'inverter') {
+                    inverter.rotation.y += 0.01 * animationSpeed;
+                }
+
+                if (app && animationStage !== 'app') {
+                    app.rotation.y += 0.008 * animationSpeed;
+                }
+
+                // Mouvement de caméra automatique
+                const time = Date.now() * 0.0005;
+                camera.position.x = Math.sin(time) * 2;
+                camera.position.z = 15 + Math.cos(time) * 3;
+                camera.lookAt(0, 0, 0);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function updateStageText(text) {
+            document.getElementById('stage-text').textContent = text;
+        }
+
+        function updateProgress(text) {
+            document.getElementById('progress-text').textContent = text;
+        }
+
+        function restartAnimation() {
+            // Nettoyer la scène
+            panels.forEach(panel => scene.remove(panel));
+            if (inverter) scene.remove(inverter);
+            if (app) scene.remove(app);
+            
+            panels = [];
+            inverter = null;
+            app = null;
+            animationStage = 'panels';
+            currentPanelIndex = 0;
+            
+            startAnimation();
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            document.querySelector('button[onclick="togglePause()"]').textContent = 
+                isPaused ? '▶️ Reprendre' : '⏸️ Pause';
+        }
+
+        function speedUp() {
+            animationSpeed = animationSpeed === 1 ? 2 : animationSpeed === 2 ? 4 : 1;
+            document.querySelector('button[onclick="speedUp()"]').textContent = 
+                animationSpeed === 1 ? '⚡ Accélérer' : 
+                animationSpeed === 2 ? '⚡⚡ Turbo' : '🐌 Normal';
+        }
+
+        // Initialisation au chargement
+        window.addEventListener('load', init);
+
+        // Redimensionnement
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
