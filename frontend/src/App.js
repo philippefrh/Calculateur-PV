@@ -1212,7 +1212,7 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep }) 
   };
 
   const getOptimalFinancing = () => {
-    if (!results.financing_options) return null;
+    if (!results || !results.financing_options) return null;
     return results.financing_options.find(option => 
       option.difference_vs_savings >= -20 && option.difference_vs_savings <= 20
     ) || results.financing_options[results.financing_options.length - 1];
