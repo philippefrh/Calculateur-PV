@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import SolarAnimation3D from './SolarAnimation3D';
+import SolarAnimationCSS from './SolarAnimationCSS';
 import "./App.css";
 import axios from 'axios';
 
