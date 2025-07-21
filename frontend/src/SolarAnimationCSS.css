@@ -46,6 +46,114 @@
   border-radius: 50% 50% 0 0 / 100px 100px 0 0;
 }
 
+/* SOLEIL ANIMÉ EN HAUT À GAUCHE */
+.animated-sun {
+  position: absolute;
+  top: 60px;
+  left: 80px;
+  width: 120px;
+  height: 120px;
+  z-index: 50;
+}
+
+.sun-core {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #FFD700 0%, #FFA500 40%, #FF8C00 80%, #FF6347 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 20px #FFD700,
+    0 0 40px #FFA500,
+    0 0 60px rgba(255, 215, 0, 0.8);
+  animation: sun-pulse 4s ease-in-out infinite alternate;
+}
+
+.sun-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: sun-glow-pulse 3s ease-in-out infinite alternate;
+}
+
+.sun-rays {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  animation: sun-rotate 20s linear infinite;
+}
+
+.sun-ray {
+  position: absolute;
+  width: 4px;
+  height: 25px;
+  background: linear-gradient(to bottom, #FFD700, transparent);
+  border-radius: 2px;
+  top: 0;
+  left: 50%;
+  transform-origin: 50% 60px;
+  animation: ray-flicker 2s ease-in-out infinite alternate;
+}
+
+.sun-ray.ray-1 { transform: translateX(-50%) rotate(0deg); animation-delay: 0s; }
+.sun-ray.ray-2 { transform: translateX(-50%) rotate(45deg); animation-delay: 0.25s; }
+.sun-ray.ray-3 { transform: translateX(-50%) rotate(90deg); animation-delay: 0.5s; }
+.sun-ray.ray-4 { transform: translateX(-50%) rotate(135deg); animation-delay: 0.75s; }
+.sun-ray.ray-5 { transform: translateX(-50%) rotate(180deg); animation-delay: 1s; }
+.sun-ray.ray-6 { transform: translateX(-50%) rotate(225deg); animation-delay: 1.25s; }
+.sun-ray.ray-7 { transform: translateX(-50%) rotate(270deg); animation-delay: 1.5s; }
+.sun-ray.ray-8 { transform: translateX(-50%) rotate(315deg); animation-delay: 1.75s; }
+
+/* Animations du soleil */
+@keyframes sun-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes sun-pulse {
+  0% { 
+    box-shadow: 
+      0 0 20px #FFD700,
+      0 0 40px #FFA500,
+      0 0 60px rgba(255, 215, 0, 0.8);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% { 
+    box-shadow: 
+      0 0 30px #FFD700,
+      0 0 60px #FFA500,
+      0 0 90px rgba(255, 215, 0, 0.9);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+@keyframes sun-glow-pulse {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes ray-flicker {
+  0% { 
+    opacity: 0.7; 
+    height: 25px;
+    background: linear-gradient(to bottom, #FFD700, transparent);
+  }
+  100% { 
+    opacity: 1; 
+    height: 35px;
+    background: linear-gradient(to bottom, #FFFF00, rgba(255, 215, 0, 0.8), transparent);
+  }
+}
+
 /* PANNEAUX SOLAIRES */
 .solar-panel {
   position: absolute;
