@@ -2761,24 +2761,7 @@ function App() {
         <SolarAnimationCSS 
           panelCount={panelCount}
           onBack={() => setCurrentStep(5)} // Retour aux résultats
-          onNext={() => {
-            // Réinitialiser pour une nouvelle étude
-            setCurrentStep(1);
-            setFormData({
-              firstName: '',
-              lastName: '',
-              email: '',
-              phone: '',
-              address: '',
-              postalCode: '',
-              city: '',
-              annualConsumption: '',
-              monthlyEdfPayment: '',
-              useManualKit: false,
-              manualKit: null
-            });
-            setCalculationResults(null);
-          }}
+          onNext={() => setCurrentStep(7)} // Aller vers synthèse financière
         />
       </div>
     );
