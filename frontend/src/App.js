@@ -1234,13 +1234,14 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, fo
   const optimalFinancing = getOptimalFinancing();
 
   const sendToExpert = () => {
-    const subject = encodeURIComponent(`Demande de rendez-vous - Étude solaire ${results.kit_power}kW`);
+    const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
+    const subject = encodeURIComponent(`Demande de rendez-vous - Étude solaire ${kitPower}kW`);
     const body = encodeURIComponent(`Bonjour,
 
 Suite à mon étude solaire personnalisée, je souhaiterais prendre rendez-vous pour finaliser mon projet d'installation.
 
 Résumé de mon étude :
-- Kit recommandé : ${results.kit_power}kW (${results.panel_count} panneaux)
+- Kit recommandé : ${kitPower}kW (${results.panel_count} panneaux)
 - Production estimée : ${Math.round(results.estimated_production)} kWh/an
 - Autonomie : ${Math.round(results.autonomy_percentage)}%
 - Économies : ${Math.round(results.estimated_savings)} €/an
