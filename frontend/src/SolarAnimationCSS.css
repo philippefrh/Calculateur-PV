@@ -194,7 +194,7 @@
   z-index: 100;
 }
 
-.restart-btn, .back-btn {
+.restart-btn, .back-btn, .next-btn {
   background: rgba(46, 204, 113, 0.9);
   color: white;
   border: none;
@@ -213,7 +213,12 @@
   box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
 }
 
-.restart-btn:hover, .back-btn:hover {
+.next-btn {
+  background: rgba(52, 152, 219, 0.9);
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+}
+
+.restart-btn:hover, .back-btn:hover, .next-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(46, 204, 113, 0.6);
 }
