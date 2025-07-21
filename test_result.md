@@ -639,7 +639,6 @@ test_plan:
     - "Success Screen Improvements and Auto-Transition"
   stuck_tasks:
     - "Erreur TVA région France dans PDF devis"
-    - "Success Screen Improvements and Auto-Transition"
   test_all: false
   test_priority: "high_first"
 
