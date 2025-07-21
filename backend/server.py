@@ -638,8 +638,8 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
             kit_info = SOLAR_KITS[best_kit]
         
         # Get PVGIS data
-        pvgis_data = await get_pvgis_data(lat, lon, orientation, 
-                                         kit_info['power'] if region == "martinique" else best_kit)
+        kit_power = kit_info['power'] if region == "martinique" else best_kit
+        pvgis_data = await get_pvgis_data(lat, lon, orientation, kit_power)
         annual_production = pvgis_data["annual_production"]
         
         # Calculate autonomy percentage based on calculation mode
