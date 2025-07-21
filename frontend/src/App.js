@@ -1076,7 +1076,7 @@ const ConsumptionForm = ({
 };
 
 // Écran de résultats - Version Premium avec génération PDF
-const ResultsScreen = ({ results, onPrevious, selectedRegion }) => {
+const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [showFinancing, setShowFinancing] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
