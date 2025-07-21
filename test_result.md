@@ -632,9 +632,11 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Success Screen Improvements and Auto-Transition"
   stuck_tasks:
     - "Erreur TVA région France dans PDF devis"
+    - "Success Screen Improvements and Auto-Transition"
   test_all: false
   test_priority: "high_first"
 
