@@ -624,6 +624,9 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
+
+        // Initialisation au chargement
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
