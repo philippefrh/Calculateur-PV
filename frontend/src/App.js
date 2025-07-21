@@ -2654,6 +2654,7 @@ function App() {
           results={calculationResults}
           onPrevious={handlePrevious}
           selectedRegion={selectedRegion}
+          setCurrentStep={setCurrentStep}
         />
       </div>
     );
