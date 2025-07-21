@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Animation Complète - Soleil + Linky + kWh</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .solar-animation-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            overflow: hidden;
+            perspective: 1000px;
+        }
+        
+        .animation-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #2ecc71;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 100;
+            margin: 0;
+        }
+        
+        .animation-status {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.2em;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+        
+        .animation-ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to top, #228B22, #32CD32);
+            border-radius: 50% 50% 0 0 / 100px 100px 0 0;
+        }
+        
+        /* SOLEIL */
+        .animated-sun {
+            position: absolute;
+            top: 60px;
+            left: 80px;
+            width: 120px;
+            height: 120px;
+            z-index: 50;
+        }
+        
+        .sun-core {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #FFD700 0%, #FFA500 40%, #FF8C00 80%, #FF6347 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 20px #FFD700,
+                0 0 40px #FFA500,
+                0 0 60px rgba(255, 215, 0, 0.8);
+            animation: sun-pulse 4s ease-in-out infinite alternate;
+        }
+        
+        .sun-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: sun-glow-pulse 3s ease-in-out infinite alternate;
+        }
+        
+        .sun-rays {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            animation: sun-rotate 20s linear infinite;
+        }
+        
+        .sun-ray {
+            position: absolute;
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(to bottom, #FFD700, transparent);
+            border-radius: 2px;
+            top: 0;
+            left: 50%;
+            transform-origin: 50% 60px;
+            animation: ray-flicker 2s ease-in-out infinite alternate;
+        }
+        
+        .sun-ray.ray-1 { transform: translateX(-50%) rotate(0deg); animation-delay: 0s; }
+        .sun-ray.ray-2 { transform: translateX(-50%) rotate(45deg); animation-delay: 0.25s; }
+        .sun-ray.ray-3 { transform: translateX(-50%) rotate(90deg); animation-delay: 0.5s; }
+        .sun-ray.ray-4 { transform: translateX(-50%) rotate(135deg); animation-delay: 0.75s; }
+        .sun-ray.ray-5 { transform: translateX(-50%) rotate(180deg); animation-delay: 1s; }
+        .sun-ray.ray-6 { transform: translateX(-50%) rotate(225deg); animation-delay: 1.25s; }
+        .sun-ray.ray-7 { transform: translateX(-50%) rotate(270deg); animation-delay: 1.5s; }
+        .sun-ray.ray-8 { transform: translateX(-50%) rotate(315deg); animation-delay: 1.75s; }
+        
+        /* PANNEAUX */
+        .solar-panel {
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            background: linear-gradient(45deg, #1a1a1a 25%, #333333 25%, #333333 50%, #1a1a1a 50%, #1a1a1a 75%, #333333 75%);
+            background-size: 20px 20px;
+            border: 4px solid #888888;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg) rotateY(0deg);
+        }
+        
+        .solar-panel.producing {
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.5),
+                0 0 20px rgba(255, 215, 0, 0.3),
+                inset 0 0 10px rgba(255, 215, 0, 0.1);
+        }
+        
+        .panel-1 { left: 150px; bottom: 320px; }
+        .panel-2 { left: 370px; bottom: 320px; }
+        .panel-3 { left: 590px; bottom: 320px; }
+        .panel-4 { left: 150px; bottom: 250px; }
+        .panel-5 { left: 370px; bottom: 250px; }
+        .panel-6 { left: 590px; bottom: 250px; }
+        
+        .panel-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+        
+        /* kWh FLOTTANTS */
+        .kwh-production {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 200px;
+            pointer-events: none;
+            overflow: visible;
+        }
+        
+        .kwh-floating {
+            position: absolute;
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 14px;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+            animation: kwh-float 3s ease-in-out infinite;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* COMPTEUR LINKY */
+        .linky-counter {
+            position: absolute;
+            bottom: 240px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 160px;
+            height: 200px;
+            background: linear-gradient(to bottom, #7ED321, #5BA81B);
+            border: 4px solid #4A6E19;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            opacity: 1;
+            z-index: 60;
+        }
+        
+        .linky-header {
+            background: #4A6E19;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 8px;
+            margin: 8px 8px 0 8px;
+            border-radius: 8px;
+        }
+        
+        .linky-screen {
+            background: #000;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        
+        .linky-display {
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 8px #00FF00;
+            animation: digital-flicker 0.1s infinite alternate;
+        }
+        
+        .linky-unit {
+            color: #00AA00;
+            font-size: 12px;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .linky-led {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: #00FF00;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+            animation: led-blink 1s infinite;
+        }
+        
+        .linky-label {
+            color: white;
+            font-size: 10px;
+            text-align: center;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+        
+        /* ANIMATIONS */
+        @keyframes sun-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes sun-pulse {
+            0% { 
+                box-shadow: 
+                    0 0 20px #FFD700,
+                    0 0 40px #FFA500,
+                    0 0 60px rgba(255, 215, 0, 0.8);
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% { 
+                box-shadow: 
+                    0 0 30px #FFD700,
+                    0 0 60px #FFA500,
+                    0 0 90px rgba(255, 215, 0, 0.9);
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+        
+        @keyframes sun-glow-pulse {
+            0% { opacity: 0.6; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        @keyframes ray-flicker {
+            0% { 
+                opacity: 0.7; 
+                height: 25px;
+                background: linear-gradient(to bottom, #FFD700, transparent);
+            }
+            100% { 
+                opacity: 1; 
+                height: 35px;
+                background: linear-gradient(to bottom, #FFFF00, rgba(255, 215, 0, 0.8), transparent);
+            }
+        }
+        
+        @keyframes kwh-float {
+            0% {
+                opacity: 1;
+                top: 0;
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateX(-50%) scale(1.1);
+            }
+            100% {
+                opacity: 0;
+                top: -150px;
+                transform: translateX(-50%) scale(0.8);
+            }
+        }
+        
+        @keyframes led-blink {
+            0%, 50% { 
+                background: #00FF00; 
+                box-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+            }
+            51%, 100% { 
+                background: #004400; 
+                box-shadow: 0 0 4px rgba(0, 255, 0, 0.3);
+            }
+        }
+        
+        @keyframes digital-flicker {
+            0% { text-shadow: 0 0 8px #00FF00; }
+            100% { text-shadow: 0 0 12px #00FF00, 0 0 16px #00AA00; }
+        }
+    </style>
+</head>
+<body>
+    <div class="solar-animation-container" data-panels="6">
+        <h1 class="animation-title">🌞 Animation Complète</h1>
+        <div class="animation-status">⚡ Production d'énergie en cours...</div>
+        
+        <div class="animation-ground"></div>
+        
+        <!-- Soleil -->
+        <div class="animated-sun">
+            <div class="sun-core"></div>
+            <div class="sun-rays">
+                <div class="sun-ray ray-1"></div>
+                <div class="sun-ray ray-2"></div>
+                <div class="sun-ray ray-3"></div>
+                <div class="sun-ray ray-4"></div>
+                <div class="sun-ray ray-5"></div>
+                <div class="sun-ray ray-6"></div>
+                <div class="sun-ray ray-7"></div>
+                <div class="sun-ray ray-8"></div>
+            </div>
+            <div class="sun-glow"></div>
+        </div>
+        
+        <!-- Panneaux en production -->
+        <div class="solar-panel panel-1 producing">
+            <div class="panel-number">1</div>
+            <div class="kwh-production">
+                <div class="kwh-floating">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 1s">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 2s">kWh</div>
+            </div>
+        </div>
+        
+        <div class="solar-panel panel-2 producing">
+            <div class="panel-number">2</div>
+            <div class="kwh-production">
+                <div class="kwh-floating">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 1s">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 2s">kWh</div>
+            </div>
+        </div>
+        
+        <div class="solar-panel panel-3 producing">
+            <div class="panel-number">3</div>
+            <div class="kwh-production">
+                <div class="kwh-floating">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 1s">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 2s">kWh</div>
+            </div>
+        </div>
+        
+        <div class="solar-panel panel-4 producing">
+            <div class="panel-number">4</div>
+            <div class="kwh-production">
+                <div class="kwh-floating">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 1s">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 2s">kWh</div>
+            </div>
+        </div>
+        
+        <div class="solar-panel panel-5 producing">
+            <div class="panel-number">5</div>
+            <div class="kwh-production">
+                <div class="kwh-floating">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 1s">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 2s">kWh</div>
+            </div>
+        </div>
+        
+        <div class="solar-panel panel-6 producing">
+            <div class="panel-number">6</div>
+            <div class="kwh-production">
+                <div class="kwh-floating">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 1s">kWh</div>
+                <div class="kwh-floating" style="animation-delay: 2s">kWh</div>
+            </div>
+        </div>
+        
+        <!-- Compteur Linky -->
+        <div class="linky-counter active">
+            <div class="linky-header">LINKY</div>
+            <div class="linky-screen">
+                <div class="linky-display" id="kwhCounter">27.45</div>
+                <div class="linky-unit">kWh</div>
+            </div>
+            <div class="linky-led blinking"></div>
+            <div class="linky-label">Production Solaire</div>
+        </div>
+    </div>
+
+    <script>
+        // Simulation compteur qui monte
+        let kwh = 0;
+        setInterval(() => {
+            kwh += 1.5;
+            document.getElementById('kwhCounter').textContent = kwh.toFixed(2);
+        }, 500);
+    </script>
+</body>
+</html>
