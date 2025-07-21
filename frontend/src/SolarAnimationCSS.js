@@ -98,6 +98,13 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
       <h1 className="animation-title">🎬 Installation de {panelCount} Panneaux Solaires</h1>
       <div className="animation-status">{getStatusText()}</div>
       
+      {/* Nouveau badge pour l'autoconsommation */}
+      {showEconomyBadge && (
+        <div className="economy-badge">
+          Autoconsommation = Économies directement sur votre Facture
+        </div>
+      )}
+      
       <div className="animation-ground"></div>
       
       {/* Soleil Animé en haut à gauche */}
