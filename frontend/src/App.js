@@ -2789,8 +2789,8 @@ function App() {
       <div className="App">
         <SolarAnimationCSS 
           panelCount={panelCount}
-          onBack={() => setCurrentStep(5)} // Retour aux résultats
-          onNext={() => setCurrentStep(5)} // Retour vers les VRAIS résultats (votre page originale)
+          onBack={() => setCurrentStep('results')} // Retour aux résultats
+          onNext={() => setCurrentStep('results')} // Retour vers les VRAIS résultats (votre page originale)
         />
       </div>
     );
