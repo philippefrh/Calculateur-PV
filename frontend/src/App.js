@@ -2643,7 +2643,7 @@ function App() {
   if (currentStep === 5) {
     return (
       <div className="App">
-        <ResultsPage 
+        <ResultsScreen 
           calculationResults={calculationResults} 
           formData={formData} 
           selectedRegion={selectedRegion}
