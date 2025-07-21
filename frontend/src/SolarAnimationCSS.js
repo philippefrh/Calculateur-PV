@@ -166,27 +166,25 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
         </div>
       </div>
       
-      {/* Section Économies */}
+      {/* Section Économies avec de vrais billets d'euros */}
       {(animationStage === 'savings' || animationStage === 'complete') && (
         <div className="savings-section">
-          <div className="savings-text">
-            Autoconsommation = Économies<br />
-            <span>directement sur votre Facture</span>
-          </div>
           <div className="money-stack">
-            {Array.from({ length: Math.min(moneyBills, 8) }, (_, index) => (
-              <div 
-                key={index} 
-                className="money-bill"
-                style={{
-                  animationDelay: `${index * 1.5}s`,
-                  zIndex: 10 + index,
-                  bottom: `${index * 3}px`
-                }}
-              >
-                💶
-              </div>
-            ))}
+            {/* Billets de 50€ (roses) */}
+            {moneyBills >= 1 && <div className="euro-bill bill-50" style={{animationDelay: '0s', bottom: '0px'}}>50</div>}
+            {moneyBills >= 2 && <div className="euro-bill bill-50" style={{animationDelay: '1.5s', bottom: '3px'}}>50</div>}
+            
+            {/* Billets de 20€ (bleus) */}
+            {moneyBills >= 3 && <div className="euro-bill bill-20" style={{animationDelay: '3s', bottom: '6px'}}>20</div>}
+            {moneyBills >= 4 && <div className="euro-bill bill-20" style={{animationDelay: '4.5s', bottom: '9px'}}>20</div>}
+            
+            {/* Billets de 10€ (rouges) */}
+            {moneyBills >= 5 && <div className="euro-bill bill-10" style={{animationDelay: '6s', bottom: '12px'}}>10</div>}
+            {moneyBills >= 6 && <div className="euro-bill bill-10" style={{animationDelay: '7.5s', bottom: '15px'}}>10</div>}
+            
+            {/* Billets de 5€ (gris) */}
+            {moneyBills >= 7 && <div className="euro-bill bill-5" style={{animationDelay: '9s', bottom: '18px'}}>5</div>}
+            {moneyBills >= 8 && <div className="euro-bill bill-5" style={{animationDelay: '10.5s', bottom: '21px'}}>5</div>}
           </div>
         </div>
       )}
