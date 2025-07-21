@@ -1573,6 +1573,171 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Intelligent Roof Analysis System", False, f"Error: {str(e)}")
 
+    def test_user_requested_endpoints(self):
+        """Test the specific endpoints requested by the user with realistic French data"""
+        print("\n🎯 TESTING USER-REQUESTED ENDPOINTS WITH REALISTIC FRENCH DATA")
+        print("=" * 80)
+        
+        # Create realistic French client data as specified by user
+        realistic_french_data = {
+            "first_name": "Pierre",
+            "last_name": "Martin", 
+            "address": "15 Rue de la République, 69001 Lyon, France",
+            "phone": "0472123456",
+            "email": "pierre.martin@gmail.com",
+            "roof_surface": 50.0,  # 50m² as requested
+            "roof_orientation": "Sud",  # South orientation as requested
+            "velux_count": 2,  # 2 Velux as requested
+            "heating_system": "Électrique",  # Electric heating as requested
+            "water_heating_system": "Ballon électrique",
+            "water_heating_capacity": 200,
+            "annual_consumption_kwh": 8000.0,  # 8000 kWh/year as requested
+            "monthly_edf_payment": 150.0,  # 150€/month as requested
+            "annual_edf_payment": 1800.0  # 150€ × 12 months
+        }
+        
+        # Test 1: Create client with realistic French data
+        try:
+            print("\n1️⃣ Testing client creation with realistic French data...")
+            response = self.session.post(f"{self.base_url}/clients", json=realistic_french_data)
+            if response.status_code == 200:
+                client = response.json()
+                self.client_id = client["id"]
+                self.log_test("User Request - Create French Client", True, 
+                            f"✅ Client créé: {client['first_name']} {client['last_name']}, Lyon, 50m² toit Sud, 8000 kWh/an, 150€/mois EDF", 
+                            client)
+            else:
+                # Try to use existing client as fallback
+                self.use_existing_client()
+                self.log_test("User Request - Create French Client", False, 
+                            f"Failed to create client (using existing): HTTP {response.status_code}")
+        except Exception as e:
+            self.use_existing_client()
+            self.log_test("User Request - Create French Client", False, f"Error: {str(e)}")
+        
+        # Test 2: Endpoint de calcul - /api/calculate
+        if self.client_id:
+            try:
+                print("\n2️⃣ Testing /api/calculate endpoint with realistic French data...")
+                response = self.session.post(f"{self.base_url}/calculate/{self.client_id}")
+                if response.status_code == 200:
+                    calculation = response.json()
+                    
+                    # Validate key results for French realistic scenario
+                    kit_power = calculation.get("kit_power", 0)
+                    production = calculation.get("estimated_production", 0)
+                    savings = calculation.get("estimated_savings", 0)
+                    autonomy = calculation.get("autonomy_percentage", 0)
+                    monthly_savings = calculation.get("monthly_savings", 0)
+                    
+                    # Expected results for 8000 kWh consumption in Lyon
+                    issues = []
+                    if not (6000 <= production <= 9000):
+                        issues.append(f"Production {production:.0f} kWh outside expected range 6000-9000")
+                    if not (80 <= autonomy <= 100):
+                        issues.append(f"Autonomy {autonomy:.1f}% outside expected range 80-100%")
+                    if not (1000 <= savings <= 2500):
+                        issues.append(f"Annual savings {savings:.0f}€ outside expected range 1000-2500€")
+                    
+                    if issues:
+                        self.log_test("User Request - Calculate Endpoint", False, 
+                                    f"Calculation issues: {'; '.join(issues)}", calculation)
+                    else:
+                        self.log_test("User Request - Calculate Endpoint", True, 
+                                    f"✅ Calcul solaire complet réussi: Kit {kit_power}kW, {production:.0f} kWh/an, {autonomy:.1f}% autonomie, {monthly_savings:.0f}€/mois économies", 
+                                    calculation)
+                else:
+                    self.log_test("User Request - Calculate Endpoint", False, 
+                                f"HTTP {response.status_code}: {response.text}")
+            except Exception as e:
+                self.log_test("User Request - Calculate Endpoint", False, f"Error: {str(e)}")
+        
+        # Test 3: Endpoint des modes de calcul (check if calculation modes are working)
+        try:
+            print("\n3️⃣ Testing calculation modes (Réaliste and Optimiste)...")
+            if self.client_id:
+                # Test realistic mode
+                response_realistic = self.session.post(f"{self.base_url}/calculate/{self.client_id}?calculation_mode=realistic")
+                response_optimistic = self.session.post(f"{self.base_url}/calculate/{self.client_id}?calculation_mode=optimistic")
+                
+                if response_realistic.status_code == 200 and response_optimistic.status_code == 200:
+                    calc_realistic = response_realistic.json()
+                    calc_optimistic = response_optimistic.json()
+                    
+                    realistic_savings = calc_realistic.get("monthly_savings", 0)
+                    optimistic_savings = calc_optimistic.get("monthly_savings", 0)
+                    
+                    # Optimistic should have higher savings than realistic
+                    if optimistic_savings > realistic_savings:
+                        difference = optimistic_savings - realistic_savings
+                        self.log_test("User Request - Calculation Modes", True, 
+                                    f"✅ Modes de calcul fonctionnels: Réaliste {realistic_savings:.0f}€/mois, Optimiste {optimistic_savings:.0f}€/mois (+{difference:.0f}€/mois)", 
+                                    {"realistic": realistic_savings, "optimistic": optimistic_savings})
+                    else:
+                        self.log_test("User Request - Calculation Modes", False, 
+                                    f"Optimistic mode should have higher savings: Realistic {realistic_savings}€, Optimistic {optimistic_savings}€")
+                else:
+                    self.log_test("User Request - Calculation Modes", False, 
+                                f"Failed to test modes: Realistic {response_realistic.status_code}, Optimistic {response_optimistic.status_code}")
+            else:
+                self.log_test("User Request - Calculation Modes", False, "No client ID available")
+        except Exception as e:
+            self.log_test("User Request - Calculation Modes", False, f"Error: {str(e)}")
+        
+        # Test 4: Endpoint des kits - /api/solar-kits (renamed from /api/kits)
+        try:
+            print("\n4️⃣ Testing /api/solar-kits endpoint...")
+            response = self.session.get(f"{self.base_url}/solar-kits")
+            if response.status_code == 200:
+                kits = response.json()
+                if isinstance(kits, dict) and len(kits) >= 7:
+                    # Check for expected kit sizes (3-9kW)
+                    kit_sizes = [int(k) for k in kits.keys()]
+                    expected_sizes = [3, 4, 5, 6, 7, 8, 9]
+                    
+                    if all(size in kit_sizes for size in expected_sizes):
+                        kit_6 = kits.get("6", {})
+                        self.log_test("User Request - Kits Endpoint", True, 
+                                    f"✅ Kits disponibles: {len(kits)} kits (3-9kW). Kit 6kW: {kit_6.get('price', 0)}€, {kit_6.get('panels', 0)} panneaux", 
+                                    kits)
+                    else:
+                        self.log_test("User Request - Kits Endpoint", False, 
+                                    f"Missing expected kit sizes. Available: {kit_sizes}")
+                else:
+                    self.log_test("User Request - Kits Endpoint", False, 
+                                f"Invalid kits response: {type(kits)}, length: {len(kits) if isinstance(kits, dict) else 'N/A'}")
+            else:
+                self.log_test("User Request - Kits Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("User Request - Kits Endpoint", False, f"Error: {str(e)}")
+        
+        # Test 5: Endpoint de génération PDF - /api/generate-pdf/{client_id}
+        if self.client_id:
+            try:
+                print("\n5️⃣ Testing /api/generate-pdf/{client_id} endpoint...")
+                response = self.session.get(f"{self.base_url}/generate-pdf/{self.client_id}")
+                if response.status_code == 200:
+                    # Check if response is actually a PDF
+                    content_type = response.headers.get('content-type', '')
+                    pdf_size = len(response.content)
+                    
+                    if content_type.startswith('application/pdf') and pdf_size > 10000:
+                        filename = response.headers.get('content-disposition', '')
+                        self.log_test("User Request - PDF Generation", True, 
+                                    f"✅ PDF généré avec succès: {pdf_size:,} bytes, Content-Type: {content_type}, Filename: {filename}", 
+                                    {"size": pdf_size, "content_type": content_type})
+                    else:
+                        self.log_test("User Request - PDF Generation", False, 
+                                    f"Invalid PDF response: Content-Type: {content_type}, Size: {pdf_size} bytes")
+                else:
+                    self.log_test("User Request - PDF Generation", False, 
+                                f"HTTP {response.status_code}: {response.text}")
+            except Exception as e:
+                self.log_test("User Request - PDF Generation", False, f"Error: {str(e)}")
+        else:
+            self.log_test("User Request - PDF Generation", False, "No client ID available")
+
     def test_roof_analysis_obstacle_detection_functions(self):
         """Test the specific obstacle detection and geometry analysis functions"""
         try:
