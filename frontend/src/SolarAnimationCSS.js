@@ -181,16 +181,6 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
         </div>
       )}
       
-      {/* Application Mobile - AGRANDIE ET CENTRÉE */}
-      <div className={`mobile-app ${animationStage === 'app' || animationStage === 'complete' ? 'show' : ''}`}>
-        <div className="app-header">Solar Monitor</div>
-        <div className="app-production">27.32 kWh</div>
-        <div className="app-label">Production aujourd'hui</div>
-        <div className="app-consumption">30.02 kWh</div>
-        <div className="app-label">Consommation</div>
-        <div className="app-chart"></div>
-      </div>
-      
       {/* Boutons de contrôle */}
       <div className="animation-controls">
         <button onClick={startAnimation} className="restart-btn">
