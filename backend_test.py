@@ -4203,9 +4203,16 @@ class SolarCalculatorTester:
             self.log_test("Roof Analysis - Realistic Rendering", False, f"Error: {str(e)}")
 
     def run_all_tests(self):
-        """Run all backend tests with focus on TVA correction verification"""
-        print("🚀 Starting Comprehensive Backend Testing for Solar Calculator")
-        print("🎯 FOCUS: TVA Correction Verification (France 10% vs Martinique 2.1%)")
+        """Run all backend tests with focus on user-requested endpoints"""
+        print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
+        print("🎯 FOCUS: User-Requested Endpoints with Realistic French Data")
+        print("=" * 80)
+        
+        # First run the user-requested specific tests
+        self.test_user_requested_endpoints()
+        
+        # Then run other comprehensive tests
+        print("\n🔧 RUNNING ADDITIONAL COMPREHENSIVE TESTS")
         print("=" * 80)
         
         # Basic connectivity tests
@@ -4213,8 +4220,7 @@ class SolarCalculatorTester:
         self.test_solar_kits()
         self.test_pvgis_direct()
         
-        # Client management tests
-        self.test_create_client()
+        # Client management tests (skip create_client as we already did it)
         self.test_get_clients()
         self.test_get_client_by_id()
         
