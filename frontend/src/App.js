@@ -1083,6 +1083,19 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep }) 
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isGeneratingDevis, setIsGeneratingDevis] = useState(false);
 
+  // Protection contre les résultats null/undefined
+  if (!results) {
+    return (
+      <div className="App">
+        <div className="results-container">
+          <div className="loading-message">
+            <p>Chargement des résultats...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const generatePDF = async () => {
     try {
       setIsGeneratingPDF(true);
