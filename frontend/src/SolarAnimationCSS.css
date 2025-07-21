@@ -517,7 +517,7 @@
   display: none; /* Complètement masqué */
 }
 
-/* APPLICATION MOBILE - MISE À JOUR */
+/* APPLICATION MOBILE - DÉPLACÉE PLUS À DROITE */
 .mobile-app {
   position: absolute;
   width: 200px;  /* Même taille que le compteur */
@@ -525,7 +525,7 @@
   background: linear-gradient(to bottom, #000 15px, #1e3a5f 15px);
   border: 4px solid #333;
   border-radius: 35px;
-  right: 120px;  /* Repositionnée à droite */
+  right: 80px;  /* Déplacé plus vers la droite */
   bottom: 240px; /* Même niveau que le compteur */
   transform: translateY(-500px) rotateZ(360deg) scale(0);
   opacity: 0;
