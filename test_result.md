@@ -531,15 +531,21 @@ frontend:
 
   - task: "Success Screen Improvements and Auto-Transition"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
         comment: "✅ SUCCESS SCREEN IMPROVEMENTS FULLY VERIFIED - Comprehensive testing completed of all requested success screen improvements. RESULTS: ✅ ALL 5 REQUIREMENTS VERIFIED. 1) ✅ SUCCESS SCREEN TITLE: '🎉 Calcul terminé avec succès !' correctly implemented (line 2181 App.js). 2) ✅ IMPROVED TEXT WITH 'ET D'AUTONOMIE': Commission text contains 'Ce % d'économie et d'autonomie de couleur verte permet le dépôt de votre dossier aux différentes commissions pour qu'il puisse être validé' - the requested 'et d'autonomie' addition is present (line 2183 App.js). 3) ✅ LARGER VISUAL ELEMENTS: Success circle is 180px x 180px with 6rem font-size, success title is 3.2rem font-size - all visual improvements implemented in App.css lines 1126-1148. 4) ✅ 20-SECOND AUTO-TRANSITION: Code shows setTimeout with 20000ms (20 seconds) for automatic transition to results screen (lines 2164-2173 App.js). 5) ✅ LOGO UNIFORMITY VERIFIED: 'Étude 1' and 'Étude 2' buttons (120px x 44px) have identical size to 'France' and 'Martinique' buttons (120px x 44px). All success screen improvements are correctly implemented and ready for production use."
+      - working: false
+        agent: "user"
+        comment: "❌ USER FEEDBACK: L'écran 'Calcul terminé avec succès' ne dure que 4 secondes au lieu de 20 secondes, et l'animation 3D des panneaux solaires ne s'affiche plus - l'application passe directement à la page d'analyse financière."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL TIMER CONFLICT IDENTIFIED - User report confirmed through detailed code analysis. Found conflicting timers in App.js: 1) Lines 2187-2192: 20-second timer (20000ms) intended to transition from success screen to step 6 (3D animation). 2) Lines 2459-2461: 1-second timer (1000ms) in handleCalculationComplete function that transitions directly to 'results'. The 1-second timer overrides the 20-second timer, causing success screen to last ~1 second instead of 20 seconds and completely skipping the 3D animation (step 6). ROOT CAUSE: handleCalculationComplete is called when calculation finishes, sets calculationResults AND immediately starts 1-second timer to 'results', conflicting with intended 20-second success screen behavior. SOLUTION NEEDED: Remove or modify the 1-second timer in handleCalculationComplete to allow proper 20-second success screen duration and step 6 animation flow."
 
   - task: "Roof Analysis UI - Image Upload and AI Analysis"
     implemented: true
