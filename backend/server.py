@@ -251,6 +251,15 @@ ORIENTATION_ASPECTS = {
     "Ouest": 90
 }
 
+def detect_region_from_address(address: str) -> str:
+    """
+    Detect region (france or martinique) from address string
+    """
+    address_lower = address.lower()
+    if any(keyword in address_lower for keyword in ["martinique", "97200", "97201", "97202", "97203", "97204", "97205", "fort-de-france", "schoelcher", "lamentin"]):
+        return "martinique"
+    return "france"
+
 async def geocode_address(address: str, region: str = "france") -> tuple[float, float]:
     """
     Convert address to latitude/longitude using geopy
