@@ -520,13 +520,13 @@
 
 /* POSITIONS DES PANNEAUX - ADAPTÉES AU NOMBRE */
 
-/* Pour 6 panneaux (2 rangées de 3) */
-.solar-animation-container[data-panels="6"] .panel-1 { left: 150px; bottom: 320px; }
-.solar-animation-container[data-panels="6"] .panel-2 { left: 370px; bottom: 320px; }
-.solar-animation-container[data-panels="6"] .panel-3 { left: 590px; bottom: 320px; }
-.solar-animation-container[data-panels="6"] .panel-4 { left: 150px; bottom: 250px; }
-.solar-animation-container[data-panels="6"] .panel-5 { left: 370px; bottom: 250px; }
-.solar-animation-container[data-panels="6"] .panel-6 { left: 590px; bottom: 250px; }
+/* Pour 6 panneaux (2 rangées de 3) - POSITIONS AJUSTÉES */
+.solar-animation-container[data-panels="6"] .panel-1 { left: 200px; bottom: 320px; }
+.solar-animation-container[data-panels="6"] .panel-2 { left: 420px; bottom: 320px; }
+.solar-animation-container[data-panels="6"] .panel-3 { left: 640px; bottom: 320px; }
+.solar-animation-container[data-panels="6"] .panel-4 { left: 200px; bottom: 250px; }
+.solar-animation-container[data-panels="6"] .panel-5 { left: 420px; bottom: 250px; }
+.solar-animation-container[data-panels="6"] .panel-6 { left: 640px; bottom: 250px; }
 
 /* Pour 12 panneaux (3 rangées de 4) - POSITIONS AJUSTÉES */
 .solar-animation-container[data-panels="12"] .panel-1 { left: 100px; bottom: 350px; }
