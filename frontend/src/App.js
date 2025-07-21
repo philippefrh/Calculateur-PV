@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import SolarAnimation3D from './SolarAnimation3D';
+import "./App.css";
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
