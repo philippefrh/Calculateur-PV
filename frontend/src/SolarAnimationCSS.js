@@ -5,7 +5,9 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
   const [animationStage, setAnimationStage] = useState('ready');
   const [currentPanel, setCurrentPanel] = useState(0);
   const [kwhProduction, setKwhProduction] = useState(0);
+  const [kwhConsumption, setKwhConsumption] = useState(0);
   const [producingPanels, setProducingPanels] = useState([]);
+  const [moneyBills, setMoneyBills] = useState(0);
 
   useEffect(() => {
     // Démarrer l'animation automatiquement après 2 secondes
@@ -19,7 +21,9 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
   const startAnimation = () => {
     setAnimationStage('panels');
     setKwhProduction(0);
+    setKwhConsumption(0);
     setProducingPanels([]);
+    setMoneyBills(0);
     
     // Animation des panneaux un par un
     for (let i = 0; i < panelCount; i++) {
@@ -29,12 +33,8 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
         // Si c'est le dernier panneau, démarrer la production après l'app
         if (i === panelCount - 1) {
           setTimeout(() => {
-            setAnimationStage('app');
-            
-            setTimeout(() => {
-              setAnimationStage('production');
-              startProduction();
-            }, 2000);
+            setAnimationStage('production');
+            startProduction();
           }, 1000);
         }
       }, i * 300);
@@ -49,24 +49,42 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
     // Démarrer le comptage des kWh
     const productionTimer = setInterval(() => {
       setKwhProduction(prev => {
-        const increment = (panelCount * 0.25); // 0.25 kWh par panneau par tick
+        const increment = (panelCount * 0.35); // Production rapide
+        return prev + increment;
+      });
+      
+      setKwhConsumption(prev => {
+        const increment = (panelCount * 0.15); // Consommation plus lente
         return prev + increment;
       });
     }, 500);
 
-    // Arrêter après 20 secondes et marquer comme terminé
+    // Démarrer l'animation des billets après 8 secondes
+    setTimeout(() => {
+      setAnimationStage('savings');
+      const billsTimer = setInterval(() => {
+        setMoneyBills(prev => prev + 1);
+      }, 1500);
+      
+      // Arrêter les billets après 12 secondes
+      setTimeout(() => {
+        clearInterval(billsTimer);
+      }, 12000);
+    }, 8000);
+
+    // Arrêter après 25 secondes et marquer comme terminé
     setTimeout(() => {
       clearInterval(productionTimer);
       setAnimationStage('complete');
-    }, 20000);
+    }, 25000);
   };
 
   const getStatusText = () => {
     switch (animationStage) {
       case 'ready': return 'Prêt à démarrer...';
       case 'panels': return `🔧 Installation panneau ${currentPanel}/${panelCount}...`;
-      case 'app': return '📱 Connexion application monitoring...';
       case 'production': return '⚡ Production d\'énergie en cours...';
+      case 'savings': return '💰 Calcul des économies...';
       case 'complete': return '🎉 Installation terminée ! Système opérationnel !';
       default: return 'Prêt à démarrer...';
     }
