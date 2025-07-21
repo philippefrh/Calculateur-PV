@@ -397,17 +397,19 @@
             updateStageText('Installation de l\'onduleur Hoymiles...');
 
             const inverterTexture = createInverterTexture();
-            const inverterGeometry = new THREE.BoxGeometry(2, 1, 0.4);
+            const inverterGeometry = new THREE.BoxGeometry(2.5, 1.2, 0.5);  // Plus grand
             const inverterMaterial = new THREE.MeshLambertMaterial({ map: inverterTexture });
             inverter = new THREE.Mesh(inverterGeometry, inverterMaterial);
 
-            inverter.position.set(10, 10, 0);
+            // Position VISIBLE à droite des panneaux
+            inverter.position.set(12, 10, 0);  // Plus à droite
             inverter.castShadow = true;
             scene.add(inverter);
 
             // Animation d'apparition spectaculaire
             const startTime = Date.now();
             const duration = 3000 / animationSpeed;
+            const finalY = 0.8; // Position finale VISIBLE
 
             function updateInverter() {
                 if (isPaused) {
@@ -418,7 +420,7 @@
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
 
-                inverter.position.y = 10 + (0.6 - 10) * progress;
+                inverter.position.y = 10 + (finalY - 10) * progress;
                 inverter.rotation.y = progress * Math.PI * 6;
                 inverter.rotation.x = Math.sin(progress * Math.PI * 4) * 0.7;
 
