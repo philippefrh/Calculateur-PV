@@ -47,13 +47,13 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack }) => {
   };
 
   return (
-    <div className="solar-animation-container">
-      <h1 className="animation-title">🎬 Votre Installation Solaire</h1>
+    <div className="solar-animation-container" data-panels={panelCount}>
+      <h1 className="animation-title">🎬 Installation de {panelCount} Panneaux Solaires</h1>
       <div className="animation-status">{getStatusText()}</div>
       
       <div className="animation-ground"></div>
       
-      {/* 12 Panneaux Solaires */}
+      {/* Panneaux Solaires - Nombre variable */}
       {Array.from({ length: panelCount }, (_, index) => (
         <div 
           key={index}
