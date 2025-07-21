@@ -22,18 +22,14 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack }) => {
       setTimeout(() => {
         setCurrentPanel(i + 1);
         
-        // Si c'est le dernier panneau
+        // Si c'est le dernier panneau, passer directement à l'app (sans onduleur)
         if (i === panelCount - 1) {
           setTimeout(() => {
-            setAnimationStage('inverter');
+            setAnimationStage('app');
             
             setTimeout(() => {
-              setAnimationStage('app');
-              
-              setTimeout(() => {
-                setAnimationStage('complete');
-              }, 2000);
-            }, 2500);
+              setAnimationStage('complete');
+            }, 2000);
           }, 1000);
         }
       }, i * 300);
@@ -44,7 +40,6 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack }) => {
     switch (animationStage) {
       case 'ready': return 'Prêt à démarrer...';
       case 'panels': return `🔧 Installation panneau ${currentPanel}/${panelCount}...`;
-      case 'inverter': return '⚡ Installation onduleur Hoymiles...';
       case 'app': return '📱 Connexion application monitoring...';
       case 'complete': return '🎉 Installation terminée ! Système opérationnel !';
       default: return 'Prêt à démarrer...';
