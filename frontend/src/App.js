@@ -2660,6 +2660,7 @@ function App() {
           onPrevious={handlePrevious}
           selectedRegion={selectedRegion}
           setCurrentStep={setCurrentStep}
+          formData={formData}
         />
       </div>
     );
