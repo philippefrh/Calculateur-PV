@@ -562,19 +562,19 @@
 .solar-animation-container[data-panels="18"] .panel-17 { left: 630px; bottom: 210px; }
 .solar-animation-container[data-panels="18"] .panel-18 { left: 770px; bottom: 210px; }
 
-/* Positions par défaut (au cas où) */
-.panel-1 { left: 50px; bottom: 350px; }
-.panel-2 { left: 270px; bottom: 350px; }
-.panel-3 { left: 490px; bottom: 350px; }
-.panel-4 { left: 710px; bottom: 350px; }
-.panel-5 { left: 50px; bottom: 280px; }
-.panel-6 { left: 270px; bottom: 280px; }
-.panel-7 { left: 490px; bottom: 280px; }
-.panel-8 { left: 710px; bottom: 280px; }
-.panel-9 { left: 50px; bottom: 210px; }
-.panel-10 { left: 270px; bottom: 210px; }
-.panel-11 { left: 490px; bottom: 210px; }
-.panel-12 { left: 710px; bottom: 210px; }
+/* Positions par défaut (au cas où) - AJUSTÉES */
+.panel-1 { left: 100px; bottom: 350px; }
+.panel-2 { left: 320px; bottom: 350px; }
+.panel-3 { left: 540px; bottom: 350px; }
+.panel-4 { left: 760px; bottom: 350px; }
+.panel-5 { left: 100px; bottom: 280px; }
+.panel-6 { left: 320px; bottom: 280px; }
+.panel-7 { left: 540px; bottom: 280px; }
+.panel-8 { left: 760px; bottom: 280px; }
+.panel-9 { left: 100px; bottom: 210px; }
+.panel-10 { left: 320px; bottom: 210px; }
+.panel-11 { left: 540px; bottom: 210px; }
+.panel-12 { left: 760px; bottom: 210px; }
 
 /* ONDULEUR HOYMILES - SUPPRIMÉ */
 .solar-inverter {
