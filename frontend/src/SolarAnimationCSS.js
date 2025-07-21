@@ -63,17 +63,7 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack }) => {
         </div>
       ))}
       
-      {/* Onduleur Hoymiles */}
-      <div className={`solar-inverter ${animationStage === 'inverter' || animationStage === 'app' || animationStage === 'complete' ? 'show' : ''}`}>
-        <div className="inverter-logo">Hoymiles</div>
-        <div className="inverter-led"></div>
-        <div className="connector connector-1"></div>
-        <div className="connector connector-2"></div>
-        <div className="connector connector-3"></div>
-        <div className="connector connector-4"></div>
-      </div>
-      
-      {/* Application Mobile */}
+      {/* Application Mobile - AGRANDIE ET CENTRÉE */}
       <div className={`mobile-app ${animationStage === 'app' || animationStage === 'complete' ? 'show' : ''}`}>
         <div className="app-header">Solar Monitor</div>
         <div className="app-production">27.32 kWh</div>
