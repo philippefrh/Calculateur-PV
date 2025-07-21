@@ -2665,7 +2665,7 @@ function App() {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Surface totale:</span>
-                    <strong>{((calculationResults.recommended_kit?.panels || panelCount) * 2.11).toFixed(1)} m²</strong>
+                    <strong>{((calculationResults.recommended_kit?.panels || (formData.useManualKit ? formData.manualKit?.panels : 12)) * 2.11).toFixed(1)} m²</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Production annuelle:</span>
