@@ -251,20 +251,32 @@ ORIENTATION_ASPECTS = {
     "Ouest": 90
 }
 
-async def geocode_address(address: str) -> tuple[float, float]:
+async def geocode_address(address: str, region: str = "france") -> tuple[float, float]:
     """
     Convert address to latitude/longitude using geopy
+    Falls back to default coordinates if geocoding fails
     """
+    # Default coordinates by region
+    default_coords = {
+        "france": (46.2276, 2.2137),  # Center of France
+        "martinique": (14.6415, -61.0242)  # Center of Martinique
+    }
+    
     try:
-        geolocator = Nominatim(user_agent="solar_calculator")
-        location = geolocator.geocode(address + ", France")
+        geolocator = Nominatim(user_agent="solar_calculator", timeout=5)
+        full_address = f"{address}, {region.title()}" if region == "france" else f"{address}, Martinique"
+        location = geolocator.geocode(full_address)
+        
         if location:
+            logging.info(f"Successfully geocoded address: {address} -> ({location.latitude}, {location.longitude})")
             return location.latitude, location.longitude
         else:
-            raise ValueError(f"Could not geocode address: {address}")
+            logging.warning(f"Could not geocode address: {address}, using default coordinates for {region}")
+            return default_coords.get(region, default_coords["france"])
     except Exception as e:
         logging.error(f"Geocoding error: {e}")
-        raise HTTPException(status_code=400, detail=f"Could not find coordinates for address: {address}")
+        logging.warning(f"Using default coordinates for {region}")
+        return default_coords.get(region, default_coords["france"])
 
 async def get_pvgis_data(lat: float, lon: float, orientation: str, kit_power: int) -> Dict[str, Any]:
     """
