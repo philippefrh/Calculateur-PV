@@ -53,6 +53,17 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
       
       <div className="animation-ground"></div>
       
+      {/* Soleil Animé en haut à gauche */}
+      <div className="animated-sun">
+        <div className="sun-core"></div>
+        <div className="sun-rays">
+          {Array.from({ length: 8 }, (_, index) => (
+            <div key={index} className={`sun-ray ray-${index + 1}`}></div>
+          ))}
+        </div>
+        <div className="sun-glow"></div>
+      </div>
+      
       {/* Panneaux Solaires - Nombre variable */}
       {Array.from({ length: panelCount }, (_, index) => (
         <div 
