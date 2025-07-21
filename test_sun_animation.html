@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Soleil Animé</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .solar-animation-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            overflow: hidden;
+            perspective: 1000px;
+        }
+        
+        .animation-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #2ecc71;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 100;
+            margin: 0;
+        }
+        
+        .animation-ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to top, #228B22, #32CD32);
+            border-radius: 50% 50% 0 0 / 100px 100px 0 0;
+        }
+        
+        /* SOLEIL ANIMÉ EN HAUT À GAUCHE */
+        .animated-sun {
+            position: absolute;
+            top: 60px;
+            left: 80px;
+            width: 120px;
+            height: 120px;
+            z-index: 50;
+        }
+        
+        .sun-core {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #FFD700 0%, #FFA500 40%, #FF8C00 80%, #FF6347 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 20px #FFD700,
+                0 0 40px #FFA500,
+                0 0 60px rgba(255, 215, 0, 0.8);
+            animation: sun-pulse 4s ease-in-out infinite alternate;
+        }
+        
+        .sun-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: sun-glow-pulse 3s ease-in-out infinite alternate;
+        }
+        
+        .sun-rays {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            animation: sun-rotate 20s linear infinite;
+        }
+        
+        .sun-ray {
+            position: absolute;
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(to bottom, #FFD700, transparent);
+            border-radius: 2px;
+            top: 0;
+            left: 50%;
+            transform-origin: 50% 60px;
+            animation: ray-flicker 2s ease-in-out infinite alternate;
+        }
+        
+        .sun-ray.ray-1 { transform: translateX(-50%) rotate(0deg); animation-delay: 0s; }
+        .sun-ray.ray-2 { transform: translateX(-50%) rotate(45deg); animation-delay: 0.25s; }
+        .sun-ray.ray-3 { transform: translateX(-50%) rotate(90deg); animation-delay: 0.5s; }
+        .sun-ray.ray-4 { transform: translateX(-50%) rotate(135deg); animation-delay: 0.75s; }
+        .sun-ray.ray-5 { transform: translateX(-50%) rotate(180deg); animation-delay: 1s; }
+        .sun-ray.ray-6 { transform: translateX(-50%) rotate(225deg); animation-delay: 1.25s; }
+        .sun-ray.ray-7 { transform: translateX(-50%) rotate(270deg); animation-delay: 1.5s; }
+        .sun-ray.ray-8 { transform: translateX(-50%) rotate(315deg); animation-delay: 1.75s; }
+        
+        /* Animations du soleil */
+        @keyframes sun-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes sun-pulse {
+            0% { 
+                box-shadow: 
+                    0 0 20px #FFD700,
+                    0 0 40px #FFA500,
+                    0 0 60px rgba(255, 215, 0, 0.8);
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% { 
+                box-shadow: 
+                    0 0 30px #FFD700,
+                    0 0 60px #FFA500,
+                    0 0 90px rgba(255, 215, 0, 0.9);
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+        
+        @keyframes sun-glow-pulse {
+            0% { opacity: 0.6; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        @keyframes ray-flicker {
+            0% { 
+                opacity: 0.7; 
+                height: 25px;
+                background: linear-gradient(to bottom, #FFD700, transparent);
+            }
+            100% { 
+                opacity: 1; 
+                height: 35px;
+                background: linear-gradient(to bottom, #FFFF00, rgba(255, 215, 0, 0.8), transparent);
+            }
+        }
+        
+        /* Panneau solaire simple pour contexte */
+        .sample-panel {
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            background: linear-gradient(45deg, #1a1a1a 25%, #333333 25%, #333333 50%, #1a1a1a 50%, #1a1a1a 75%, #333333 75%);
+            background-size: 20px 20px;
+            border: 4px solid #888888;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            left: 300px;
+            bottom: 280px;
+        }
+    </style>
+</head>
+<body>
+    <div class="solar-animation-container">
+        <h1 class="animation-title">🌞 Test Animation Soleil</h1>
+        
+        <div class="animation-ground"></div>
+        
+        <!-- Soleil Animé en haut à gauche -->
+        <div class="animated-sun">
+            <div class="sun-core"></div>
+            <div class="sun-rays">
+                <div class="sun-ray ray-1"></div>
+                <div class="sun-ray ray-2"></div>
+                <div class="sun-ray ray-3"></div>
+                <div class="sun-ray ray-4"></div>
+                <div class="sun-ray ray-5"></div>
+                <div class="sun-ray ray-6"></div>
+                <div class="sun-ray ray-7"></div>
+                <div class="sun-ray ray-8"></div>
+            </div>
+            <div class="sun-glow"></div>
+        </div>
+        
+        <!-- Panneau d'exemple pour contexte -->
+        <div class="sample-panel"></div>
+    </div>
+</body>
+</html>
