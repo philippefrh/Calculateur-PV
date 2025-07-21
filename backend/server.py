@@ -561,8 +561,11 @@ async def get_solar_kits():
 @api_router.post("/clients", response_model=ClientInfo)
 async def create_client(client_data: ClientInfoCreate):
     try:
-        # Geocode the address
-        lat, lon = await geocode_address(client_data.address)
+        # Detect region from address
+        region = detect_region_from_address(client_data.address)
+        
+        # Geocode the address with region context
+        lat, lon = await geocode_address(client_data.address, region)
         
         client_dict = client_data.dict()
         client_dict['latitude'] = lat
