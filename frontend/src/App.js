@@ -2639,6 +2639,108 @@ function App() {
     );
   }
   
+  // Synthèse financière et technique (Étape 7)
+  if (currentStep === 7) {
+    return (
+      <div className="App">
+        <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
+          <h1 style={{ textAlign: 'center', color: '#2ecc71', marginBottom: '30px' }}>
+            📊 Synthèse Financière et Technique
+          </h1>
+          
+          {calculationResults && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '30px' }}>
+              
+              {/* Synthèse Technique */}
+              <div style={{ background: '#f8f9fa', padding: '25px', borderRadius: '12px', border: '1px solid #e9ecef' }}>
+                <h3 style={{ color: '#2c3e50', marginBottom: '20px' }}>🔧 Synthèse Technique</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Puissance installée:</span>
+                    <strong>{calculationResults.kit_power} kW</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Nombre de panneaux:</span>
+                    <strong>{calculationResults.recommended_kit?.panels || panelCount} panneaux</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Surface totale:</span>
+                    <strong>{((calculationResults.recommended_kit?.panels || panelCount) * 2.11).toFixed(1)} m²</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Production annuelle:</span>
+                    <strong>{Math.round(calculationResults.annual_production)} kWh/an</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Autonomie énergétique:</span>
+                    <strong style={{ color: '#2ecc71' }}>{Math.round(calculationResults.autonomy_percentage)}%</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Synthèse Financière */}
+              <div style={{ background: '#f8f9fa', padding: '25px', borderRadius: '12px', border: '1px solid #e9ecef' }}>
+                <h3 style={{ color: '#2c3e50', marginBottom: '20px' }}>💰 Synthèse Financière</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Prix installation:</span>
+                    <strong>{calculationResults.total_price?.toLocaleString()} €</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Économies annuelles:</span>
+                    <strong style={{ color: '#2ecc71' }}>+{Math.round(calculationResults.estimated_savings)} €/an</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Retour sur investissement:</span>
+                    <strong>{calculationResults.payback_years} ans</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Gain sur 20 ans:</span>
+                    <strong style={{ color: '#27ae60' }}>+{Math.round(calculationResults.estimated_savings * 20).toLocaleString()} €</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Boutons de navigation */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '40px' }}>
+            <button 
+              onClick={() => setCurrentStep(5)}
+              style={{ 
+                backgroundColor: '#e74c3c', 
+                color: 'white', 
+                border: 'none', 
+                padding: '15px 30px', 
+                borderRadius: '8px', 
+                fontSize: '16px', 
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              ← Retour aux Résultats
+            </button>
+            <button 
+              onClick={() => setCurrentStep(1)}
+              style={{ 
+                backgroundColor: '#2ecc71', 
+                color: 'white', 
+                border: 'none', 
+                padding: '15px 30px', 
+                borderRadius: '8px', 
+                fontSize: '16px', 
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              🏠 Nouvelle Étude
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Animation 3D (Étape 6)
   if (currentStep === 6) {
     // CORRECTION : Prendre le nombre de panneaux choisi par l'utilisateur
