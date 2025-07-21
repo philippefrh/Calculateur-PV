@@ -566,23 +566,25 @@
         }
         
         function createAllElementsInstantly() {
-            // Créer tous les panneaux INSTANTANÉMENT
+            // Créer TOUS les éléments IMMÉDIATEMENT ET VISIBLES
             const panelTexture = createPanelTexture();
-            const panelsPerRow = 4;
-            const rows = 3;
             
-            for (let i = 0; i < totalPanels; i++) {
-                const row = Math.floor(i / panelsPerRow);
-                const col = i % panelsPerRow;
+            // PANNEAUX - GROS ET VISIBLES
+            for (let i = 0; i < 12; i++) {
+                const row = Math.floor(i / 4);
+                const col = i % 4;
                 
-                const panelGeometry = new THREE.BoxGeometry(3, 0.2, 1.5);
-                const panelMaterial = new THREE.MeshLambertMaterial({ map: panelTexture });
+                const panelGeometry = new THREE.BoxGeometry(4, 0.3, 2);  // ENCORE PLUS GROS
+                const panelMaterial = new THREE.MeshLambertMaterial({ 
+                    map: panelTexture,
+                    color: 0x333333  // GRIS FONCÉ pour être VISIBLE
+                });
                 const panel = new THREE.Mesh(panelGeometry, panelMaterial);
                 
                 panel.position.set(
-                    (col - panelsPerRow/2 + 0.5) * 3.5,
-                    0.1,  // Sur le sol
-                    (row - rows/2 + 0.5) * 2
+                    (col - 2) * 5,     // Espacement large
+                    0.5,               // Au-dessus du sol
+                    (row - 1) * 3      // Espacement large
                 );
                 
                 panel.castShadow = true;
@@ -590,21 +592,27 @@
                 panels.push(panel);
             }
             
-            // Créer l'onduleur INSTANTANÉMENT
+            // ONDULEUR - GROS ET VISIBLE
             const inverterTexture = createInverterTexture();
-            const inverterGeometry = new THREE.BoxGeometry(2.5, 1.2, 0.5);
-            const inverterMaterial = new THREE.MeshLambertMaterial({ map: inverterTexture });
+            const inverterGeometry = new THREE.BoxGeometry(3, 2, 1);  // GROS
+            const inverterMaterial = new THREE.MeshLambertMaterial({ 
+                map: inverterTexture,
+                color: 0xcccccc  // GRIS CLAIR
+            });
             inverter = new THREE.Mesh(inverterGeometry, inverterMaterial);
-            inverter.position.set(12, 0.8, 0);  // Position finale visible
+            inverter.position.set(15, 1, 0);  // À DROITE, VISIBLE
             inverter.castShadow = true;
             scene.add(inverter);
             
-            // Créer l'application INSTANTANÉMENT  
+            // APPLICATION - GROSSE ET VISIBLE
             const appTexture = createAppTexture();
-            const phoneGeometry = new THREE.BoxGeometry(1.2, 2.4, 0.15);
-            const phoneMaterial = new THREE.MeshLambertMaterial({ map: appTexture });
+            const phoneGeometry = new THREE.BoxGeometry(2, 4, 0.3);  // GROS TÉLÉPHONE
+            const phoneMaterial = new THREE.MeshLambertMaterial({ 
+                map: appTexture,
+                color: 0x111111  // NOIR
+            });
             app = new THREE.Mesh(phoneGeometry, phoneMaterial);
-            app.position.set(-12, 1.5, 0);  // Position finale visible
+            app.position.set(-15, 2, 0);  // À GAUCHE, VISIBLE
             app.castShadow = true;
             scene.add(app);
             
