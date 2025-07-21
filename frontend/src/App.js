@@ -1594,6 +1594,13 @@ Cordialement`);
           <button type="button" onClick={onPrevious} className="prev-button">⬅️ Modifier les données</button>
           <button 
             type="button" 
+            onClick={() => setCurrentStep(7)}
+            className="financing-button"
+          >
+            💰 Voir toutes les options de financement
+          </button>
+          <button 
+            type="button" 
             onClick={generatePDF} 
             className={`pdf-button ${isGeneratingPDF ? 'generating' : ''}`}
             disabled={isGeneratingPDF}
