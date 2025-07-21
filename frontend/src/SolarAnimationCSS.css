@@ -105,61 +105,10 @@
 .panel-11 { left: 490px; bottom: 210px; }
 .panel-12 { left: 710px; bottom: 210px; }
 
-/* ONDULEUR HOYMILES */
+/* ONDULEUR HOYMILES - SUPPRIMÉ */
 .solar-inverter {
-  position: absolute;
-  width: 150px;
-  height: 80px;
-  background: linear-gradient(145deg, #e8e8e8, #cccccc);
-  border: 2px solid #999;
-  border-radius: 8px;
-  right: 100px;
-  bottom: 250px;
-  transform: translateY(-300px) rotateY(720deg) scale(0);
-  opacity: 0;
-  transition: all 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+  display: none; /* Complètement masqué */
 }
-
-.solar-inverter.show {
-  opacity: 1;
-  transform: translateY(0) rotateY(0deg) scale(1);
-}
-
-.inverter-logo {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #2ecc71;
-  font-weight: bold;
-  font-size: 12px;
-}
-
-.inverter-led {
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 8px;
-  height: 8px;
-  background: #00ff00;
-  border-radius: 50%;
-  box-shadow: 0 0 10px #00ff00;
-}
-
-.connector {
-  position: absolute;
-  width: 20px;
-  height: 10px;
-  background: #000;
-  border-radius: 2px;
-}
-
-.connector-1 { top: 25px; left: 15px; }
-.connector-2 { top: 25px; right: 15px; }
-.connector-3 { top: 45px; left: 15px; }
-.connector-4 { top: 45px; right: 15px; }
 
 /* APPLICATION MOBILE - AGRANDIE ET CENTRÉE À DROITE */
 .mobile-app {
