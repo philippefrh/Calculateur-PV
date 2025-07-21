@@ -94,11 +94,31 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
       {Array.from({ length: panelCount }, (_, index) => (
         <div 
           key={index}
-          className={`solar-panel panel-${index + 1} ${currentPanel > index ? 'show' : ''}`}
+          className={`solar-panel panel-${index + 1} ${currentPanel > index ? 'show' : ''} ${producingPanels.includes(index + 1) ? 'producing' : ''}`}
         >
           <div className="panel-number">{index + 1}</div>
+          
+          {/* kWh flottants produits par ce panneau */}
+          {producingPanels.includes(index + 1) && (
+            <div className="kwh-production">
+              <div className="kwh-floating">kWh</div>
+              <div className="kwh-floating" style={{animationDelay: '1s'}}>kWh</div>
+              <div className="kwh-floating" style={{animationDelay: '2s'}}>kWh</div>
+            </div>
+          )}
         </div>
       ))}
+      
+      {/* Compteur Linky */}
+      <div className={`linky-counter ${animationStage === 'production' || animationStage === 'complete' ? 'active' : ''}`}>
+        <div className="linky-header">LINKY</div>
+        <div className="linky-screen">
+          <div className="linky-display">{kwhProduction.toFixed(2)}</div>
+          <div className="linky-unit">kWh</div>
+        </div>
+        <div className={`linky-led ${animationStage === 'production' ? 'blinking' : ''}`}></div>
+        <div className="linky-label">Production Solaire</div>
+      </div>
       
       {/* Application Mobile - AGRANDIE ET CENTRÉE */}
       <div className={`mobile-app ${animationStage === 'app' || animationStage === 'complete' ? 'show' : ''}`}>
