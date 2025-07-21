@@ -316,28 +316,31 @@
                     const row = Math.floor(i / panelsPerRow);
                     const col = i % panelsPerRow;
 
-                    // Géométrie du panneau
-                    const panelGeometry = new THREE.BoxGeometry(2.5, 0.15, 1.2);
+                    // Géométrie du panneau PLUS GRANDE
+                    const panelGeometry = new THREE.BoxGeometry(3, 0.2, 1.5);
                     const panelMaterial = new THREE.MeshLambertMaterial({ map: panelTexture });
                     const panel = new THREE.Mesh(panelGeometry, panelMaterial);
 
                     // Position initiale (tombant du ciel)
                     panel.position.set(
-                        (col - panelsPerRow/2 + 0.5) * 3,
+                        (col - panelsPerRow/2 + 0.5) * 3.5,  // Plus d'espacement
                         15,
-                        (row - rows/2 + 0.5) * 1.8
+                        (row - rows/2 + 0.5) * 2              // Plus d'espacement
                     );
 
                     panel.castShadow = true;
                     scene.add(panel);
                     panels.push(panel);
 
+                    // Position finale VISIBLE
+                    const finalPosition = {
+                        x: (col - panelsPerRow/2 + 0.5) * 3.5,
+                        y: 0.1,  // Sur le sol
+                        z: (row - rows/2 + 0.5) * 2
+                    };
+
                     // Animation spectaculaire de chute
-                    animatePanel(panel, {
-                        x: (col - panelsPerRow/2 + 0.5) * 3,
-                        y: 0.1,
-                        z: (row - rows/2 + 0.5) * 1.8
-                    }, i);
+                    animatePanel(panel, finalPosition, i);
 
                     currentPanelIndex = i;
                     updateProgress(`Panneau ${i + 1}/${totalPanels}`);
