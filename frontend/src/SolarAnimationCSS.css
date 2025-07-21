@@ -269,14 +269,14 @@
   }
 }
 
-/* COMPTEUR LINKY - AGRANDI */
+/* COMPTEUR LINKY - REPOSITIONNÉ */
 .linky-counter {
   position: absolute;
   bottom: 240px;
-  left: 40%;
+  left: 30%;  /* Déplacé plus vers la gauche */
   transform: translateX(-50%);
-  width: 200px;  /* Agrandi comme le téléphone */
-  height: 400px; /* Agrandi comme le téléphone */
+  width: 200px;  /* Même taille que le téléphone */
+  height: 400px; /* Même taille que le téléphone */
   background: linear-gradient(to bottom, #7ED321, #5BA81B);
   border: 4px solid #4A6E19;
   border-radius: 15px;
