@@ -2639,6 +2639,25 @@ function App() {
     );
   }
   
+  // Résultats (Étape 5) - PAGE ORIGINALE RESTAURÉE
+  if (currentStep === 5) {
+    return (
+      <div className="App">
+        <ResultsPage 
+          calculationResults={calculationResults} 
+          formData={formData} 
+          selectedRegion={selectedRegion}
+          regionConfig={regionConfig}
+          onPrevious={handlePrevious}
+          sendToExpert={sendToExpert}
+          generateDevis={generateDevis}
+          isGeneratingDevis={isGeneratingDevis}
+          setCurrentStep={setCurrentStep}
+        />
+      </div>
+    );
+  }
+
   // Synthèse financière et technique (Étape 7)
   if (currentStep === 7) {
     return (
