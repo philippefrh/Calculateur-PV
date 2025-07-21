@@ -37,6 +37,24 @@
   z-index: 100;
 }
 
+/* Nouveau badge pour l'économie */
+.economy-badge {
+  position: absolute;
+  top: 130px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 1.1em;
+  font-weight: bold;
+  background: rgba(0,0,0,0.7);
+  padding: 10px 20px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  text-align: center;
+  max-width: 500px;
+}
+
 .animation-ground {
   position: absolute;
   bottom: 0;
