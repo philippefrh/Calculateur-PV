@@ -2221,7 +2221,11 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
         
         <div className="quick-results">
           <div className="quick-result-item">
-            <span className="quick-number">{calculationResults.kit_power} kW</span>
+            <span className="quick-number">
+              {formData.useManualKit && formData.manualKit 
+                ? formData.manualKit.power 
+                : calculationResults.kit_power} kW
+            </span>
             <span className="quick-label">Kit recommandé</span>
           </div>
           <div className="quick-result-item">
