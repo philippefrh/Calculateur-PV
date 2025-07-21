@@ -90,6 +90,9 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
     }
   };
 
+  // Nouveau badge pour l'autoconsommation
+  const showEconomyBadge = animationStage === 'savings' || animationStage === 'complete';
+
   return (
     <div className="solar-animation-container" data-panels={panelCount}>
       <h1 className="animation-title">🎬 Installation de {panelCount} Panneaux Solaires</h1>
