@@ -2168,11 +2168,11 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     setIsDemoMode(!isDemoMode);
   };
 
-  // Timer de 20 secondes pour l'écran de succès
+  // Timer de 20 secondes pour l'écran de succès - VA VERS L'ANIMATION
   useEffect(() => {
     if (!isCalculating && calculationResults && !successTimerRef.current) {
       successTimerRef.current = setTimeout(() => {
-        onComplete(calculationResults);
+        setCurrentStep(6); // Aller vers l'animation au lieu des résultats
       }, 20000);
     }
     
@@ -2182,7 +2182,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
         successTimerRef.current = null;
       }
     };
-  }, [isCalculating, calculationResults, onComplete]);
+  }, [isCalculating, calculationResults]);
 
   if (!isCalculating && calculationResults) {
     return (
