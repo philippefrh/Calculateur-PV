@@ -625,7 +625,8 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
             # Kit manuel fourni
             best_kit = manual_kit_power
             if region == "martinique":
-                kit_info = region_config["kits"][str(manual_kit_power)]
+                kit_key = f"kit_{manual_kit_power}kw"
+                kit_info = region_config["kits"][kit_key]
             else:
                 kit_info = SOLAR_KITS[str(manual_kit_power)]
         elif region == "martinique":
