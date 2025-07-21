@@ -2750,7 +2750,7 @@ function App() {
               ← Retour aux Résultats
             </button>
             <button 
-              onClick={() => setCurrentStep(1)}
+              onClick={handleNewCalculation}
               style={{ 
                 backgroundColor: '#2ecc71', 
                 color: 'white', 
