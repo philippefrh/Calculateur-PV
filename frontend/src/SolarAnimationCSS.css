@@ -353,14 +353,14 @@
   font-weight: bold;
 }
 
-/* CÂBLE DE RACCORDEMENT */
+/* CÂBLE DE RACCORDEMENT - AJUSTÉ */
 .power-cable {
   position: absolute;
   width: 8px;
   height: 120px;
   background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
   border-radius: 4px;
-  right: 150px;  /* Position depuis le dernier panneau */
+  right: 200px;  /* Ajusté pour la nouvelle position */
   bottom: 300px;
   transform: rotate(-25deg);
   transform-origin: top;
