@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Animation Solaire CSS - DÉMO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            perspective: 1000px;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #2ecc71;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+
+        .status {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.2em;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to top, #228B22, #32CD32);
+            border-radius: 50% 50% 0 0 / 100px 100px 0 0;
+        }
+
+        /* PANNEAUX SOLAIRES */
+        .panel {
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            background: linear-gradient(45deg, #1a1a1a 25%, #333333 25%, #333333 50%, #1a1a1a 50%, #1a1a1a 75%, #333333 75%);
+            background-size: 20px 20px;
+            border: 4px solid #888888;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateY(-200vh) rotateX(180deg) rotateY(360deg);
+            opacity: 0;
+            transition: all 2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .panel::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: 
+                linear-gradient(90deg, transparent 30px, #444 31px, #444 32px, transparent 33px),
+                linear-gradient(0deg, transparent 30px, #444 31px, #444 32px, transparent 33px);
+            background-size: 66px 50px;
+        }
+
+        .panel-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        .panel.show {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg) rotateY(0deg);
+        }
+
+        /* ONDULEUR HOYMILES */
+        .inverter {
+            position: absolute;
+            width: 150px;
+            height: 80px;
+            background: linear-gradient(145deg, #e8e8e8, #cccccc);
+            border: 2px solid #999;
+            border-radius: 8px;
+            right: 100px;
+            bottom: 250px;
+            transform: translateY(-300px) rotateY(720deg) scale(0);
+            opacity: 0;
+            transition: all 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .inverter::before {
+            content: 'Hoymiles';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .inverter::after {
+            content: '';
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        .connector {
+            position: absolute;
+            width: 20px;
+            height: 10px;
+            background: #000;
+            border-radius: 2px;
+        }
+
+        .connector:nth-of-type(1) { top: 25px; left: 15px; }
+        .connector:nth-of-type(2) { top: 25px; right: 15px; }
+        .connector:nth-of-type(3) { top: 45px; left: 15px; }
+        .connector:nth-of-type(4) { top: 45px; right: 15px; }
+
+        .inverter.show {
+            opacity: 1;
+            transform: translateY(0) rotateY(0deg) scale(1);
+        }
+
+        /* APPLICATION MOBILE */
+        .mobile-app {
+            position: absolute;
+            width: 120px;
+            height: 240px;
+            background: linear-gradient(to bottom, #000 10px, #1e3a5f 10px);
+            border: 3px solid #333;
+            border-radius: 25px;
+            left: 100px;
+            bottom: 220px;
+            transform: translateY(-400px) rotateZ(360deg) scale(0);
+            opacity: 0;
+            transition: all 2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .app-header {
+            color: white;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .app-data {
+            color: #2ecc71;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .app-label {
+            color: #ccc;
+            text-align: center;
+            font-size: 8px;
+            margin-bottom: 10px;
+        }
+
+        .app-chart {
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            margin: 10px auto;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-chart::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
+        }
+
+        .mobile-app.show {
+            opacity: 1;
+            transform: translateY(0) rotateZ(0deg) scale(1);
+        }
+
+        /* BOUTON DE DÉMO */
+        .demo-button {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .demo-button:hover {
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.6);
+        }
+
+        /* POSITIONS DES PANNEAUX (grille 4x3) */
+        .panel:nth-child(1) { left: 200px; bottom: 350px; }
+        .panel:nth-child(2) { left: 420px; bottom: 350px; }
+        .panel:nth-child(3) { left: 640px; bottom: 350px; }
+        .panel:nth-child(4) { left: 860px; bottom: 350px; }
+        
+        .panel:nth-child(5) { left: 200px; bottom: 280px; }
+        .panel:nth-child(6) { left: 420px; bottom: 280px; }
+        .panel:nth-child(7) { left: 640px; bottom: 280px; }
+        .panel:nth-child(8) { left: 860px; bottom: 280px; }
+        
+        .panel:nth-child(9) { left: 200px; bottom: 210px; }
+        .panel:nth-child(10) { left: 420px; bottom: 210px; }
+        .panel:nth-child(11) { left: 640px; bottom: 210px; }
+        .panel:nth-child(12) { left: 860px; bottom: 210px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🎬 Installation Solaire CSS</h1>
+        <div class="status" id="status">Prêt à démarrer...</div>
+        
+        <div class="ground"></div>
+        
+        <!-- 12 Panneaux Solaires -->
+        <div class="panel"><div class="panel-number">1</div></div>
+        <div class="panel"><div class="panel-number">2</div></div>
+        <div class="panel"><div class="panel-number">3</div></div>
+        <div class="panel"><div class="panel-number">4</div></div>
+        <div class="panel"><div class="panel-number">5</div></div>
+        <div class="panel"><div class="panel-number">6</div></div>
+        <div class="panel"><div class="panel-number">7</div></div>
+        <div class="panel"><div class="panel-number">8</div></div>
+        <div class="panel"><div class="panel-number">9</div></div>
+        <div class="panel"><div class="panel-number">10</div></div>
+        <div class="panel"><div class="panel-number">11</div></div>
+        <div class="panel"><div class="panel-number">12</div></div>
+        
+        <!-- Onduleur Hoymiles -->
+        <div class="inverter">
+            <div class="connector"></div>
+            <div class="connector"></div>
+            <div class="connector"></div>
+            <div class="connector"></div>
+        </div>
+        
+        <!-- Application Mobile -->
+        <div class="mobile-app">
+            <div class="app-header">Solar Monitor</div>
+            <div class="app-data">27.32 kWh</div>
+            <div class="app-label">Production today</div>
+            <div class="app-data" style="color: #e74c3c;">30.02 kWh</div>
+            <div class="app-label">Consumption</div>
+            <div class="app-chart"></div>
+        </div>
+        
+        <button class="demo-button" onclick="startAnimation()">🚀 DÉMARRER L'ANIMATION</button>
+    </div>
+
+    <script>
+        let animationRunning = false;
+
+        function updateStatus(text) {
+            document.getElementById('status').textContent = text;
+        }
+
+        function startAnimation() {
+            if (animationRunning) return;
+            animationRunning = true;
+
+            // Reset tous les éléments
+            document.querySelectorAll('.panel, .inverter, .mobile-app').forEach(el => {
+                el.classList.remove('show');
+            });
+
+            updateStatus('🔧 Installation des panneaux solaires...');
+
+            // Faire apparaître les panneaux un par un
+            const panels = document.querySelectorAll('.panel');
+            panels.forEach((panel, index) => {
+                setTimeout(() => {
+                    panel.classList.add('show');
+                    updateStatus(`📍 Panneau ${index + 1}/12 installé...`);
+                    
+                    // Si c'est le dernier panneau
+                    if (index === panels.length - 1) {
+                        setTimeout(() => {
+                            showInverter();
+                        }, 1000);
+                    }
+                }, index * 300); // 300ms entre chaque panneau
+            });
+        }
+
+        function showInverter() {
+            updateStatus('⚡ Installation de l\'onduleur Hoymiles...');
+            
+            setTimeout(() => {
+                document.querySelector('.inverter').classList.add('show');
+                
+                setTimeout(() => {
+                    showApp();
+                }, 1500);
+            }, 500);
+        }
+
+        function showApp() {
+            updateStatus('📱 Connexion de l\'application de monitoring...');
+            
+            setTimeout(() => {
+                document.querySelector('.mobile-app').classList.add('show');
+                
+                setTimeout(() => {
+                    updateStatus('🎉 Installation terminée ! Système opérationnel !');
+                    animationRunning = false;
+                }, 1500);
+            }, 500);
+        }
+
+        // Démarrer automatiquement après 2 secondes
+        setTimeout(() => {
+            startAnimation();
+        }, 2000);
+    </script>
+</body>
+</html>
