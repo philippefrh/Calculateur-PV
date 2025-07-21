@@ -437,20 +437,21 @@
   display: none; /* Complètement masqué */
 }
 
-/* APPLICATION MOBILE - AGRANDIE ET CENTRÉE À DROITE */
+/* APPLICATION MOBILE - MISE À JOUR */
 .mobile-app {
   position: absolute;
-  width: 200px;  /* Plus large */
-  height: 400px;  /* Plus haute */
+  width: 200px;  /* Même taille que le compteur */
+  height: 400px;  /* Même taille que le compteur */
   background: linear-gradient(to bottom, #000 15px, #1e3a5f 15px);
   border: 4px solid #333;
   border-radius: 35px;
-  right: 150px;  /* Positionnée à droite */
-  bottom: 200px;
+  right: 120px;  /* Repositionnée à droite */
+  bottom: 240px; /* Même niveau que le compteur */
   transform: translateY(-500px) rotateZ(360deg) scale(0);
   opacity: 0;
   transition: all 2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+  z-index: 65;
 }
 
 .mobile-app.show {
@@ -461,18 +462,19 @@
 .app-header {
   color: white;
   text-align: center;
-  font-size: 16px;  /* Plus gros */
+  font-size: 18px;  /* Plus gros */
   font-weight: bold;
-  margin-top: 30px;
-  margin-bottom: 15px;
+  margin-top: 35px;
+  margin-bottom: 20px;
 }
 
 .app-production {
   color: #2ecc71;
   text-align: center;
-  font-size: 24px;  /* Plus gros */
+  font-size: 28px;  /* Plus gros */
   font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  animation: production-pulse 2s ease-in-out infinite;
 }
 
 .app-consumption {
@@ -480,34 +482,54 @@
   text-align: center;
   font-size: 24px;  /* Plus gros */
   font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .app-label {
   color: #ccc;
   text-align: center;
-  font-size: 12px;  /* Plus gros */
-  margin-bottom: 15px;
+  font-size: 14px;  /* Plus gros */
+  margin-bottom: 20px;
 }
 
 .app-chart {
-  width: 140px;  /* Plus large */
-  height: 70px;   /* Plus haute */
-  background: linear-gradient(to right, #2ecc71, #27ae60);
-  margin: 15px auto;
-  border-radius: 8px;
+  width: 160px;  /* Plus large */
+  height: 100px;   /* Plus haute */
+  background: rgba(255,255,255,0.1);
+  margin: 20px auto;
+  border-radius: 12px;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: end;
+  padding: 10px;
+  gap: 10px;
 }
 
-.app-chart::after {
-  content: '';
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
-  background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
+.chart-bar {
+  width: 60px;
+  border-radius: 6px 6px 0 0;
+  transition: height 0.5s ease;
+  position: relative;
+}
+
+.chart-bar.production {
+  background: linear-gradient(to top, #27ae60, #2ecc71);
+  animation: bar-pulse-green 1.5s ease-in-out infinite alternate;
+}
+
+.chart-bar.consumption {
+  background: linear-gradient(to top, #c0392b, #e74c3c);
+}
+
+@keyframes production-pulse {
+  0%, 100% { color: #2ecc71; }
+  50% { color: #27ae60; text-shadow: 0 0 10px #2ecc71; }
+}
+
+@keyframes bar-pulse-green {
+  0% { box-shadow: 0 0 5px rgba(46, 204, 113, 0.5); }
+  100% { box-shadow: 0 0 15px rgba(46, 204, 113, 0.8); }
 }
 
 /* CONTRÔLES */
