@@ -2667,7 +2667,7 @@ function App() {
     
     return (
       <div className="App">
-        <SolarAnimation3D 
+        <SolarAnimationCSS 
           panelCount={panelCount}
           onBack={() => setCurrentStep(5)} // Retour aux résultats
         />
