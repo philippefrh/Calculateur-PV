@@ -2663,7 +2663,18 @@ function App() {
   
   // Animation 3D (Étape 6)
   if (currentStep === 6) {
-    const panelCount = calculationResults?.recommended_kit?.panels || 12;
+    // CORRECTION : Prendre le nombre de panneaux choisi par l'utilisateur
+    let panelCount = 12; // Par défaut
+    
+    if (formData.useManualKit && formData.manualKit) {
+      // Si l'utilisateur a choisi manuellement
+      panelCount = formData.manualKit.panels;
+      console.log(`🔧 Panneau manuel choisi: ${panelCount}`);
+    } else if (calculationResults?.recommended_kit?.panels) {
+      // Si c'est automatique
+      panelCount = calculationResults.recommended_kit.panels;
+      console.log(`🤖 Panneau automatique: ${panelCount}`);
+    }
     
     return (
       <div className="App">
