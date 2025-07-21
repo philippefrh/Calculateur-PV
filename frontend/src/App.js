@@ -2644,14 +2644,9 @@ function App() {
     return (
       <div className="App">
         <ResultsScreen 
-          calculationResults={calculationResults} 
-          formData={formData} 
-          selectedRegion={selectedRegion}
-          regionConfig={regionConfig}
+          results={calculationResults}
           onPrevious={handlePrevious}
-          sendToExpert={sendToExpert}
-          generateDevis={generateDevis}
-          isGeneratingDevis={isGeneratingDevis}
+          selectedRegion={selectedRegion}
           setCurrentStep={setCurrentStep}
         />
       </div>
