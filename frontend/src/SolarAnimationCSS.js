@@ -4,6 +4,8 @@ import './SolarAnimationCSS.css';
 const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
   const [animationStage, setAnimationStage] = useState('ready');
   const [currentPanel, setCurrentPanel] = useState(0);
+  const [kwhProduction, setKwhProduction] = useState(0);
+  const [producingPanels, setProducingPanels] = useState([]);
 
   useEffect(() => {
     // Démarrer l'animation automatiquement après 2 secondes
@@ -16,19 +18,22 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
 
   const startAnimation = () => {
     setAnimationStage('panels');
+    setKwhProduction(0);
+    setProducingPanels([]);
     
     // Animation des panneaux un par un
     for (let i = 0; i < panelCount; i++) {
       setTimeout(() => {
         setCurrentPanel(i + 1);
         
-        // Si c'est le dernier panneau, passer directement à l'app (sans onduleur)
+        // Si c'est le dernier panneau, démarrer la production après l'app
         if (i === panelCount - 1) {
           setTimeout(() => {
             setAnimationStage('app');
             
             setTimeout(() => {
-              setAnimationStage('complete');
+              setAnimationStage('production');
+              startProduction();
             }, 2000);
           }, 1000);
         }
@@ -36,11 +41,32 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
     }
   };
 
+  const startProduction = () => {
+    // Activer tous les panneaux en production
+    const allPanels = Array.from({ length: panelCount }, (_, i) => i + 1);
+    setProducingPanels(allPanels);
+    
+    // Démarrer le comptage des kWh
+    const productionTimer = setInterval(() => {
+      setKwhProduction(prev => {
+        const increment = (panelCount * 0.25); // 0.25 kWh par panneau par tick
+        return prev + increment;
+      });
+    }, 500);
+
+    // Arrêter après 20 secondes et marquer comme terminé
+    setTimeout(() => {
+      clearInterval(productionTimer);
+      setAnimationStage('complete');
+    }, 20000);
+  };
+
   const getStatusText = () => {
     switch (animationStage) {
       case 'ready': return 'Prêt à démarrer...';
       case 'panels': return `🔧 Installation panneau ${currentPanel}/${panelCount}...`;
       case 'app': return '📱 Connexion application monitoring...';
+      case 'production': return '⚡ Production d\'énergie en cours...';
       case 'complete': return '🎉 Installation terminée ! Système opérationnel !';
       default: return 'Prêt à démarrer...';
     }
