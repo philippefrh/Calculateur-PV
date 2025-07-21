@@ -2615,6 +2615,7 @@ function App() {
           onPrevious={handlePrevious}
           selectedRegion={selectedRegion}
           selectedCalculationMode={selectedCalculationMode}
+          setCurrentStep={setCurrentStep}
         />
       </div>
     );
