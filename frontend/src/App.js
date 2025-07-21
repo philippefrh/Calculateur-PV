@@ -2683,7 +2683,11 @@ function App() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Puissance installée:</span>
-                    <strong>{calculationResults.kit_power} kW</strong>
+                    <strong>
+                      {formData.useManualKit && formData.manualKit 
+                        ? formData.manualKit.power 
+                        : calculationResults.kit_power} kW
+                    </strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Nombre de panneaux:</span>
