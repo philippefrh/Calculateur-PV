@@ -127,16 +127,59 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
         </div>
       ))}
       
-      {/* Compteur Linky */}
-      <div className={`linky-counter ${animationStage === 'production' || animationStage === 'complete' ? 'active' : ''}`}>
+      {/* Câble de raccordement du dernier panneau au compteur */}
+      {producingPanels.length > 0 && (
+        <div className="power-cable"></div>
+      )}
+      
+      {/* Compteur Linky - AGRANDI */}
+      <div className={`linky-counter ${animationStage === 'production' || animationStage === 'savings' || animationStage === 'complete' ? 'active' : ''}`}>
         <div className="linky-header">LINKY</div>
         <div className="linky-screen">
           <div className="linky-display">{kwhProduction.toFixed(2)}</div>
           <div className="linky-unit">kWh</div>
         </div>
-        <div className={`linky-led ${animationStage === 'production' ? 'blinking' : ''}`}></div>
+        <div className={`linky-led ${animationStage === 'production' || animationStage === 'savings' ? 'blinking' : ''}`}></div>
         <div className="linky-label">Production Solaire</div>
       </div>
+      
+      {/* Application Mobile - PERMANENTE ET MISE À JOUR */}
+      <div className={`mobile-app ${animationStage === 'production' || animationStage === 'savings' || animationStage === 'complete' ? 'show' : ''}`}>
+        <div className="app-header">Solar Monitor</div>
+        <div className="app-production">{kwhProduction.toFixed(1)} kWh</div>
+        <div className="app-label">Production aujourd'hui</div>
+        <div className="app-consumption">{kwhConsumption.toFixed(1)} kWh</div>
+        <div className="app-label">Consommation</div>
+        <div className="app-chart">
+          <div className="chart-bar production" style={{height: `${Math.min(80, (kwhProduction/50) * 80)}%`}}></div>
+          <div className="chart-bar consumption" style={{height: `${Math.min(80, (kwhConsumption/50) * 80)}%`}}></div>
+        </div>
+      </div>
+      
+      {/* Section Économies */}
+      {(animationStage === 'savings' || animationStage === 'complete') && (
+        <div className="savings-section">
+          <div className="savings-text">
+            Autoconsommation = Économies<br />
+            <span>directement sur votre Facture</span>
+          </div>
+          <div className="money-stack">
+            {Array.from({ length: Math.min(moneyBills, 8) }, (_, index) => (
+              <div 
+                key={index} 
+                className="money-bill"
+                style={{
+                  animationDelay: `${index * 1.5}s`,
+                  zIndex: 10 + index,
+                  bottom: `${index * 3}px`
+                }}
+              >
+                💶
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       
       {/* Application Mobile - AGRANDIE ET CENTRÉE */}
       <div className={`mobile-app ${animationStage === 'app' || animationStage === 'complete' ? 'show' : ''}`}>
