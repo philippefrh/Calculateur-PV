@@ -1594,6 +1594,29 @@ Cordialement`);
           >
             {isGeneratingDevis ? '⏳ Génération...' : '📋 Générer le Devis PDF'}
           </button>
+          
+          <button 
+            type="button" 
+            className="next-animation-button"
+            onClick={() => setCurrentStep(6)}
+            style={{
+              backgroundColor: '#2ecc71',
+              color: 'white',
+              border: 'none',
+              padding: '15px 30px',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              marginTop: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px'
+            }}
+          >
+            🎬 Voir l'Animation 3D de votre Installation
+          </button>
           <button type="button" onClick={sendToExpert} className="expert-button">
             👨‍💼 Prendre RDV avec un Expert
           </button>
