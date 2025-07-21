@@ -443,16 +443,18 @@
             updateStageText('Connexion de l\'application de monitoring...');
 
             const appTexture = createAppTexture();
-            const phoneGeometry = new THREE.BoxGeometry(0.9, 1.8, 0.1);
+            const phoneGeometry = new THREE.BoxGeometry(1.2, 2.4, 0.15);  // Plus grand
             const phoneMaterial = new THREE.MeshLambertMaterial({ map: appTexture });
             app = new THREE.Mesh(phoneGeometry, phoneMaterial);
 
-            app.position.set(-10, 8, 0);
+            // Position VISIBLE à gauche des panneaux
+            app.position.set(-12, 8, 0);  // Plus à gauche
             app.castShadow = true;
             scene.add(app);
 
             const startTime = Date.now();
             const duration = 2500 / animationSpeed;
+            const finalY = 1.5; // Position finale VISIBLE
 
             function updateApp() {
                 if (isPaused) {
@@ -463,7 +465,7 @@
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
 
-                app.position.y = 8 + (1.2 - 8) * progress;
+                app.position.y = 8 + (finalY - 8) * progress;
                 app.rotation.y = progress * Math.PI * 5;
                 app.rotation.z = Math.sin(progress * Math.PI * 3) * 0.4;
 
@@ -474,8 +476,12 @@
                 } else {
                     app.rotation.z = 0;
                     animationStage = 'complete';
-                    updateStageText('🎉 Installation terminée ! Votre système solaire est opérationnel !');
-                    updateProgress('✅ Animation terminée');
+                    updateStageText('🎉 Installation terminée ! 12 panneaux + onduleur + app installés !');
+                    updateProgress('✅ Tous les éléments sont visibles sur le terrain !');
+                    
+                    // Ajuster la caméra pour voir TOUT
+                    camera.position.set(0, 12, 20);  // Vue plus haute et plus éloignée
+                    camera.lookAt(0, 0, 0);
                 }
             }
             updateApp();
