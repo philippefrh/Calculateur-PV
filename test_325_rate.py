@@ -8,7 +8,7 @@ import requests
 import json
 
 # Backend URL
-BACKEND_URL = "https://6a095b37-67fa-45c7-b84f-d298696d9bdc.preview.emergentagent.com/api"
+BACKEND_URL = "https://0547f288-c3e4-4a6e-b39f-5f0975d43c58.preview.emergentagent.com/api"
 
 def test_325_rate_specific():
     """Test specific scenario for 3.25% TAEG rate"""
