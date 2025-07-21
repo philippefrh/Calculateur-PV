@@ -620,8 +620,15 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
         lat = client['latitude']
         lon = client['longitude']
         
-        # Calculate optimal kit size based on region
-        if region == "martinique":
+        # Calculate optimal kit size based on region or use manual kit if provided
+        if manual_kit_power:
+            # Kit manuel fourni
+            best_kit = manual_kit_power
+            if region == "martinique":
+                kit_info = region_config["kits"][str(manual_kit_power)]
+            else:
+                kit_info = SOLAR_KITS[str(manual_kit_power)]
+        elif region == "martinique":
             # Pour Martinique, utiliser les kits fixes
             best_kit = calculate_optimal_kit_size_martinique(annual_consumption, roof_surface)
             kit_info = region_config["kits"][best_kit]
