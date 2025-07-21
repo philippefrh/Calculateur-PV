@@ -91,7 +91,51 @@
   transform: translateY(0) rotateX(0deg) rotateY(0deg);
 }
 
-/* POSITIONS DES PANNEAUX (grille 4x3) - DÉCALÉS VERS LA GAUCHE */
+/* POSITIONS DES PANNEAUX - ADAPTÉES AU NOMBRE */
+
+/* Pour 6 panneaux (2 rangées de 3) */
+.solar-animation-container[data-panels="6"] .panel-1 { left: 150px; bottom: 320px; }
+.solar-animation-container[data-panels="6"] .panel-2 { left: 370px; bottom: 320px; }
+.solar-animation-container[data-panels="6"] .panel-3 { left: 590px; bottom: 320px; }
+.solar-animation-container[data-panels="6"] .panel-4 { left: 150px; bottom: 250px; }
+.solar-animation-container[data-panels="6"] .panel-5 { left: 370px; bottom: 250px; }
+.solar-animation-container[data-panels="6"] .panel-6 { left: 590px; bottom: 250px; }
+
+/* Pour 12 panneaux (3 rangées de 4) */
+.solar-animation-container[data-panels="12"] .panel-1 { left: 50px; bottom: 350px; }
+.solar-animation-container[data-panels="12"] .panel-2 { left: 270px; bottom: 350px; }
+.solar-animation-container[data-panels="12"] .panel-3 { left: 490px; bottom: 350px; }
+.solar-animation-container[data-panels="12"] .panel-4 { left: 710px; bottom: 350px; }
+.solar-animation-container[data-panels="12"] .panel-5 { left: 50px; bottom: 280px; }
+.solar-animation-container[data-panels="12"] .panel-6 { left: 270px; bottom: 280px; }
+.solar-animation-container[data-panels="12"] .panel-7 { left: 490px; bottom: 280px; }
+.solar-animation-container[data-panels="12"] .panel-8 { left: 710px; bottom: 280px; }
+.solar-animation-container[data-panels="12"] .panel-9 { left: 50px; bottom: 210px; }
+.solar-animation-container[data-panels="12"] .panel-10 { left: 270px; bottom: 210px; }
+.solar-animation-container[data-panels="12"] .panel-11 { left: 490px; bottom: 210px; }
+.solar-animation-container[data-panels="12"] .panel-12 { left: 710px; bottom: 210px; }
+
+/* Pour 18 panneaux (3 rangées de 6) */
+.solar-animation-container[data-panels="18"] .panel-1 { left: 20px; bottom: 350px; }
+.solar-animation-container[data-panels="18"] .panel-2 { left: 160px; bottom: 350px; }
+.solar-animation-container[data-panels="18"] .panel-3 { left: 300px; bottom: 350px; }
+.solar-animation-container[data-panels="18"] .panel-4 { left: 440px; bottom: 350px; }
+.solar-animation-container[data-panels="18"] .panel-5 { left: 580px; bottom: 350px; }
+.solar-animation-container[data-panels="18"] .panel-6 { left: 720px; bottom: 350px; }
+.solar-animation-container[data-panels="18"] .panel-7 { left: 20px; bottom: 280px; }
+.solar-animation-container[data-panels="18"] .panel-8 { left: 160px; bottom: 280px; }
+.solar-animation-container[data-panels="18"] .panel-9 { left: 300px; bottom: 280px; }
+.solar-animation-container[data-panels="18"] .panel-10 { left: 440px; bottom: 280px; }
+.solar-animation-container[data-panels="18"] .panel-11 { left: 580px; bottom: 280px; }
+.solar-animation-container[data-panels="18"] .panel-12 { left: 720px; bottom: 280px; }
+.solar-animation-container[data-panels="18"] .panel-13 { left: 20px; bottom: 210px; }
+.solar-animation-container[data-panels="18"] .panel-14 { left: 160px; bottom: 210px; }
+.solar-animation-container[data-panels="18"] .panel-15 { left: 300px; bottom: 210px; }
+.solar-animation-container[data-panels="18"] .panel-16 { left: 440px; bottom: 210px; }
+.solar-animation-container[data-panels="18"] .panel-17 { left: 580px; bottom: 210px; }
+.solar-animation-container[data-panels="18"] .panel-18 { left: 720px; bottom: 210px; }
+
+/* Positions par défaut (au cas où) */
 .panel-1 { left: 50px; bottom: 350px; }
 .panel-2 { left: 270px; bottom: 350px; }
 .panel-3 { left: 490px; bottom: 350px; }
