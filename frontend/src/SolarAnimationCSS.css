@@ -400,7 +400,7 @@
 /* SECTION ÉCONOMIES AVEC VRAIS BILLETS D'EUROS */
 .savings-section {
   position: absolute;
-  bottom: 300px;  /* Repositionnée entre le Linky et le téléphone */
+  bottom: 380px;  /* Rehaussée pour être plus visible */
   left: 50%;      /* Centrée entre les deux */
   transform: translateX(-50%);
   text-align: center;
@@ -410,7 +410,7 @@
 .money-stack {
   position: relative;
   width: 140px;   /* Plus large pour contenir les vrais billets */
-  height: 100px;
+  height: 120px;  /* Plus haute */
   margin: 0 auto;
 }
 
