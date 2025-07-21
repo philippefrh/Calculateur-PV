@@ -2661,7 +2661,7 @@ function App() {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Nombre de panneaux:</span>
-                    <strong>{calculationResults.recommended_kit?.panels || panelCount} panneaux</strong>
+                    <strong>{calculationResults.recommended_kit?.panels || (formData.useManualKit ? formData.manualKit?.panels : 12)} panneaux</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Surface totale:</span>
