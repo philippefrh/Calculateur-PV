@@ -1422,7 +1422,7 @@ Cordialement`);
               <h3>🌍 Données géographiques</h3>
               <p><strong>Coordonnées:</strong> {results.coordinates?.lat.toFixed(4)}°N, {results.coordinates?.lon.toFixed(4)}°E</p>
               <p><strong>Source:</strong> {results.pvgis_source}</p>
-              <p><strong>Irradiation globale:</strong> ~{Math.round(results.estimated_production / results.kit_power)} kWh/kWc/an</p>
+              <p><strong>Irradiation globale:</strong> ~{Math.round(results.estimated_production / (formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power))} kWh/kWc/an</p>
             </div>
           </div>
         </div>
