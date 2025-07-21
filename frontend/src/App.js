@@ -2167,7 +2167,14 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       const clientId = clientResponse.data.id;
 
       // Ensuite faire le calcul PVGIS avec la région et le mode de calcul sélectionnés
-      const calculationResponse = await axios.post(`${API}/calculate/${clientId}?region=${selectedRegion}&calculation_mode=${selectedCalculationMode}`);
+      let calculationUrl = `${API}/calculate/${clientId}?region=${selectedRegion}&calculation_mode=${selectedCalculationMode}`;
+      
+      // Ajouter le kit manuel si sélectionné
+      if (formData.useManualKit && formData.manualKit) {
+        calculationUrl += `&manual_kit_power=${formData.manualKit.power}`;
+      }
+      
+      const calculationResponse = await axios.post(calculationUrl);
       
       setCalculationResults(calculationResponse.data);
       
