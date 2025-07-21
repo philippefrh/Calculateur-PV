@@ -2761,7 +2761,7 @@ function App() {
         <SolarAnimationCSS 
           panelCount={panelCount}
           onBack={() => setCurrentStep(5)} // Retour aux résultats
-          onNext={() => setCurrentStep(7)} // Aller vers synthèse financière
+          onNext={() => setCurrentStep(5)} // Retour vers les VRAIS résultats (votre page originale)
         />
       </div>
     );
