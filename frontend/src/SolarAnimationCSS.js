@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './SolarAnimationCSS.css';
 
-const SolarAnimationCSS = ({ panelCount = 12, onBack }) => {
+const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
   const [animationStage, setAnimationStage] = useState('ready');
   const [currentPanel, setCurrentPanel] = useState(0);
 
