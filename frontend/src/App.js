@@ -2735,7 +2735,7 @@ function App() {
           {/* Boutons de navigation */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '40px' }}>
             <button 
-              onClick={() => setCurrentStep(5)}
+              onClick={() => setCurrentStep('results')}
               style={{ 
                 backgroundColor: '#e74c3c', 
                 color: 'white', 
