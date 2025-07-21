@@ -551,8 +551,72 @@
                 animationSpeed === 2 ? '⚡⚡ Turbo' : '🐌 Normal';
         }
 
-        // Initialisation au chargement
-        window.addEventListener('load', init);
+        function showFinalResult() {
+            // Nettoyer la scène existante
+            panels.forEach(panel => scene.remove(panel));
+            if (inverter) scene.remove(inverter);
+            if (app) scene.remove(app);
+            
+            panels = [];
+            inverter = null;
+            app = null;
+            
+            // Créer instantanément TOUS les éléments visibles
+            createAllElementsInstantly();
+        }
+        
+        function createAllElementsInstantly() {
+            // Créer tous les panneaux INSTANTANÉMENT
+            const panelTexture = createPanelTexture();
+            const panelsPerRow = 4;
+            const rows = 3;
+            
+            for (let i = 0; i < totalPanels; i++) {
+                const row = Math.floor(i / panelsPerRow);
+                const col = i % panelsPerRow;
+                
+                const panelGeometry = new THREE.BoxGeometry(3, 0.2, 1.5);
+                const panelMaterial = new THREE.MeshLambertMaterial({ map: panelTexture });
+                const panel = new THREE.Mesh(panelGeometry, panelMaterial);
+                
+                panel.position.set(
+                    (col - panelsPerRow/2 + 0.5) * 3.5,
+                    0.1,  // Sur le sol
+                    (row - rows/2 + 0.5) * 2
+                );
+                
+                panel.castShadow = true;
+                scene.add(panel);
+                panels.push(panel);
+            }
+            
+            // Créer l'onduleur INSTANTANÉMENT
+            const inverterTexture = createInverterTexture();
+            const inverterGeometry = new THREE.BoxGeometry(2.5, 1.2, 0.5);
+            const inverterMaterial = new THREE.MeshLambertMaterial({ map: inverterTexture });
+            inverter = new THREE.Mesh(inverterGeometry, inverterMaterial);
+            inverter.position.set(12, 0.8, 0);  // Position finale visible
+            inverter.castShadow = true;
+            scene.add(inverter);
+            
+            // Créer l'application INSTANTANÉMENT  
+            const appTexture = createAppTexture();
+            const phoneGeometry = new THREE.BoxGeometry(1.2, 2.4, 0.15);
+            const phoneMaterial = new THREE.MeshLambertMaterial({ map: appTexture });
+            app = new THREE.Mesh(phoneGeometry, phoneMaterial);
+            app.position.set(-12, 1.5, 0);  // Position finale visible
+            app.castShadow = true;
+            scene.add(app);
+            
+            // Ajuster la caméra pour TOUT voir
+            camera.position.set(0, 12, 20);
+            camera.lookAt(0, 0, 0);
+            
+            // Mettre à jour l'interface
+            updateStageText('👁️ RÉSULTAT FINAL - 12 Panneaux + Onduleur Hoymiles + App Mobile');
+            updateProgress('✅ Tous les éléments installés et visibles !');
+            animationStage = 'complete';
+        }
 
         // Redimensionnement
         window.addEventListener('resize', () => {
