@@ -2162,6 +2162,9 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       const calculationResponse = await axios.post(`${API}/calculate/${clientId}?region=${selectedRegion}&calculation_mode=${selectedCalculationMode}`);
       
       setCalculationResults(calculationResponse.data);
+      
+      // Transmettre les résultats au composant parent
+      onComplete(calculationResponse.data);
 
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
