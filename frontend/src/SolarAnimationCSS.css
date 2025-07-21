@@ -246,14 +246,14 @@
   }
 }
 
-/* COMPTEUR LINKY */
+/* COMPTEUR LINKY - AGRANDI */
 .linky-counter {
   position: absolute;
   bottom: 240px;
-  left: 50%;
+  left: 40%;
   transform: translateX(-50%);
-  width: 160px;
-  height: 200px;
+  width: 200px;  /* Agrandi comme le téléphone */
+  height: 400px; /* Agrandi comme le téléphone */
   background: linear-gradient(to bottom, #7ED321, #5BA81B);
   border: 4px solid #4A6E19;
   border-radius: 15px;
@@ -274,47 +274,48 @@
   color: white;
   text-align: center;
   font-weight: bold;
-  font-size: 14px;
-  padding: 8px;
-  margin: 8px 8px 0 8px;
-  border-radius: 8px;
+  font-size: 18px;  /* Plus gros */
+  padding: 12px;
+  margin: 12px 12px 0 12px;
+  border-radius: 10px;
 }
 
 .linky-screen {
   background: #000;
-  margin: 15px;
-  padding: 15px;
-  border-radius: 8px;
+  margin: 20px;
+  padding: 20px;  /* Plus grand */
+  border-radius: 12px;
   text-align: center;
   position: relative;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+  height: 120px;  /* Plus haute */
 }
 
 .linky-display {
   color: #00FF00;
   font-family: 'Courier New', monospace;
-  font-size: 24px;
+  font-size: 32px;  /* Plus gros */
   font-weight: bold;
-  text-shadow: 0 0 8px #00FF00;
+  text-shadow: 0 0 12px #00FF00;
   animation: digital-flicker 0.1s infinite alternate;
 }
 
 .linky-unit {
   color: #00AA00;
-  font-size: 12px;
-  margin-top: 5px;
+  font-size: 16px;  /* Plus gros */
+  margin-top: 8px;
   font-family: 'Courier New', monospace;
 }
 
 .linky-led {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 12px;
-  height: 12px;
+  bottom: 30px;
+  right: 30px;
+  width: 16px;  /* Plus gros */
+  height: 16px;
   background: #FF0000;
   border-radius: 50%;
-  box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
 }
 
 .linky-led.blinking {
@@ -323,10 +324,38 @@
 
 .linky-label {
   color: white;
-  font-size: 10px;
+  font-size: 14px;  /* Plus gros */
   text-align: center;
-  margin-top: 8px;
+  margin-top: 15px;
   font-weight: bold;
+}
+
+/* CÂBLE DE RACCORDEMENT */
+.power-cable {
+  position: absolute;
+  width: 8px;
+  height: 120px;
+  background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
+  border-radius: 4px;
+  right: 150px;  /* Position depuis le dernier panneau */
+  bottom: 300px;
+  transform: rotate(-25deg);
+  transform-origin: top;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+  z-index: 55;
+}
+
+.power-cable::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  right: -60px;
+  width: 8px;
+  height: 80px;
+  background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
+  border-radius: 4px;
+  transform: rotate(60deg);
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
 }
 
 @keyframes led-blink {
