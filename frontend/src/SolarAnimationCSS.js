@@ -78,8 +78,11 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack }) => {
         <button onClick={startAnimation} className="restart-btn">
           🔄 Recommencer
         </button>
-        <button onClick={onBack} className="back-btn">
+        <button onClick={() => window.history.back()} className="back-btn">
           ← Retour aux Résultats
+        </button>
+        <button onClick={() => alert('Page suivante en cours de développement...')} className="next-btn">
+          Continuer →
         </button>
       </div>
     </div>
