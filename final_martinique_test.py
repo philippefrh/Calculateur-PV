@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://572011d6-35bd-490d-ba0c-18bbbb191c89.preview.emergentagent.com/api"
+BACKEND_URL = "https://6a095b37-67fa-45c7-b84f-d298696d9bdc.preview.emergentagent.com/api"
 
 def test_martinique_fixes():
     session = requests.Session()
