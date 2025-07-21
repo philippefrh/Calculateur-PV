@@ -2660,6 +2660,20 @@ function App() {
       </div>
     );
   }
+  
+  // Animation 3D (Étape 6)
+  if (currentStep === 6) {
+    const panelCount = calculationResults?.recommended_kit?.panels || 12;
+    
+    return (
+      <div className="App">
+        <SolarAnimation3D 
+          panelCount={panelCount}
+          onBack={() => setCurrentStep(5)} // Retour aux résultats
+        />
+      </div>
+    );
+  }
 
   // Fallback
   return (
