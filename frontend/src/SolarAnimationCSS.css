@@ -91,19 +91,19 @@
   transform: translateY(0) rotateX(0deg) rotateY(0deg);
 }
 
-/* POSITIONS DES PANNEAUX (grille 4x3) */
-.panel-1 { left: 200px; bottom: 350px; }
-.panel-2 { left: 420px; bottom: 350px; }
-.panel-3 { left: 640px; bottom: 350px; }
-.panel-4 { left: 860px; bottom: 350px; }
-.panel-5 { left: 200px; bottom: 280px; }
-.panel-6 { left: 420px; bottom: 280px; }
-.panel-7 { left: 640px; bottom: 280px; }
-.panel-8 { left: 860px; bottom: 280px; }
-.panel-9 { left: 200px; bottom: 210px; }
-.panel-10 { left: 420px; bottom: 210px; }
-.panel-11 { left: 640px; bottom: 210px; }
-.panel-12 { left: 860px; bottom: 210px; }
+/* POSITIONS DES PANNEAUX (grille 4x3) - DÉCALÉS VERS LA GAUCHE */
+.panel-1 { left: 50px; bottom: 350px; }
+.panel-2 { left: 270px; bottom: 350px; }
+.panel-3 { left: 490px; bottom: 350px; }
+.panel-4 { left: 710px; bottom: 350px; }
+.panel-5 { left: 50px; bottom: 280px; }
+.panel-6 { left: 270px; bottom: 280px; }
+.panel-7 { left: 490px; bottom: 280px; }
+.panel-8 { left: 710px; bottom: 280px; }
+.panel-9 { left: 50px; bottom: 210px; }
+.panel-10 { left: 270px; bottom: 210px; }
+.panel-11 { left: 490px; bottom: 210px; }
+.panel-12 { left: 710px; bottom: 210px; }
 
 /* ONDULEUR HOYMILES */
 .solar-inverter {
