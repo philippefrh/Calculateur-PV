@@ -356,12 +356,12 @@
 .power-cable {
   position: absolute;
   width: 8px;
-  height: 140px;
+  height: 160px;
   background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
   border-radius: 4px;
-  right: 540px;  /* Ajusté pour aller du dernier panneau au compteur Linky */
-  bottom: 300px;
-  transform: rotate(-15deg);
+  left: 860px;  /* Départ du centre du panneau 12 (760px + 100px pour le centre) */
+  bottom: 260px; /* Légèrement au-dessus du panneau 12 (210px + 50px) */
+  transform: rotate(25deg);
   transform-origin: top;
   box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
   z-index: 55;
@@ -370,13 +370,13 @@
 .power-cable::after {
   content: '';
   position: absolute;
-  bottom: -80px;
-  right: -140px;
+  bottom: -100px;
+  left: -80px;
   width: 8px;
-  height: 100px;
+  height: 120px;
   background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
   border-radius: 4px;
-  transform: rotate(45deg);
+  transform: rotate(-60deg);
   box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
 }
 
