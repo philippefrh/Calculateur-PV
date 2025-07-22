@@ -588,17 +588,24 @@
             </div>
         </div>
         
-        <!-- Section Économies avec de vrais billets d'euros -->
+        <!-- Section Économies avec de vrais billets d'euros - EFFET DE TAS RÉALISTE -->
         <div class="savings-section">
             <div class="money-stack">
-                <div class="euro-bill bill-50" style="bottom: 0px;">50</div>
-                <div class="euro-bill bill-50" style="bottom: 3px; animation-delay: 1.5s;">50</div>
-                <div class="euro-bill bill-20" style="bottom: 6px; animation-delay: 3s;">20</div>
-                <div class="euro-bill bill-20" style="bottom: 9px; animation-delay: 4.5s;">20</div>
-                <div class="euro-bill bill-10" style="bottom: 12px; animation-delay: 6s;">10</div>
-                <div class="euro-bill bill-10" style="bottom: 15px; animation-delay: 7.5s;">10</div>
-                <div class="euro-bill bill-5" style="bottom: 18px; animation-delay: 9s;">5</div>
-                <div class="euro-bill bill-5" style="bottom: 21px; animation-delay: 10.5s;">5</div>
+                <!-- Première couche - Billets de base -->
+                <div class="euro-bill bill-50" style="bottom: 0px; left: 5px; z-index: 1; animation-delay: 0s;">50</div>
+                <div class="euro-bill bill-20" style="bottom: 2px; left: 10px; z-index: 2; animation-delay: 1.5s;">20</div>
+                
+                <!-- Deuxième couche -->
+                <div class="euro-bill bill-10" style="bottom: 4px; left: 0px; z-index: 3; animation-delay: 3s;">10</div>
+                <div class="euro-bill bill-5" style="bottom: 6px; left: 15px; z-index: 4; animation-delay: 4.5s;">5</div>
+                
+                <!-- Troisième couche -->
+                <div class="euro-bill bill-50" style="bottom: 8px; left: 3px; z-index: 5; animation-delay: 6s;">50</div>
+                <div class="euro-bill bill-20" style="bottom: 10px; left: 12px; z-index: 6; animation-delay: 7.5s;">20</div>
+                
+                <!-- Quatrième couche - Tas qui grandit -->
+                <div class="euro-bill bill-10" style="bottom: 12px; left: 7px; z-index: 7; animation-delay: 9s;">10</div>
+                <div class="euro-bill bill-5" style="bottom: 14px; left: 2px; z-index: 8; animation-delay: 10.5s;">5</div>
             </div>
         </div>
         
