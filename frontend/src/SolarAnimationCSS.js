@@ -137,10 +137,7 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
         </div>
       ))}
       
-      {/* Câble de raccordement du dernier panneau au compteur */}
-      {producingPanels.length > 0 && (
-        <div className="power-cable"></div>
-      )}
+
       
       {/* Compteur Linky - AGRANDI */}
       <div className={`linky-counter ${animationStage === 'production' || animationStage === 'savings' || animationStage === 'complete' ? 'active' : ''}`}>
