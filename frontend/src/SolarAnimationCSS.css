@@ -269,12 +269,11 @@
   }
 }
 
-/* COMPTEUR LINKY - REPOSITIONNÉ */
+/* COMPTEUR LINKY - REPOSITIONNÉ À DROITE */
 .linky-counter {
   position: absolute;
   bottom: 240px;
-  left: 30%;  /* Déplacé plus vers la gauche */
-  transform: translateX(-50%);
+  right: 320px;  /* Déplacé à droite, à côté du téléphone */
   width: 200px;  /* Même taille que le téléphone */
   height: 400px; /* Même taille que le téléphone */
   background: linear-gradient(to bottom, #7ED321, #5BA81B);
@@ -282,7 +281,7 @@
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
   opacity: 0;
-  transform: translateX(-50%) translateY(50px);
+  transform: translateY(50px);
   transition: all 1s ease;
   z-index: 60;
 }
