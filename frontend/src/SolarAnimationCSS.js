@@ -170,21 +170,21 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext }) => {
       {(animationStage === 'savings' || animationStage === 'complete') && (
         <div className="savings-section">
           <div className="money-stack">
-            {/* Billets de 50€ (roses) */}
-            {moneyBills >= 1 && <div className="euro-bill bill-50" style={{animationDelay: '0s', bottom: '0px'}}>50</div>}
-            {moneyBills >= 2 && <div className="euro-bill bill-50" style={{animationDelay: '1.5s', bottom: '3px'}}>50</div>}
+            {/* Première couche - Billets de base */}
+            {moneyBills >= 1 && <div className="euro-bill bill-50" style={{animationDelay: '0s', bottom: '0px', left: '5px', zIndex: 1}}>50</div>}
+            {moneyBills >= 2 && <div className="euro-bill bill-20" style={{animationDelay: '1.5s', bottom: '2px', left: '10px', zIndex: 2}}>20</div>}
             
-            {/* Billets de 20€ (bleus) */}
-            {moneyBills >= 3 && <div className="euro-bill bill-20" style={{animationDelay: '3s', bottom: '6px'}}>20</div>}
-            {moneyBills >= 4 && <div className="euro-bill bill-20" style={{animationDelay: '4.5s', bottom: '9px'}}>20</div>}
+            {/* Deuxième couche */}
+            {moneyBills >= 3 && <div className="euro-bill bill-10" style={{animationDelay: '3s', bottom: '4px', left: '0px', zIndex: 3}}>10</div>}
+            {moneyBills >= 4 && <div className="euro-bill bill-5" style={{animationDelay: '4.5s', bottom: '6px', left: '15px', zIndex: 4}}>5</div>}
             
-            {/* Billets de 10€ (rouges) */}
-            {moneyBills >= 5 && <div className="euro-bill bill-10" style={{animationDelay: '6s', bottom: '12px'}}>10</div>}
-            {moneyBills >= 6 && <div className="euro-bill bill-10" style={{animationDelay: '7.5s', bottom: '15px'}}>10</div>}
+            {/* Troisième couche */}
+            {moneyBills >= 5 && <div className="euro-bill bill-50" style={{animationDelay: '6s', bottom: '8px', left: '3px', zIndex: 5}}>50</div>}
+            {moneyBills >= 6 && <div className="euro-bill bill-20" style={{animationDelay: '7.5s', bottom: '10px', left: '12px', zIndex: 6}}>20</div>}
             
-            {/* Billets de 5€ (gris) */}
-            {moneyBills >= 7 && <div className="euro-bill bill-5" style={{animationDelay: '9s', bottom: '18px'}}>5</div>}
-            {moneyBills >= 8 && <div className="euro-bill bill-5" style={{animationDelay: '10.5s', bottom: '21px'}}>5</div>}
+            {/* Quatrième couche - Tas qui grandit */}
+            {moneyBills >= 7 && <div className="euro-bill bill-10" style={{animationDelay: '9s', bottom: '12px', left: '7px', zIndex: 7}}>10</div>}
+            {moneyBills >= 8 && <div className="euro-bill bill-5" style={{animationDelay: '10.5s', bottom: '14px', left: '2px', zIndex: 8}}>5</div>}
           </div>
         </div>
       )}
