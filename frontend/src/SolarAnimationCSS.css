@@ -396,11 +396,11 @@
   100% { text-shadow: 0 0 12px #00FF00, 0 0 16px #00AA00; }
 }
 
-/* SECTION ÉCONOMIES AVEC VRAIS BILLETS D'EUROS */
+/* SECTION ÉCONOMIES AVEC VRAIS BILLETS D'EUROS - AU-DESSUS DU BOUTON */
 .savings-section {
   position: absolute;
-  bottom: 380px;  /* Rehaussée pour être plus visible */
-  left: 50%;      /* Centrée entre les deux */
+  bottom: 120px;  /* Au-dessus du bouton "Voir les Résultats Détaillés" */
+  left: 50%;      /* Centré */
   transform: translateX(-50%);
   text-align: center;
   z-index: 70;
@@ -409,7 +409,7 @@
 .money-stack {
   position: relative;
   width: 140px;   /* Plus large pour contenir les vrais billets */
-  height: 120px;  /* Plus haute */
+  height: 80px;   /* Plus compact pour l'effet de tas au sol */
   margin: 0 auto;
 }
 
