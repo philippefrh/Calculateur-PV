@@ -352,16 +352,16 @@
   font-weight: bold;
 }
 
-/* CÂBLE DE RACCORDEMENT - AJUSTÉ */
+/* CÂBLE DE RACCORDEMENT - AJUSTÉ POUR NOUVELLE POSITION */
 .power-cable {
   position: absolute;
   width: 8px;
-  height: 120px;
+  height: 140px;
   background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
   border-radius: 4px;
-  right: 200px;  /* Ajusté pour la nouvelle position */
+  right: 540px;  /* Ajusté pour aller du dernier panneau au compteur Linky */
   bottom: 300px;
-  transform: rotate(-25deg);
+  transform: rotate(-15deg);
   transform-origin: top;
   box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
   z-index: 55;
@@ -370,13 +370,13 @@
 .power-cable::after {
   content: '';
   position: absolute;
-  bottom: -60px;
-  right: -60px;
+  bottom: -80px;
+  right: -140px;
   width: 8px;
-  height: 80px;
+  height: 100px;
   background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
   border-radius: 4px;
-  transform: rotate(60deg);
+  transform: rotate(45deg);
   box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
 }
 
