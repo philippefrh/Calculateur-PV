@@ -511,16 +511,16 @@
             }
         }
 
-        /* CÂBLE DE RACCORDEMENT - CORRIGÉ POUR SE CONNECTER AU COMPTEUR LINKY */
+        /* CÂBLE DE RACCORDEMENT - AJUSTÉ POUR ATTEINDRE LE BAS DU COMPTEUR LINKY */
         .power-cable {
             position: absolute;
             width: 8px;
-            height: 100px;
+            height: 150px;
             background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
             border-radius: 4px;
             left: 870px;  /* Départ du centre du panneau 18 */
             bottom: 310px; /* Au niveau du panneau 18 */
-            transform: rotate(70deg);
+            transform: rotate(45deg);
             transform-origin: bottom;
             box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
             z-index: 55;
@@ -529,13 +529,13 @@
         .power-cable::after {
             content: '';
             position: absolute;
-            top: -80px;
-            left: 80px;
+            top: -110px;
+            left: 110px;
             width: 8px;
-            height: 120px;
+            height: 90px;
             background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
             border-radius: 4px;
-            transform: rotate(-35deg);
+            transform: rotate(-90deg);
             box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
         }
         
