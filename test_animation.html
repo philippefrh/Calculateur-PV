@@ -511,32 +511,32 @@
             }
         }
 
-        /* CÂBLE DE RACCORDEMENT - AJUSTÉ POUR ATTEINDRE LE BAS DU COMPTEUR LINKY */
+        /* CÂBLE DE RACCORDEMENT - VERSION SIMPLE ET RÉALISTE */
         .power-cable {
             position: absolute;
-            width: 8px;
-            height: 150px;
-            background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
-            border-radius: 4px;
-            left: 870px;  /* Départ du centre du panneau 18 */
-            bottom: 310px; /* Au niveau du panneau 18 */
-            transform: rotate(45deg);
-            transform-origin: bottom;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            width: 6px;
+            height: 240px;
+            background: #000;
+            border-radius: 3px;
+            left: 870px;  /* Centre du panneau 18 */
+            bottom: 210px; /* Bas du panneau 18 */
+            transform: rotate(-20deg);
+            transform-origin: top;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             z-index: 55;
         }
 
         .power-cable::after {
             content: '';
             position: absolute;
-            top: -110px;
-            left: 110px;
-            width: 8px;
-            height: 90px;
-            background: linear-gradient(to bottom, #000 0%, #333 50%, #000 100%);
-            border-radius: 4px;
-            transform: rotate(-90deg);
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            top: 240px;
+            left: -40px;
+            width: 6px;
+            height: 60px;
+            background: #000;
+            border-radius: 3px;
+            transform: rotate(-70deg);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         /* Positions des panneaux pour test - 18 panneaux (3 rangées de 6) */
