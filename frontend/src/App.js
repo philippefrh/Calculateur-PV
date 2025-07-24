@@ -824,11 +824,20 @@ const ConsumptionForm = ({
   };
 
   const handleSelectKit = (kit) => {
-    setSelectedKit(kit);
+    // Appliquer la remise si elle est active pour ce kit
+    const discountedKit = { ...kit };
+    if (kitDiscounts[kit.power]) {
+      discountedKit.priceTTC = kit.originalPriceTTC - 1000;
+      discountedKit.priceWithAids = kit.originalPriceWithAids - 1000;
+      discountedKit.hasDiscount = true;
+      discountedKit.discountAmount = 1000;
+    }
+    
+    setSelectedKit(discountedKit);
     // Mettre à jour le formData avec le kit sélectionné
     setFormData(prev => ({
       ...prev,
-      selectedManualKit: kit
+      selectedManualKit: discountedKit
     }));
   };
 
