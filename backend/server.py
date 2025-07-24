@@ -1355,7 +1355,7 @@ puissance totale de {kit_power * 1000} Watt Crêtes pour de
 l'autoconsommation
 Modèle : JKL132-B-MH
 Référence : POW500
-- Puissance d'un panneau 500W
+- Puissance d'un panneau 375W
 - Module solaire monocristallin haute efficacité.
 Certifications
 CEI: 61215, CEI 61730, CE, CQC
