@@ -843,13 +843,23 @@ const ConsumptionForm = ({
 
   const handleConfirmKitSelection = () => {
     if (selectedKit) {
+      const finalKit = { ...selectedKit };
+      
+      // S'assurer que les prix avec remise sont bien appliqués
+      if (kitDiscounts[selectedKit.power]) {
+        finalKit.priceTTC = selectedKit.originalPriceTTC - 1000;
+        finalKit.priceWithAids = selectedKit.originalPriceWithAids - 1000;
+        finalKit.hasDiscount = true;
+        finalKit.discountAmount = 1000;
+      }
+      
       setFormData(prev => ({
         ...prev,
         useManualKit: true,
-        manualKit: selectedKit
+        manualKit: finalKit
       }));
       setShowKitSelection(false);
-      alert(`Kit ${selectedKit.power}kW sélectionné avec succès !`);
+      alert(`Kit ${finalKit.power}kW sélectionné avec succès ${finalKit.hasDiscount ? '(avec remise de 1000€)' : ''} !`);
     }
   };
 
