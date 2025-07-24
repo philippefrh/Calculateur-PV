@@ -724,6 +724,7 @@ const ConsumptionForm = ({
   const [availableKits, setAvailableKits] = useState([]);
   const [selectedKit, setSelectedKit] = useState(null);
   const [loadingKits, setLoadingKits] = useState(false);
+  const [kitDiscounts, setKitDiscounts] = useState({}); // Gestion des remises par kit
 
   // Recharger les kits quand la région change
   useEffect(() => {
