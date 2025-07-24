@@ -751,7 +751,7 @@ const ConsumptionForm = ({
         // Pour Martinique, utiliser les données directement
         const kitsWithDetails = kits.map(kit => ({
           power: kit.power,
-          panels: Math.round(kit.power / 0.5), // Estimé à 0.5kW par panneau
+          panels: kit.panels, // Utiliser le nombre de panneaux de l'API (375W par panneau)
           priceTTC: kit.price_ttc,
           priceHT: kit.price_ttc, // Prix TTC en Martinique
           commission: Math.round(kit.co2_savings), // 15% du prix TTC
