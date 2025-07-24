@@ -1,18 +1,21 @@
 <analysis>
-The previous AI engineer focused on enhancing the  page of the FRH ENVIRONNEMENT application. Initially, general bug fixes stabilized the MVP. Subsequently, the engineer iteratively implemented a realistic sun, real-time kWh counter with a Linky meter, integrated a mobile app display with synchronized data, and an animated sequence of accumulating banknotes. The most recent phase involved precise visual adjustments: repositioning the Linky meter and phone, resizing them, adjusting banknote fall and stacking behavior, and changing logo background colors to green with white text. A significant challenge was the integration of a power cable from the solar panels to the Linky meter; despite multiple attempts and adjustments based on user feedback regarding its position and appearance (from panel 12, then 18, connection point), the user ultimately decided to abandon the cable entirely due to its unnatural look. The final state reflects an aesthetically pleasing and functional animation with all elements except the cable, concluding the requested visual enhancements.
+The previous AI engineer effectively transitioned from enhancing the  page, which involved integrating visual elements like sun, Linky meter, phone, and animated banknotes (with the eventual removal of a problematic power cable), to directly addressing core business logic updates. The immediate shift in focus was prompted by a user request to update Martinique's solar panel kit pricing and associated parameters. The engineer systematically analyzed existing configurations, implemented new price points, added new kit sizes, adjusted aid amounts, updated the interest rate, and critically, corrected the panel wattage from 500W to 375W across backend calculations and PDF specifications. A key challenge arose when the frontend displayed outdated panel counts despite backend updates. This required a targeted fix to ensure the backend API returned the correct  count and the frontend consumed this data directly, rather than recalculating it with an outdated formula, ensuring data consistency across the application.
 </analysis>
 
 <product_requirements>
-The FRH ENVIRONNEMENT application is a solar calculation and quote generation tool for France and Martinique, supporting Realistic and Optimistic modes. The initial build focused on PDF enhancements, a solid green background, UI consistency, and a dynamic CSS-based 3D solar panel animation (). This animation displays after a Calcul terminé avec succès screen and leads to a financial summary. Recent user requirements for the  page centered on visual enhancements: an animated sun; a real-time kWh Linky meter appearing after panel installation with floating kWh figures; persistent, same-sized Linky meter and mobile phone display with a connecting cable; synchronized green (production) and red (consumption) kWh values on the phone; and a final visual sequence of Autoconsommation = Économies directement sur votre Facture text followed by animated banknotes stacking up. The latest task involved repositioning the mobile phone to the right, resizing the Linky meter to match the phone while ensuring no panel overlap, creating central space for animated banknotes, and displaying the Autoconsommation = Économies directement sur votre Facture text within a new badge, styled identically to the Installation terminée ! Système opérationnel ! logo. The user also explicitly requested the Linky meter be moved near the phone, the cable from the last panel to the Linky meter (initially Panel 12, then Panel 18, connected to the bottom of the Linky), banknotes falling one by one to form a stack above the Voir les Résultats Détaillés button, and both Installation terminée ! and Autoconsommation = Économies logos to have a green background (like the ground) with white text. The cable was ultimately removed.
+The FRH ENVIRONNEMENT application is a solar calculation and quote generation tool for France and Martinique, supporting Realistic and Optimistic modes. The initial build focused on PDF enhancements, UI consistency, and a dynamic CSS-based 3D solar panel animation (). This animation was enhanced to include an animated sun, a real-time kWh Linky meter, a persistent mobile phone display with synchronized green (production) and red (consumption) kWh values, and an animated sequence of Autoconsommation = Économies directement sur votre Facture text followed by stacking banknotes. Specific visual requirements included repositioning the phone (right: 80px) and Linky meter (left: 30%) for central banknote space, resizing the Linky to match the phone (200x400px), ensuring no panel overlap, and styling new Autoconsommation = Économies and existing Installation terminée ! badges with green background and white text. The problematic power cable was ultimately removed.
+
+Following this, the user requested an update to the Martinique panel pack pricing: a new list of TTC prices, a confirmed TVA of 2.10%, and a recalculation of the credit interest rate from 8% to 8.63%. This involved updating existing kit prices (3kW, 6kW, 9kW), adding 6 new kits (12, 15, 18, 21, 24, 27 kW) with their corresponding prices and aid amounts, and adjusting the calculation based on a panel power of 375W (instead of 500W), which impacts the number of panels per kit and derived surface areas.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-Stack Architecture**: React (frontend), FastAPI (backend), MongoDB.
--   **Web Animation**: Extensive CSS-based 3D-like animations, keyframe animations, and transitions.
--   **API Integration**: External geocoding service (Nominatim) with robust fallback mechanisms.
--   **State Management**: React's  for managing UI flow, data, and animation states.
--   **Environment Variables**:  files for secure configuration (, ).
--   **Data Synchronization**: Ensuring consistency between frontend display and backend calculations.
+-   **Web Animation**: CSS-based 3D-like animations, keyframe animations, and transitions.
+-   **API Integration**: Frontend-backend data exchange, external geocoding (Nominatim).
+-   **State Management**: React's  for UI flow and data.
+-   **Environment Variables**:  for secure configuration.
+-   **Data Synchronization**: Ensuring consistency between backend calculations and frontend display.
+-   **Dynamic Pricing & Calculation**: Backend logic for regional pricing, aids, interest rates, and panel calculations.
 </key_technical_concepts>
 
 <code_architecture>
@@ -22,44 +25,52 @@ The application follows a standard full-stack structure:
 
 -   ****:
     -   **Summary**: Stores backend environment variables.
-    -   **Changes Made**: No direct modifications in this trajectory, implicitly used for .
+    -   **Changes Made**: No direct modifications.
 
 -   ****:
-    -   **Summary**: FastAPI backend handling API routes, calculations, and data.
-    -   **Changes Made**: Modified  for geocoding fallback, added , updated  to accept , and fixed Martinique kit lookup logic in .
+    -   **Summary**: FastAPI backend handling API routes, calculations, and data. This is the core logic for regional configurations, kit pricing, and financing.
+    -   **Changes Made**:
+        -   Updated  for geocoding fallback.
+        -   Added .
+        -   Updated  to accept .
+        -   Fixed Martinique kit lookup logic in .
+        -   **Significant updates for Martinique pricing**: Modified  to include new kits (12, 15, 18, 21, 24, 27 Kw), updated prices and aid amounts for all 9 kits, and set the interest rate to 8.63%.
+        -   **Panel power update**: Changed panel wattage from 500W to 375W in various calculation formulas and technical specifications for PDF generation (e.g., around lines 746, 1128, 1360 for  and technical descriptions).
+        -   **API enhancement**: Modified the  endpoint to explicitly return the  count for each kit, resolving a frontend data inconsistency.
 
 -   ****:
     -   **Summary**: Frontend environment variables;  for API calls.
     -   **Changes Made**: No explicit modifications.
 
 -   ****:
-    -   **Summary**: Main React component managing UI, state, and API interactions.
-    -   **Changes Made**: Fixed premature  in , corrected navigation button logic (Modifier les données, Retour aux Résultats, Nouvelle Étude), added Voir toutes les options de financement button, re-added financial/technical synthesis content to step 7, and updated API call to  to pass .
+    -   **Summary**: Main React component managing UI, state, and API interactions, including the display of kit details.
+    -   **Changes Made**:
+        -   Fixed  in .
+        -   Corrected navigation button logic (Modifier les données, Retour aux Résultats, Nouvelle Étude).
+        -   Added Voir toutes les options de financement button.
+        -   Re-added financial/technical synthesis content to step 7.
+        -   Updated API call to  to pass .
+        -   **Critical fix for panel display**: Modified logic (around line 754) to consume the  property directly from the backend API response instead of recalculating it based on an outdated 0.5kW/panel assumption.
 
 -   ****:
     -   **Summary**: Application styling.
-    -   **Changes Made**: Added CSS styles for the new financing button and various elements for the enhanced solar animation, including sun, Linky meter, kWh particles, cable, and banknotes. This file was updated to accommodate the new positioning of Linky and phone, as well as the badge styling and banknote animations.
+    -   **Changes Made**: Added CSS for financing button and various elements for solar animation (sun, Linky, kWh particles, cable, banknotes). Updated for Linky/phone positioning, badge styling, and banknote animations.
 
 -   ****:
-    -   **Summary**: React component for the CSS-based 3D-like animation of solar panels. This file has been the primary focus of recent development and received numerous updates for animation logic and element positioning.
-    -   **Changes Made**:
-        -   Corrected Retour aux Résultats button  handler.
-        -   Integrated sun animation logic, Linky meter component and kWh flow, persistent phone, and cable connection visuals.
-        -   Implemented logic for synchronized green (production) and red (consumption) kWh values on the phone screen.
-        -   **Recent and Final Changes**: Implemented logic to reposition the phone (), adjusted Linky meter position () to match phone size (200x400px) and create space between them for banknotes. Added a new badge/logo for Autoconsommation = Économies directement sur votre Facture and its display logic. Updated banknote rendering logic to display specific euro denominations (50€, 20€, 10€, 5€) and their realistic falling and stacking effects by adjusting their positions and timing. Adjusted solar panel positions across different configurations (6, 12, 18 panels) to prevent overlap. Multiple attempts were made to integrate a power cable from panel 12/18 to the Linky meter, but ultimately all cable-related rendering logic and state management were removed. Badge colors were changed to green background with white text.
+    -   **Summary**: React component for the CSS-based 3D-like animation. Primary focus for visual enhancements.
+    -   **Changes Made**: Integrated sun, Linky meter, kWh flow, persistent phone, and synchronized kWh values. Repositioned phone (right: 80px), resized Linky (200x400px, left: 30%), adjusted banknote fall/stacking logic with specific euro denominations, added new Autoconsommation = Économies badge logic, and adjusted panel positions. All power cable rendering logic was ultimately removed. Badge colors were set to green background with white text.
 
 -   ****:
-    -   **Summary**: Specific styles for the  component.
-    -   **Changes Made**: Extensive additions and modifications to style the sun, Linky meter, kWh particles, cable, phone display elements.
-    -   **Recent and Final Changes**: Added/modified CSS rules for the new positions and sizes of the phone and Linky meter. Implemented styles for the new Autoconsommation = Économies badge and existing Installation terminée! badge, specifically setting their background to green (matching the ground) and text color to white. Crucially, added detailed CSS for the real euro banknotes (5€, 10€, 20€, 50€), including their distinct colors (grey, red/orange, blue, rose/magenta), gradients, and keyframe animations for realistic falling and stacking effects. Multiple CSS rules for the power cable were added and later removed after the user decided to drop the feature.
+    -   **Summary**: Specific styles for .
+    -   **Changes Made**: Extensive additions for sun, Linky, kWh, cable, phone display. Updated styles for phone/Linky positions, Autoconsommation = Économies and Installation terminée! badges (green background, white text), and detailed CSS for euro banknotes (colors, gradients, animations). Power cable styles were added and later removed.
 
 -   ** (Newly Created)**:
-    -   **Summary**: A simple HTML file created temporarily to directly render and test the  component in isolation. This allowed for faster visual verification of the animation enhancements.
-    -   **Changes Made**: Created with minimal HTML to include the React build and mount the  component. Continuously updated to test various configurations (e.g., 18 panels) and visual elements (Linky, phone, banknotes, cable attempts) in isolation. All references and styling for the power cable were ultimately removed from this test file as well.
+    -   **Summary**: Temporary HTML for isolated testing of .
+    -   **Changes Made**: Created and updated to test various animation configurations and visual elements in isolation. All cable references were removed.
 
 -   ****:
     -   **Summary**: Documentation for testing, problem statements, and communication logs.
-    -   **Changes Made**: Regularly updated to log issues, fixes, and user feedback throughout the development process.
+    -   **Changes Made**: Regularly updated to log issues, fixes, and user feedback, including the recent backend testing results for Martinique kit updates.
 </code_architecture>
 
 <pending_tasks>
@@ -69,19 +80,21 @@ The application follows a standard full-stack structure:
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer completed a series of comprehensive enhancements to the  page, transforming it into a dynamic, pedagogical visualization. The work successfully integrated a realistic, animated sun; a real-time Linky meter displaying increasing kWh values with particles flowing from panels; a persistently visible mobile phone showing synchronized green (production) and red (consumption) kWh; and an animated sequence illustrating financial savings with text and stacking banknotes.
+Immediately prior to this summary, the AI engineer completed a series of comprehensive enhancements to the  page, integrating dynamic elements like an animated sun, a real-time Linky meter with flowing kWh particles, a persistently visible mobile phone displaying synchronized production/consumption, and an animated sequence of stacking banknotes illustrating financial savings. The latest visual refinements involved repositioning the phone (), resizing and repositioning the Linky meter (, 200x400px) to match the phone and create space for banknotes, implementing a new Autoconsommation = Économies badge, displaying distinct euro banknotes with realistic animations, and restyling both the new and existing Installation terminée ! badges with a green background and white text. The power cable feature was ultimately abandoned.
 
-The most recent task, specifically addressing the user's explicit requests, involved significant layout and visual refinements, which were iteratively adjusted:
-1.  **Phone Repositioning**: The mobile phone was shifted further to the right ().
-2.  **Linky Meter Resizing and Repositioning**: The Linky meter was resized to match the phone's dimensions (200x400px) and repositioned () to avoid overlapping solar panels, while also creating sufficient central space.
-3.  **Banknote Space**: The layout now ensures a clear area between the Linky meter and the phone for banknotes to animate.
-4.  **New Economy Badge**: A new badge, visually identical to the Installation terminée ! Système opérationnel ! logo, was created to display the text Autoconsommation = Économies directement sur votre Facture and positioned just below the existing installation badge, appearing during the savings phase. Both this badge and the Installation terminée ! badge were restyled to have a green background (matching the ground) and white text.
-5.  **Realistic Banknotes**: The banknotes were refined to display visually distinct, animated euro bills (5€, 10€, 20€, 50€) featuring specific colors and realistic falling/stacking animations within the newly created space, accumulating into a pile above the Voir les Résultats Détaillés button.
-6.  **Power Cable**: Multiple attempts were made to draw a power cable connecting the last solar panel (initially panel 12, then specifically panel 18 for the 18-panel configuration) to the bottom of the Linky meter. Despite several iterative adjustments to its position, trajectory, and styling in  and , the user was not satisfied with its appearance and ultimately requested its complete removal.
+Following the visual enhancements, the focus shifted to updating core business logic for the Martinique region. The AI engineer successfully:
+1.  **Updated Martinique Kit Data**: Implemented new TTC prices and aid amounts for existing 3kW, 6kW, and 9kW kits.
+2.  **Added New Kits**: Introduced 6 new kit sizes (12kW, 15kW, 18kW, 21kW, 24kW, 27kW) with their specified prices and aid amounts.
+3.  **Adjusted Interest Rate**: Changed the financing interest rate for Martinique to 8.63% from 8%.
+4.  **Updated Panel Wattage**: Changed the standard panel power from 500W to 375W, recalculating the number of panels required for each kit (e.g., 3kW now uses 8 panels, 6kW uses 16 panels) and updating technical specifications for PDF generation.
 
-The current state of the application's animation () has all these elements fully implemented and visually aligned, *excluding* the power cable, which has been removed as per the user's final instruction. The user expressed satisfaction with this version and indicated they would consider future modifications.
+After successful backend testing, a critical UI discrepancy was identified: the frontend was still displaying incorrect panel counts despite the backend updates. This was traced to two issues:
+1.  The  endpoint in  was not returning the  field. This was rectified by explicitly including  in the API response.
+2.  The  component in the frontend was hardcoding the panel calculation (e.g., ) instead of using the  data provided by the API. This was corrected by modifying  to directly use the  property from the API response.
+
+The application currently has all Martinique kit pricing, aid amounts, interest rates, and panel calculations updated and correctly reflected in the backend API. The frontend has been patched to display the accurate number of panels based on the updated 375W panel power and the new API data.
 </current_work>
 
 <optional_next_step>
-The last task, which involved refining the  animation, has been concluded and accepted by the user. No immediate next step is required from the current trajectory.
+Await user verification on the frontend interface to confirm the correct display of panel counts.
 </optional_next_step>

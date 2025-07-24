@@ -7,7 +7,7 @@ Based on the review request requirements
 import requests
 import json
 
-BACKEND_URL = "https://7ba2c77a-9b96-4e1b-80ed-708c4711805a.preview.emergentagent.com/api"
+BACKEND_URL = "https://5410321f-da01-4eb4-b6e7-0d805c152085.preview.emergentagent.com/api"
 
 def test_financing_with_aids_specific():
     """Test the specific requirements from the review request"""
