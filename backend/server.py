@@ -1125,7 +1125,7 @@ async def generate_solar_report_pdf(client_id: str, calculation_data: dict) -> b
         # Technical specifications
         story.append(Paragraph("SPÉCIFICATIONS TECHNIQUES", heading_style))
         tech_specs = [
-            ['Panneaux photovoltaïques:', f'{calculation_data["panel_count"]} × 500W monocristallin'],
+            ['Panneaux photovoltaïques:', f'{calculation_data["panel_count"]} × 375W monocristallin' if calculation_data.get("region") == 'martinique' else f'{calculation_data["panel_count"]} × 500W monocristallin'],
             ['Puissance totale:', f'{calculation_data["kit_power"]} kWc'],
             ['Surface nécessaire:', f'{calculation_data["panel_count"] * 2.1:.1f} m²'],
             ['Onduleur:', 'Hoymiles haute performance (99,8% efficacité)'],
