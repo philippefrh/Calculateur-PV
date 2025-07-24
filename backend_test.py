@@ -4944,6 +4944,22 @@ class SolarCalculatorTester:
         self.test_get_clients()
         self.test_get_client_by_id()
         
+        # NEW DISCOUNT FUNCTIONALITY TESTS - HIGHEST PRIORITY
+        print("\n🎯 TESTING DISCOUNT FUNCTIONALITY FOR KIT SELECTION")
+        print("=" * 60)
+        
+        # Test new Martinique pricing (9 kits)
+        self.test_martinique_kits_with_new_pricing()
+        
+        # Create Martinique client for discount testing
+        self.test_create_client_martinique()
+        
+        # Test manual kit selection with discount capability
+        self.test_manual_kit_selection_with_discount()
+        
+        # Test discount pricing flow through calculations
+        self.test_discount_pricing_flow()
+        
         # NEW MARTINIQUE TARIFFS TESTS - HIGHEST PRIORITY
         print("\n🔥 NEW MARTINIQUE TARIFFS TESTS - HIGHEST PRIORITY")
         print("-" * 60)
