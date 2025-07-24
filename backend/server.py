@@ -1607,6 +1607,7 @@ async def get_region_kits(region_name: str):
                 "id": kit_id,
                 "name": kit_data["description"],
                 "power": kit_data["power"],
+                "panels": kit_data["panels"],  # Ajouter le nombre de panneaux
                 "price_ht": kit_data["price_ttc"],  # Prix TTC pour Martinique
                 "price_ttc": kit_data["price_ttc"],
                 "aid_amount": kit_data["aid_amount"],
