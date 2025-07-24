@@ -770,7 +770,9 @@ const ConsumptionForm = ({
           tvaRefund: 0, // Pas de TVA en Martinique
           totalAids: kit.aid_amount,
           priceWithAids: kit.price_ttc - kit.aid_amount,
-          description: kit.name
+          description: kit.name,
+          originalPriceTTC: kit.price_ttc, // Prix original sans remise
+          originalPriceWithAids: kit.price_ttc - kit.aid_amount // Prix avec aides original sans remise
         }));
         
         setAvailableKits(kitsWithDetails);
