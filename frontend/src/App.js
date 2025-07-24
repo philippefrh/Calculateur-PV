@@ -1012,11 +1012,39 @@ const ConsumptionForm = ({
                           </div>
                           <div className="kit-detail-row">
                             <span>Prix TTC:</span>
-                            <span>{kit.priceTTC.toLocaleString()}€</span>
+                            <span>
+                              {kitDiscounts[kit.power] ? (
+                                <>
+                                  <span style={{textDecoration: 'line-through', color: '#999', fontSize: '0.9em'}}>
+                                    {kit.originalPriceTTC.toLocaleString()}€
+                                  </span>
+                                  {' '}
+                                  <span style={{color: '#e74c3c', fontWeight: 'bold'}}>
+                                    {(kit.originalPriceTTC - 1000).toLocaleString()}€
+                                  </span>
+                                </>
+                              ) : (
+                                <span>{kit.priceTTC.toLocaleString()}€</span>
+                              )}
+                            </span>
                           </div>
                           <div className="kit-detail-row">
                             <span>Prix avec aides:</span>
-                            <span className="price-with-aids">{kit.priceWithAids.toLocaleString()}€</span>
+                            <span className="price-with-aids">
+                              {kitDiscounts[kit.power] ? (
+                                <>
+                                  <span style={{textDecoration: 'line-through', color: '#999', fontSize: '0.9em'}}>
+                                    {kit.originalPriceWithAids.toLocaleString()}€
+                                  </span>
+                                  {' '}
+                                  <span style={{color: '#27ae60', fontWeight: 'bold'}}>
+                                    {(kit.originalPriceWithAids - 1000).toLocaleString()}€
+                                  </span>
+                                </>
+                              ) : (
+                                <span>{kit.priceWithAids.toLocaleString()}€</span>
+                              )}
+                            </span>
                           </div>
                           <div className="kit-detail-row commission">
                             <span>CO2 économisé:</span>
