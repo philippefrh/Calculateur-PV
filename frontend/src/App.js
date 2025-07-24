@@ -993,7 +993,16 @@ const ConsumptionForm = ({
                       >
                         <div className="kit-header">
                           <h5>Kit {kit.power}kW</h5>
-                          <span className="kit-panels">{kit.panels} panneaux</span>
+                          <div className="kit-header-right">
+                            <button 
+                              className="discount-button"
+                              onClick={(e) => toggleKitDiscount(kit.power, e)}
+                              title={kitDiscounts[kit.power] ? "Retirer la remise de 1000€" : "Appliquer une remise de 1000€"}
+                            >
+                              R
+                            </button>
+                            <span className="kit-panels">{kit.panels} panneaux</span>
+                          </div>
                         </div>
                         
                         <div className="kit-details">
