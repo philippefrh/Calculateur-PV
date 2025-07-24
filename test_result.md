@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "L'utilisateur a signalé plusieurs problèmes critiques : 1) Erreur en mode démo lors du calcul automatique (formData.monthlyEdfPayment undefined), 2) Erreur sur la TVA en région France (la TVA de Martinique était utilisée au lieu de celle de France), 3) Demande d'intégration du vrai logo FRH dans le PDF devis (en haut à gauche et en bas à droite) comme dans l'interface principale, 4) Correction des couleurs pour les lignes 'délai de livraison' et 'offre valable' (texte en vert, valeurs en noir), 5) Correction du placement de l'adresse en bas de page selon le devis original. Tous ces problèmes ont été identifiés et corrigés."
+user_problem_statement: "L'utilisateur a demandé une mise à jour complète des tarifs des packs panneaux pour la Martinique avec de nouveaux prix TTC (9 kits de 3kW à 27kW), de nouvelles aides correspondantes, et un changement du taux d'intérêt de 8% à 8,63%. La puissance des panneaux a été mise à jour de 500W à 375W. Il faut tester que tous ces nouveaux tarifs et calculs fonctionnent correctement."
 
 backend:
   - task: "Erreur mode démo - formData.monthlyEdfPayment undefined"
