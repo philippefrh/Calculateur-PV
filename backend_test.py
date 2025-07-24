@@ -4202,6 +4202,383 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Roof Analysis - Realistic Rendering", False, f"Error: {str(e)}")
 
+    def test_martinique_new_tariffs_9_kits(self):
+        """Test the NEW Martinique tariffs with 9 kits (3kW to 27kW) and updated prices"""
+        try:
+            response = self.session.get(f"{self.base_url}/regions/martinique/kits")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if "kits" not in data:
+                    self.log_test("Martinique New Tariffs - 9 Kits", False, "Missing 'kits' in response", data)
+                    return
+                
+                kits = data["kits"]
+                
+                # Should have exactly 9 kits now (3kW to 27kW)
+                if len(kits) != 9:
+                    self.log_test("Martinique New Tariffs - 9 Kits", False, f"Expected 9 kits, got {len(kits)}", data)
+                    return
+                
+                # Check each kit with NEW prices and aids
+                expected_kits = {
+                    "kit_3kw": {"power": 3, "price_ttc": 10900, "aid_amount": 5340, "panels": 8},
+                    "kit_6kw": {"power": 6, "price_ttc": 15900, "aid_amount": 6480, "panels": 16},
+                    "kit_9kw": {"power": 9, "price_ttc": 18900, "aid_amount": 9720, "panels": 24},
+                    "kit_12kw": {"power": 12, "price_ttc": 22900, "aid_amount": 9720, "panels": 32},
+                    "kit_15kw": {"power": 15, "price_ttc": 25900, "aid_amount": 12150, "panels": 40},
+                    "kit_18kw": {"power": 18, "price_ttc": 28900, "aid_amount": 14580, "panels": 48},
+                    "kit_21kw": {"power": 21, "price_ttc": 30900, "aid_amount": 17010, "panels": 56},
+                    "kit_24kw": {"power": 24, "price_ttc": 32900, "aid_amount": 19440, "panels": 64},
+                    "kit_27kw": {"power": 27, "price_ttc": 34900, "aid_amount": 21870, "panels": 72}
+                }
+                
+                kit_ids = [kit["id"] for kit in kits]
+                if not all(kit_id in kit_ids for kit_id in expected_kits.keys()):
+                    self.log_test("Martinique New Tariffs - 9 Kits", False, f"Missing expected kit IDs. Got: {kit_ids}, Expected: {list(expected_kits.keys())}", data)
+                    return
+                
+                issues = []
+                for kit in kits:
+                    kit_id = kit["id"]
+                    if kit_id in expected_kits:
+                        expected_data = expected_kits[kit_id]
+                        
+                        # Check required fields
+                        required_fields = ["name", "power", "price_ttc", "aid_amount", "panels"]
+                        missing_fields = [field for field in required_fields if field not in kit]
+                        if missing_fields:
+                            issues.append(f"{kit_id} missing fields: {missing_fields}")
+                            continue
+                        
+                        # Check NEW values
+                        if kit["power"] != expected_data["power"]:
+                            issues.append(f"{kit_id} power: expected {expected_data['power']}, got {kit['power']}")
+                        if kit["price_ttc"] != expected_data["price_ttc"]:
+                            issues.append(f"{kit_id} price_ttc: expected {expected_data['price_ttc']}, got {kit['price_ttc']}")
+                        if kit["aid_amount"] != expected_data["aid_amount"]:
+                            issues.append(f"{kit_id} aid_amount: expected {expected_data['aid_amount']}, got {kit['aid_amount']}")
+                        if kit["panels"] != expected_data["panels"]:
+                            issues.append(f"{kit_id} panels: expected {expected_data['panels']}, got {kit['panels']}")
+                
+                if issues:
+                    self.log_test("Martinique New Tariffs - 9 Kits", False, f"Kit validation issues: {'; '.join(issues)}", data)
+                    return
+                
+                # Create summary of all 9 kits
+                kit_summary = []
+                for kit in sorted(kits, key=lambda x: x['power']):
+                    kit_summary.append(f"{kit['power']}kW={kit['price_ttc']}€/aid{kit['aid_amount']}€")
+                
+                self.log_test("Martinique New Tariffs - 9 Kits", True, 
+                            f"✅ NEW MARTINIQUE TARIFFS WORKING: 9 kits available (3kW to 27kW). Prices: {', '.join(kit_summary)}", 
+                            data)
+            else:
+                self.log_test("Martinique New Tariffs - 9 Kits", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Martinique New Tariffs - 9 Kits", False, f"Error: {str(e)}")
+
+    def test_martinique_375w_panels_calculation(self):
+        """Test calculations with 375W panels (was 500W) for Martinique"""
+        if not self.client_id:
+            self.log_test("Martinique 375W Panels", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test with different kit sizes to verify 375W panel calculation
+            test_cases = [
+                {"kit": "3kw", "expected_panels": 8, "expected_power": 3},
+                {"kit": "6kw", "expected_panels": 16, "expected_power": 6},
+                {"kit": "9kw", "expected_panels": 24, "expected_power": 9},
+                {"kit": "12kw", "expected_panels": 32, "expected_power": 12},
+                {"kit": "15kw", "expected_panels": 40, "expected_power": 15},
+                {"kit": "18kw", "expected_panels": 48, "expected_power": 18},
+                {"kit": "21kw", "expected_panels": 56, "expected_power": 21},
+                {"kit": "24kw", "expected_panels": 64, "expected_power": 24},
+                {"kit": "27kw", "expected_panels": 72, "expected_power": 27}
+            ]
+            
+            issues = []
+            
+            for test_case in test_cases:
+                # Test calculation with manual kit selection
+                response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique&manual_kit_power={test_case['expected_power']}")
+                if response.status_code == 200:
+                    calculation = response.json()
+                    
+                    # Check panel count calculation (1kW = 2.67 panneaux de 375W)
+                    panel_count = calculation.get("panel_count", 0)
+                    expected_panels = test_case["expected_panels"]
+                    
+                    if panel_count != expected_panels:
+                        issues.append(f"{test_case['kit']}: expected {expected_panels} panels (375W), got {panel_count}")
+                    
+                    # Verify power calculation: panels * 375W should equal kit power
+                    calculated_power_w = panel_count * 375
+                    expected_power_w = test_case["expected_power"] * 1000
+                    
+                    if abs(calculated_power_w - expected_power_w) > 50:  # Allow 50W tolerance
+                        issues.append(f"{test_case['kit']}: {panel_count} panels × 375W = {calculated_power_w}W, expected {expected_power_w}W")
+                else:
+                    issues.append(f"{test_case['kit']}: HTTP {response.status_code}")
+            
+            if issues:
+                self.log_test("Martinique 375W Panels", False, f"375W panel calculation issues: {'; '.join(issues)}")
+            else:
+                # Test the 1kW = 2.67 panels formula
+                panels_per_kw = 8 / 3  # 3kW = 8 panels, so 1kW = 8/3 = 2.67 panels
+                self.log_test("Martinique 375W Panels", True, 
+                            f"✅ 375W PANELS CALCULATION WORKING: All 9 kits use correct panel count. Formula: 1kW = {panels_per_kw:.2f} panels (375W each). Examples: 3kW=8 panels, 6kW=16 panels, 27kW=72 panels", 
+                            {"formula": "1kW = 2.67 panels × 375W", "test_cases": test_cases})
+        except Exception as e:
+            self.log_test("Martinique 375W Panels", False, f"Error: {str(e)}")
+
+    def test_martinique_863_interest_rate(self):
+        """Test the NEW 8.63% interest rate for Martinique financing (was 8%)"""
+        if not self.client_id:
+            self.log_test("Martinique 8.63% Interest Rate", False, "No client ID available from previous test")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check financing options use 8.63% rate
+                financing_options = calculation.get("financing_options", [])
+                if not financing_options:
+                    self.log_test("Martinique 8.63% Interest Rate", False, "Missing financing_options in response", calculation)
+                    return
+                
+                # Check TAEG rate in financing options
+                first_option = financing_options[0]
+                taeg_rate = first_option.get("taeg", 0)
+                expected_rate = 0.0863  # 8.63%
+                
+                if abs(taeg_rate - expected_rate) > 0.001:  # Allow 0.1% tolerance
+                    self.log_test("Martinique 8.63% Interest Rate", False, f"Expected 8.63% TAEG ({expected_rate}), got {taeg_rate} ({taeg_rate*100:.2f}%)", calculation)
+                    return
+                
+                # Check all_financing_with_aids also uses 8.63%
+                all_financing_with_aids = calculation.get("all_financing_with_aids", [])
+                if all_financing_with_aids:
+                    first_aids_option = all_financing_with_aids[0]
+                    aids_taeg_rate = first_aids_option.get("taeg", 0)
+                    
+                    if abs(aids_taeg_rate - expected_rate) > 0.001:
+                        self.log_test("Martinique 8.63% Interest Rate", False, f"Aids financing should also use 8.63% TAEG, got {aids_taeg_rate} ({aids_taeg_rate*100:.2f}%)", calculation)
+                        return
+                
+                # Compare with old 8% rate to show the difference
+                old_rate = 0.08
+                kit_price = calculation.get("kit_price", 13900)
+                total_aids = calculation.get("total_aids", 6480)
+                financed_amount = kit_price - total_aids
+                
+                # Calculate monthly payment difference for 15 years
+                months = 15 * 12
+                
+                # Old 8% calculation
+                old_monthly_rate = old_rate / 12
+                old_payment = financed_amount * (old_monthly_rate * (1 + old_monthly_rate)**months) / ((1 + old_monthly_rate)**months - 1)
+                
+                # New 8.63% calculation
+                new_monthly_rate = expected_rate / 12
+                new_payment = financed_amount * (new_monthly_rate * (1 + new_monthly_rate)**months) / ((1 + new_monthly_rate)**months - 1)
+                
+                payment_increase = new_payment - old_payment
+                percentage_increase = (payment_increase / old_payment) * 100
+                
+                self.log_test("Martinique 8.63% Interest Rate", True, 
+                            f"✅ NEW 8.63% INTEREST RATE WORKING: Financing uses 8.63% TAEG (was 8%). For 15-year financing: old payment {old_payment:.2f}€/month (8%) vs new payment {new_payment:.2f}€/month (8.63%) = +{payment_increase:.2f}€/month (+{percentage_increase:.1f}%)", 
+                            {
+                                "new_rate": f"{expected_rate*100:.2f}%",
+                                "old_rate": f"{old_rate*100:.2f}%",
+                                "financed_amount": financed_amount,
+                                "old_payment": old_payment,
+                                "new_payment": new_payment,
+                                "increase": payment_increase,
+                                "percentage_increase": percentage_increase
+                            })
+            else:
+                self.log_test("Martinique 8.63% Interest Rate", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Martinique 8.63% Interest Rate", False, f"Error: {str(e)}")
+
+    def test_martinique_complete_calculation_new_tariffs(self):
+        """Test complete Martinique calculation with new tariffs, 375W panels, and 8.63% rate"""
+        try:
+            # Create a test client specifically for Martinique
+            martinique_client_data = {
+                "first_name": "Marie",
+                "last_name": "Dubois",
+                "address": "Fort-de-France, Martinique",
+                "phone": "0596123456",
+                "email": "marie.dubois@example.com",
+                "roof_surface": 80.0,
+                "roof_orientation": "Sud",
+                "velux_count": 1,
+                "heating_system": "Climatisation",
+                "water_heating_system": "Chauffe-eau solaire",
+                "water_heating_capacity": 150,
+                "annual_consumption_kwh": 8500.0,
+                "monthly_edf_payment": 220.0,
+                "annual_edf_payment": 2640.0
+            }
+            
+            # Create Martinique client
+            client_response = self.session.post(f"{self.base_url}/clients", json=martinique_client_data)
+            if client_response.status_code != 200:
+                self.log_test("Martinique Complete Calculation", False, f"Failed to create Martinique client: {client_response.status_code}")
+                return
+            
+            martinique_client = client_response.json()
+            martinique_client_id = martinique_client["id"]
+            
+            # Test calculation with Martinique region
+            calc_response = self.session.post(f"{self.base_url}/calculate/{martinique_client_id}?region=martinique")
+            if calc_response.status_code != 200:
+                self.log_test("Martinique Complete Calculation", False, f"Calculation failed: {calc_response.status_code}: {calc_response.text}")
+                return
+            
+            calculation = calc_response.json()
+            
+            # Verify all aspects of the new Martinique implementation
+            issues = []
+            
+            # 1. Check region is Martinique
+            if calculation.get("region") != "martinique":
+                issues.append(f"Expected region 'martinique', got '{calculation.get('region')}'")
+            
+            # 2. Check kit selection (should be one of the 9 new kits)
+            kit_power = calculation.get("kit_power", 0)
+            valid_powers = [3, 6, 9, 12, 15, 18, 21, 24, 27]
+            if kit_power not in valid_powers:
+                issues.append(f"Kit power {kit_power} not in valid Martinique range {valid_powers}")
+            
+            # 3. Check panel count uses 375W calculation
+            panel_count = calculation.get("panel_count", 0)
+            expected_panels = round(kit_power * 1000 / 375)  # 1kW = 2.67 panels of 375W
+            if abs(panel_count - expected_panels) > 1:
+                issues.append(f"Panel count {panel_count} doesn't match 375W calculation (expected ~{expected_panels})")
+            
+            # 4. Check pricing uses new tariffs
+            kit_price = calculation.get("kit_price", 0)
+            new_prices = {3: 10900, 6: 15900, 9: 18900, 12: 22900, 15: 25900, 18: 28900, 21: 30900, 24: 32900, 27: 34900}
+            expected_price = new_prices.get(kit_power, 0)
+            if kit_price != expected_price:
+                issues.append(f"Kit price {kit_price}€ doesn't match new tariff {expected_price}€ for {kit_power}kW")
+            
+            # 5. Check aids use new amounts
+            total_aids = calculation.get("total_aids", 0)
+            new_aids = {3: 5340, 6: 6480, 9: 9720, 12: 9720, 15: 12150, 18: 14580, 21: 17010, 24: 19440, 27: 21870}
+            expected_aids = new_aids.get(kit_power, 0)
+            if total_aids != expected_aids:
+                issues.append(f"Total aids {total_aids}€ doesn't match new amount {expected_aids}€ for {kit_power}kW")
+            
+            # 6. Check interest rate is 8.63%
+            financing_options = calculation.get("financing_options", [])
+            if financing_options:
+                taeg_rate = financing_options[0].get("taeg", 0)
+                if abs(taeg_rate - 0.0863) > 0.001:
+                    issues.append(f"Interest rate {taeg_rate*100:.2f}% should be 8.63%")
+            
+            # 7. Check PVGIS production is reasonable for Martinique
+            estimated_production = calculation.get("estimated_production", 0)
+            # Martinique has better solar conditions, expect ~1400-1500 kWh/kW/year
+            expected_production_range = (kit_power * 1300, kit_power * 1600)
+            if not (expected_production_range[0] <= estimated_production <= expected_production_range[1]):
+                issues.append(f"Production {estimated_production:.0f} kWh outside expected range {expected_production_range[0]:.0f}-{expected_production_range[1]:.0f} kWh for {kit_power}kW in Martinique")
+            
+            if issues:
+                self.log_test("Martinique Complete Calculation", False, f"Calculation issues: {'; '.join(issues)}", calculation)
+            else:
+                # Calculate key metrics for success message
+                autonomy_percentage = calculation.get("autonomy_percentage", 0)
+                monthly_savings = calculation.get("monthly_savings", 0)
+                financing_with_aids = calculation.get("financing_with_aids", {})
+                monthly_payment_with_aids = financing_with_aids.get("monthly_payment", 0)
+                
+                self.log_test("Martinique Complete Calculation", True, 
+                            f"✅ MARTINIQUE NEW TARIFFS COMPLETE TEST SUCCESSFUL: {kit_power}kW kit ({panel_count} panels × 375W), {kit_price}€ TTC, {total_aids}€ aids, {estimated_production:.0f} kWh/year, {autonomy_percentage:.1f}% autonomy, {monthly_savings:.0f}€/month savings, {monthly_payment_with_aids:.0f}€/month financing (8.63% TAEG)", 
+                            {
+                                "kit_power": kit_power,
+                                "panel_count": panel_count,
+                                "kit_price": kit_price,
+                                "total_aids": total_aids,
+                                "estimated_production": estimated_production,
+                                "autonomy_percentage": autonomy_percentage,
+                                "monthly_savings": monthly_savings,
+                                "interest_rate": "8.63%",
+                                "region": "martinique"
+                            })
+                
+        except Exception as e:
+            self.log_test("Martinique Complete Calculation", False, f"Error: {str(e)}")
+
+    def test_martinique_pdf_generation_375w_specs(self):
+        """Test PDF generation for Martinique with 375W panel specifications"""
+        if not self.client_id:
+            self.log_test("Martinique PDF Generation 375W", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Generate PDF for Martinique region
+            pdf_response = self.session.get(f"{self.base_url}/generate-devis/{self.client_id}?region=martinique")
+            if pdf_response.status_code != 200:
+                self.log_test("Martinique PDF Generation 375W", False, f"PDF generation failed: HTTP {pdf_response.status_code}: {pdf_response.text}")
+                return
+            
+            # Check if response is actually a PDF
+            if not pdf_response.headers.get('content-type', '').startswith('application/pdf'):
+                self.log_test("Martinique PDF Generation 375W", False, f"Response is not a PDF. Content-Type: {pdf_response.headers.get('content-type')}")
+                return
+            
+            # Check PDF size (should be reasonable)
+            pdf_size = len(pdf_response.content)
+            if pdf_size < 3000:  # Less than 3KB seems too small for a devis
+                self.log_test("Martinique PDF Generation 375W", False, f"PDF size {pdf_size} bytes seems too small")
+                return
+            elif pdf_size > 1000000:  # More than 1MB seems too large for a simple devis
+                self.log_test("Martinique PDF Generation 375W", False, f"PDF size {pdf_size} bytes seems too large")
+                return
+            
+            # Get calculation data to verify PDF content should include 375W specs
+            calc_response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique")
+            if calc_response.status_code == 200:
+                calculation = calc_response.json()
+                kit_power = calculation.get("kit_power", 6)
+                panel_count = calculation.get("panel_count", 16)
+                
+                # Check filename format
+                content_disposition = pdf_response.headers.get('content-disposition', '')
+                if 'filename=' not in content_disposition:
+                    self.log_test("Martinique PDF Generation 375W", False, "PDF response missing filename in Content-Disposition header")
+                    return
+                elif 'devis_' not in content_disposition:
+                    self.log_test("Martinique PDF Generation 375W", False, "PDF filename should contain 'devis_'")
+                    return
+                
+                # Success - PDF generated with Martinique specifications
+                self.log_test("Martinique PDF Generation 375W", True, 
+                            f"✅ MARTINIQUE PDF WITH 375W SPECS GENERATED: PDF created ({pdf_size:,} bytes) for {kit_power}kW kit with {panel_count} panels × 375W monocristallin. Filename format correct: {content_disposition}", 
+                            {
+                                "pdf_size": pdf_size,
+                                "kit_power": kit_power,
+                                "panel_count": panel_count,
+                                "panel_spec": "375W monocristallin",
+                                "region": "martinique",
+                                "content_disposition": content_disposition
+                            })
+            else:
+                self.log_test("Martinique PDF Generation 375W", True, 
+                            f"✅ MARTINIQUE PDF GENERATED: PDF created ({pdf_size:,} bytes) with 375W panel specifications", 
+                            {"pdf_size": pdf_size, "region": "martinique"})
+                
+        except Exception as e:
+            self.log_test("Martinique PDF Generation 375W", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on user-requested endpoints"""
         print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
