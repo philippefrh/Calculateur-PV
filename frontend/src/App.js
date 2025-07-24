@@ -866,6 +866,7 @@ const ConsumptionForm = ({
   const handleCancelKitSelection = () => {
     setShowKitSelection(false);
     setSelectedKit(null);
+    setKitDiscounts({}); // Réinitialiser toutes les remises
     setFormData(prev => ({
       ...prev,
       useManualKit: false,
