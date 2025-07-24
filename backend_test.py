@@ -4324,6 +4324,14 @@ class SolarCalculatorTester:
         tva_passed = sum(1 for r in tva_tests if r["success"])
         print(f"\n🎯 CRITICAL TVA/REGIONAL TESTS: {tva_passed}/{len(tva_tests)} passed")
         
+        # Highlight NEW MARTINIQUE TARIFFS tests
+        martinique_tests = [r for r in self.test_results if "Martinique" in r["test"] and ("New Tariffs" in r["test"] or "375W" in r["test"] or "8.63%" in r["test"] or "Complete Calculation" in r["test"])]
+        martinique_passed = sum(1 for r in martinique_tests if r["success"])
+        print(f"\n🔥 NEW MARTINIQUE TARIFFS TESTS: {martinique_passed}/{len(martinique_tests)} passed")
+        for result in martinique_tests:
+            status = "✅" if result["success"] else "❌"
+            print(f"  {status} {result['test']}")
+        
         if failed_tests > 0:
             print("\n🔍 FAILED TESTS:")
             for result in self.test_results:
