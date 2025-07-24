@@ -800,7 +800,9 @@ const ConsumptionForm = ({
             autoconsumptionAid,
             tvaRefund: Math.round(tvaRefund),
             totalAids: Math.round(totalAids),
-            priceWithAids: Math.round(priceWithAids)
+            priceWithAids: Math.round(priceWithAids),
+            originalPriceTTC: info.price, // Prix original sans remise
+            originalPriceWithAids: Math.round(priceWithAids) // Prix avec aides original sans remise
           };
         });
         
