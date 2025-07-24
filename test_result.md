@@ -105,23 +105,41 @@
 user_problem_statement: "L'utilisateur a demandé une mise à jour complète des tarifs des packs panneaux pour la Martinique avec de nouveaux prix TTC (9 kits de 3kW à 27kW), de nouvelles aides correspondantes, et un changement du taux d'intérêt de 8% à 8,63%. La puissance des panneaux a été mise à jour de 500W à 375W. Il faut tester que tous ces nouveaux tarifs et calculs fonctionnent correctement."
 
 backend:
-  - task: "Erreur mode démo - formData.monthlyEdfPayment undefined"
+  - task: "Mise à jour tarifs Martinique - 9 nouveaux kits avec prix TTC"
     implemented: true
-    working: true
-    file: "frontend/src/App.js"
+    working: false
+    file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: false
-        agent: "user"
-        comment: "❌ USER FEEDBACK: Erreur en mode démo lors du calcul automatique - formData.monthlyEdfPayment est undefined"
-      - working: true
         agent: "main"
-        comment: "✅ FIXED: Ajouté une vérification pour formData.monthlyEdfPayment avec fallback à '0' si undefined dans les tips du calcul PVGIS"
-      - working: true
-        agent: "testing"
-        comment: "✅ BACKEND IMPACT VERIFIED: Backend calculations handle different scenarios robustly. All calculation modes (realistic/optimistic) and regions (france/martinique) working correctly without undefined values or calculation errors. Frontend fix has no negative backend impact."
+        comment: "✅ IMPLEMENTED: Mis à jour la configuration Martinique avec 9 kits (3kW à 27kW), nouveaux prix TTC (10900€ à 34900€), nouvelles aides (5340€ à 21870€), et taux d'intérêt 8,63%. Nécessite test complet."
+
+  - task: "Panneaux 375W - Calcul et spécifications techniques"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Changé la puissance des panneaux de 500W à 375W pour Martinique. Mis à jour calcul automatique (1kW = 2,67 panneaux) et spécifications PDF. Nécessite test complet."
+
+  - task: "Nouveau taux d'intérêt 8,63% pour financements Martinique"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Changé le taux d'intérêt de 8% à 8,63% pour tous les financements Martinique. Nécessite test des calculs de financement."
 
   - task: "Erreur TVA région France dans PDF devis"
     implemented: true
