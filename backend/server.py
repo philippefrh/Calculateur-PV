@@ -116,30 +116,72 @@ REGIONS_CONFIG = {
             "subtitle": "FRH ENVIRONNEMENT - Énergie Solaire Professionnel"
         },
         "interest_rates": {
-            "standard": 0.08,  # 8% TAEG
-            "with_aids": 0.08  # 8% TAEG
+            "standard": 0.0863,  # 8.63% TAEG
+            "with_aids": 0.0863  # 8.63% TAEG
         },
         "kits": {
             "kit_3kw": {
                 "power": 3,
-                "price_ttc": 9900,
+                "price_ttc": 10900,
                 "aid_amount": 5340,
                 "surface": 15,  # m² estimée
                 "description": "Kit 3kW - Résidentiel"
             },
             "kit_6kw": {
                 "power": 6,
-                "price_ttc": 13900,
+                "price_ttc": 15900,
                 "aid_amount": 6480,
                 "surface": 30,  # m² estimée
                 "description": "Kit 6kW - Résidentiel+"
             },
             "kit_9kw": {
                 "power": 9,
-                "price_ttc": 16900,
+                "price_ttc": 18900,
                 "aid_amount": 9720,
                 "surface": 45,  # m² estimée
                 "description": "Kit 9kW - Grande résidence"
+            },
+            "kit_12kw": {
+                "power": 12,
+                "price_ttc": 22900,
+                "aid_amount": 9720,
+                "surface": 60,  # m² estimée
+                "description": "Kit 12kW - Résidentiel large"
+            },
+            "kit_15kw": {
+                "power": 15,
+                "price_ttc": 25900,
+                "aid_amount": 12150,
+                "surface": 75,  # m² estimée
+                "description": "Kit 15kW - Commercial petit"
+            },
+            "kit_18kw": {
+                "power": 18,
+                "price_ttc": 28900,
+                "aid_amount": 14580,
+                "surface": 90,  # m² estimée
+                "description": "Kit 18kW - Commercial moyen"
+            },
+            "kit_21kw": {
+                "power": 21,
+                "price_ttc": 30900,
+                "aid_amount": 17010,
+                "surface": 105,  # m² estimée
+                "description": "Kit 21kW - Commercial+"
+            },
+            "kit_24kw": {
+                "power": 24,
+                "price_ttc": 32900,
+                "aid_amount": 19440,
+                "surface": 120,  # m² estimée
+                "description": "Kit 24kW - Commercial large"
+            },
+            "kit_27kw": {
+                "power": 27,
+                "price_ttc": 34900,
+                "aid_amount": 21870,
+                "surface": 135,  # m² estimée
+                "description": "Kit 27kW - Commercial XL"
             }
         },
         "financing": {
