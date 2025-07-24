@@ -734,6 +734,15 @@ const ConsumptionForm = ({
     }
   }, [selectedRegion]);
 
+  // Fonction pour appliquer/retirer une remise sur un kit
+  const toggleKitDiscount = (kitPower, event) => {
+    event.stopPropagation(); // Empêcher la sélection du kit
+    setKitDiscounts(prev => ({
+      ...prev,
+      [kitPower]: !prev[kitPower]
+    }));
+  };
+
   // Récupérer les kits solaires disponibles selon la région
   const fetchAvailableKits = async () => {
     if (availableKits.length > 0) return; // Déjà chargés
