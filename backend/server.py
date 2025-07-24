@@ -122,65 +122,74 @@ REGIONS_CONFIG = {
         "kits": {
             "kit_3kw": {
                 "power": 3,
+                "panels": 8,
                 "price_ttc": 10900,
                 "aid_amount": 5340,
-                "surface": 15,  # m² estimée
+                "surface": 16.8,  # m² calculée (8 × 2.1)
                 "description": "Kit 3kW - Résidentiel"
             },
             "kit_6kw": {
                 "power": 6,
+                "panels": 16,
                 "price_ttc": 15900,
                 "aid_amount": 6480,
-                "surface": 30,  # m² estimée
+                "surface": 33.6,  # m² calculée (16 × 2.1)
                 "description": "Kit 6kW - Résidentiel+"
             },
             "kit_9kw": {
                 "power": 9,
+                "panels": 24,
                 "price_ttc": 18900,
                 "aid_amount": 9720,
-                "surface": 45,  # m² estimée
+                "surface": 50.4,  # m² calculée (24 × 2.1)
                 "description": "Kit 9kW - Grande résidence"
             },
             "kit_12kw": {
                 "power": 12,
+                "panels": 32,
                 "price_ttc": 22900,
                 "aid_amount": 9720,
-                "surface": 60,  # m² estimée
+                "surface": 67.2,  # m² calculée (32 × 2.1)
                 "description": "Kit 12kW - Résidentiel large"
             },
             "kit_15kw": {
                 "power": 15,
+                "panels": 40,
                 "price_ttc": 25900,
                 "aid_amount": 12150,
-                "surface": 75,  # m² estimée
+                "surface": 84.0,  # m² calculée (40 × 2.1)
                 "description": "Kit 15kW - Commercial petit"
             },
             "kit_18kw": {
                 "power": 18,
+                "panels": 48,
                 "price_ttc": 28900,
                 "aid_amount": 14580,
-                "surface": 90,  # m² estimée
+                "surface": 100.8,  # m² calculée (48 × 2.1)
                 "description": "Kit 18kW - Commercial moyen"
             },
             "kit_21kw": {
                 "power": 21,
+                "panels": 56,
                 "price_ttc": 30900,
                 "aid_amount": 17010,
-                "surface": 105,  # m² estimée
+                "surface": 117.6,  # m² calculée (56 × 2.1)
                 "description": "Kit 21kW - Commercial+"
             },
             "kit_24kw": {
                 "power": 24,
+                "panels": 64,
                 "price_ttc": 32900,
                 "aid_amount": 19440,
-                "surface": 120,  # m² estimée
+                "surface": 134.4,  # m² calculée (64 × 2.1)
                 "description": "Kit 24kW - Commercial large"
             },
             "kit_27kw": {
                 "power": 27,
+                "panels": 72,
                 "price_ttc": 34900,
                 "aid_amount": 21870,
-                "surface": 135,  # m² estimée
+                "surface": 151.2,  # m² calculée (72 × 2.1)
                 "description": "Kit 27kW - Commercial XL"
             }
         },
