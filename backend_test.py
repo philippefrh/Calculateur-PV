@@ -4224,6 +4224,15 @@ class SolarCalculatorTester:
         self.test_get_clients()
         self.test_get_client_by_id()
         
+        # NEW MARTINIQUE TARIFFS TESTS - HIGHEST PRIORITY
+        print("\n🔥 NEW MARTINIQUE TARIFFS TESTS - HIGHEST PRIORITY")
+        print("-" * 60)
+        self.test_martinique_new_tariffs_9_kits()
+        self.test_martinique_375w_panels_calculation()
+        self.test_martinique_863_interest_rate()
+        self.test_martinique_complete_calculation_new_tariffs()
+        self.test_martinique_pdf_generation_375w_specs()
+        
         # CRITICAL TVA CORRECTION TESTS (as requested in review)
         print("\n🔥 CRITICAL TVA CORRECTION TESTS")
         print("-" * 50)
