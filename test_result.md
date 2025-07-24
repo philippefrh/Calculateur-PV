@@ -107,39 +107,48 @@ user_problem_statement: "L'utilisateur a demandé une mise à jour complète des
 backend:
   - task: "Mise à jour tarifs Martinique - 9 nouveaux kits avec prix TTC"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "main"
         comment: "✅ IMPLEMENTED: Mis à jour la configuration Martinique avec 9 kits (3kW à 27kW), nouveaux prix TTC (10900€ à 34900€), nouvelles aides (5340€ à 21870€), et taux d'intérêt 8,63%. Nécessite test complet."
+      - working: true
+        agent: "testing"
+        comment: "✅ NEW MARTINIQUE TARIFFS WORKING: 9 kits available (3kW to 27kW) with correct NEW prices and aids. All kits verified: 3kW=10900€/aid5340€, 6kW=15900€/aid6480€, 9kW=18900€/aid9720€, 12kW=22900€/aid9720€, 15kW=25900€/aid12150€, 18kW=28900€/aid14580€, 21kW=30900€/aid17010€, 24kW=32900€/aid19440€, 27kW=34900€/aid21870€. API endpoint /api/regions/martinique/kits returns all 9 kits with correct pricing structure."
 
   - task: "Panneaux 375W - Calcul et spécifications techniques"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "main"
         comment: "✅ IMPLEMENTED: Changé la puissance des panneaux de 500W à 375W pour Martinique. Mis à jour calcul automatique (1kW = 2,67 panneaux) et spécifications PDF. Nécessite test complet."
+      - working: true
+        agent: "testing"
+        comment: "✅ 375W PANELS CALCULATION WORKING: All 9 kits use correct panel count with formula 1kW = 2.67 panels (375W each). Verified examples: 3kW=8 panels, 6kW=16 panels, 9kW=24 panels, 12kW=32 panels, 15kW=40 panels, 18kW=48 panels, 21kW=56 panels, 24kW=64 panels, 27kW=72 panels. Panel count calculation (panels × 375W = kit power) working correctly for all kit sizes."
 
   - task: "Nouveau taux d'intérêt 8,63% pour financements Martinique"
     implemented: true
-    working: false
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "main"
         comment: "✅ IMPLEMENTED: Changé le taux d'intérêt de 8% à 8,63% pour tous les financements Martinique. Nécessite test des calculs de financement."
+      - working: true
+        agent: "testing"
+        comment: "✅ NEW 8.63% INTEREST RATE WORKING: Financing uses 8.63% TAEG (was 8%). Verified in both standard financing and financing with aids. For 15-year financing example: old payment would be 90.02€/month (8%) vs new payment 93.48€/month (8.63%) = +3.46€/month (+3.8% increase). All financing calculations now use the updated 8.63% rate correctly."
 
   - task: "Erreur TVA région France dans PDF devis"
     implemented: true
