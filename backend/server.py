@@ -742,8 +742,8 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
         
         # Calculer le nombre de panneaux selon la région
         if region == "martinique":
-            # Pour Martinique, calculer les panneaux basé sur la puissance (1 panneau = 500W)
-            panel_count = kit_info['power'] * 2  # 1kW = 2 panneaux de 500W
+            # Pour Martinique, calculer les panneaux basé sur la puissance (1 panneau = 375W)
+            panel_count = round(kit_info['power'] * 1000 / 375)  # 1kW = 2.67 panneaux de 375W
         else:
             # Pour France, utiliser les données existantes
             panel_count = kit_info.get('panels', 0)
