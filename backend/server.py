@@ -506,7 +506,6 @@ def find_optimal_duration(financing_options: List[Dict], monthly_savings: float)
 def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", financing_options: List[Dict] = None, discount_amount: float = 0) -> Dict:
     """
     Calculate financing options with aids deducted - WITH INTERESTS
-    Use mensualité = économie_mensuelle - 25€ for guaranteed positive cash flow
     """
     region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG["france"])
     taeg = region_config["interest_rates"]["with_aids"]
@@ -518,55 +517,29 @@ def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_s
     # Amount to finance after aids and discount
     financed_amount = discounted_price - total_aids
     
-    # Calculate optimal monthly payment: monthly_savings - 25€ for guaranteed positive cash flow
-    target_monthly_payment = monthly_savings - 25
+    # Find optimal duration from financing options
+    optimal_duration = find_optimal_duration(financing_options, monthly_savings) if financing_options else 15
     
-    # Ensure minimum payment to avoid unrealistic durations
-    min_payment = financed_amount / (15 * 12)  # Maximum 15 years
-    max_payment = financed_amount / (3 * 12)   # Minimum 3 years
-    
-    if target_monthly_payment < min_payment:
-        target_monthly_payment = min_payment
-    elif target_monthly_payment > max_payment:
-        target_monthly_payment = max_payment
-    
-    # Calculate duration for this monthly payment
+    # Calculate monthly payment with interests for optimal duration
+    months = optimal_duration * 12
     if monthly_rate > 0:
-        # Solve for number of months: target_payment = financed_amount * [r * (1+r)^n] / [(1+r)^n - 1]
-        # Using iterative approach to find optimal duration
-        best_duration = 12  # Start with 1 year
-        best_difference = float('inf')
-        
-        for months in range(12, 181):  # 1 to 15 years
-            calculated_payment = financed_amount * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
-            difference = abs(calculated_payment - target_monthly_payment)
-            
-            if difference < best_difference:
-                best_difference = difference
-                best_duration = months
-            
-            # If we found exact match or very close, break
-            if difference < 0.01:
-                break
-        
-        # Calculate final payment with optimal duration
-        final_monthly_payment = financed_amount * (monthly_rate * (1 + monthly_rate)**best_duration) / ((1 + monthly_rate)**best_duration - 1)
-        years = best_duration / 12
-        months = best_duration
-        
+        monthly_payment = financed_amount * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
     else:
-        # No interest case
-        final_monthly_payment = target_monthly_payment
-        years = financed_amount / target_monthly_payment / 12
-        months = int(years * 12)
+        monthly_payment = financed_amount / months
+    
+    # Calculate total cost and interests
+    total_cost = monthly_payment * months
+    total_interests = total_cost - financed_amount
     
     return {
-        "duration_years": years,
-        "duration_months": months,
+        "monthly_payment": round(monthly_payment, 2),
+        "total_cost": round(total_cost, 2),
+        "total_interests": round(total_interests, 2),
         "financed_amount": round(financed_amount, 2),
-        "monthly_payment": round(final_monthly_payment, 2),
-        "total_interests": round((final_monthly_payment * months) - financed_amount, 2),
-        "difference_vs_savings": round(final_monthly_payment - monthly_savings, 2)
+        "taeg": taeg,
+        "duration_years": optimal_duration,
+        "duration_months": months,
+        "difference_vs_savings": round(monthly_payment - monthly_savings, 2)
     }
 
 def calculate_all_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", discount_amount: float = 0) -> List[Dict]:
