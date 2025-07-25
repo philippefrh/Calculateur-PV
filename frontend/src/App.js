@@ -1091,7 +1091,17 @@ const ConsumptionForm = ({
                                   </span>
                                   {' '}
                                   <span style={{color: '#e74c3c', fontWeight: 'bold'}}>
-                                    {(kit.originalPriceTTC - 1000).toLocaleString()}€
+                                    {(() => {
+                                      const discountType = kitDiscounts[kit.power];
+                                      let discountAmount = 0;
+                                      switch (discountType) {
+                                        case 'R1': discountAmount = 1000; break;
+                                        case 'R2': discountAmount = 2000; break;
+                                        case 'R3': discountAmount = 3000; break;
+                                        default: discountAmount = 0;
+                                      }
+                                      return (kit.originalPriceTTC - discountAmount).toLocaleString() + '€';
+                                    })()}
                                   </span>
                                 </>
                               ) : (
@@ -1109,7 +1119,17 @@ const ConsumptionForm = ({
                                   </span>
                                   {' '}
                                   <span style={{color: '#27ae60', fontWeight: 'bold'}}>
-                                    {(kit.originalPriceWithAids - 1000).toLocaleString()}€
+                                    {(() => {
+                                      const discountType = kitDiscounts[kit.power];
+                                      let discountAmount = 0;
+                                      switch (discountType) {
+                                        case 'R1': discountAmount = 1000; break;
+                                        case 'R2': discountAmount = 2000; break;
+                                        case 'R3': discountAmount = 3000; break;
+                                        default: discountAmount = 0;
+                                      }
+                                      return (kit.originalPriceWithAids - discountAmount).toLocaleString() + '€';
+                                    })()}
                                   </span>
                                 </>
                               ) : (
