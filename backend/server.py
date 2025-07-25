@@ -503,7 +503,7 @@ def find_optimal_duration(financing_options: List[Dict], monthly_savings: float)
     
     return optimal_option["duration_years"]
 
-def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", financing_options: List[Dict] = None) -> Dict:
+def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", financing_options: List[Dict] = None, discount_amount: float = 0) -> Dict:
     """
     Calculate financing options with aids deducted - WITH INTERESTS
     Use mensualité = économie_mensuelle - 25€ for guaranteed positive cash flow
