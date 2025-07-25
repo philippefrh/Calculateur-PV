@@ -4922,6 +4922,38 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Use Existing Martinique Client", False, f"Error: {str(e)}")
 
+    def create_martinique_client(self):
+        """Create a test client for Martinique region"""
+        try:
+            martinique_client_data = {
+                "first_name": "Marcel",
+                "last_name": "Retailleau", 
+                "address": "11 rue des Arts et Métiers, 97200 Fort-de-France, Martinique",
+                "phone": "0596123456",
+                "email": "marcel.retailleau@gmail.com",
+                "roof_surface": 80.0,
+                "roof_orientation": "Sud",
+                "velux_count": 1,
+                "heating_system": "Électrique",
+                "water_heating_system": "Ballon électrique",
+                "water_heating_capacity": 200,
+                "annual_consumption_kwh": 9000.0,
+                "monthly_edf_payment": 200.0,
+                "annual_edf_payment": 2400.0
+            }
+            
+            response = self.session.post(f"{self.base_url}/clients", json=martinique_client_data)
+            if response.status_code == 200:
+                client = response.json()
+                self.martinique_client_id = client["id"]
+                self.log_test("Create Martinique Client", True, 
+                            f"Martinique client created: {client['first_name']} {client['last_name']}, Fort-de-France, 80m² toit Sud, 9000 kWh/an, 200€/mois EDF", 
+                            client)
+            else:
+                self.log_test("Create Martinique Client", False, f"Failed to create Martinique client: HTTP {response.status_code}")
+        except Exception as e:
+            self.log_test("Create Martinique Client", False, f"Error: {str(e)}")
+
     def test_discount_system_r1_r2_r3(self):
         """Test the new discount system R1/R2/R3 with discount_amount parameter"""
         if not self.client_id:
