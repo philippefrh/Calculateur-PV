@@ -4922,6 +4922,329 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Use Existing Martinique Client", False, f"Error: {str(e)}")
 
+    def test_discount_system_r1_r2_r3(self):
+        """Test the new discount system R1/R2/R3 with discount_amount parameter"""
+        if not self.client_id:
+            self.log_test("Discount System R1/R2/R3", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test 1: Without discount_amount (compatibility test)
+            response_no_discount = self.session.post(f"{self.base_url}/calculate/{self.client_id}")
+            if response_no_discount.status_code != 200:
+                self.log_test("Discount System R1/R2/R3", False, f"Failed to get baseline calculation: {response_no_discount.status_code}")
+                return
+            
+            baseline = response_no_discount.json()
+            baseline_kit_price = baseline.get("kit_price", 0)
+            baseline_financing = baseline.get("financing_options", [])
+            baseline_financing_with_aids = baseline.get("financing_with_aids", {})
+            
+            # Test 2: R1 discount (1000€)
+            response_r1 = self.session.post(f"{self.base_url}/calculate/{self.client_id}?discount_amount=1000")
+            if response_r1.status_code != 200:
+                self.log_test("Discount System R1/R2/R3", False, f"R1 discount failed: {response_r1.status_code}")
+                return
+            
+            r1_calc = response_r1.json()
+            
+            # Test 3: R2 discount (2000€)
+            response_r2 = self.session.post(f"{self.base_url}/calculate/{self.client_id}?discount_amount=2000")
+            if response_r2.status_code != 200:
+                self.log_test("Discount System R1/R2/R3", False, f"R2 discount failed: {response_r2.status_code}")
+                return
+            
+            r2_calc = response_r2.json()
+            
+            # Test 4: R3 discount (3000€)
+            response_r3 = self.session.post(f"{self.base_url}/calculate/{self.client_id}?discount_amount=3000")
+            if response_r3.status_code != 200:
+                self.log_test("Discount System R1/R2/R3", False, f"R3 discount failed: {response_r3.status_code}")
+                return
+            
+            r3_calc = response_r3.json()
+            
+            # Validation
+            issues = []
+            
+            # Check that kit_price remains the same (discount should not affect displayed price)
+            for calc, discount_name in [(r1_calc, "R1"), (r2_calc, "R2"), (r3_calc, "R3")]:
+                if calc.get("kit_price") != baseline_kit_price:
+                    issues.append(f"{discount_name}: kit_price changed from {baseline_kit_price}€ to {calc.get('kit_price')}€ (should remain same)")
+            
+            # Check financing options are reduced by discount amount
+            if baseline_financing and r1_calc.get("financing_options"):
+                baseline_15y = next((opt for opt in baseline_financing if opt["duration_years"] == 15), None)
+                r1_15y = next((opt for opt in r1_calc["financing_options"] if opt["duration_years"] == 15), None)
+                
+                if baseline_15y and r1_15y:
+                    # Calculate expected reduction in monthly payment
+                    # For 1000€ discount over 15 years with interest
+                    expected_reduction = 1000 / 180  # Approximate reduction (simple calculation)
+                    actual_reduction = baseline_15y["monthly_payment"] - r1_15y["monthly_payment"]
+                    
+                    if actual_reduction < expected_reduction * 0.8:  # Allow some tolerance for interest calculations
+                        issues.append(f"R1 financing reduction too small: {actual_reduction:.2f}€ vs expected ~{expected_reduction:.2f}€")
+            
+            # Check financing with aids is also reduced
+            if baseline_financing_with_aids and r1_calc.get("financing_with_aids"):
+                baseline_financed = baseline_financing_with_aids.get("financed_amount", 0)
+                r1_financed = r1_calc["financing_with_aids"].get("financed_amount", 0)
+                
+                expected_r1_financed = baseline_financed - 1000
+                if abs(r1_financed - expected_r1_financed) > 1:  # Allow 1€ tolerance
+                    issues.append(f"R1 financed amount incorrect: {r1_financed}€ vs expected {expected_r1_financed}€")
+            
+            # Check progressive discount amounts
+            discounts = [
+                (r1_calc, 1000, "R1"),
+                (r2_calc, 2000, "R2"), 
+                (r3_calc, 3000, "R3")
+            ]
+            
+            for calc, discount_amount, discount_name in discounts:
+                financing_with_aids = calc.get("financing_with_aids", {})
+                if financing_with_aids:
+                    financed_amount = financing_with_aids.get("financed_amount", 0)
+                    baseline_financed = baseline_financing_with_aids.get("financed_amount", 0)
+                    expected_financed = baseline_financed - discount_amount
+                    
+                    if abs(financed_amount - expected_financed) > 1:
+                        issues.append(f"{discount_name} financed amount: {financed_amount}€ vs expected {expected_financed}€")
+            
+            # Check that monthly payments decrease with higher discounts
+            r1_payment = r1_calc.get("financing_with_aids", {}).get("monthly_payment", 0)
+            r2_payment = r2_calc.get("financing_with_aids", {}).get("monthly_payment", 0)
+            r3_payment = r3_calc.get("financing_with_aids", {}).get("monthly_payment", 0)
+            
+            if r1_payment <= r2_payment or r2_payment <= r3_payment:
+                issues.append(f"Monthly payments should decrease with higher discounts: R1={r1_payment:.2f}€, R2={r2_payment:.2f}€, R3={r3_payment:.2f}€")
+            
+            if issues:
+                self.log_test("Discount System R1/R2/R3", False, f"Discount system issues: {'; '.join(issues)}", {
+                    "baseline_kit_price": baseline_kit_price,
+                    "r1_financed": r1_calc.get("financing_with_aids", {}).get("financed_amount"),
+                    "r2_financed": r2_calc.get("financing_with_aids", {}).get("financed_amount"),
+                    "r3_financed": r3_calc.get("financing_with_aids", {}).get("financed_amount")
+                })
+            else:
+                baseline_payment = baseline_financing_with_aids.get("monthly_payment", 0)
+                self.log_test("Discount System R1/R2/R3", True, 
+                            f"✅ DISCOUNT SYSTEM WORKING: R1 (1000€): {r1_payment:.2f}€/month, R2 (2000€): {r2_payment:.2f}€/month, R3 (3000€): {r3_payment:.2f}€/month vs baseline {baseline_payment:.2f}€/month. Kit price unchanged: {baseline_kit_price}€", 
+                            {
+                                "baseline_payment": baseline_payment,
+                                "r1_payment": r1_payment,
+                                "r2_payment": r2_payment,
+                                "r3_payment": r3_payment,
+                                "kit_price": baseline_kit_price
+                            })
+                
+        except Exception as e:
+            self.log_test("Discount System R1/R2/R3", False, f"Error: {str(e)}")
+
+    def test_martinique_discount_system(self):
+        """Test discount system specifically for Martinique with 9 kits"""
+        if not self.martinique_client_id:
+            self.log_test("Martinique Discount System", False, "No Martinique client ID available")
+            return
+            
+        try:
+            # Test all 9 Martinique kits with different discount levels
+            martinique_kits = [3, 6, 9, 12, 15, 18, 21, 24, 27]  # All 9 kits
+            discount_levels = [0, 1000, 2000, 3000]  # No discount, R1, R2, R3
+            
+            results = {}
+            
+            for kit_power in martinique_kits:
+                results[kit_power] = {}
+                
+                for discount in discount_levels:
+                    # Test calculation with manual kit selection and discount
+                    params = f"region=martinique&manual_kit_power={kit_power}"
+                    if discount > 0:
+                        params += f"&discount_amount={discount}"
+                    
+                    response = self.session.post(f"{self.base_url}/calculate/{self.martinique_client_id}?{params}")
+                    if response.status_code == 200:
+                        calc = response.json()
+                        results[kit_power][discount] = {
+                            "kit_price": calc.get("kit_price", 0),
+                            "total_aids": calc.get("total_aids", 0),
+                            "financed_amount": calc.get("financing_with_aids", {}).get("financed_amount", 0),
+                            "monthly_payment": calc.get("financing_with_aids", {}).get("monthly_payment", 0)
+                        }
+                    else:
+                        self.log_test("Martinique Discount System", False, f"Failed to calculate {kit_power}kW with {discount}€ discount: {response.status_code}")
+                        return
+            
+            # Validation
+            issues = []
+            
+            # Check that discounts work correctly for each kit
+            for kit_power in martinique_kits:
+                kit_results = results[kit_power]
+                baseline = kit_results[0]  # No discount
+                
+                for discount in [1000, 2000, 3000]:
+                    if discount in kit_results:
+                        discounted = kit_results[discount]
+                        
+                        # Kit price should remain the same
+                        if discounted["kit_price"] != baseline["kit_price"]:
+                            issues.append(f"{kit_power}kW: kit_price changed with {discount}€ discount")
+                        
+                        # Financed amount should be reduced by discount
+                        expected_financed = baseline["financed_amount"] - discount
+                        if abs(discounted["financed_amount"] - expected_financed) > 1:
+                            issues.append(f"{kit_power}kW with {discount}€ discount: financed amount {discounted['financed_amount']}€ vs expected {expected_financed}€")
+                        
+                        # Monthly payment should be lower
+                        if discounted["monthly_payment"] >= baseline["monthly_payment"]:
+                            issues.append(f"{kit_power}kW: monthly payment not reduced with {discount}€ discount")
+            
+            # Check that larger kits have higher prices and financing amounts
+            for i in range(len(martinique_kits) - 1):
+                current_kit = martinique_kits[i]
+                next_kit = martinique_kits[i + 1]
+                
+                current_price = results[current_kit][0]["kit_price"]
+                next_price = results[next_kit][0]["kit_price"]
+                
+                if current_price >= next_price:
+                    issues.append(f"Kit prices not increasing: {current_kit}kW ({current_price}€) >= {next_kit}kW ({next_price}€)")
+            
+            if issues:
+                self.log_test("Martinique Discount System", False, f"Martinique discount issues: {'; '.join(issues[:5])}", results)  # Limit to first 5 issues
+            else:
+                # Create summary of test results
+                summary_kits = [3, 15, 27]  # Sample kits for summary
+                summary_data = []
+                
+                for kit_power in summary_kits:
+                    kit_data = results[kit_power]
+                    baseline_payment = kit_data[0]["monthly_payment"]
+                    r3_payment = kit_data[3000]["monthly_payment"]
+                    savings = baseline_payment - r3_payment
+                    
+                    summary_data.append(f"{kit_power}kW: {baseline_payment:.2f}€→{r3_payment:.2f}€ (-{savings:.2f}€)")
+                
+                self.log_test("Martinique Discount System", True, 
+                            f"✅ MARTINIQUE DISCOUNT SYSTEM WORKING: All 9 kits tested with R1/R2/R3 discounts. Sample results with R3 (3000€): {', '.join(summary_data)}", 
+                            {"tested_kits": len(martinique_kits), "discount_levels": len(discount_levels), "sample_results": {kit: results[kit] for kit in summary_kits}})
+                
+        except Exception as e:
+            self.log_test("Martinique Discount System", False, f"Error: {str(e)}")
+
+    def test_france_discount_system(self):
+        """Test discount system for France with different kit sizes"""
+        if not self.client_id:
+            self.log_test("France Discount System", False, "No France client ID available")
+            return
+            
+        try:
+            # Test several France kits with different discount levels
+            france_kits = [3, 6, 9]  # Sample of France kits
+            discount_levels = [0, 1000, 2000, 3000]  # No discount, R1, R2, R3
+            
+            results = {}
+            
+            for kit_power in france_kits:
+                results[kit_power] = {}
+                
+                for discount in discount_levels:
+                    # Test calculation with manual kit selection and discount
+                    params = f"region=france&manual_kit_power={kit_power}"
+                    if discount > 0:
+                        params += f"&discount_amount={discount}"
+                    
+                    response = self.session.post(f"{self.base_url}/calculate/{self.client_id}?{params}")
+                    if response.status_code == 200:
+                        calc = response.json()
+                        results[kit_power][discount] = {
+                            "kit_price": calc.get("kit_price", 0),
+                            "total_aids": calc.get("total_aids", 0),
+                            "financed_amount": calc.get("financing_with_aids", {}).get("financed_amount", 0),
+                            "monthly_payment": calc.get("financing_with_aids", {}).get("monthly_payment", 0),
+                            "autoconsumption_aid": calc.get("autoconsumption_aid", 0),
+                            "tva_refund": calc.get("tva_refund", 0)
+                        }
+                    else:
+                        self.log_test("France Discount System", False, f"Failed to calculate {kit_power}kW with {discount}€ discount: {response.status_code}")
+                        return
+            
+            # Validation
+            issues = []
+            
+            # Check that discounts work correctly for each kit
+            for kit_power in france_kits:
+                kit_results = results[kit_power]
+                baseline = kit_results[0]  # No discount
+                
+                for discount in [1000, 2000, 3000]:
+                    if discount in kit_results:
+                        discounted = kit_results[discount]
+                        
+                        # Kit price should remain the same
+                        if discounted["kit_price"] != baseline["kit_price"]:
+                            issues.append(f"{kit_power}kW: kit_price changed with {discount}€ discount")
+                        
+                        # Aids should remain the same (discount doesn't affect aids calculation)
+                        if discounted["total_aids"] != baseline["total_aids"]:
+                            issues.append(f"{kit_power}kW: total_aids changed with {discount}€ discount")
+                        
+                        if discounted["autoconsumption_aid"] != baseline["autoconsumption_aid"]:
+                            issues.append(f"{kit_power}kW: autoconsumption_aid changed with {discount}€ discount")
+                        
+                        if discounted["tva_refund"] != baseline["tva_refund"]:
+                            issues.append(f"{kit_power}kW: tva_refund changed with {discount}€ discount")
+                        
+                        # Financed amount should be reduced by discount
+                        expected_financed = baseline["financed_amount"] - discount
+                        if abs(discounted["financed_amount"] - expected_financed) > 1:
+                            issues.append(f"{kit_power}kW with {discount}€ discount: financed amount {discounted['financed_amount']}€ vs expected {expected_financed}€")
+                        
+                        # Monthly payment should be lower
+                        if discounted["monthly_payment"] >= baseline["monthly_payment"]:
+                            issues.append(f"{kit_power}kW: monthly payment not reduced with {discount}€ discount")
+            
+            # Check that aids calculations are correct for France
+            for kit_power in france_kits:
+                baseline = results[kit_power][0]
+                expected_autoconsumption_aid = kit_power * 80  # 80€/kW
+                expected_tva_refund = baseline["kit_price"] * 0.20 if kit_power > 3 else 0  # 20% TVA except for 3kW
+                expected_total_aids = expected_autoconsumption_aid + expected_tva_refund
+                
+                if abs(baseline["autoconsumption_aid"] - expected_autoconsumption_aid) > 1:
+                    issues.append(f"{kit_power}kW: autoconsumption_aid {baseline['autoconsumption_aid']}€ vs expected {expected_autoconsumption_aid}€")
+                
+                if abs(baseline["tva_refund"] - expected_tva_refund) > 1:
+                    issues.append(f"{kit_power}kW: tva_refund {baseline['tva_refund']}€ vs expected {expected_tva_refund}€")
+                
+                if abs(baseline["total_aids"] - expected_total_aids) > 1:
+                    issues.append(f"{kit_power}kW: total_aids {baseline['total_aids']}€ vs expected {expected_total_aids}€")
+            
+            if issues:
+                self.log_test("France Discount System", False, f"France discount issues: {'; '.join(issues[:5])}", results)  # Limit to first 5 issues
+            else:
+                # Create summary of test results
+                summary_data = []
+                
+                for kit_power in france_kits:
+                    kit_data = results[kit_power]
+                    baseline_payment = kit_data[0]["monthly_payment"]
+                    r3_payment = kit_data[3000]["monthly_payment"]
+                    savings = baseline_payment - r3_payment
+                    aids = kit_data[0]["total_aids"]
+                    
+                    summary_data.append(f"{kit_power}kW: {baseline_payment:.2f}€→{r3_payment:.2f}€ (-{savings:.2f}€, aids {aids:.0f}€)")
+                
+                self.log_test("France Discount System", True, 
+                            f"✅ FRANCE DISCOUNT SYSTEM WORKING: Tested kits with R1/R2/R3 discounts. Results with R3 (3000€): {', '.join(summary_data)}. Aids calculations correct (80€/kW + 20% TVA)", 
+                            {"tested_kits": len(france_kits), "discount_levels": len(discount_levels), "sample_results": {kit: results[kit] for kit in france_kits}})
+                
+        except Exception as e:
+            self.log_test("France Discount System", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on user-requested endpoints"""
         print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
