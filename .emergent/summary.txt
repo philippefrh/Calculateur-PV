@@ -1,20 +1,19 @@
 <analysis>
-The previous AI engineer effectively transitioned from enhancing the  page, which involved integrating visual elements like sun, Linky meter, phone, and animated banknotes (with the eventual removal of a problematic power cable), to directly addressing core business logic updates. The immediate shift in focus was prompted by a user request to update Martinique's solar panel kit pricing and associated parameters. The engineer systematically analyzed existing configurations, implemented new price points, added new kit sizes, adjusted aid amounts, updated the interest rate, and critically, corrected the panel wattage from 500W to 375W across backend calculations and PDF specifications. A key challenge arose when the frontend displayed outdated panel counts despite backend updates. This required a targeted fix to ensure the backend API returned the correct  count and the frontend consumed this data directly, rather than recalculating it with an outdated formula, ensuring data consistency across the application.
+The previous AI engineer successfully extended the FRH ENVIRONNEMENT application from visual enhancements to critical business logic. Initially, the focus was on refining the  with dynamic elements and visual consistency, including sun, Linky meter, phone, and animated banknotes. Subsequently, the engineer addressed a major user request to update Martinique's solar panel kit pricing, adding new kit sizes, adjusting aid amounts, changing the interest rate, and correcting panel wattage from 500W to 375W. A key challenge involved ensuring frontend data consistency by explicitly returning  from the backend API and updating the frontend to consume this data directly. Most recently, the engineer implemented a new R discount button feature, allowing a €1000 reduction per kit, with visual feedback and proper integration into backend calculations, without appearing on the final quote, as requested by the user. The backend functionality for this discount was confirmed, and the engineer is now awaiting user verification for the frontend.
 </analysis>
 
 <product_requirements>
-The FRH ENVIRONNEMENT application is a solar calculation and quote generation tool for France and Martinique, supporting Realistic and Optimistic modes. The initial build focused on PDF enhancements, UI consistency, and a dynamic CSS-based 3D solar panel animation (). This animation was enhanced to include an animated sun, a real-time kWh Linky meter, a persistent mobile phone display with synchronized green (production) and red (consumption) kWh values, and an animated sequence of Autoconsommation = Économies directement sur votre Facture text followed by stacking banknotes. Specific visual requirements included repositioning the phone (right: 80px) and Linky meter (left: 30%) for central banknote space, resizing the Linky to match the phone (200x400px), ensuring no panel overlap, and styling new Autoconsommation = Économies and existing Installation terminée ! badges with green background and white text. The problematic power cable was ultimately removed.
+The FRH ENVIRONNEMENT application is a solar calculation and quote generation tool for France and Martinique, supporting Realistic and Optimistic modes. The initial development focused on PDF enhancements, UI consistency, and a dynamic CSS-based 3D solar panel animation (). This animation featured an animated sun, a real-time kWh Linky meter, a persistent mobile phone with synchronized kWh values (green for production, red for consumption), and an animated sequence of Autoconsommation = Économies text followed by stacking euro banknotes. Specific visual requirements included repositioning the phone (right: 80px), Linky meter (left: 30%, 200x400px), ensuring no panel overlap, and styling Autoconsommation = Économies and Installation terminée ! badges with a green background and white text. A problematic power cable was removed.
 
-Following this, the user requested an update to the Martinique panel pack pricing: a new list of TTC prices, a confirmed TVA of 2.10%, and a recalculation of the credit interest rate from 8% to 8.63%. This involved updating existing kit prices (3kW, 6kW, 9kW), adding 6 new kits (12, 15, 18, 21, 24, 27 kW) with their corresponding prices and aid amounts, and adjusting the calculation based on a panel power of 375W (instead of 500W), which impacts the number of panels per kit and derived surface areas.
+Subsequently, the user requested updates to Martinique panel pack pricing: a new list of TTC prices, a confirmed TVA of 2.10%, and a recalculation of the credit interest rate from 8% to 8.63%. This involved updating existing kits (3kW, 6kW, 9kW), adding 6 new kits (12, 15, 18, 21, 24, 27 kW) with corresponding prices and aid amounts, and adjusting calculations based on a panel power of 375W (instead of 500W). The latest requirement added a discrete R button on each kit selection card to apply a €1000 discount, which should reflect in subsequent calculations but not appear on the final quote.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-Stack Architecture**: React (frontend), FastAPI (backend), MongoDB.
--   **Web Animation**: CSS-based 3D-like animations, keyframe animations, and transitions.
+-   **Web Animation**: CSS-based 3D-like animations, keyframe animations, transitions.
 -   **API Integration**: Frontend-backend data exchange, external geocoding (Nominatim).
 -   **State Management**: React's  for UI flow and data.
 -   **Environment Variables**:  for secure configuration.
--   **Data Synchronization**: Ensuring consistency between backend calculations and frontend display.
 -   **Dynamic Pricing & Calculation**: Backend logic for regional pricing, aids, interest rates, and panel calculations.
 </key_technical_concepts>
 
@@ -24,53 +23,58 @@ The application follows a standard full-stack structure:
 
 
 -   ****:
-    -   **Summary**: Stores backend environment variables.
-    -   **Changes Made**: No direct modifications.
+    -   **Summary**: Stores backend environment variables, specifically .
+    -   **Changes Made**: No direct modifications recorded.
 
 -   ****:
-    -   **Summary**: FastAPI backend handling API routes, calculations, and data. This is the core logic for regional configurations, kit pricing, and financing.
+    -   **Summary**: Core FastAPI backend handling API routes, calculations, and data for regional configurations, kit pricing, and financing.
     -   **Changes Made**:
-        -   Updated  for geocoding fallback.
-        -   Added .
-        -   Updated  to accept .
-        -   Fixed Martinique kit lookup logic in .
-        -   **Significant updates for Martinique pricing**: Modified  to include new kits (12, 15, 18, 21, 24, 27 Kw), updated prices and aid amounts for all 9 kits, and set the interest rate to 8.63%.
-        -   **Panel power update**: Changed panel wattage from 500W to 375W in various calculation formulas and technical specifications for PDF generation (e.g., around lines 746, 1128, 1360 for  and technical descriptions).
-        -   **API enhancement**: Modified the  endpoint to explicitly return the  count for each kit, resolving a frontend data inconsistency.
+        -   Updated  and added .
+        -   Modified  to accept .
+        -   Fixed Martinique kit lookup in .
+        -   Extensive updates to  for Martinique: new kits (12, 15, 18, 21, 24, 27 Kw), updated prices and aid amounts for all 9 kits, and interest rate set to 8.63%.
+        -   Panel wattage changed from 500W to 375W in calculations and PDF specifications (e.g., lines 746, 1128, 1360).
+        -    endpoint modified to explicitly return the  count for each kit, resolving a frontend data inconsistency.
+        -   Updated  function to accept and apply a  parameter, ensuring the 1000€ reduction affects financing calculations.
 
 -   ****:
-    -   **Summary**: Frontend environment variables;  for API calls.
-    -   **Changes Made**: No explicit modifications.
+    -   **Summary**: Frontend environment variables, primarily  for API calls.
+    -   **Changes Made**: No explicit modifications recorded.
 
 -   ****:
-    -   **Summary**: Main React component managing UI, state, and API interactions, including the display of kit details.
+    -   **Summary**: Main React component managing UI, state, and API interactions, including the display and selection of kit details.
     -   **Changes Made**:
-        -   Fixed  in .
-        -   Corrected navigation button logic (Modifier les données, Retour aux Résultats, Nouvelle Étude).
-        -   Added Voir toutes les options de financement button.
-        -   Re-added financial/technical synthesis content to step 7.
-        -   Updated API call to  to pass .
-        -   **Critical fix for panel display**: Modified logic (around line 754) to consume the  property directly from the backend API response instead of recalculating it based on an outdated 0.5kW/panel assumption.
+        -   Fixed  in , navigation button logic, and re-added financial/technical synthesis content.
+        -   API call to  updated to pass .
+        -   **Critical fix for panel display**: Logic (around line 754) now consumes  directly from API response instead of recalculating.
+        -   **Discount Feature**:
+            -   Added  to manage  for each kit.
+            -   Implemented a  function to apply/remove 1000€ discount per kit.
+            -   Rendered a discrete R button next to each kit's panel count.
+            -   Modified price display to show original (strikethrough) and discounted prices.
+            -   Ensured  and  functions correctly pass and reset discount information to backend.
+            -   Updated API call to  to send the  amount.
 
 -   ****:
     -   **Summary**: Application styling.
-    -   **Changes Made**: Added CSS for financing button and various elements for solar animation (sun, Linky, kWh particles, cable, banknotes). Updated for Linky/phone positioning, badge styling, and banknote animations.
+    -   **Changes Made**: Added CSS for financing button, solar animation elements (sun, Linky, kWh particles, banknotes), positioning for Linky/phone, badge styling.
+    -   **Discount Feature**: Added styles for the new R button (small, red, discreet, hover effects, tooltip).
 
 -   ****:
-    -   **Summary**: React component for the CSS-based 3D-like animation. Primary focus for visual enhancements.
-    -   **Changes Made**: Integrated sun, Linky meter, kWh flow, persistent phone, and synchronized kWh values. Repositioned phone (right: 80px), resized Linky (200x400px, left: 30%), adjusted banknote fall/stacking logic with specific euro denominations, added new Autoconsommation = Économies badge logic, and adjusted panel positions. All power cable rendering logic was ultimately removed. Badge colors were set to green background with white text.
+    -   **Summary**: React component for the CSS-based 3D-like animation, primary focus for visual enhancements.
+    -   **Changes Made**: Integrated sun, Linky meter, kWh flow, persistent phone, synchronized kWh values, repositioned phone (right: 80px), resized Linky (200x400px, left: 30%), adjusted banknote fall/stacking, added Autoconsommation = Économies badge logic, adjusted panel positions. Power cable rendering logic removed. Badge colors set to green background with white text.
 
 -   ****:
     -   **Summary**: Specific styles for .
-    -   **Changes Made**: Extensive additions for sun, Linky, kWh, cable, phone display. Updated styles for phone/Linky positions, Autoconsommation = Économies and Installation terminée! badges (green background, white text), and detailed CSS for euro banknotes (colors, gradients, animations). Power cable styles were added and later removed.
+    -   **Changes Made**: Extensive additions for sun, Linky, kWh, cable (later removed), phone display. Updated styles for phone/Linky positions, Autoconsommation = Économies and Installation terminée! badges (green background, white text), and detailed CSS for euro banknotes.
 
 -   ** (Newly Created)**:
     -   **Summary**: Temporary HTML for isolated testing of .
-    -   **Changes Made**: Created and updated to test various animation configurations and visual elements in isolation. All cable references were removed.
+    -   **Changes Made**: Created and updated to test various animation configurations and visual elements in isolation. Cable references removed.
 
 -   ****:
     -   **Summary**: Documentation for testing, problem statements, and communication logs.
-    -   **Changes Made**: Regularly updated to log issues, fixes, and user feedback, including the recent backend testing results for Martinique kit updates.
+    -   **Changes Made**: Regularly updated to log issues, fixes, and user feedback, including backend testing results for Martinique kit updates and the recently implemented discount feature.
 </code_architecture>
 
 <pending_tasks>
@@ -80,21 +84,13 @@ The application follows a standard full-stack structure:
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer completed a series of comprehensive enhancements to the  page, integrating dynamic elements like an animated sun, a real-time Linky meter with flowing kWh particles, a persistently visible mobile phone displaying synchronized production/consumption, and an animated sequence of stacking banknotes illustrating financial savings. The latest visual refinements involved repositioning the phone (), resizing and repositioning the Linky meter (, 200x400px) to match the phone and create space for banknotes, implementing a new Autoconsommation = Économies badge, displaying distinct euro banknotes with realistic animations, and restyling both the new and existing Installation terminée ! badges with a green background and white text. The power cable feature was ultimately abandoned.
+Immediately prior to this summary, the AI engineer successfully implemented a new discount functionality requested by the user. This involved adding a discrete R button (20px x 20px, red, low opacity) to each solar kit card on the frontend ( and ). Clicking this button applies a 1000€ reduction to the selected kit's price. The frontend visually represents this by displaying the original price struck through, alongside the new, reduced price in red for TTC and green for aided prices.
 
-Following the visual enhancements, the focus shifted to updating core business logic for the Martinique region. The AI engineer successfully:
-1.  **Updated Martinique Kit Data**: Implemented new TTC prices and aid amounts for existing 3kW, 6kW, and 9kW kits.
-2.  **Added New Kits**: Introduced 6 new kit sizes (12kW, 15kW, 18kW, 21kW, 24kW, 27kW) with their specified prices and aid amounts.
-3.  **Adjusted Interest Rate**: Changed the financing interest rate for Martinique to 8.63% from 8%.
-4.  **Updated Panel Wattage**: Changed the standard panel power from 500W to 375W, recalculating the number of panels required for each kit (e.g., 3kW now uses 8 panels, 6kW uses 16 panels) and updating technical specifications for PDF generation.
+On the backend (), the  function was updated to accept and incorporate this discount amount into all subsequent financial calculations, ensuring that monthly payments reflect the reduction. The implementation ensures that the discount is managed per kit using React's state, is compatible across both France and Martinique regions, and is correctly reset when the user changes or resets their kit selection. Crucially, as per user's explicit request, this discount is *not* reflected in the final quote PDF.
 
-After successful backend testing, a critical UI discrepancy was identified: the frontend was still displaying incorrect panel counts despite the backend updates. This was traced to two issues:
-1.  The  endpoint in  was not returning the  field. This was rectified by explicitly including  in the API response.
-2.  The  component in the frontend was hardcoding the panel calculation (e.g., ) instead of using the  data provided by the API. This was corrected by modifying  to directly use the  property from the API response.
-
-The application currently has all Martinique kit pricing, aid amounts, interest rates, and panel calculations updated and correctly reflected in the backend API. The frontend has been patched to display the accurate number of panels based on the updated 375W panel power and the new API data.
+Backend tests using  confirmed that the discount functionality works perfectly for all 9 Martinique kits, with calculations for financing correctly integrating the reduction, leading to significantly reduced monthly payments. The application is now in a state where the discount feature is fully integrated and validated on the backend. The engineer has completed the implementation and is awaiting user confirmation on the frontend display and functionality.
 </current_work>
 
 <optional_next_step>
-Await user verification on the frontend interface to confirm the correct display of panel counts.
+Await user verification of the frontend interface to confirm the correct display and functionality of the R discount button.
 </optional_next_step>
