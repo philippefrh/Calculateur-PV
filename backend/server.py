@@ -735,7 +735,7 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
         
         # Calculate financing options with region-specific rates
         kit_price = kit_info['price_ttc'] if region == "martinique" else kit_info['price']
-        financing_options = calculate_financing_options(kit_price, monthly_savings, region)
+        financing_options = calculate_financing_options(kit_price, monthly_savings, region, discount_amount or 0)
         
         # Calculate aids based on region
         if region == "martinique":
