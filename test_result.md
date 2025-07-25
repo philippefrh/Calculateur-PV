@@ -675,16 +675,16 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Mise à jour tarifs Martinique - 9 nouveaux kits avec prix TTC"
-    - "Panneaux 375W - Calcul et spécifications techniques"
-    - "Nouveau taux d'intérêt 8,63% pour financements Martinique"
-  stuck_tasks: []
+    - "Système de remises R1/R2/R3 avec boutons mutuellement exclusifs"
+    - "Interface utilisateur avec 3 boutons R1/R2/R3 mutuellement exclusifs"
+  stuck_tasks:
+    - "Aucune tâche bloquée actuellement"
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "🆕 NOUVELLE MISE À JOUR TARIFAIRE MARTINIQUE: Implémenté 9 nouveaux kits (3kW à 27kW) avec nouveaux prix TTC (10900€ à 34900€), aides mises à jour, taux d'intérêt 8,63%, et panneaux 375W. Configuration complète nécessite test backend pour vérifier calculs, financements, et spécifications PDF.""
+    message: "Implémentation complète du système de remises R1/R2/R3 terminée. Backend modifié pour supporter les paramètres discount_amount (1000€, 2000€, 3000€) dans tous les calculs de financement. Frontend mis à jour avec 3 boutons mutuellement exclusifs et logique de gestion des remises. Prêt pour test backend complet."
   - agent: "testing"
     message: "❌ CRITICAL FORM VALIDATION ISSUE IDENTIFIED - FRH ENVIRONNEMENT navigation test reveals form validation blocking progression. Step 1 (Personal Information) form validation prevents advancement to Step 2 despite fields being filled. The 'Nom' field consistently shows 'Please fill out this field' validation error even when populated with 'Martin'. This prevents testing of the complete navigation workflow as requested. Form validation logic needs investigation - may be related to field naming, validation timing, or React state management. Unable to complete full navigation test due to this blocking issue."ctly to results. This causes success screen to last ~1 second instead of 20 seconds and skips 3D animation entirely. SOLUTION: Remove/modify 1-second timer in handleCalculationComplete to allow proper 20-second success screen duration and animation flow."
   - agent: "testing"
