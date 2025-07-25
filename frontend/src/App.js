@@ -724,7 +724,7 @@ const ConsumptionForm = ({
   const [availableKits, setAvailableKits] = useState([]);
   const [selectedKit, setSelectedKit] = useState(null);
   const [loadingKits, setLoadingKits] = useState(false);
-  const [kitDiscounts, setKitDiscounts] = useState({}); // Gestion des remises par kit
+  const [kitDiscounts, setKitDiscounts] = useState({}); // Gestion des remises par kit (R1, R2, R3)
 
   // Recharger les kits quand la région change
   useEffect(() => {
@@ -735,11 +735,11 @@ const ConsumptionForm = ({
   }, [selectedRegion]);
 
   // Fonction pour appliquer/retirer une remise sur un kit
-  const toggleKitDiscount = (kitPower, event) => {
+  const toggleKitDiscount = (kitPower, discountType, event) => {
     event.stopPropagation(); // Empêcher la sélection du kit
     setKitDiscounts(prev => ({
       ...prev,
-      [kitPower]: !prev[kitPower]
+      [kitPower]: prev[kitPower] === discountType ? null : discountType // Si même type, désactiver; sinon activer
     }));
   };
 
