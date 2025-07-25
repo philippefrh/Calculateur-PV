@@ -5335,6 +5335,10 @@ class SolarCalculatorTester:
         # NEW DISCOUNT SYSTEM TESTS (R1/R2/R3) - HIGHEST PRIORITY
         print("\n🎯 NEW DISCOUNT SYSTEM TESTS (R1/R2/R3) - HIGHEST PRIORITY")
         print("-" * 60)
+        
+        # Create Martinique client for discount testing
+        self.create_martinique_client()
+        
         self.test_discount_system_r1_r2_r3()
         self.test_france_discount_system()
         if self.martinique_client_id:
