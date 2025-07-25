@@ -569,7 +569,7 @@ def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_s
         "difference_vs_savings": round(final_monthly_payment - monthly_savings, 2)
     }
 
-def calculate_all_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france") -> List[Dict]:
+def calculate_all_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", discount_amount: float = 0) -> List[Dict]:
     """
     Calculate financing options with aids deducted for all durations (3-15 years) - WITH INTERESTS
     """
