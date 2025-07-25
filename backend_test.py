@@ -4977,6 +4977,14 @@ class SolarCalculatorTester:
         self.test_regional_calculation_consistency()
         self.test_devis_endpoint_both_regions()
         
+        # NEW DISCOUNT SYSTEM TESTS (R1/R2/R3) - HIGHEST PRIORITY
+        print("\n🎯 NEW DISCOUNT SYSTEM TESTS (R1/R2/R3) - HIGHEST PRIORITY")
+        print("-" * 60)
+        self.test_discount_system_r1_r2_r3()
+        self.test_france_discount_system()
+        if self.martinique_client_id:
+            self.test_martinique_discount_system()
+        
         # Core calculation tests
         print("\n⚙️ CORE CALCULATION TESTS")
         print("-" * 50)
