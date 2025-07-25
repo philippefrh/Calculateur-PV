@@ -455,17 +455,17 @@ backend:
         comment: "✅ CALCULATION MODES UI CHANGES SUCCESSFULLY TESTED AND VERIFIED - Comprehensive testing completed of all UI changes requested in review. RESULTS: ✅ ALL REQUESTED CHANGES IMPLEMENTED CORRECTLY. 1) ✅ Mode Selector Changes: Mode selector now shows 'Etude 1' and 'Etude 2' instead of 'Mode Réaliste' and 'Mode Optimiste'. Backend API confirmed: realistic mode = 'Etude 1', optimistic mode = 'Etude 2'. 2) ✅ Header Removal: Header 'Mode de calcul' and description 'Choisissez le mode de calcul des économies' successfully removed from selector. 3) ✅ Mode Switching: Both modes work correctly with different calculation results. Etude 2 shows higher savings than Etude 1 as expected. 4) ✅ Results Screen Title: Results header now shows 'SYNTHESE et RESULTAT FINAL DES CALCULS' instead of old calculation mode titles. 5) ✅ Financing Duration Rounding: Duration values properly rounded to ≤1 decimal place (e.g., '7.2 ans' instead of '7.166666667 ans'). 6) ✅ Full Workflow: Successfully completed form steps 1-3, mode switching functionality verified. All UI changes meet the requirements from the review request and are ready for production use."
 
 frontend:
-  - task: "Region Selector System Implementation"
+  - task: "Interface utilisateur avec 3 boutons R1/R2/R3 mutuellement exclusifs"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-      - working: true
-        agent: "testing"
-        comment: "✅ REGION SELECTOR SYSTEM FULLY TESTED AND WORKING PERFECTLY - Comprehensive testing completed of all region selector functionality. RESULTS: 1) ✅ France selected by default with correct 'active' class and loads France region config successfully. 2) ✅ Martinique button click DOES trigger region change (contrary to initial problem report). 3) ✅ API calls working correctly: GET /api/regions/martinique and /api/regions/france called appropriately. 4) ✅ Button state management perfect: active/inactive classes switch correctly between France and Martinique. 5) ✅ StartScreen updates correctly with region-specific content: France shows 'Adresse France (actuelle)' with no region subtitle (logo_subtitle: null), Martinique shows 'Région Martinique' subtitle and 'F.R.H Environnement SAS, 11 rue des Arts et Métiers, Fort-de-France' address. 6) ✅ Region selection persists during navigation to form steps. 7) ✅ Console logs confirm proper region config loading with expected data structures. 8) ✅ All expected behavior from review request working as designed. The initial problem statement appears to have been inaccurate - the region selector system is fully operational and ready for production use."
+      - working: "NA"
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Remplacement du bouton 'R' unique par 3 boutons R1, R2, R3 mutuellement exclusifs. Mise à jour de la logique de gestion des remises (toggleKitDiscount, handleSelectKit, handleConfirmKitSelection), affichage des prix avec remises variables selon le type (1000€, 2000€, 3000€), et envoi des données de remise au backend. Styles CSS mis à jour pour 3 boutons avec état actif/inactif. Nécessite test complet."
   - task: "Complete Frontend Workflow Testing"
     implemented: true
     working: true
