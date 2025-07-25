@@ -580,8 +580,11 @@ def calculate_all_financing_with_aids(kit_price: float, total_aids: float, month
     min_duration = region_config["financing"]["min_duration"]
     max_duration = region_config["financing"]["max_duration"]
     
-    # Amount to finance after aids
-    financed_amount = kit_price - total_aids
+    # Apply discount to the kit price
+    discounted_price = kit_price - discount_amount
+    
+    # Amount to finance after aids and discount
+    financed_amount = discounted_price - total_aids
     
     options = []
     
