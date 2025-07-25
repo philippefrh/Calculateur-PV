@@ -1049,13 +1049,29 @@ const ConsumptionForm = ({
                         <div className="kit-header">
                           <h5>Kit {kit.power}kW</h5>
                           <div className="kit-header-right">
-                            <button 
-                              className="discount-button"
-                              onClick={(e) => toggleKitDiscount(kit.power, e)}
-                              title={kitDiscounts[kit.power] ? "Retirer la remise de 1000€" : "Appliquer une remise de 1000€"}
-                            >
-                              R
-                            </button>
+                            <div className="discount-buttons">
+                              <button 
+                                className={`discount-button ${kitDiscounts[kit.power] === 'R1' ? 'active' : ''}`}
+                                onClick={(e) => toggleKitDiscount(kit.power, 'R1', e)}
+                                title="Remise de 1000€"
+                              >
+                                R1
+                              </button>
+                              <button 
+                                className={`discount-button ${kitDiscounts[kit.power] === 'R2' ? 'active' : ''}`}
+                                onClick={(e) => toggleKitDiscount(kit.power, 'R2', e)}
+                                title="Remise de 2000€"
+                              >
+                                R2
+                              </button>
+                              <button 
+                                className={`discount-button ${kitDiscounts[kit.power] === 'R3' ? 'active' : ''}`}
+                                onClick={(e) => toggleKitDiscount(kit.power, 'R3', e)}
+                                title="Remise de 3000€"
+                              >
+                                R3
+                              </button>
+                            </div>
                             <span className="kit-panels">{kit.panels} panneaux</span>
                           </div>
                         </div>
