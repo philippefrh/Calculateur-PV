@@ -105,17 +105,17 @@
 user_problem_statement: "L'utilisateur a demandé de remplacer le bouton 'R' unique (remise de 1000€) par 3 boutons séparés: 'R1' (remise de 1000€), 'R2' (remise de 2000€), et 'R3' (remise de 3000€). Ces boutons doivent être mutuellement exclusifs (un seul actif à la fois), conserver le design discret existant, et ces réductions ne doivent pas apparaître sur le devis final."
 
 backend:
-  - task: "Discount functionality for kit selection"
+  - task: "Système de remises R1/R2/R3 avec boutons mutuellement exclusifs"
     implemented: true
-    working: true
-    file: "frontend/src/App.js"
+    working: false
+    file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
-        agent: "testing"
-        comment: "✅ DISCOUNT FUNCTIONALITY FULLY TESTED AND WORKING: 1) ✅ /api/regions/martinique/kits endpoint working correctly - returns all 9 Martinique kits (3kW to 27kW) with correct NEW pricing. 2) ✅ Manual kit selection verified - all 9 kit sizes (3-27kW) can be selected manually via manual_kit_power parameter. 3) ✅ Discount pricing flow tested - 1000€ discount applied in frontend reduces both priceTTC and priceWithAids correctly. Example: 12kW kit (22900€ → 21900€), financed amount reduces from 13180€ to 12180€, monthly payment reduces from 278.72€ to 120.87€ (saves 157.85€/month). 4) ✅ All financing options benefit from discount - verified that discount flows through all financing calculations correctly. 5) ✅ Backend handles manual kit selection properly with correct 8.63% TAEG rate for Martinique. The discount system works as designed: frontend applies 1000€ reduction to kit pricing, backend processes the discounted values correctly through all calculations."
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Ajout du paramètre discount_amount au backend pour supporter les remises R1 (1000€), R2 (2000€), R3 (3000€). Modification des fonctions calculate_financing_options, calculate_financing_with_aids et calculate_all_financing_with_aids pour prendre en compte les remises dans les calculs de financement. Nécessite test complet."
 
   - task: "Mise à jour tarifs Martinique - 9 nouveaux kits avec prix TTC"
     implemented: true
