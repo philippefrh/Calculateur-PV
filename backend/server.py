@@ -592,18 +592,24 @@ def calculate_all_financing_with_aids(kit_price: float, total_aids: float, month
         months = years * 12
         
         if monthly_rate > 0:
-            # Standard loan calculation WITH INTERESTS
-            monthly_payment_with_interests = financed_amount * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
+            # Standard loan calculation
+            monthly_payment = financed_amount * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
         else:
-            monthly_payment_with_interests = financed_amount / months
+            monthly_payment = financed_amount / months
+        
+        # Calculate total cost and interests
+        total_cost = monthly_payment * months
+        total_interests = total_cost - financed_amount
         
         options.append({
             "duration_years": years,
             "duration_months": months,
-            "monthly_payment": round(monthly_payment_with_interests, 2),
-            "total_interests": round((monthly_payment_with_interests * months) - financed_amount, 2),
-            "difference_vs_savings": round(monthly_payment_with_interests - monthly_savings, 2),
-            "taeg": taeg
+            "monthly_payment": round(monthly_payment, 2),
+            "total_cost": round(total_cost, 2),
+            "total_interests": round(total_interests, 2),
+            "amount_financed": round(financed_amount, 2),
+            "taeg": taeg,
+            "difference_vs_savings": round(monthly_payment - monthly_savings, 2)
         })
     
     return options
