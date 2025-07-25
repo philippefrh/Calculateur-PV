@@ -756,7 +756,7 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
         financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings, region, financing_options, discount_amount or 0)
         
         # Calculate all financing options with aids deducted for all durations
-        all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings, region)
+        all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings, region, discount_amount or 0)
         
         # Calculer le nombre de panneaux selon la région
         if region == "martinique":
