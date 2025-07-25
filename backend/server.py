@@ -750,7 +750,7 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
             total_aids = autoconsumption_aid_total + tva_refund
         
         # Calculate financing options with aids deducted (same duration as optimal financing)
-        financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings, region, financing_options)
+        financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings, region, financing_options, discount_amount or 0)
         
         # Calculate all financing options with aids deducted for all durations
         all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings, region)
