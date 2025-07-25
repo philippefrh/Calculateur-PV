@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "L'utilisateur a demandé une mise à jour complète des tarifs des packs panneaux pour la Martinique avec de nouveaux prix TTC (9 kits de 3kW à 27kW), de nouvelles aides correspondantes, et un changement du taux d'intérêt de 8% à 8,63%. La puissance des panneaux a été mise à jour de 500W à 375W. Il faut tester que tous ces nouveaux tarifs et calculs fonctionnent correctement."
+user_problem_statement: "L'utilisateur a demandé de remplacer le bouton 'R' unique (remise de 1000€) par 3 boutons séparés: 'R1' (remise de 1000€), 'R2' (remise de 2000€), et 'R3' (remise de 3000€). Ces boutons doivent être mutuellement exclusifs (un seul actif à la fois), conserver le design discret existant, et ces réductions ne doivent pas apparaître sur le devis final."
 
 backend:
   - task: "Discount functionality for kit selection"
