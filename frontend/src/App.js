@@ -826,11 +826,29 @@ const ConsumptionForm = ({
   const handleSelectKit = (kit) => {
     // Appliquer la remise si elle est active pour ce kit
     const discountedKit = { ...kit };
-    if (kitDiscounts[kit.power]) {
-      discountedKit.priceTTC = kit.originalPriceTTC - 1000;
-      discountedKit.priceWithAids = kit.originalPriceWithAids - 1000;
+    const discountType = kitDiscounts[kit.power];
+    
+    if (discountType) {
+      let discountAmount = 0;
+      switch (discountType) {
+        case 'R1':
+          discountAmount = 1000;
+          break;
+        case 'R2':
+          discountAmount = 2000;
+          break;
+        case 'R3':
+          discountAmount = 3000;
+          break;
+        default:
+          discountAmount = 0;
+      }
+      
+      discountedKit.priceTTC = kit.originalPriceTTC - discountAmount;
+      discountedKit.priceWithAids = kit.originalPriceWithAids - discountAmount;
       discountedKit.hasDiscount = true;
-      discountedKit.discountAmount = 1000;
+      discountedKit.discountAmount = discountAmount;
+      discountedKit.discountType = discountType;
     }
     
     setSelectedKit(discountedKit);
