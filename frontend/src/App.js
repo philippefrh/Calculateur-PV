@@ -2314,6 +2314,11 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       // Ajouter le kit manuel si sélectionné
       if (formData.useManualKit && formData.manualKit) {
         calculationUrl += `&manual_kit_power=${formData.manualKit.power}`;
+        
+        // Ajouter les informations de remise si applicable
+        if (formData.manualKit.hasDiscount) {
+          calculationUrl += `&discount_amount=${formData.manualKit.discountAmount}`;
+        }
       }
       
       const calculationResponse = await axios.post(calculationUrl);
