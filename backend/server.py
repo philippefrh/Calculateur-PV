@@ -512,8 +512,11 @@ def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_s
     taeg = region_config["interest_rates"]["with_aids"]
     monthly_rate = taeg / 12
     
-    # Amount to finance after aids
-    financed_amount = kit_price - total_aids
+    # Apply discount to the kit price
+    discounted_price = kit_price - discount_amount
+    
+    # Amount to finance after aids and discount
+    financed_amount = discounted_price - total_aids
     
     # Calculate optimal monthly payment: monthly_savings - 25€ for guaranteed positive cash flow
     target_monthly_payment = monthly_savings - 25
