@@ -2112,10 +2112,22 @@ def create_professional_frh_syrius_pdf(client_data: dict, calculation_results: d
         
         c.setFillColor(colors.black)
         c.setFont("Helvetica", 8)
-        c.drawCentredText(width/2, 40, f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['address']}")
-        c.drawCentredText(width/2, 28, f"Tél: {FRH_MARTINIQUE_INFO['phone']} - Email: {FRH_MARTINIQUE_INFO['email']} - Web: {FRH_MARTINIQUE_INFO['website']}")
-        c.drawCentredText(width/2, 16, f"SIRET: {FRH_MARTINIQUE_INFO['siret']} - N° TVA: {FRH_MARTINIQUE_INFO['tva_intra']} - RCS: {FRH_MARTINIQUE_INFO['rcs']}")
-        c.drawCentredText(width/2, 4, f"N° Convention: {FRH_MARTINIQUE_INFO['convention_number']} - Code NAF: {FRH_MARTINIQUE_INFO['naf']}")
+        
+        # Ligne 1
+        text1 = f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['address']}"
+        c.drawString(width/2 - len(text1)*2, 40, text1)
+        
+        # Ligne 2
+        text2 = f"Tél: {FRH_MARTINIQUE_INFO['phone']} - Email: {FRH_MARTINIQUE_INFO['email']} - Web: {FRH_MARTINIQUE_INFO['website']}"
+        c.drawString(width/2 - len(text2)*2, 28, text2)
+        
+        # Ligne 3
+        text3 = f"SIRET: {FRH_MARTINIQUE_INFO['siret']} - N° TVA: {FRH_MARTINIQUE_INFO['tva_intra']} - RCS: {FRH_MARTINIQUE_INFO['rcs']}"
+        c.drawString(width/2 - len(text3)*2, 16, text3)
+        
+        # Ligne 4
+        text4 = f"N° Convention: {FRH_MARTINIQUE_INFO['convention_number']} - Code NAF: {FRH_MARTINIQUE_INFO['naf']}"
+        c.drawString(width/2 - len(text4)*2, 4, text4)
         
         c.showPage()
         c.save()
