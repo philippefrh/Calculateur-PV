@@ -2438,6 +2438,12 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       
       const calculationResponse = await axios.post(calculationUrl);
       
+      console.log('🚨 DEBUG FINAL: Réponse du backend reçue:', calculationResponse.data);
+      console.log('🚨 DEBUG FINAL: kit_price:', calculationResponse.data.kit_price);
+      console.log('🚨 DEBUG FINAL: kit_price_original:', calculationResponse.data.kit_price_original);
+      console.log('🚨 DEBUG FINAL: kit_price_final:', calculationResponse.data.kit_price_final);
+      console.log('🚨 DEBUG FINAL: discount_applied:', calculationResponse.data.discount_applied);
+      
       setCalculationResults(calculationResponse.data);
       
       // Transmettre les résultats au composant parent
