@@ -1916,7 +1916,9 @@ def create_professional_frh_syrius_pdf(client_data: dict, calculation_results: d
                 c.rect(x, table_y, col_widths[i], 25, fill=1, stroke=1)
                 c.setFillColor(colors.white)
                 c.setFont("Helvetica-Bold", 10)
-                c.drawCentredText(x + col_widths[i]/2, table_y + 8, header)
+                # Centrer le texte manuellement
+                text_width = len(header) * 4  # Approximation
+                c.drawString(x + (col_widths[i] - text_width)/2, table_y + 8, header)
                 c.setFillColor(colors.Color(0.0, 0.3, 0.6))
             
             # Données du tableau avec calculs client
