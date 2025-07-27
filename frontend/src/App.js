@@ -1301,11 +1301,11 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, fo
       // Afficher un message de génération
       const notification = document.createElement('div');
       notification.className = 'devis-notification';
-      notification.innerHTML = '📄 Génération du devis en cours...';
+      notification.innerHTML = '📄 Génération du devis FRH Martinique en cours...';
       document.body.appendChild(notification);
       
-      // Appel à l'API pour générer le devis
-      const response = await fetch(`${API}/generate-devis/${results.client_id}?region=${selectedRegion}`, {
+      // Appel au nouvel endpoint FRH PDF
+      const response = await fetch(`${API}/generate-frh-pdf/${results.client_id}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/pdf',
@@ -1321,7 +1321,8 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, fo
         
         // Nom du fichier avec date
         const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
-        link.download = `devis_FRH_${today}.pdf`;
+        const clientName = results.client_name || 'client';
+        link.download = `devis_frh_martinique_${clientName}_${today}.pdf`;
         
         document.body.appendChild(link);
         link.click();
