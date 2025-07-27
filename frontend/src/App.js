@@ -1715,7 +1715,14 @@ Cordialement`);
                   <div className="financing-details">
                     <div className="financing-row">
                       <span>Investissement total:</span>
-                      <span className="amount">{results.kit_price?.toLocaleString()} € TTC</span>
+                      {results.discount_applied > 0 ? (
+                        <>
+                          <span className="amount" style={{textDecoration: 'line-through', color: '#888', fontSize: '0.9em'}}>{results.kit_price_original?.toLocaleString()} €</span>
+                          <span className="amount" style={{color: '#e74c3c', fontWeight: 'bold'}}> {results.kit_price_final?.toLocaleString()} € TTC</span>
+                        </>
+                      ) : (
+                        <span className="amount">{results.kit_price?.toLocaleString()} € TTC</span>
+                      )}
                     </div>
                     <div className="financing-row">
                       <span>Mensualité crédit:</span>
