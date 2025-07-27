@@ -460,11 +460,11 @@ backend:
 frontend:
   - task: "Interface utilisateur avec 3 boutons R1/R2/R3 mutuellement exclusifs"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 2
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -472,6 +472,12 @@ frontend:
       - working: true
         agent: "main"
         comment: "✅ FORM VALIDATION FIX: Correction du problème de validation du formulaire étape 1/4. Suppression des attributs 'required' HTML5 des champs firstName, lastName, phone, email qui entraient en conflit avec la validation React custom. La validation React fonctionne maintenant correctement - affiche 'Le prénom est obligatoire' quand manquant et permet le passage à l'étape 2/4 quand tous les champs sont remplis. Tests visuels des boutons R1/R2/R3 maintenant débloqués."
+      - working: false
+        agent: "user"
+        comment: "❌ USER FEEDBACK: Les modifications visuelles (prix) apparaissent maintenant sur le frontend, mais la remise n'est toujours PAS prise en compte dans le calcul final après confirmation du kit. De plus, sélectionner un kit 6kW avec remise (ex: R3) aboutit toujours au calcul final d'un kit 9kW au prix complet. NOUVEAU PROBLÈME CRITIQUE: la modale de confirmation elle-même est maintenant cassée, empêchant l'utilisateur de procéder à la sélection."
+      - working: false
+        agent: "main"
+        comment: "🔧 DEBUGGING EN COURS: Identification de 3 problèmes critiques: 1) Modale de confirmation qui ne s'affiche plus (conditions selectedKit && !loadingKits non remplies), 2) Flux de données incorrects entre toggleKitDiscount -> handleSelectKit -> handleConfirmKitSelection -> performCalculation, 3) États formData.useManualKit et formData.manualKit non initialisés correctement. Ajout de logs de debugging pour tracer le flux de données."
   - task: "Complete Frontend Workflow Testing"
     implemented: true
     working: true
