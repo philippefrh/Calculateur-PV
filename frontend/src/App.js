@@ -2393,18 +2393,23 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
         console.log('🚨 DEBUG FINAL: Power =', formData.manualKit.power);
         console.log('🚨 DEBUG FINAL: Has discount =', formData.manualKit.hasDiscount);
         console.log('🚨 DEBUG FINAL: Discount amount =', formData.manualKit.discountAmount);
+        console.log('🚨 DEBUG FINAL: Discount type =', formData.manualKit.discountType);
         
         calculationUrl += `&manual_kit_power=${formData.manualKit.power}`;
         
         // Ajouter les informations de remise si applicable
-        if (formData.manualKit.hasDiscount) {
+        if (formData.manualKit.hasDiscount && formData.manualKit.discountAmount > 0) {
           calculationUrl += `&discount_amount=${formData.manualKit.discountAmount}`;
-          console.log('🚨 DEBUG FINAL: Remise ajoutée à l\'URL !');
+          console.log('🚨 DEBUG FINAL: Remise ajoutée à l\'URL - Montant:', formData.manualKit.discountAmount);
+        } else {
+          console.log('🚨 DEBUG FINAL: Aucune remise à appliquer');
         }
         
         console.log('🚨 DEBUG FINAL: URL finale =', calculationUrl);
       } else {
-        console.log('🚨 DEBUG FINAL: AUCUN kit manuel - useManualKit =', formData.useManualKit, 'manualKit =', formData.manualKit);
+        console.log('🚨 DEBUG FINAL: AUCUN kit manuel détecté');
+        console.log('🚨 DEBUG FINAL: useManualKit =', formData.useManualKit);
+        console.log('🚨 DEBUG FINAL: manualKit =', formData.manualKit);
       }
       
       console.log('🚨 DEBUG FINAL: Appel API avec URL =', calculationUrl);
