@@ -257,7 +257,6 @@ const PersonalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
             onChange={(e) => setFormData({...formData, phone: e.target.value})}
             placeholder="0659597690"
             className={errors.phone ? 'error' : ''}
-            required
           />
           {errors.phone && <span className="error-message">{errors.phone}</span>}
           <small>💡 Votre numéro de téléphone pour vous contacter</small>
@@ -271,7 +270,6 @@ const PersonalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
             onChange={(e) => setFormData({...formData, email: e.target.value})}
             placeholder="votre.email@example.com"
             className={errors.email ? 'error' : ''}
-            required
           />
           {errors.email && <span className="error-message">{errors.email}</span>}
           <small>💡 Votre email pour recevoir le devis et la documentation</small>
