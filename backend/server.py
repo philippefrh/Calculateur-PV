@@ -1946,7 +1946,9 @@ def create_professional_frh_syrius_pdf(client_data: dict, calculation_results: d
                     
                     c.setFillColor(colors.black)
                     c.setFont("Helvetica", 9)
-                    c.drawCentredText(x + col_widths[col_idx]/2, y + 8, cell)
+                    # Centrer le texte manuellement
+                    text_width = len(cell) * 3  # Approximation
+                    c.drawString(x + (col_widths[col_idx] - text_width)/2, y + 8, cell)
         
         # Footer FRH
         c.setFillColor(colors.Color(0.2, 0.2, 0.2))
