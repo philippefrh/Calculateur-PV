@@ -734,7 +734,11 @@ const ConsumptionForm = ({
     console.log(`🔥 DEBUGGING: toggleKitDiscount appelée - Kit: ${kitPower}kW, Type: ${discountType}`);
     console.log('🔥 DEBUGGING: État actuel kitDiscounts:', kitDiscounts);
     
-    event.stopPropagation(); // Empêcher la sélection du kit
+    // ARRÊTER IMMÉDIATEMENT la propagation
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    
     setKitDiscounts(prev => {
       const newState = {
         ...prev,
@@ -745,6 +749,11 @@ const ConsumptionForm = ({
       console.log('🔥 DEBUGGING: Nouvel état kitDiscounts:', newState);
       return newState;
     });
+    
+    // Forcer le re-render
+    setTimeout(() => {
+      console.log('🔥 DEBUGGING: Force re-render après changement discount');
+    }, 100);
   };
 
   // Récupérer les kits solaires disponibles selon la région
