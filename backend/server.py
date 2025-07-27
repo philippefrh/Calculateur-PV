@@ -792,7 +792,10 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
             "calculation_config": calculation_config,
             "real_savings_percentage": real_savings_percentage,
             "autoconsumption_rate": autoconsumption_rate,
-            "annual_edf_bill": annual_edf_bill
+            "annual_edf_bill": annual_edf_bill,
+            "discount_applied": discount_amount or 0,  # ✅ AJOUT: Retourner la remise appliquée
+            "kit_price_original": kit_price,  # ✅ AJOUT: Prix original avant remise
+            "kit_price_final": kit_price - (discount_amount or 0)  # ✅ AJOUT: Prix final après remise
         })
         
         return result
