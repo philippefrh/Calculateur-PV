@@ -220,7 +220,6 @@ const PersonalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
             onChange={(e) => setFormData({...formData, firstName: e.target.value})}
             placeholder="Votre prénom"
             className={errors.firstName ? 'error' : ''}
-            required
           />
           {errors.firstName && <span className="error-message">{errors.firstName}</span>}
         </div>
@@ -233,7 +232,6 @@ const PersonalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
             onChange={(e) => setFormData({...formData, lastName: e.target.value})}
             placeholder="Votre nom de famille"
             className={errors.lastName ? 'error' : ''}
-            required
           />
           {errors.lastName && <span className="error-message">{errors.lastName}</span>}
         </div>
@@ -246,7 +244,6 @@ const PersonalInfoForm = ({ formData, setFormData, onNext, onPrevious }) => {
             onChange={(e) => setFormData({...formData, address: e.target.value})}
             placeholder="10 Avenue des Champs-Élysées, 75008 Paris"
             className={errors.address ? 'error' : ''}
-            required
           />
           {errors.address && <span className="error-message">{errors.address}</span>}
           <small>💡 Cette adresse sera utilisée pour calculer précisément votre potentiel solaire</small>
