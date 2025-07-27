@@ -1162,7 +1162,6 @@ const ConsumptionForm = ({
                             <span>{kit.commission} kilos/an</span>
                           </div>
                         </div>
-                        </div>
                         
                         {selectedKit?.power === kit.power && (
                           <div className="kit-selected-indicator">
