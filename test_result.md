@@ -119,6 +119,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ DISCOUNT SYSTEM R1/R2/R3 WORKING: Test backend réussi avec mensualités décroissantes selon les remises. R1 (1000€): 151.80€/mois, R2 (2000€): 151.21€/mois, R3 (3000€): 142.50€/mois vs baseline 152.69€/mois. Kit price unchanged: 24900€. Correction appliquée à calculate_financing_with_aids pour utiliser la durée optimale au lieu du paiement cible. Système fonctionnel pour la majorité des kits."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMPREHENSIVE DISCOUNT SYSTEM TESTING COMPLETED: Fixed critical bug in manual_kit_power selection (SOLAR_KITS key access). All discount scenarios working perfectly: R1 (1000€): 6kW kit, 22900€→21900€, 15y payment 172.73€; R2 (2000€): 6kW kit, 22900€→20900€, 15y payment 164.84€; R3 (3000€): 6kW kit, 22900€→19900€, 15y payment 156.95€; No discount: 9kW kit, 29900€, 15y payment 235.82€. Manual kit power selection respected, discount amounts applied correctly, financing calculations use discounted prices, all required response fields present (discount_applied, kit_price_original, kit_price_final). Backend discount system fully functional."
 
   - task: "Mise à jour tarifs Martinique - 9 nouveaux kits avec prix TTC"
     implemented: true
