@@ -5299,6 +5299,14 @@ class SolarCalculatorTester:
         self.test_get_clients()
         self.test_get_client_by_id()
         
+        # DISCOUNT SYSTEM R1/R2/R3 TESTS - HIGHEST PRIORITY
+        print("\n🎯 TESTING DISCOUNT SYSTEM R1/R2/R3 - HIGHEST PRIORITY")
+        print("=" * 60)
+        
+        # Test the discount system R1/R2/R3 with manual kit power and discount amounts
+        self.test_discount_system_r1_r2_r3()
+        self.test_discount_system_edge_cases()
+        
         # NEW DISCOUNT FUNCTIONALITY TESTS - HIGHEST PRIORITY
         print("\n🎯 TESTING DISCOUNT FUNCTIONALITY FOR KIT SELECTION")
         print("=" * 60)
