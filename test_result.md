@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "L'utilisateur a demandé de remplacer le bouton 'R' unique (remise de 1000€) par 3 boutons séparés: 'R1' (remise de 1000€), 'R2' (remise de 2000€), et 'R3' (remise de 3000€). Ces boutons doivent être mutuellement exclusifs (un seul actif à la fois), conserver le design discret existant, et ces réductions ne doivent pas apparaître sur le devis final."
+user_problem_statement: "L'utilisateur a demandé de remplacer le bouton 'R' unique (remise de 1000€) par 3 boutons séparés: 'R1' (remise de 1000€), 'R2' (remise de 2000€), et 'R3' (remise de 3000€). Ces boutons doivent être mutuellement exclusifs (un seul actif à la fois), conserver le design discret existant, et ces réductions ne doivent pas apparaître sur le devis final. PLUS: Intégration PDF avec les informations FRH Martinique Environnement."
 
 backend:
   - task: "Système de remises R1/R2/R3 avec boutons mutuellement exclusifs"
