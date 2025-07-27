@@ -31,3 +31,5 @@ Pillow>=10.0.0
 matplotlib>=3.7.0
 emergentintegrations
 fal-client
+PyPDF2>=3.0.0
+pypdf>=5.8.0
