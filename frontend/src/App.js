@@ -918,46 +918,35 @@ const ConsumptionForm = ({
   };
 
   const handleConfirmKitSelection = () => {
+    console.log('🔥 DEBUG: handleConfirmKitSelection appelé avec selectedKit:', selectedKit);
+    
     if (selectedKit) {
+      // Le kit final est déjà prêt avec toutes les remises appliquées
       const finalKit = { ...selectedKit };
       
-      // Appliquer la remise si elle est active pour ce kit
-      const discountType = kitDiscounts[selectedKit.power];
+      console.log('🔥 DEBUG: Kit final à confirmer:', finalKit);
       
-      if (discountType) {
-        let discountAmount = 0;
-        switch (discountType) {
-          case 'R1':
-            discountAmount = 1000;
-            break;
-          case 'R2':
-            discountAmount = 2000;
-            break;
-          case 'R3':
-            discountAmount = 3000;
-            break;
-          default:
-            discountAmount = 0;
-        }
-        
-        finalKit.priceTTC = selectedKit.originalPriceTTC - discountAmount;
-        finalKit.priceWithAids = selectedKit.originalPriceWithAids - discountAmount;
-        finalKit.hasDiscount = true;
-        finalKit.discountAmount = discountAmount;
-        finalKit.discountType = discountType;
-      }
-      
-      // ✅ CORRECTION: Mettre à jour formData.manualKit avec la remise
+      // Mettre à jour formData avec le kit confirmé
       setFormData(prev => ({
         ...prev,
         useManualKit: true,
-        manualKit: finalKit  // ← Ici on met le kit avec la remise
+        manualKit: finalKit
       }));
       
-      alert(`Kit ${finalKit.power}kW sélectionné avec succès ${finalKit.hasDiscount ? `(avec remise ${finalKit.discountType} de ${finalKit.discountAmount}€)` : ''} !`);
+      const discountText = finalKit.hasDiscount ? 
+        ` (avec remise ${finalKit.discountType} de ${finalKit.discountAmount}€)` : 
+        ' (sans remise)';
+        
+      alert(`Kit ${finalKit.power}kW sélectionné avec succès${discountText} !`);
+      
+      console.log('🔥 DEBUG: formData.useManualKit:', true);
+      console.log('🔥 DEBUG: formData.manualKit:', finalKit);
       
       // Masquer la modal
       setShowKitSelection(false);
+    } else {
+      console.error('🔥 ERROR: Pas de kit sélectionné pour la confirmation');
+      alert('Erreur: Aucun kit sélectionné. Veuillez sélectionner un kit avant de confirmer.');
     }
   };
 
