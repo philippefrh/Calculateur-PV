@@ -1674,21 +1674,18 @@ def create_frh_pdf_from_syrius(client_data: dict, calculation_results: dict) -> 
     - Remplace "Syrius Martinique" par "FRH Martinique Environnement"
     """
     try:
-        # Charger les PDFs
+        # Chemins des PDFs
         syrius_path = "/app/backend/syrius_original.pdf"
         powernity_path = "/app/backend/powernity_375w.pdf"
         
-        # Lire le PDF Syrius original
-        with open(syrius_path, 'rb') as syrius_file:
-            syrius_reader = PdfReader(syrius_file)
-            syrius_pages = len(syrius_reader.pages)
-            
-        # Lire le PDF Powernity
-        with open(powernity_path, 'rb') as powernity_file:
-            powernity_reader = PdfReader(powernity_file)
-            
         # Créer le nouveau PDF
         writer = PdfWriter()
+        
+        # Lire le PDF Syrius original
+        syrius_reader = PdfReader(syrius_path)
+        
+        # Lire le PDF Powernity
+        powernity_reader = PdfReader(powernity_path)
         
         # Pages à garder du Syrius : 1, 3, 4, 5, 7, 8, 9, 10, 11 (index 0-based)
         syrius_pages_to_keep = [0, 2, 3, 4, 6, 7, 8, 9, 10]  # index 0-based
@@ -1697,10 +1694,6 @@ def create_frh_pdf_from_syrius(client_data: dict, calculation_results: dict) -> 
         for page_idx in syrius_pages_to_keep:
             if page_idx < len(syrius_reader.pages):
                 page = syrius_reader.pages[page_idx]
-                
-                # Remplacer le texte sur la page (approximatif)
-                # Note: La modification de texte dans PDF est complexe
-                # Pour l'instant, on garde la page telle quelle
                 writer.add_page(page)
                 
                 # Insertion des pages Powernity après la page 5 (index 4 dans notre liste)
