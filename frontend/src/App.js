@@ -731,10 +731,10 @@ const ConsumptionForm = ({
 
   // Fonction pour appliquer/retirer une remise sur un kit
   const toggleKitDiscount = (kitPower, discountType, event) => {
-    console.log(`🔥 DEBUGGING: toggleKitDiscount appelée - Kit: ${kitPower}kW, Type: ${discountType}`);
-    console.log('🔥 DEBUGGING: État actuel kitDiscounts:', kitDiscounts);
+    console.log(`🔥 DEBUG: toggleKitDiscount - Kit: ${kitPower}kW, Type: ${discountType}`);
+    console.log('🔥 DEBUG: État actuel kitDiscounts:', kitDiscounts);
     
-    // ARRÊTER la propagation - MÉTHODES CORRECTES
+    // ARRÊTER la propagation pour éviter le déclenchement de handleSelectKit
     event.preventDefault();
     event.stopPropagation();
     
@@ -744,15 +744,39 @@ const ConsumptionForm = ({
         [kitPower]: prev[kitPower] === discountType ? null : discountType // Si même type, désactiver; sinon activer
       };
       
-      console.log(`🔥 DEBUGGING: ${prev[kitPower] === discountType ? 'Désactivation' : 'Activation'} ${discountType} pour ${kitPower}kW`);
-      console.log('🔥 DEBUGGING: Nouvel état kitDiscounts:', newState);
+      console.log(`🔥 DEBUG: ${prev[kitPower] === discountType ? 'Désactivation' : 'Activation'} ${discountType} pour ${kitPower}kW`);
+      console.log('🔥 DEBUG: Nouvel état kitDiscounts:', newState);
+      
+      // Si nous avons un kit sélectionné et que la remise change pour ce kit, mettre à jour selectedKit
+      if (selectedKit && selectedKit.power === kitPower) {
+        console.log('🔥 DEBUG: Mise à jour du kit sélectionné avec nouvelle remise');
+        const updatedKit = { ...selectedKit };
+        
+        if (newState[kitPower]) {
+          const discountAmount = newState[kitPower] === 'R1' ? 1000 : 
+                               newState[kitPower] === 'R2' ? 2000 : 
+                               newState[kitPower] === 'R3' ? 3000 : 0;
+          
+          updatedKit.priceTTC = selectedKit.originalPriceTTC - discountAmount;
+          updatedKit.priceWithAids = selectedKit.originalPriceWithAids - discountAmount;
+          updatedKit.hasDiscount = true;
+          updatedKit.discountAmount = discountAmount;
+          updatedKit.discountType = newState[kitPower];
+        } else {
+          // Pas de remise
+          updatedKit.priceTTC = selectedKit.originalPriceTTC;
+          updatedKit.priceWithAids = selectedKit.originalPriceWithAids;
+          updatedKit.hasDiscount = false;
+          updatedKit.discountAmount = 0;
+          updatedKit.discountType = null;
+        }
+        
+        setSelectedKit(updatedKit);
+        console.log('🔥 DEBUG: Kit sélectionné mis à jour:', updatedKit);
+      }
+      
       return newState;
     });
-    
-    // Forcer le re-render
-    setTimeout(() => {
-      console.log('🔥 DEBUGGING: Force re-render après changement discount');
-    }, 100);
   };
 
   // Récupérer les kits solaires disponibles selon la région
