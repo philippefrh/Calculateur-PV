@@ -1817,7 +1817,7 @@ def create_frh_pdf_content(client_data: dict, calculation_results: dict) -> byte
         return buffer.getvalue()
         
     except Exception as e:
-        logger.error(f"Erreur création PDF FRH: {e}")
+        logging.error(f"Erreur création PDF FRH: {e}")
         raise HTTPException(status_code=500, detail=f"Erreur génération PDF: {str(e)}")
 
 @api_router.get("/generate-frh-pdf/{client_id}")
