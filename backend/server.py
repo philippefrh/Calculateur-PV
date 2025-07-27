@@ -1820,14 +1820,14 @@ def create_frh_pdf_content(client_data: dict, calculation_results: dict) -> byte
         logger.error(f"Erreur création PDF FRH: {e}")
         raise HTTPException(status_code=500, detail=f"Erreur génération PDF: {str(e)}")
 
-@app.get("/api/generate-frh-pdf/{client_id}")
+@api_router.get("/generate-frh-pdf/{client_id}")
 async def generate_frh_pdf(client_id: str):
     """
     Génère un PDF de devis personnalisé FRH Martinique Environnement
     """
     try:
         # Récupérer les données client
-        client_data = await db.clients.find_one({"client_id": client_id})
+        client_data = await db.clients.find_one({"id": client_id})
         if not client_data:
             raise HTTPException(status_code=404, detail="Client non trouvé")
         
@@ -1847,5 +1847,5 @@ async def generate_frh_pdf(client_id: str):
         )
         
     except Exception as e:
-        logger.error(f"Erreur endpoint PDF FRH: {e}")
+        logging.error(f"Erreur endpoint PDF FRH: {e}")
         raise HTTPException(status_code=500, detail=f"Erreur génération PDF: {str(e)}")
