@@ -836,9 +836,22 @@ const ConsumptionForm = ({
   };
 
   const handleSelectKit = (kit) => {
-    // Appliquer la remise si elle est active pour ce kit
-    const discountedKit = { ...kit };
+    console.log('🔥 DEBUGGING: handleSelectKit appelée avec kit:', kit);
+    
+    // Créer une copie du kit avec les données originales sauvegardées
+    const kitWithOriginals = {
+      ...kit,
+      originalPriceTTC: kit.priceTTC,
+      originalPriceWithAids: kit.priceWithAids
+    };
+    
+    console.log('🔥 DEBUGGING: Kit avec originaux:', kitWithOriginals);
+    
+    // Vérifier s'il y a une remise active pour ce kit
     const discountType = kitDiscounts[kit.power];
+    console.log('🔥 DEBUGGING: Type de remise actif:', discountType);
+    
+    const discountedKit = { ...kitWithOriginals };
     
     if (discountType) {
       let discountAmount = 0;
@@ -856,6 +869,8 @@ const ConsumptionForm = ({
           discountAmount = 0;
       }
       
+      console.log('🔥 DEBUGGING: Montant de la remise:', discountAmount);
+      
       discountedKit.priceTTC = kit.originalPriceTTC - discountAmount;
       discountedKit.priceWithAids = kit.originalPriceWithAids - discountAmount;
       discountedKit.hasDiscount = true;
@@ -863,7 +878,9 @@ const ConsumptionForm = ({
       discountedKit.discountType = discountType;
     }
     
+    console.log('🔥 DEBUGGING: Kit final sélectionné:', discountedKit);
     setSelectedKit(discountedKit);
+    
     // Mettre à jour le formData avec le kit sélectionné
     setFormData(prev => ({
       ...prev,
