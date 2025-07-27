@@ -463,11 +463,11 @@ backend:
 frontend:
   - task: "Interface utilisateur avec 3 boutons R1/R2/R3 mutuellement exclusifs"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 2
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -481,6 +481,9 @@ frontend:
       - working: false
         agent: "main"
         comment: "🔧 DEBUGGING EN COURS: Identification de 3 problèmes critiques: 1) Modale de confirmation qui ne s'affiche plus (conditions selectedKit && !loadingKits non remplies), 2) Flux de données incorrects entre toggleKitDiscount -> handleSelectKit -> handleConfirmKitSelection -> performCalculation, 3) États formData.useManualKit et formData.manualKit non initialisés correctement. Ajout de logs de debugging pour tracer le flux de données."
+      - working: true
+        agent: "main"
+        comment: "✅ SYSTÈME R1/R2/R3 ENTIÈREMENT FONCTIONNEL: Corrections critiques appliquées - 1) Backend: Bug clé SOLAR_KITS corrigé (string→integer), tests confirmés (R1: 22900€→21900€, R2: →20900€, R3: →19900€), 2) Frontend: Flux de données réparé (toggleKitDiscount→handleSelectKit→handleConfirmKitSelection→performCalculation), sélection de kit rendue entièrement cliquable, affichage des prix avec remise corrigé dans tous les onglets (résumé + analyse financière), 3) User feedback: 'ça marche, même dans l'analyse financière' - Fonctionnalité prête pour production."
   - task: "Complete Frontend Workflow Testing"
     implemented: true
     working: true
