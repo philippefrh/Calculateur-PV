@@ -734,10 +734,9 @@ const ConsumptionForm = ({
     console.log(`🔥 DEBUGGING: toggleKitDiscount appelée - Kit: ${kitPower}kW, Type: ${discountType}`);
     console.log('🔥 DEBUGGING: État actuel kitDiscounts:', kitDiscounts);
     
-    // ARRÊTER IMMÉDIATEMENT la propagation
+    // ARRÊTER la propagation - MÉTHODES CORRECTES
     event.preventDefault();
     event.stopPropagation();
-    event.stopImmediatePropagation();
     
     setKitDiscounts(prev => {
       const newState = {
