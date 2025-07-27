@@ -33,6 +33,7 @@ from reportlab.lib.utils import ImageReader
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import requests
+from pypdf import PdfReader, PdfWriter
 
 # OpenAI Vision imports - Updated LLMChat to LlmChat
 from emergentintegrations.llm.chat import ImageContent, UserMessage, LlmChat
