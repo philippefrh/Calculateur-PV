@@ -1457,7 +1457,17 @@ Cordialement`);
             <div className="summary-row">
               <div className="summary-cell dark">
                 <div className="cell-title">Coût du projet</div>
-                <div className="cell-value">{results.kit_price?.toLocaleString()} € TTC</div>
+                <div className="cell-value">
+                  {results.discount_applied > 0 ? (
+                    <>
+                      <span style={{textDecoration: 'line-through', color: '#888', fontSize: '0.9em'}}>{results.kit_price_original?.toLocaleString()} €</span>
+                      <br/>
+                      <span style={{color: '#e74c3c', fontWeight: 'bold'}}>{results.kit_price_final?.toLocaleString()} € TTC</span>
+                    </>
+                  ) : (
+                    <>{results.kit_price?.toLocaleString()} € TTC</>
+                  )}
+                </div>
               </div>
               <div className="summary-cell dark">
                 <div className="cell-title">KAP Photovoltaïque</div>
