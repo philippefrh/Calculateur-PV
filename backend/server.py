@@ -1779,7 +1779,8 @@ def create_professional_frh_syrius_pdf(client_data: dict, calculation_results: d
                 # Footer FRH
                 c.setFillColor(colors.Color(0.2, 0.2, 0.2))
                 c.setFont("Helvetica", 9)
-                c.drawCentredText(width/2, 50, f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['phone']}")
+                footer_text = f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['phone']}"
+                c.drawString(width/2 - len(footer_text)*2.5, 50, footer_text)
                 
                 c.showPage()
                 
