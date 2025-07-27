@@ -1714,10 +1714,10 @@ def create_professional_frh_syrius_pdf(client_data: dict, calculation_results: d
         # Titre principal (style Syrius)
         c.setFillColor(colors.Color(0.0, 0.3, 0.6))  # Bleu Syrius
         c.setFont("Helvetica-Bold", 26)
-        c.drawCentredText(width/2, height-180, "ÉTUDE PERSONNALISÉE")
+        c.drawString(width/2 - 150, height-180, "ÉTUDE PERSONNALISÉE")
         
         c.setFont("Helvetica-Bold", 22)
-        c.drawCentredText(width/2, height-210, "INSTALLATION PHOTOVOLTAÏQUE")
+        c.drawString(width/2 - 180, height-210, "INSTALLATION PHOTOVOLTAÏQUE")
         
         # Zone orange pour le client (reproduction fidèle)
         orange_syrius = colors.Color(0.95, 0.6, 0.1)  # Orange Syrius
@@ -1728,25 +1728,29 @@ def create_professional_frh_syrius_pdf(client_data: dict, calculation_results: d
         client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
         c.setFillColor(colors.white)
         c.setFont("Helvetica-Bold", 16)
-        c.drawCentredText(width/2, height-295, f"Madame / Monsieur {client_name}")
+        c.drawString(width/2 - len(client_name)*4, height-295, f"Madame / Monsieur {client_name}")
         
         # Adresse client (style Syrius)
         c.setFillColor(colors.Color(0.1, 0.1, 0.1))
         c.setFont("Helvetica", 12)
         client_address = client_data.get('address', '')
-        c.drawCentredText(width/2, height-340, client_address)
+        c.drawString(width/2 - len(client_address)*3, height-340, client_address)
         
         # Date de l'étude
         c.setFont("Helvetica-Bold", 11)
-        c.drawCentredText(width/2, height-365, f"Date de l'étude : {datetime.now().strftime('%d/%m/%Y')}")
+        date_text = f"Date de l'étude : {datetime.now().strftime('%d/%m/%Y')}"
+        c.drawString(width/2 - len(date_text)*3, height-365, date_text)
         
         # Footer coordonnées FRH (style Syrius en bas)
         c.setFillColor(colors.Color(0.2, 0.2, 0.2))
         c.setFont("Helvetica", 9)
         footer_y = 50
-        c.drawCentredText(width/2, footer_y + 30, f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['address']}")
-        c.drawCentredText(width/2, footer_y + 18, f"Tél: {FRH_MARTINIQUE_INFO['phone']} - Email: {FRH_MARTINIQUE_INFO['email']}")
-        c.drawCentredText(width/2, footer_y + 6, f"SIRET: {FRH_MARTINIQUE_INFO['siret']} - N° TVA: {FRH_MARTINIQUE_INFO['tva_intra']}")
+        footer_text1 = f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['address']}"
+        c.drawString(width/2 - len(footer_text1)*2.5, footer_y + 30, footer_text1)
+        footer_text2 = f"Tél: {FRH_MARTINIQUE_INFO['phone']} - Email: {FRH_MARTINIQUE_INFO['email']}"
+        c.drawString(width/2 - len(footer_text2)*2.5, footer_y + 18, footer_text2)
+        footer_text3 = f"SIRET: {FRH_MARTINIQUE_INFO['siret']} - N° TVA: {FRH_MARTINIQUE_INFO['tva_intra']}"
+        c.drawString(width/2 - len(footer_text3)*2.5, footer_y + 6, footer_text3)
         
         c.showPage()
         
