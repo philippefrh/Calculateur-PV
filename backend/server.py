@@ -668,7 +668,7 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
                 kit_key = f"kit_{manual_kit_power}kw"
                 kit_info = region_config["kits"][kit_key]
             else:
-                kit_info = SOLAR_KITS[str(manual_kit_power)]
+                kit_info = SOLAR_KITS[manual_kit_power]  # Use integer key, not string
         elif region == "martinique":
             # Pour Martinique, utiliser les kits fixes
             best_kit = calculate_optimal_kit_size_martinique(annual_consumption, roof_surface)
