@@ -860,22 +860,22 @@ const ConsumptionForm = ({
   };
 
   const handleSelectKit = (kit) => {
-    console.log('🔥 DEBUGGING: handleSelectKit appelée avec kit:', kit);
+    console.log('🔥 DEBUG: handleSelectKit appelé avec kit:', kit);
     
     // Créer une copie du kit avec les données originales sauvegardées
     const kitWithOriginals = {
       ...kit,
-      originalPriceTTC: kit.priceTTC,
-      originalPriceWithAids: kit.priceWithAids
+      originalPriceTTC: kit.originalPriceTTC || kit.priceTTC,
+      originalPriceWithAids: kit.originalPriceWithAids || kit.priceWithAids
     };
     
-    console.log('🔥 DEBUGGING: Kit avec originaux:', kitWithOriginals);
+    console.log('🔥 DEBUG: Kit avec originaux:', kitWithOriginals);
     
     // Vérifier s'il y a une remise active pour ce kit
     const discountType = kitDiscounts[kit.power];
-    console.log('🔥 DEBUGGING: Type de remise actif:', discountType);
+    console.log('🔥 DEBUG: Type de remise actif pour ce kit:', discountType);
     
-    const discountedKit = { ...kitWithOriginals };
+    const finalKit = { ...kitWithOriginals };
     
     if (discountType) {
       let discountAmount = 0;
@@ -893,22 +893,27 @@ const ConsumptionForm = ({
           discountAmount = 0;
       }
       
-      console.log('🔥 DEBUGGING: Montant de la remise:', discountAmount);
+      console.log('🔥 DEBUG: Montant de la remise appliquée:', discountAmount);
       
-      discountedKit.priceTTC = kit.originalPriceTTC - discountAmount;
-      discountedKit.priceWithAids = kit.originalPriceWithAids - discountAmount;
-      discountedKit.hasDiscount = true;
-      discountedKit.discountAmount = discountAmount;
-      discountedKit.discountType = discountType;
+      finalKit.priceTTC = kitWithOriginals.originalPriceTTC - discountAmount;
+      finalKit.priceWithAids = kitWithOriginals.originalPriceWithAids - discountAmount;
+      finalKit.hasDiscount = true;
+      finalKit.discountAmount = discountAmount;
+      finalKit.discountType = discountType;
+    } else {
+      // Pas de remise
+      finalKit.hasDiscount = false;
+      finalKit.discountAmount = 0;
+      finalKit.discountType = null;
     }
     
-    console.log('🔥 DEBUGGING: Kit final sélectionné:', discountedKit);
-    setSelectedKit(discountedKit);
+    console.log('🔥 DEBUG: Kit final sélectionné avec remise:', finalKit);
+    setSelectedKit(finalKit);
     
-    // Mettre à jour le formData avec le kit sélectionné
+    // Mettre à jour le formData avec le kit sélectionné immédiatement
     setFormData(prev => ({
       ...prev,
-      selectedManualKit: discountedKit
+      selectedManualKit: finalKit
     }));
   };
 
