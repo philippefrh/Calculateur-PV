@@ -1666,493 +1666,212 @@ FRH_MARTINIQUE_INFO = {
     "warranty": "Toutes nos installations bénéficient d'une garantie de 10 ans"
 }
 
-def create_professional_frh_pdf(client_data: dict, calculation_results: dict) -> bytes:
+def create_frh_pdf_with_overlays(client_data: dict, calculation_results: dict) -> bytes:
     """
-    Crée un PDF professionnel FRH Martinique basé sur la structure Syrius
-    avec toutes les données client et FRH intégrées dynamiquement
+    Crée le PDF FRH en gardant le design Syrius original et en ajoutant des overlays
+    pour remplacer les textes et données
     """
     try:
-        buffer = BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4, 
-                              rightMargin=50, leftMargin=50,
-                              topMargin=50, bottomMargin=50)
-        
-        # Styles professionnels
-        styles = getSampleStyleSheet()
-        
-        # Styles personnalisés FRH
-        frh_title_style = ParagraphStyle(
-            'FRHTitle',
-            parent=styles['Heading1'],
-            fontSize=22,
-            spaceAfter=20,
-            textColor=colors.darkgreen,
-            fontName='Helvetica-Bold',
-            alignment=1  # Centré
-        )
-        
-        frh_heading_style = ParagraphStyle(
-            'FRHHeading',
-            parent=styles['Heading2'],
-            fontSize=16,
-            spaceAfter=15,
-            textColor=colors.darkgreen,
-            fontName='Helvetica-Bold'
-        )
-        
-        frh_normal_style = ParagraphStyle(
-            'FRHNormal',
-            parent=styles['Normal'],
-            fontSize=11,
-            spaceAfter=8,
-            fontName='Helvetica'
-        )
-        
-        frh_bold_style = ParagraphStyle(
-            'FRHBold',
-            parent=styles['Normal'],
-            fontSize=11,
-            spaceAfter=8,
-            fontName='Helvetica-Bold'
-        )
-        
-        content = []
-        
-        # ===================================================================
-        # PAGE 1 - EN-TÊTE FRH + DONNÉES CLIENT
-        # ===================================================================
-        
-        # Logo FRH en haut
-        logo_url = "https://customer-assets.emergentagent.com/job_quote-sun-power/artifacts/lut86gkv_FRH2-logo-HORIZONTALE.png"
-        try:
-            response = requests.get(logo_url, timeout=10)
-            if response.status_code == 200:
-                logo_buffer = BytesIO(response.content)
-                logo_img = Image(logo_buffer, width=250, height=100)
-                content.append(logo_img)
-        except:
-            content.append(Paragraph("🌳 FRH MARTINIQUE ENVIRONNEMENT", frh_title_style))
-        
-        content.append(Spacer(1, 30))
-        
-        # Titre principal
-        content.append(Paragraph("ÉTUDE PERSONNALISÉE", frh_title_style))
-        content.append(Paragraph("INSTALLATION PHOTOVOLTAÏQUE", frh_title_style))
-        content.append(Spacer(1, 40))
-        
-        # Données client
-        client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
-        content.append(Paragraph(f"Madame / Monsieur {client_name}", frh_bold_style))
-        content.append(Spacer(1, 15))
-        
-        content.append(Paragraph("Conformément à notre échange, nous avons le plaisir de vous adresser votre rapport d'étude personnalisé pour l'installation de panneaux photovoltaïques à votre domicile.", frh_normal_style))
-        content.append(Spacer(1, 20))
-        
-        # Adresse client
-        if client_data.get('address'):
-            content.append(Paragraph(f"<b>Adresse de l'installation :</b>", frh_bold_style))
-            content.append(Paragraph(client_data.get('address', ''), frh_normal_style))
-            content.append(Spacer(1, 20))
-        
-        # Date du devis
-        content.append(Paragraph(f"<b>Date de l'étude :</b> {datetime.now().strftime('%d/%m/%Y')}", frh_bold_style))
-        content.append(Spacer(1, 30))
-        
-        # Coordonnées FRH en bas de page
-        content.append(Spacer(1, 50))
-        frh_footer = f"""
-        <b>FRH MARTINIQUE ENVIRONNEMENT</b><br/>
-        {FRH_MARTINIQUE_INFO['address']}<br/>
-        Tél: {FRH_MARTINIQUE_INFO['phone']}<br/>
-        Email: {FRH_MARTINIQUE_INFO['email']}<br/>
-        Web: {FRH_MARTINIQUE_INFO['website']}<br/>
-        SIRET: {FRH_MARTINIQUE_INFO['siret']} - N° TVA: {FRH_MARTINIQUE_INFO['tva_intra']}
-        """
-        content.append(Paragraph(frh_footer, frh_normal_style))
-        
-        # Saut de page
-        content.append(PageBreak())
-        
-        # ===================================================================
-        # PAGE 2 - VOTRE PROJET SOLAIRE EN DÉTAIL
-        # ===================================================================
-        
-        content.append(Paragraph("VOTRE PROJET SOLAIRE EN DÉTAIL", frh_title_style))
-        content.append(Spacer(1, 30))
-        
-        content.append(Paragraph("L'objectif est de vous faire réaliser le maximum d'économies en installant une centrale solaire dimensionnée de manière optimale par rapport à votre logement et vos habitudes de vie.", frh_normal_style))
-        content.append(Spacer(1, 20))
-        
-        content.append(Paragraph("Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de votre générateur solaire avec une production énergétique garantie pendant 25 ans minimum.", frh_normal_style))
-        content.append(Spacer(1, 30))
-        
-        # Données de l'étude
-        if calculation_results:
-            content.append(Paragraph("<b>Puissance solaire proposée:</b>", frh_bold_style))
-            content.append(Paragraph(f"{calculation_results.get('recommended_kit_power', 'N/A')} kWc", frh_heading_style))
-            content.append(Spacer(1, 15))
-            
-            content.append(Paragraph("<b>Taux d'auto-consommation estimé selon les hypothèses de l'étude:</b>", frh_bold_style))
-            content.append(Paragraph(f"{calculation_results.get('autonomy_percentage', 'N/A')}%", frh_heading_style))
-            content.append(Spacer(1, 20))
-            
-            # Principales données pour le calcul
-            content.append(Paragraph("<b>Principales données pour le calcul de votre centrale solaire :</b>", frh_bold_style))
-            content.append(Spacer(1, 10))
-            
-            data_items = [
-                f"• Consommation annuelle actuelle: {client_data.get('annual_consumption_kwh', 'N/A')} kWh",
-                f"• Production solaire annuelle estimée: {calculation_results.get('annual_production', 'N/A')} kWh",
-                f"• Dont {calculation_results.get('autoconsumption', 'N/A')} kWh sont autoconsommés",
-                f"• Dont {calculation_results.get('surplus', 'N/A')} kWh sont réinjectés dans le réseau"
-            ]
-            
-            for item in data_items:
-                content.append(Paragraph(item, frh_normal_style))
-            
-            content.append(Spacer(1, 30))
-        
-        # Footer FRH
-        content.append(Paragraph(frh_footer, frh_normal_style))
-        content.append(PageBreak())
-        
-        # ===================================================================
-        # PAGE 3 - PRODUCTION ANNUELLE PAR MOIS
-        # ===================================================================
-        
-        content.append(Paragraph("VOTRE PRODUCTION D'ÉNERGIE", frh_title_style))
-        content.append(Spacer(1, 30))
-        
-        content.append(Paragraph("Production par mois sur 1 an", frh_heading_style))
-        content.append(Spacer(1, 20))
-        
-        content.append(Paragraph("La production de votre générateur photovoltaïque est calculée sur la base des données météorologiques des 10 dernières années et tient compte de l'orientation et de l'inclinaison de votre toiture.", frh_normal_style))
-        content.append(Spacer(1, 30))
-        
-        # Graphique de production mensuelle (simulé avec un tableau)
-        if calculation_results:
-            monthly_data = [
-                ["Mois", "Production (kWh)"],
-                ["Janvier", "380"],
-                ["Février", "420"],
-                ["Mars", "580"],
-                ["Avril", "650"],
-                ["Mai", "720"],
-                ["Juin", "750"],
-                ["Juillet", "780"],
-                ["Août", "760"],
-                ["Septembre", "630"],
-                ["Octobre", "520"],
-                ["Novembre", "410"],
-                ["Décembre", "350"]
-            ]
-            
-            monthly_table = Table(monthly_data, colWidths=[2*inch, 2*inch])
-            monthly_table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 12),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black)
-            ]))
-            content.append(monthly_table)
-            content.append(Spacer(1, 30))
-        
-        # Footer FRH
-        content.append(Paragraph(frh_footer, frh_normal_style))
-        content.append(PageBreak())
-        
-        # ===================================================================
-        # PAGE 4 - PAGES POWERNITY 375W (3 pages)
-        # ===================================================================
-        
-        # Intégrer les 3 pages Powernity ici
+        syrius_path = "/app/backend/syrius_original.pdf"
         powernity_path = "/app/backend/powernity_375w.pdf"
-        try:
-            powernity_reader = PdfReader(powernity_path)
-            # On va créer une page de transition avant les specs techniques
-            content.append(Paragraph("SPÉCIFICATIONS TECHNIQUES", frh_title_style))
-            content.append(Paragraph("PANNEAUX POWERNITY 375W - MICRO-ONDULEURS TECH 360", frh_heading_style))
-            content.append(Spacer(1, 20))
-            content.append(Paragraph("Vous trouverez ci-après les spécifications techniques détaillées des équipements sélectionnés pour votre installation.", frh_normal_style))
-            content.append(Spacer(1, 30))
-            
-            # Info sur les panneaux
-            tech_info = [
-                ["Caractéristiques Techniques", ""],
-                ["Marque des panneaux", "POWERNITY"],
-                ["Puissance unitaire", "375W"],
-                ["Type de micro-onduleur", "TECH 360"],
-                ["Garantie panneaux", "25 ans"],
-                ["Garantie micro-onduleurs", "12 ans"],
-                ["Certification", "CE, IEC 61215, IEC 61730"]
-            ]
-            
-            tech_table = Table(tech_info, colWidths=[3*inch, 3*inch])
-            tech_table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 12),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black)
-            ]))
-            content.append(tech_table)
-            content.append(Spacer(1, 30))
-            
-        except Exception as e:
-            logging.error(f"Erreur lecture Powernity PDF: {e}")
         
-        # Footer FRH
-        content.append(Paragraph(frh_footer, frh_normal_style))
-        content.append(PageBreak())
+        # Lire les PDFs
+        syrius_reader = PdfReader(syrius_path)
+        powernity_reader = PdfReader(powernity_path)
         
-        # ===================================================================
-        # PAGE 5 - PRIX ET FINANCEMENT
-        # ===================================================================
+        # Créer le nouveau PDF
+        writer = PdfWriter()
         
-        content.append(Paragraph("VOTRE INVESTISSEMENT", frh_title_style))
-        content.append(Spacer(1, 30))
+        # Pages à garder du Syrius : 1, 3, 4, 5, 7, 8, 9, 10, 11 (index 0-based)
+        syrius_pages_to_keep = [0, 2, 3, 4, 6, 7, 8, 9, 10]
         
-        # Prix selon les données de calcul ou estimations Martinique
-        if calculation_results:
-            kit_power = calculation_results.get('recommended_kit_power', 6)
-            
-            # Estimation des prix basée sur les kits Martinique
-            price_estimates = {
-                3: {"ttc": 10900, "aide": 5340},
-                6: {"ttc": 15900, "aide": 6480},
-                9: {"ttc": 18900, "aide": 9720},
-                12: {"ttc": 22900, "aide": 9720},
-                15: {"ttc": 25900, "aide": 12150},
-                18: {"ttc": 28900, "aide": 14580},
-                21: {"ttc": 30900, "aide": 17010},
-                24: {"ttc": 32900, "aide": 19440},
-                27: {"ttc": 34900, "aide": 21870}
-            }
-            
-            # Trouver le prix le plus proche
-            closest_power = min(price_estimates.keys(), key=lambda x: abs(x - kit_power))
-            price_info = price_estimates[closest_power]
-            
-            # Afficher les prix
-            price_data = [
-                ["DÉTAIL DE VOTRE INVESTISSEMENT", ""],
-                ["Montant TTC hors primes", f"{price_info['ttc']:,} €".replace(',', ' ')],
-                ["Primes d'investissement pour l'autoconsommation", f"- {price_info['aide']:,} €".replace(',', ' ')],
-                ["MONTANT TTC PRIMES DÉDUITES", f"{price_info['ttc'] - price_info['aide']:,} €".replace(',', ' ')]
-            ]
-            
-            price_table = Table(price_data, colWidths=[4*inch, 2*inch])
-            price_table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                ('BACKGROUND', (0, 3), (-1, 3), colors.orange),
-                ('TEXTCOLOR', (0, 3), (-1, 3), colors.white),
-                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTNAME', (0, 3), (-1, 3), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 14),
-                ('FONTSIZE', (0, 3), (-1, 3), 14),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('BACKGROUND', (0, 1), (0, 2), colors.lightgrey),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black)
-            ]))
-            content.append(price_table)
-            content.append(Spacer(1, 30))
-            
-        # Footer FRH
-        content.append(Paragraph(frh_footer, frh_normal_style))
-        content.append(PageBreak())
+        for page_idx in syrius_pages_to_keep:
+            if page_idx < len(syrius_reader.pages):
+                # Prendre la page originale
+                original_page = syrius_reader.pages[page_idx]
+                
+                # Créer un overlay pour cette page
+                overlay = create_page_overlay(page_idx + 1, client_data, calculation_results)
+                
+                if overlay:
+                    # Fusionner l'overlay avec la page originale
+                    original_page.merge_page(overlay)
+                
+                writer.add_page(original_page)
+                
+                # Insérer les pages Powernity après la page 5 (index 4 dans notre liste)
+                if page_idx == 4:  # Après la page 5 du Syrius
+                    # Ajouter les 3 pages Powernity
+                    for powernity_page_idx in range(min(3, len(powernity_reader.pages))):
+                        writer.add_page(powernity_reader.pages[powernity_page_idx])
         
-        # ===================================================================
-        # PAGE 6 - ÉVOLUTION FACTURES ET ÉCONOMIES
-        # ===================================================================
-        
-        content.append(Paragraph("VOS ÉCONOMIES D'ÉNERGIE", frh_title_style))
-        content.append(Spacer(1, 30))
-        
-        content.append(Paragraph("Évolution de vos factures avec ou sans PV", frh_heading_style))
-        content.append(Spacer(1, 20))
-        
-        if calculation_results:
-            # Calcul des économies
-            monthly_savings = calculation_results.get('estimated_savings', 2000) / 12
-            
-            savings_data = [
-                ["", "Sans PV", "Avec PV", "Économies"],
-                ["Facture mensuelle moyenne", f"{client_data.get('monthly_edf_payment', 220)} €", f"{client_data.get('monthly_edf_payment', 220) - monthly_savings:.0f} €", f"{monthly_savings:.0f} €"],
-                ["Facture annuelle", f"{client_data.get('annual_edf_payment', 2640)} €", f"{client_data.get('annual_edf_payment', 2640) - calculation_results.get('estimated_savings', 2000):.0f} €", f"{calculation_results.get('estimated_savings', 2000)} €"],
-                ["20 ans de factures", f"{client_data.get('annual_edf_payment', 2640) * 20:,} €".replace(',', ' '), f"{(client_data.get('annual_edf_payment', 2640) - calculation_results.get('estimated_savings', 2000)) * 20:,} €".replace(',', ' '), f"{calculation_results.get('estimated_savings', 2000) * 20:,} €".replace(',', ' ')]
-            ]
-            
-            savings_table = Table(savings_data, colWidths=[2*inch, 1.5*inch, 1.5*inch, 1.5*inch])
-            savings_table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                ('BACKGROUND', (3, 1), (3, -1), colors.lightgreen),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 11),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black)
-            ]))
-            content.append(savings_table)
-            content.append(Spacer(1, 30))
-        
-        # Footer FRH
-        content.append(Paragraph(frh_footer, frh_normal_style))
-        content.append(PageBreak())
-        
-        # ===================================================================
-        # PAGE 7 - DEVIS FINAL AVEC REMISES R1/R2/R3
-        # ===================================================================
-        
-        content.append(Paragraph("DEVIS FINAL", frh_title_style))
-        content.append(Spacer(1, 30))
-        
-        # Informations client pour le devis
-        client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
-        
-        devis_client_data = [
-            ["VOS COORDONNÉES", ""],
-            ["Nom", client_name],
-            ["Adresse", client_data.get('address', '')],
-            ["Téléphone", client_data.get('phone', '')],
-            ["Email", client_data.get('email', '')]
-        ]
-        
-        devis_client_table = Table(devis_client_data, colWidths=[2*inch, 4*inch])
-        devis_client_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 12),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black)
-        ]))
-        content.append(devis_client_table)
-        content.append(Spacer(1, 30))
-        
-        # Pack sélectionné avec données réelles
-        if calculation_results:
-            kit_power = calculation_results.get('recommended_kit_power', 6)
-            panels_count = calculation_results.get('panels', kit_power * 2.67)  # 375W par panneau
-            
-            pack_data = [
-                ["PACK SÉLECTIONNÉ", ""],
-                ["Puissance", f"Pack {kit_power} kWc"],
-                ["Nombre de panneaux", f"{int(panels_count)} Panneaux POWERNITY 375W"],
-                ["Type d'installation", "Monophasé avec micro-onduleurs"],
-                ["Production annuelle estimée", f"{calculation_results.get('annual_production', 'N/A')} kWh/an"],
-                ["Autonomie", f"{calculation_results.get('autonomy_percentage', 'N/A')}%"]
-            ]
-            
-            pack_table = Table(pack_data, colWidths=[2*inch, 4*inch])
-            pack_table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.orange),
-                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 12),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('BACKGROUND', (0, 1), (-1, -1), colors.lightyellow),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black)
-            ]))
-            content.append(pack_table)
-            content.append(Spacer(1, 30))
-            
-            # Section remises R1/R2/R3 (discrète)
-            content.append(Paragraph("<b>Note :</b> Des conditions préférentielles peuvent s'appliquer selon le contexte de votre projet.", frh_normal_style))
-            content.append(Spacer(1, 20))
-        
-        # Footer FRH
-        content.append(Paragraph(frh_footer, frh_normal_style))
-        content.append(PageBreak())
-        
-        # ===================================================================
-        # PAGE 8 - CONDITIONS GÉNÉRALES ET CONTACT
-        # ===================================================================
-        
-        content.append(Paragraph("CONDITIONS ET CONTACT", frh_title_style))
-        content.append(Spacer(1, 30))
-        
-        # Conditions
-        content.append(Paragraph("CONDITIONS GÉNÉRALES", frh_heading_style))
-        content.append(Spacer(1, 15))
-        
-        conditions_text = [
-            "• Installation réalisée par notre équipe certifiée RGE",
-            "• Garantie panneaux : 25 ans",
-            "• Garantie micro-onduleurs : 12 ans", 
-            "• Garantie main d'œuvre : 10 ans",
-            "• Démarches administratives incluses",
-            "• Suivi de production via application mobile",
-            "• Service après-vente local en Martinique"
-        ]
-        
-        for condition in conditions_text:
-            content.append(Paragraph(condition, frh_normal_style))
-        
-        content.append(Spacer(1, 30))
-        
-        # Contact commercial
-        content.append(Paragraph("VOTRE CONTACT COMMERCIAL", frh_heading_style))
-        content.append(Spacer(1, 15))
-        
-        contact_data = [
-            ["", ""],
-            ["Contact commercial", FRH_MARTINIQUE_INFO['commercial_contact']],
-            ["Téléphone direct", FRH_MARTINIQUE_INFO['commercial_phone']],
-            ["Email", FRH_MARTINIQUE_INFO['commercial_email']],
-            ["", ""],
-            ["Entreprise", FRH_MARTINIQUE_INFO['company_name']],
-            ["Adresse", FRH_MARTINIQUE_INFO['address']],
-            ["Téléphone", FRH_MARTINIQUE_INFO['phone']],
-            ["Email", FRH_MARTINIQUE_INFO['email']],
-            ["Site web", FRH_MARTINIQUE_INFO['website']],
-            ["", ""],  
-            ["SIRET", FRH_MARTINIQUE_INFO['siret']],
-            ["N° TVA Intra", FRH_MARTINIQUE_INFO['tva_intra']],
-            ["N° Convention", FRH_MARTINIQUE_INFO['convention_number']],
-            ["RCS", FRH_MARTINIQUE_INFO['rcs']],
-            ["Code NAF", FRH_MARTINIQUE_INFO['naf']]
-        ]
-        
-        contact_table = Table(contact_data, colWidths=[2*inch, 4*inch])
-        contact_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-            ('GRID', (0, 1), (-1, 9), 1, colors.grey),
-            ('GRID', (0, 11), (-1, -1), 1, colors.grey)
-        ]))
-        content.append(contact_table)
-        
-        # Fin du PDF
-        
-        # Build PDF
-        doc.build(content)
+        # Sauvegarder en buffer
+        buffer = BytesIO()
+        writer.write(buffer)
         buffer.seek(0)
+        
         return buffer.getvalue()
         
     except Exception as e:
-        logging.error(f"Erreur création PDF FRH professionnel: {e}")
+        logging.error(f"Erreur création PDF FRH avec overlays: {e}")
         raise HTTPException(status_code=500, detail=f"Erreur génération PDF: {str(e)}")
+
+def create_page_overlay(page_num: int, client_data: dict, calculation_results: dict):
+    """
+    Crée un overlay transparent pour masquer et remplacer les textes sur chaque page
+    """
+    try:
+        overlay_buffer = BytesIO()
+        c = canvas.Canvas(overlay_buffer, pagesize=A4)
+        width, height = A4
+        
+        # Données client
+        client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
+        client_address = client_data.get('address', '')
+        client_phone = client_data.get('phone', '')
+        client_email = client_data.get('email', '')
+        
+        if page_num == 1:
+            # PAGE 1 - Masquer "SYRIUS" et ajouter données client
+            # Masquer le logo/nom SYRIUS (estimation position)
+            c.setFillColor(colors.white)
+            c.rect(400, height - 150, 150, 50, fill=1, stroke=0)  # Masquer SYRIUS
+            
+            # Écrire FRH MARTINIQUE ENVIRONNEMENT
+            c.setFillColor(colors.darkgreen)
+            c.setFont("Helvetica-Bold", 14)
+            c.drawString(420, height - 130, "FRH MARTINIQUE")
+            c.drawString(410, height - 145, "ENVIRONNEMENT")
+            
+            # Ajouter nom client (masquer l'ancien d'abord)
+            c.setFillColor(colors.white)
+            c.rect(50, height - 250, 300, 30, fill=1, stroke=0)
+            
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica-Bold", 12)
+            c.drawString(60, height - 240, f"Madame / Monsieur {client_name}")
+            
+        elif page_num == 3:
+            # PAGE 3 - Votre projet solaire
+            # Masquer ancien texte et ajouter données FRH
+            c.setFillColor(colors.white)
+            c.rect(50, height - 200, 400, 100, fill=1, stroke=0)
+            
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica", 11)
+            y_pos = height - 180
+            
+            if calculation_results:
+                c.drawString(60, y_pos, f"Puissance solaire proposée: {calculation_results.get('recommended_kit_power', 'N/A')} kWc")
+                y_pos -= 20
+                c.drawString(60, y_pos, f"Taux d'autoconsommation: {calculation_results.get('autonomy_percentage', 'N/A')}%")
+                y_pos -= 20
+                c.drawString(60, y_pos, f"Production annuelle estimée: {calculation_results.get('annual_production', 'N/A')} kWh")
+            
+        elif page_num == 4:
+            # PAGE 4 - Production mensuelle
+            pass  # Garder la page telle quelle
+            
+        elif page_num == 5:
+            # PAGE 5 - Graphique production
+            pass  # Garder la page telle quelle
+            
+        elif page_num == 7:
+            # PAGE 7 - Prix (correspond à l'ancienne page 8)
+            if calculation_results:
+                kit_power = calculation_results.get('recommended_kit_power', 6)
+                
+                # Prix selon les kits Martinique
+                price_estimates = {
+                    3: {"ttc": 10900, "aide": 5340},
+                    6: {"ttc": 15900, "aide": 6480},
+                    9: {"ttc": 18900, "aide": 9720},
+                    12: {"ttc": 22900, "aide": 9720},
+                    15: {"ttc": 25900, "aide": 12150},
+                    18: {"ttc": 28900, "aide": 14580},
+                    21: {"ttc": 30900, "aide": 17010},
+                    24: {"ttc": 32900, "aide": 19440},
+                    27: {"ttc": 34900, "aide": 21870}
+                }
+                
+                closest_power = min(price_estimates.keys(), key=lambda x: abs(x - kit_power))
+                price_info = price_estimates[closest_power]
+                
+                # Masquer anciens prix
+                c.setFillColor(colors.white)
+                c.rect(50, height - 400, 500, 200, fill=1, stroke=0)
+                
+                # Écrire nouveaux prix
+                c.setFillColor(colors.black)
+                c.setFont("Helvetica-Bold", 16)
+                c.drawString(100, height - 350, f"{price_info['ttc']:,} €".replace(',', ' '))
+                c.setFont("Helvetica", 12)
+                c.drawString(100, height - 370, "Montant TTC hors primes")
+                
+                c.setFont("Helvetica-Bold", 16)
+                c.drawString(100, height - 400, f"{price_info['ttc'] - price_info['aide']:,} €".replace(',', ' '))
+                c.setFont("Helvetica", 12)
+                c.drawString(100, height - 420, "Montant TTC primes déduites")
+        
+        elif page_num == 10:
+            # PAGE 10 - Coordonnées client (correspond à l'ancienne page 11)
+            # Masquer anciennes coordonnées
+            c.setFillColor(colors.white)
+            c.rect(50, height - 300, 300, 150, fill=1, stroke=0)
+            
+            # Écrire nouvelles coordonnées
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica-Bold", 12)
+            c.drawString(60, height - 250, "Vos coordonnées")
+            
+            c.setFont("Helvetica", 11)
+            y_pos = height - 270
+            c.drawString(60, y_pos, f"Nom : {client_name}")
+            y_pos -= 15
+            c.drawString(60, y_pos, f"Adresse : {client_address}")
+            y_pos -= 15
+            c.drawString(60, y_pos, f"Téléphone : {client_phone}")
+            y_pos -= 15
+            c.drawString(60, y_pos, f"Email : {client_email}")
+        
+        elif page_num == 11:
+            # PAGE 11 - Remplacer coordonnées Syrius par FRH
+            # Masquer coordonnées Syrius
+            c.setFillColor(colors.white)
+            c.rect(50, 50, 500, 150, fill=1, stroke=0)
+            
+            # Écrire coordonnées FRH
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica-Bold", 10)
+            y_pos = 130
+            c.drawString(60, y_pos, "FRH MARTINIQUE ENVIRONNEMENT")
+            y_pos -= 12
+            c.setFont("Helvetica", 9)
+            c.drawString(60, y_pos, FRH_MARTINIQUE_INFO['address'])
+            y_pos -= 12
+            c.drawString(60, y_pos, f"Tél: {FRH_MARTINIQUE_INFO['phone']}")
+            y_pos -= 12
+            c.drawString(60, y_pos, f"Email: {FRH_MARTINIQUE_INFO['email']}")
+            y_pos -= 12
+            c.drawString(60, y_pos, f"SIRET: {FRH_MARTINIQUE_INFO['siret']}")
+            y_pos -= 12
+            c.drawString(60, y_pos, f"N° TVA: {FRH_MARTINIQUE_INFO['tva_intra']}")
+        
+        c.save()
+        overlay_buffer.seek(0)
+        
+        # Convertir en page PDF
+        overlay_reader = PdfReader(overlay_buffer)
+        return overlay_reader.pages[0] if len(overlay_reader.pages) > 0 else None
+        
+    except Exception as e:
+        logging.error(f"Erreur création overlay page {page_num}: {e}")
+        return None
 
 @api_router.get("/generate-frh-pdf/{client_id}")
 async def generate_frh_pdf(client_id: str):
     """
-    Génère un PDF de devis FRH Martinique professionnel complet
+    Génère un PDF FRH Martinique avec overlays sur le design Syrius original
     """
     try:
         # Récupérer les données client
@@ -2163,8 +1882,8 @@ async def generate_frh_pdf(client_id: str):
         # Récupérer les résultats de calcul
         calculation_results = client_data.get('calculation_results', {})
         
-        # Générer le PDF professionnel FRH
-        pdf_content = create_professional_frh_pdf(client_data, calculation_results)
+        # Générer le PDF avec overlays
+        pdf_content = create_frh_pdf_with_overlays(client_data, calculation_results)
         
         # Nom du fichier avec date
         filename = f"devis_frh_martinique_{client_data.get('last_name', 'client')}_{datetime.now().strftime('%Y%m%d')}.pdf"
