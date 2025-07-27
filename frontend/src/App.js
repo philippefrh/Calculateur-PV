@@ -1497,7 +1497,17 @@ Cordialement`);
             <div className="financial-item">
               <span className="financial-icon">💰</span>
               <span className="financial-label">Investissement:</span>
-              <span className="financial-value">{results.kit_price?.toLocaleString()} € TTC</span>
+              {results.discount_applied > 0 ? (
+                <>
+                  <span className="financial-value original-price" style={{textDecoration: 'line-through', color: '#888'}}>{results.kit_price_original?.toLocaleString()} €</span>
+                  <span className="financial-value" style={{color: '#e74c3c', fontWeight: 'bold'}}> {results.kit_price_final?.toLocaleString()} € TTC</span>
+                  <span className="discount-badge" style={{background: '#e74c3c', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', marginLeft: '8px'}}>
+                    -{results.discount_applied} €
+                  </span>
+                </>
+              ) : (
+                <span className="financial-value">{results.kit_price?.toLocaleString()} € TTC</span>
+              )}
             </div>
             <div className="financial-item">
               <span className="financial-icon">🎁</span>
