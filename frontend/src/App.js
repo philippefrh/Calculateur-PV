@@ -858,8 +858,9 @@ const ConsumptionForm = ({
     if (selectedKit) {
       const finalKit = { ...selectedKit };
       
-      // S'assurer que les prix avec remise sont bien appliqués
+      // Appliquer la remise si elle est active pour ce kit
       const discountType = kitDiscounts[selectedKit.power];
+      
       if (discountType) {
         let discountAmount = 0;
         switch (discountType) {
@@ -883,13 +884,17 @@ const ConsumptionForm = ({
         finalKit.discountType = discountType;
       }
       
+      // ✅ CORRECTION: Mettre à jour formData.manualKit avec la remise
       setFormData(prev => ({
         ...prev,
         useManualKit: true,
-        manualKit: finalKit
+        manualKit: finalKit  // ← Ici on met le kit avec la remise
       }));
-      setShowKitSelection(false);
+      
       alert(`Kit ${finalKit.power}kW sélectionné avec succès ${finalKit.hasDiscount ? `(avec remise ${finalKit.discountType} de ${finalKit.discountAmount}€)` : ''} !`);
+      
+      // Masquer la modal
+      setShowKitSelection(false);
     }
   };
 
