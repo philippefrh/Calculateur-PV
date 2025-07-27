@@ -2010,8 +2010,135 @@ def create_professional_frh_pdf(client_data: dict, calculation_results: dict) ->
         content.append(Paragraph(frh_footer, frh_normal_style))
         content.append(PageBreak())
         
-        # Continuer avec les autres pages...
-        # Pour économiser les crédits, je vais créer les pages principales d'abord
+        # ===================================================================
+        # PAGE 7 - DEVIS FINAL AVEC REMISES R1/R2/R3
+        # ===================================================================
+        
+        content.append(Paragraph("DEVIS FINAL", frh_title_style))
+        content.append(Spacer(1, 30))
+        
+        # Informations client pour le devis
+        client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
+        
+        devis_client_data = [
+            ["VOS COORDONNÉES", ""],
+            ["Nom", client_name],
+            ["Adresse", client_data.get('address', '')],
+            ["Téléphone", client_data.get('phone', '')],
+            ["Email", client_data.get('email', '')]
+        ]
+        
+        devis_client_table = Table(devis_client_data, colWidths=[2*inch, 4*inch])
+        devis_client_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black)
+        ]))
+        content.append(devis_client_table)
+        content.append(Spacer(1, 30))
+        
+        # Pack sélectionné avec données réelles
+        if calculation_results:
+            kit_power = calculation_results.get('recommended_kit_power', 6)
+            panels_count = calculation_results.get('panels', kit_power * 2.67)  # 375W par panneau
+            
+            pack_data = [
+                ["PACK SÉLECTIONNÉ", ""],
+                ["Puissance", f"Pack {kit_power} kWc"],
+                ["Nombre de panneaux", f"{int(panels_count)} Panneaux POWERNITY 375W"],
+                ["Type d'installation", "Monophasé avec micro-onduleurs"],
+                ["Production annuelle estimée", f"{calculation_results.get('annual_production', 'N/A')} kWh/an"],
+                ["Autonomie", f"{calculation_results.get('autonomy_percentage', 'N/A')}%"]
+            ]
+            
+            pack_table = Table(pack_data, colWidths=[2*inch, 4*inch])
+            pack_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.orange),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.lightyellow),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            content.append(pack_table)
+            content.append(Spacer(1, 30))
+            
+            # Section remises R1/R2/R3 (discrète)
+            content.append(Paragraph("<b>Note :</b> Des conditions préférentielles peuvent s'appliquer selon le contexte de votre projet.", frh_normal_style))
+            content.append(Spacer(1, 20))
+        
+        # Footer FRH
+        content.append(Paragraph(frh_footer, frh_normal_style))
+        content.append(PageBreak())
+        
+        # ===================================================================
+        # PAGE 8 - CONDITIONS GÉNÉRALES ET CONTACT
+        # ===================================================================
+        
+        content.append(Paragraph("CONDITIONS ET CONTACT", frh_title_style))
+        content.append(Spacer(1, 30))
+        
+        # Conditions
+        content.append(Paragraph("CONDITIONS GÉNÉRALES", frh_heading_style))
+        content.append(Spacer(1, 15))
+        
+        conditions_text = [
+            "• Installation réalisée par notre équipe certifiée RGE",
+            "• Garantie panneaux : 25 ans",
+            "• Garantie micro-onduleurs : 12 ans", 
+            "• Garantie main d'œuvre : 10 ans",
+            "• Démarches administratives incluses",
+            "• Suivi de production via application mobile",
+            "• Service après-vente local en Martinique"
+        ]
+        
+        for condition in conditions_text:
+            content.append(Paragraph(condition, frh_normal_style))
+        
+        content.append(Spacer(1, 30))
+        
+        # Contact commercial
+        content.append(Paragraph("VOTRE CONTACT COMMERCIAL", frh_heading_style))
+        content.append(Spacer(1, 15))
+        
+        contact_data = [
+            ["", ""],
+            ["Contact commercial", FRH_MARTINIQUE_INFO['commercial_contact']],
+            ["Téléphone direct", FRH_MARTINIQUE_INFO['commercial_phone']],
+            ["Email", FRH_MARTINIQUE_INFO['commercial_email']],
+            ["", ""],
+            ["Entreprise", FRH_MARTINIQUE_INFO['company_name']],
+            ["Adresse", FRH_MARTINIQUE_INFO['address']],
+            ["Téléphone", FRH_MARTINIQUE_INFO['phone']],
+            ["Email", FRH_MARTINIQUE_INFO['email']],
+            ["Site web", FRH_MARTINIQUE_INFO['website']],
+            ["", ""],  
+            ["SIRET", FRH_MARTINIQUE_INFO['siret']],
+            ["N° TVA Intra", FRH_MARTINIQUE_INFO['tva_intra']],
+            ["N° Convention", FRH_MARTINIQUE_INFO['convention_number']],
+            ["RCS", FRH_MARTINIQUE_INFO['rcs']],
+            ["Code NAF", FRH_MARTINIQUE_INFO['naf']]
+        ]
+        
+        contact_table = Table(contact_data, colWidths=[2*inch, 4*inch])
+        contact_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 1), (-1, 9), 1, colors.grey),
+            ('GRID', (0, 11), (-1, -1), 1, colors.grey)
+        ]))
+        content.append(contact_table)
+        
+        # Fin du PDF
         
         # Build PDF
         doc.build(content)
