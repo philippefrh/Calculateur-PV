@@ -1661,7 +1661,14 @@ Cordialement`);
             <div className="financial-summary">
               <div className="financial-item">
                 <span className="financial-label">💳 Investissement:</span>
-                <span className="financial-value">{results.kit_price?.toLocaleString()} € TTC</span>
+                {results.discount_applied > 0 ? (
+                  <>
+                    <span className="financial-value" style={{textDecoration: 'line-through', color: '#888', fontSize: '0.9em'}}>{results.kit_price_original?.toLocaleString()} €</span>
+                    <span className="financial-value" style={{color: '#e74c3c', fontWeight: 'bold'}}> {results.kit_price_final?.toLocaleString()} € TTC</span>
+                  </>
+                ) : (
+                  <span className="financial-value">{results.kit_price?.toLocaleString()} € TTC</span>
+                )}
               </div>
               <div className="financial-item">
                 <span className="financial-label">🎁 Aides totales:</span>
@@ -1669,11 +1676,11 @@ Cordialement`);
               </div>
               <div className="financial-item">
                 <span className="financial-label">💸 Reste à financer:</span>
-                <span className="financial-value">{(results.kit_price - results.total_aids).toLocaleString()} €</span>
+                <span className="financial-value">{((results.discount_applied > 0 ? results.kit_price_final : results.kit_price) - results.total_aids).toLocaleString()} €</span>
               </div>
               <div className="financial-item">
                 <span className="financial-label">⏱️ Retour sur investissement:</span>
-                <span className="financial-value">{Math.round((results.kit_price - results.total_aids) / results.estimated_savings)} ans</span>
+                <span className="financial-value">{Math.round(((results.discount_applied > 0 ? results.kit_price_final : results.kit_price) - results.total_aids) / results.estimated_savings)} ans</span>
               </div>
             </div>
 
