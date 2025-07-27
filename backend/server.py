@@ -1865,6 +1865,151 @@ def create_professional_frh_pdf(client_data: dict, calculation_results: dict) ->
         content.append(Paragraph(frh_footer, frh_normal_style))
         content.append(PageBreak())
         
+        # ===================================================================
+        # PAGE 4 - PAGES POWERNITY 375W (3 pages)
+        # ===================================================================
+        
+        # Intégrer les 3 pages Powernity ici
+        powernity_path = "/app/backend/powernity_375w.pdf"
+        try:
+            powernity_reader = PdfReader(powernity_path)
+            # On va créer une page de transition avant les specs techniques
+            content.append(Paragraph("SPÉCIFICATIONS TECHNIQUES", frh_title_style))
+            content.append(Paragraph("PANNEAUX POWERNITY 375W - MICRO-ONDULEURS TECH 360", frh_heading_style))
+            content.append(Spacer(1, 20))
+            content.append(Paragraph("Vous trouverez ci-après les spécifications techniques détaillées des équipements sélectionnés pour votre installation.", frh_normal_style))
+            content.append(Spacer(1, 30))
+            
+            # Info sur les panneaux
+            tech_info = [
+                ["Caractéristiques Techniques", ""],
+                ["Marque des panneaux", "POWERNITY"],
+                ["Puissance unitaire", "375W"],
+                ["Type de micro-onduleur", "TECH 360"],
+                ["Garantie panneaux", "25 ans"],
+                ["Garantie micro-onduleurs", "12 ans"],
+                ["Certification", "CE, IEC 61215, IEC 61730"]
+            ]
+            
+            tech_table = Table(tech_info, colWidths=[3*inch, 3*inch])
+            tech_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            content.append(tech_table)
+            content.append(Spacer(1, 30))
+            
+        except Exception as e:
+            logging.error(f"Erreur lecture Powernity PDF: {e}")
+        
+        # Footer FRH
+        content.append(Paragraph(frh_footer, frh_normal_style))
+        content.append(PageBreak())
+        
+        # ===================================================================
+        # PAGE 5 - PRIX ET FINANCEMENT
+        # ===================================================================
+        
+        content.append(Paragraph("VOTRE INVESTISSEMENT", frh_title_style))
+        content.append(Spacer(1, 30))
+        
+        # Prix selon les données de calcul ou estimations Martinique
+        if calculation_results:
+            kit_power = calculation_results.get('recommended_kit_power', 6)
+            
+            # Estimation des prix basée sur les kits Martinique
+            price_estimates = {
+                3: {"ttc": 10900, "aide": 5340},
+                6: {"ttc": 15900, "aide": 6480},
+                9: {"ttc": 18900, "aide": 9720},
+                12: {"ttc": 22900, "aide": 9720},
+                15: {"ttc": 25900, "aide": 12150},
+                18: {"ttc": 28900, "aide": 14580},
+                21: {"ttc": 30900, "aide": 17010},
+                24: {"ttc": 32900, "aide": 19440},
+                27: {"ttc": 34900, "aide": 21870}
+            }
+            
+            # Trouver le prix le plus proche
+            closest_power = min(price_estimates.keys(), key=lambda x: abs(x - kit_power))
+            price_info = price_estimates[closest_power]
+            
+            # Afficher les prix
+            price_data = [
+                ["DÉTAIL DE VOTRE INVESTISSEMENT", ""],
+                ["Montant TTC hors primes", f"{price_info['ttc']:,} €".replace(',', ' ')],
+                ["Primes d'investissement pour l'autoconsommation", f"- {price_info['aide']:,} €".replace(',', ' ')],
+                ["MONTANT TTC PRIMES DÉDUITES", f"{price_info['ttc'] - price_info['aide']:,} €".replace(',', ' ')]
+            ]
+            
+            price_table = Table(price_data, colWidths=[4*inch, 2*inch])
+            price_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('BACKGROUND', (0, 3), (-1, 3), colors.orange),
+                ('TEXTCOLOR', (0, 3), (-1, 3), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, 3), (-1, 3), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 14),
+                ('FONTSIZE', (0, 3), (-1, 3), 14),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (0, 2), colors.lightgrey),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            content.append(price_table)
+            content.append(Spacer(1, 30))
+            
+        # Footer FRH
+        content.append(Paragraph(frh_footer, frh_normal_style))
+        content.append(PageBreak())
+        
+        # ===================================================================
+        # PAGE 6 - ÉVOLUTION FACTURES ET ÉCONOMIES
+        # ===================================================================
+        
+        content.append(Paragraph("VOS ÉCONOMIES D'ÉNERGIE", frh_title_style))
+        content.append(Spacer(1, 30))
+        
+        content.append(Paragraph("Évolution de vos factures avec ou sans PV", frh_heading_style))
+        content.append(Spacer(1, 20))
+        
+        if calculation_results:
+            # Calcul des économies
+            monthly_savings = calculation_results.get('estimated_savings', 2000) / 12
+            
+            savings_data = [
+                ["", "Sans PV", "Avec PV", "Économies"],
+                ["Facture mensuelle moyenne", f"{client_data.get('monthly_edf_payment', 220)} €", f"{client_data.get('monthly_edf_payment', 220) - monthly_savings:.0f} €", f"{monthly_savings:.0f} €"],
+                ["Facture annuelle", f"{client_data.get('annual_edf_payment', 2640)} €", f"{client_data.get('annual_edf_payment', 2640) - calculation_results.get('estimated_savings', 2000):.0f} €", f"{calculation_results.get('estimated_savings', 2000)} €"],
+                ["20 ans de factures", f"{client_data.get('annual_edf_payment', 2640) * 20:,} €".replace(',', ' '), f"{(client_data.get('annual_edf_payment', 2640) - calculation_results.get('estimated_savings', 2000)) * 20:,} €".replace(',', ' '), f"{calculation_results.get('estimated_savings', 2000) * 20:,} €".replace(',', ' ')]
+            ]
+            
+            savings_table = Table(savings_data, colWidths=[2*inch, 1.5*inch, 1.5*inch, 1.5*inch])
+            savings_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('BACKGROUND', (3, 1), (3, -1), colors.lightgreen),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 11),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            content.append(savings_table)
+            content.append(Spacer(1, 30))
+        
+        # Footer FRH
+        content.append(Paragraph(frh_footer, frh_normal_style))
+        content.append(PageBreak())
+        
         # Continuer avec les autres pages...
         # Pour économiser les crédits, je vais créer les pages principales d'abord
         
