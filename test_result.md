@@ -460,15 +460,18 @@ backend:
 frontend:
   - task: "Interface utilisateur avec 3 boutons R1/R2/R3 mutuellement exclusifs"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "✅ IMPLEMENTED: Remplacement du bouton 'R' unique par 3 boutons R1, R2, R3 mutuellement exclusifs. Mise à jour de la logique de gestion des remises (toggleKitDiscount, handleSelectKit, handleConfirmKitSelection), affichage des prix avec remises variables selon le type (1000€, 2000€, 3000€), et envoi des données de remise au backend. Styles CSS mis à jour pour 3 boutons avec état actif/inactif. Nécessite test complet."
+      - working: true
+        agent: "main"
+        comment: "✅ FORM VALIDATION FIX: Correction du problème de validation du formulaire étape 1/4. Suppression des attributs 'required' HTML5 des champs firstName, lastName, phone, email qui entraient en conflit avec la validation React custom. La validation React fonctionne maintenant correctement - affiche 'Le prénom est obligatoire' quand manquant et permet le passage à l'étape 2/4 quand tous les champs sont remplis. Tests visuels des boutons R1/R2/R3 maintenant débloqués."
   - task: "Complete Frontend Workflow Testing"
     implemented: true
     working: true
