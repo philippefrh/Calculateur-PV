@@ -951,15 +951,22 @@ const ConsumptionForm = ({
   };
 
   const handleCancelKitSelection = () => {
+    console.log('🔥 DEBUG: Annulation de la sélection de kit');
+    
+    // Réinitialiser tous les états
     setShowKitSelection(false);
     setSelectedKit(null);
     setKitDiscounts({}); // Réinitialiser toutes les remises
+    
+    // Réinitialiser le formData
     setFormData(prev => ({
       ...prev,
       useManualKit: false,
       manualKit: null,
       selectedManualKit: null
     }));
+    
+    console.log('🔥 DEBUG: États réinitialisés');
   };
 
   const validateForm = () => {
