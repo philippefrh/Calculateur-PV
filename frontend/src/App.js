@@ -1103,6 +1103,7 @@ const ConsumptionForm = ({
                       <div 
                         key={kit.power} 
                         className={`kit-card ${selectedKit?.power === kit.power ? 'selected' : ''}`}
+                        onClick={() => handleSelectKit(kit)}
                       >
                         <div className="kit-header">
                           <h5>Kit {kit.power}kW</h5>
@@ -1137,7 +1138,7 @@ const ConsumptionForm = ({
                           </div>
                         </div>
                         
-                        <div className="kit-clickable-area" onClick={() => handleSelectKit(kit)}>
+                        <div className="kit-content">
                           <div className="kit-detail-row">
                             <span>Surface totale:</span>
                             <span>{kit.surface}m²</span>
