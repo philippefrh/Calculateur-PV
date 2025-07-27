@@ -5277,6 +5277,187 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("France Discount System", False, f"Error: {str(e)}")
 
+    def test_discount_system_r1_r2_r3(self):
+        """Test the discount system R1/R2/R3 with manual kit power and discount amounts"""
+        if not self.client_id:
+            self.log_test("Discount System R1/R2/R3", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test scenarios as requested in the review
+            test_scenarios = [
+                {"name": "R1 Discount", "manual_kit_power": 6, "discount_amount": 1000, "expected_discount": 1000},
+                {"name": "R2 Discount", "manual_kit_power": 6, "discount_amount": 2000, "expected_discount": 2000},
+                {"name": "R3 Discount", "manual_kit_power": 6, "discount_amount": 3000, "expected_discount": 3000},
+                {"name": "No Discount", "manual_kit_power": 9, "discount_amount": 0, "expected_discount": 0},
+                {"name": "R1 with 9kW", "manual_kit_power": 9, "discount_amount": 1000, "expected_discount": 1000}
+            ]
+            
+            all_results = []
+            issues = []
+            
+            for scenario in test_scenarios:
+                try:
+                    # Build URL with parameters
+                    url = f"{self.base_url}/calculate/{self.client_id}"
+                    params = {
+                        "manual_kit_power": scenario["manual_kit_power"],
+                        "discount_amount": scenario["discount_amount"]
+                    }
+                    
+                    response = self.session.post(url, params=params)
+                    if response.status_code != 200:
+                        issues.append(f"{scenario['name']}: HTTP {response.status_code}: {response.text}")
+                        continue
+                    
+                    calculation = response.json()
+                    
+                    # Check that the recommended kit power matches manual_kit_power
+                    actual_kit_power = calculation.get("kit_power", 0)
+                    if actual_kit_power != scenario["manual_kit_power"]:
+                        issues.append(f"{scenario['name']}: Kit power {actual_kit_power}kW != manual {scenario['manual_kit_power']}kW")
+                    
+                    # Check discount fields in response
+                    discount_applied = calculation.get("discount_applied", 0)
+                    kit_price_original = calculation.get("kit_price_original", 0)
+                    kit_price_final = calculation.get("kit_price_final", 0)
+                    
+                    # Verify discount_applied matches expected
+                    if discount_applied != scenario["expected_discount"]:
+                        issues.append(f"{scenario['name']}: discount_applied {discount_applied}€ != expected {scenario['expected_discount']}€")
+                    
+                    # Verify kit_price_final = kit_price_original - discount_applied
+                    expected_final_price = kit_price_original - discount_applied
+                    if abs(kit_price_final - expected_final_price) > 0.01:  # Allow small floating point tolerance
+                        issues.append(f"{scenario['name']}: kit_price_final {kit_price_final}€ != kit_price_original {kit_price_original}€ - discount_applied {discount_applied}€ = {expected_final_price}€")
+                    
+                    # Check that financing calculations use the discounted price
+                    financing_options = calculation.get("financing_options", [])
+                    if financing_options:
+                        # Get a financing option to check if it's calculated with discounted price
+                        option_15y = next((opt for opt in financing_options if opt.get("duration_years") == 15), None)
+                        if option_15y:
+                            monthly_payment = option_15y.get("monthly_payment", 0)
+                            
+                            # Calculate expected payment with discounted price
+                            # Using region-specific interest rate (assume France 4.96% for this test)
+                            taeg = 0.0496
+                            monthly_rate = taeg / 12
+                            months = 15 * 12
+                            discounted_price = kit_price_original - discount_applied
+                            
+                            if monthly_rate > 0 and discounted_price > 0:
+                                expected_payment = discounted_price * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
+                                
+                                # Allow 5€ tolerance for financing calculation
+                                if abs(monthly_payment - expected_payment) > 5:
+                                    issues.append(f"{scenario['name']}: 15y financing payment {monthly_payment:.2f}€ doesn't match discounted price calculation {expected_payment:.2f}€")
+                    
+                    # Check financing with aids also uses discounted price
+                    financing_with_aids = calculation.get("financing_with_aids", {})
+                    if financing_with_aids:
+                        financed_amount = financing_with_aids.get("financed_amount", 0)
+                        total_aids = calculation.get("total_aids", 0)
+                        expected_financed_amount = kit_price_final - total_aids
+                        
+                        if abs(financed_amount - expected_financed_amount) > 0.01:
+                            issues.append(f"{scenario['name']}: financed_amount {financed_amount}€ != kit_price_final {kit_price_final}€ - total_aids {total_aids}€ = {expected_financed_amount}€")
+                    
+                    # Store results for summary
+                    all_results.append({
+                        "scenario": scenario["name"],
+                        "kit_power": actual_kit_power,
+                        "discount_applied": discount_applied,
+                        "kit_price_original": kit_price_original,
+                        "kit_price_final": kit_price_final,
+                        "monthly_payment_15y": option_15y.get("monthly_payment", 0) if option_15y else 0
+                    })
+                    
+                except Exception as e:
+                    issues.append(f"{scenario['name']}: Error - {str(e)}")
+            
+            if issues:
+                self.log_test("Discount System R1/R2/R3", False, f"Discount system issues: {'; '.join(issues)}", all_results)
+            else:
+                # Create success summary
+                summary_lines = []
+                for result in all_results:
+                    if result["discount_applied"] > 0:
+                        summary_lines.append(f"{result['scenario']}: {result['kit_power']}kW kit, {result['discount_applied']}€ discount, final price {result['kit_price_final']}€, 15y payment {result['monthly_payment_15y']:.2f}€")
+                    else:
+                        summary_lines.append(f"{result['scenario']}: {result['kit_power']}kW kit, no discount, price {result['kit_price_final']}€, 15y payment {result['monthly_payment_15y']:.2f}€")
+                
+                self.log_test("Discount System R1/R2/R3", True, 
+                            f"✅ DISCOUNT SYSTEM R1/R2/R3 WORKING: All scenarios tested successfully. Manual kit power respected, discounts applied correctly in calculations. Results: {'; '.join(summary_lines)}", 
+                            all_results)
+                
+        except Exception as e:
+            self.log_test("Discount System R1/R2/R3", False, f"Error: {str(e)}")
+
+    def test_discount_system_edge_cases(self):
+        """Test edge cases for the discount system"""
+        if not self.client_id:
+            self.log_test("Discount System Edge Cases", False, "No client ID available from previous test")
+            return
+            
+        try:
+            edge_cases = [
+                {"name": "Large Discount", "manual_kit_power": 6, "discount_amount": 5000},  # Discount larger than typical kit price
+                {"name": "Negative Discount", "manual_kit_power": 6, "discount_amount": -1000},  # Negative discount
+                {"name": "Zero Kit Power", "manual_kit_power": 0, "discount_amount": 1000},  # Invalid kit power
+                {"name": "High Kit Power", "manual_kit_power": 15, "discount_amount": 1000}  # Kit power not in standard range
+            ]
+            
+            results = []
+            
+            for case in edge_cases:
+                try:
+                    url = f"{self.base_url}/calculate/{self.client_id}"
+                    params = {
+                        "manual_kit_power": case["manual_kit_power"],
+                        "discount_amount": case["discount_amount"]
+                    }
+                    
+                    response = self.session.post(url, params=params)
+                    
+                    if response.status_code == 200:
+                        calculation = response.json()
+                        results.append({
+                            "case": case["name"],
+                            "status": "SUCCESS",
+                            "kit_power": calculation.get("kit_power", 0),
+                            "discount_applied": calculation.get("discount_applied", 0),
+                            "kit_price_final": calculation.get("kit_price_final", 0)
+                        })
+                    else:
+                        results.append({
+                            "case": case["name"],
+                            "status": f"HTTP_{response.status_code}",
+                            "error": response.text[:100]  # First 100 chars of error
+                        })
+                        
+                except Exception as e:
+                    results.append({
+                        "case": case["name"],
+                        "status": "ERROR",
+                        "error": str(e)[:100]
+                    })
+            
+            # Log results - edge cases are informational, not necessarily failures
+            summary = []
+            for result in results:
+                if result["status"] == "SUCCESS":
+                    summary.append(f"{result['case']}: {result['kit_power']}kW, discount {result['discount_applied']}€, final {result['kit_price_final']}€")
+                else:
+                    summary.append(f"{result['case']}: {result['status']}")
+            
+            self.log_test("Discount System Edge Cases", True, 
+                        f"✅ Edge cases tested: {'; '.join(summary)}", 
+                        results)
+                        
+        except Exception as e:
+            self.log_test("Discount System Edge Cases", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on user-requested endpoints"""
         print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
