@@ -1666,157 +1666,200 @@ FRH_MARTINIQUE_INFO = {
     "warranty": "Toutes nos installations bénéficient d'une garantie de 10 ans"
 }
 
-def create_professional_frh_syrius_pdf(client_data: dict, calculation_results: dict) -> bytes:
+def create_simple_professional_frh_pdf(client_data: dict, calculation_results: dict) -> bytes:
     """
-    Crée un PDF professionnel FRH qui reproduit fidèlement le design Syrius original
-    avec l'image de fond fournie et toutes les données FRH intégrées
+    Crée un PDF simple mais professionnel FRH Martinique avec toutes les données
     """
     try:
         buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4, 
+                              rightMargin=50, leftMargin=50,
+                              topMargin=50, bottomMargin=50)
         
-        # Taille A4
-        width, height = A4
-        c = canvas.Canvas(buffer, pagesize=A4)
+        # Styles professionnels
+        styles = getSampleStyleSheet()
         
-        # Charger l'image de fond
-        background_path = "/app/backend/frh_background.bmp"
-        logo_url = "https://customer-assets.emergentagent.com/job_quote-sun-power/artifacts/lut86gkv_FRH2-logo-HORIZONTALE.png"
+        # Styles personnalisés FRH
+        title_style = ParagraphStyle(
+            'FRHTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            spaceAfter=20,
+            textColor=colors.darkgreen,
+            fontName='Helvetica-Bold',
+            alignment=1  # Centré
+        )
+        
+        heading_style = ParagraphStyle(
+            'FRHHeading',
+            parent=styles['Heading2'],
+            fontSize=18,
+            spaceAfter=15,
+            textColor=colors.darkgreen,
+            fontName='Helvetica-Bold'
+        )
+        
+        normal_style = ParagraphStyle(
+            'FRHNormal',
+            parent=styles['Normal'],
+            fontSize=12,
+            spaceAfter=10,
+            fontName='Helvetica'
+        )
+        
+        bold_style = ParagraphStyle(
+            'FRHBold',
+            parent=styles['Normal'],
+            fontSize=12,
+            spaceAfter=10,
+            fontName='Helvetica-Bold'
+        )
+        
+        content = []
         
         # ================================================================
-        # PAGE 1 - PREMIÈRE PAGE AVEC DESIGN SYRIUS REPRODUIT
+        # PAGE 1 - EN-TÊTE AVEC LOGO FRH ET DONNÉES CLIENT
         # ================================================================
         
-        # Fond d'image (redimensionné pour A4)
+        # Logo FRH (nouveau logo fourni)
+        logo_path = "/app/backend/frh_logo_new.bmp"
         try:
-            c.drawImage(background_path, 0, 0, width=width, height=height, preserveAspectRatio=True, anchor='c')
-        except:
-            # Fallback: fond dégradé bleu-vert style Martinique
-            c.setFillColor(colors.Color(0.1, 0.4, 0.7))  # Bleu océan
-            c.rect(0, 0, width, height, fill=1, stroke=0)
-        
-        # Zone semi-transparente pour le contenu (style Syrius)
-        c.setFillColor(colors.Color(1, 1, 1, alpha=0.9))  # Blanc semi-transparent
-        c.rect(50, height-400, width-100, 350, fill=1, stroke=0)
-        
-        # Logo FRH en haut à droite (position Syrius)
-        try:
-            response = requests.get(logo_url, timeout=10)
-            if response.status_code == 200:
-                logo_buffer = BytesIO(response.content)
-                c.drawImage(ImageReader(logo_buffer), width-220, height-120, width=150, height=60)
-        except:
-            # Fallback texte
-            c.setFillColor(colors.darkgreen)
-            c.setFont("Helvetica-Bold", 12)
-            c.drawString(width-200, height-100, "FRH MARTINIQUE")
-            c.drawString(width-200, height-115, "ENVIRONNEMENT")
-        
-        # Titre principal (style Syrius)
-        c.setFillColor(colors.Color(0.0, 0.3, 0.6))  # Bleu Syrius
-        c.setFont("Helvetica-Bold", 26)
-        c.drawString(width/2 - 150, height-180, "ÉTUDE PERSONNALISÉE")
-        
-        c.setFont("Helvetica-Bold", 22)
-        c.drawString(width/2 - 180, height-210, "INSTALLATION PHOTOVOLTAÏQUE")
-        
-        # Zone orange pour le client (reproduction fidèle)
-        orange_syrius = colors.Color(0.95, 0.6, 0.1)  # Orange Syrius
-        c.setFillColor(orange_syrius)
-        c.rect(80, height-320, width-160, 60, fill=1, stroke=0)
-        
-        # Nom client dans la zone orange (même style que Syrius)
-        client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
-        c.setFillColor(colors.white)
-        c.setFont("Helvetica-Bold", 16)
-        c.drawString(width/2 - len(client_name)*4, height-295, f"Madame / Monsieur {client_name}")
-        
-        # Adresse client (style Syrius)
-        c.setFillColor(colors.Color(0.1, 0.1, 0.1))
-        c.setFont("Helvetica", 12)
-        client_address = client_data.get('address', '')
-        c.drawString(width/2 - len(client_address)*3, height-340, client_address)
-        
-        # Date de l'étude
-        c.setFont("Helvetica-Bold", 11)
-        date_text = f"Date de l'étude : {datetime.now().strftime('%d/%m/%Y')}"
-        c.drawString(width/2 - len(date_text)*3, height-365, date_text)
-        
-        # Footer coordonnées FRH (style Syrius en bas)
-        c.setFillColor(colors.Color(0.2, 0.2, 0.2))
-        c.setFont("Helvetica", 9)
-        footer_y = 50
-        footer_text1 = f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['address']}"
-        c.drawString(width/2 - len(footer_text1)*2.5, footer_y + 30, footer_text1)
-        footer_text2 = f"Tél: {FRH_MARTINIQUE_INFO['phone']} - Email: {FRH_MARTINIQUE_INFO['email']}"
-        c.drawString(width/2 - len(footer_text2)*2.5, footer_y + 18, footer_text2)
-        footer_text3 = f"SIRET: {FRH_MARTINIQUE_INFO['siret']} - N° TVA: {FRH_MARTINIQUE_INFO['tva_intra']}"
-        c.drawString(width/2 - len(footer_text3)*2.5, footer_y + 6, footer_text3)
-        
-        c.showPage()
-        
-        # ================================================================
-        # PAGE 2 - INTÉGRATION DES PAGES POWERNITY (3 pages)
-        # ================================================================
-        
-        # Ajouter les 3 pages Powernity tel quel
-        powerty_path = "/app/backend/powernity_375w.pdf"
-        try:
-            powernity_reader = PdfReader(powerty_path)
-            # Pour ReportLab Canvas, on doit utiliser une approche différente
-            # On va créer des pages simples pour l'instant
-            
-            for page_num in range(min(3, len(powernity_reader.pages))):
-                # Page de titre pour les specs techniques
-                c.setFillColor(colors.white)
-                c.rect(0, 0, width, height, fill=1, stroke=0)
-                
-                c.setFillColor(colors.darkgreen)
-                c.setFont("Helvetica-Bold", 24)
-                c.drawCentredText(width/2, height-100, "SPÉCIFICATIONS TECHNIQUES")
-                c.setFont("Helvetica-Bold", 18)
-                c.drawCentredText(width/2, height-130, "PANNEAUX POWERNITY 375W")
-                
-                # Footer FRH
-                c.setFillColor(colors.Color(0.2, 0.2, 0.2))
-                c.setFont("Helvetica", 9)
-                footer_text = f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['phone']}"
-                c.drawString(width/2 - len(footer_text)*2.5, 50, footer_text)
-                
-                c.showPage()
-                
+            logo_img = Image(logo_path, width=200, height=100)
+            logo_table = Table([[logo_img]], colWidths=[200])
+            logo_table.setStyle(TableStyle([('ALIGN', (0, 0), (-1, -1), 'CENTER')]))
+            content.append(logo_table)
+            content.append(Spacer(1, 20))
         except Exception as e:
-            logging.error(f"Erreur lecture Powernity: {e}")
-            
+            logging.error(f"Erreur chargement logo: {e}")
+            content.append(Paragraph("FRH MARTINIQUE ENVIRONNEMENT", title_style))
+            content.append(Spacer(1, 20))
+        
+        # Titre principal
+        content.append(Paragraph("ÉTUDE PERSONNALISÉE", title_style))
+        content.append(Paragraph("INSTALLATION PHOTOVOLTAÏQUE", title_style))
+        content.append(Spacer(1, 30))
+        
+        # Zone client (simple mais propre)
+        client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
+        
+        client_info = [
+            ["👤 CLIENT", ""],
+            ["Nom complet", client_name],
+            ["Adresse", client_data.get('address', '')],
+            ["Téléphone", client_data.get('phone', '')],
+            ["Email", client_data.get('email', '')],
+            ["Date de l'étude", datetime.now().strftime('%d/%m/%Y')]
+        ]
+        
+        client_table = Table(client_info, colWidths=[3*inch, 3.5*inch])
+        client_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.Color(0.95, 0.98, 0.95)),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTSIZE', (0, 1), (-1, -1), 11)
+        ]))
+        content.append(client_table)
+        content.append(Spacer(1, 30))
+        
+        # Coordonnées FRH
+        frh_info = [
+            ["🏢 FRH MARTINIQUE ENVIRONNEMENT", ""],
+            ["Adresse", FRH_MARTINIQUE_INFO['address']],
+            ["Téléphone", FRH_MARTINIQUE_INFO['phone']],
+            ["Email", FRH_MARTINIQUE_INFO['email']],
+            ["Site web", FRH_MARTINIQUE_INFO['website']],
+            ["Contact commercial", f"{FRH_MARTINIQUE_INFO['commercial_contact']} - {FRH_MARTINIQUE_INFO['commercial_phone']}"]
+        ]
+        
+        frh_table = Table(frh_info, colWidths=[3*inch, 3.5*inch])
+        frh_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.2, 0.4, 0.8)),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.Color(0.9, 0.95, 1)),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTSIZE', (0, 1), (-1, -1), 11)
+        ]))
+        content.append(frh_table)
+        
+        content.append(PageBreak())
+        
         # ================================================================
-        # PAGE 8 - PRIX AVEC STYLE SYRIUS (REPRODUCTION FIDÈLE)
+        # PAGE 2 - VOTRE PROJET SOLAIRE
         # ================================================================
         
-        # Fond blanc
-        c.setFillColor(colors.white)
-        c.rect(0, 0, width, height, fill=1, stroke=0)
+        content.append(Paragraph("VOTRE PROJET SOLAIRE", title_style))
+        content.append(Spacer(1, 20))
         
-        # En-tête avec logo FRH (position Syrius)
-        try:
-            response = requests.get(logo_url, timeout=10)
-            if response.status_code == 200:
-                logo_buffer = BytesIO(response.content)
-                c.drawImage(ImageReader(logo_buffer), width-200, height-80, width=120, height=50)
-        except:
-            c.setFillColor(colors.darkgreen)
-            c.setFont("Helvetica-Bold", 10)
-            c.drawString(width-180, height-60, "FRH MARTINIQUE")
-            c.drawString(width-180, height-75, "ENVIRONNEMENT")
+        content.append(Paragraph("Nous avons étudié votre projet d'installation photovoltaïque en tenant compte de vos besoins énergétiques et des spécificités de votre logement en Martinique.", normal_style))
+        content.append(Spacer(1, 20))
         
-        # Titre page (style Syrius)
-        c.setFillColor(colors.Color(0.0, 0.3, 0.6))
-        c.setFont("Helvetica-Bold", 20)
-        c.drawString(60, height-120, "VOTRE INVESTISSEMENT")
-        
-        # Calcul des prix selon le kit
+        # Données du projet
         if calculation_results:
             kit_power = calculation_results.get('recommended_kit_power', 6)
+            panels_count = calculation_results.get('panels', 16)
+            annual_production = calculation_results.get('annual_production', 8902)
+            autonomy = calculation_results.get('autonomy_percentage', 100)
             
-            # Prix selon la grille Martinique
+            project_info = [
+                ["📊 CONFIGURATION RECOMMANDÉE", ""],
+                ["Puissance installée", f"{kit_power} kWc"],
+                ["Nombre de panneaux", f"{panels_count} Panneaux POWERNITY 375W"],
+                ["Micro-onduleurs", "TECH 360"],
+                ["Production annuelle estimée", f"{annual_production:.0f} kWh/an"],
+                ["Taux d'autoconsommation", f"{autonomy}%"],
+                ["Économies annuelles estimées", f"{calculation_results.get('estimated_savings', 2166):.0f} €/an"]
+            ]
+            
+            project_table = Table(project_info, colWidths=[4*inch, 2.5*inch])
+            project_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.95, 0.6, 0.1)),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 14),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.Color(1, 0.98, 0.9)),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('FONTSIZE', (0, 1), (-1, -1), 12),
+                ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold')
+            ]))
+            content.append(project_table)
+            content.append(Spacer(1, 30))
+        
+        # Avantages
+        content.append(Paragraph("✅ AVANTAGES DE VOTRE INSTALLATION", heading_style))
+        avantages = [
+            "• Installation certifiée RGE par nos équipes locales",
+            "• Garantie panneaux 25 ans + micro-onduleurs 12 ans",
+            "• Maintenance et SAV local en Martinique",
+            "• Réduction drastique de vos factures EDF",
+            "• Valorisation de votre bien immobilier",
+            "• Geste écologique pour l'environnement"
+        ]
+        
+        for avantage in avantages:
+            content.append(Paragraph(avantage, normal_style))
+        
+        content.append(PageBreak())
+        
+        # ================================================================
+        # PAGE 3 - ANALYSE FINANCIÈRE DÉTAILLÉE
+        # ================================================================
+        
+        content.append(Paragraph("ANALYSE FINANCIÈRE", title_style))
+        content.append(Spacer(1, 20))
+        
+        if calculation_results:
+            # Calcul des prix selon le kit
             price_estimates = {
                 3: {"ttc": 10900, "aide": 5340},
                 6: {"ttc": 15900, "aide": 6480},
@@ -1832,317 +1875,178 @@ def create_professional_frh_syrius_pdf(client_data: dict, calculation_results: d
             closest_power = min(price_estimates.keys(), key=lambda x: abs(x - kit_power))
             price_info = price_estimates[closest_power]
             
-            # Vérifier s'il y a une remise active
+            # Vérifier les remises R1/R2/R3
             discount_amount = calculation_results.get('discount_applied', 0)
             final_ttc = price_info['ttc'] - discount_amount
             final_with_aids = final_ttc - price_info['aide']
             
-            # Zone prix principal (style Syrius - rectangle avec bordure)
-            c.setStrokeColor(colors.Color(0.8, 0.8, 0.8))
-            c.setLineWidth(2)
-            c.setFillColor(colors.Color(0.98, 0.98, 0.98))
-            c.rect(60, height-250, width-120, 100, fill=1, stroke=1)
-            
-            # Prix TTC hors prime (gros chiffres style Syrius)
-            c.setFillColor(colors.Color(0.0, 0.3, 0.6))
-            c.setFont("Helvetica-Bold", 28)
-            c.drawString(80, height-200, f"{final_ttc:,} €".replace(',', ' '))
-            
-            c.setFont("Helvetica", 14)
-            c.drawString(80, height-220, "Montant TTC hors prime")
-            
-            # Prix TTC primes déduites (style Syrius - surligné)
-            c.setFillColor(orange_syrius)
-            c.rect(60, height-320, width-120, 50, fill=1, stroke=1)
-            
-            c.setFillColor(colors.white)
-            c.setFont("Helvetica-Bold", 24)
-            c.drawString(80, height-300, f"{final_with_aids:,} €".replace(',', ' '))
-            
-            c.setFont("Helvetica-Bold", 12)
-            c.drawString(80, height-315, "Montant TTC primes déduites")
-            
-            # Détail des aides (style Syrius)
-            c.setFillColor(colors.Color(0.1, 0.1, 0.1))
-            c.setFont("Helvetica", 11)
-            c.drawString(80, height-350, f"Prime d'investissement pour l'autoconsommation : -{price_info['aide']:,} €".replace(',', ' '))
-            
-            # Si remise appliquée, l'afficher
-            if discount_amount > 0:
-                c.setFillColor(colors.red)
-                c.setFont("Helvetica-Bold", 11)
-                c.drawString(80, height-370, f"Remise exceptionnelle appliquée : -{discount_amount:,} €".replace(',', ' '))
-        
-        # Footer FRH
-        c.setFillColor(colors.Color(0.2, 0.2, 0.2))
-        c.setFont("Helvetica", 9)
-        footer_text = f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['phone']}"
-        c.drawString(width/2 - len(footer_text)*2.5, 30, footer_text)
-        
-        c.showPage()
-        
-        # ================================================================
-        # PAGE 9 - CALCULS ÉCONOMIQUES (STYLE SYRIUS)
-        # ================================================================
-        
-        c.setFillColor(colors.white)
-        c.rect(0, 0, width, height, fill=1, stroke=0)
-        
-        # En-tête avec logo
-        try:
-            response = requests.get(logo_url, timeout=10)
-            if response.status_code == 200:
-                logo_buffer = BytesIO(response.content)
-                c.drawImage(ImageReader(logo_buffer), width-200, height-80, width=120, height=50)
-        except:
-            pass
-        
-        # Titre
-        c.setFillColor(colors.Color(0.0, 0.3, 0.6))
-        c.setFont("Helvetica-Bold", 20)
-        c.drawString(60, height-120, "VOS ÉCONOMIES D'ÉNERGIE")
-        
-        if calculation_results:
-            # Tableau style Syrius
-            c.setStrokeColor(colors.black)
-            c.setLineWidth(1)
-            
-            # En-têtes du tableau
-            table_y = height - 200
-            col_widths = [120, 100, 100, 100]
-            headers = ["", "Sans PV", "Avec PV", "Économies"]
-            
-            c.setFillColor(colors.Color(0.0, 0.3, 0.6))
-            for i, header in enumerate(headers):
-                x = 60 + sum(col_widths[:i])
-                c.rect(x, table_y, col_widths[i], 25, fill=1, stroke=1)
-                c.setFillColor(colors.white)
-                c.setFont("Helvetica-Bold", 10)
-                # Centrer le texte manuellement
-                text_width = len(header) * 4  # Approximation
-                c.drawString(x + (col_widths[i] - text_width)/2, table_y + 8, header)
-                c.setFillColor(colors.Color(0.0, 0.3, 0.6))
-            
-            # Données du tableau avec calculs client
-            rows_data = [
-                ["Facture mensuelle", f"{client_data.get('monthly_edf_payment', 220)} €", 
-                 f"{client_data.get('monthly_edf_payment', 220) - (calculation_results.get('estimated_savings', 2000)/12):.0f} €",
-                 f"{calculation_results.get('estimated_savings', 2000)/12:.0f} €"],
-                ["Facture annuelle", f"{client_data.get('annual_edf_payment', 2640)} €",
-                 f"{client_data.get('annual_edf_payment', 2640) - calculation_results.get('estimated_savings', 2000):.0f} €",
-                 f"{calculation_results.get('estimated_savings', 2000)} €"],
-                ["Sur 20 ans", f"{client_data.get('annual_edf_payment', 2640) * 20:,} €".replace(',', ' '),
-                 f"{(client_data.get('annual_edf_payment', 2640) - calculation_results.get('estimated_savings', 2000)) * 20:,} €".replace(',', ' '),
-                 f"{calculation_results.get('estimated_savings', 2000) * 20:,} €".replace(',', ' ')]
+            # Tableau des prix
+            price_data = [
+                ["💰 INVESTISSEMENT", "MONTANT"],
+                ["Prix TTC hors primes", f"{final_ttc:,} €".replace(',', ' ')],
+                ["Primes d'investissement", f"- {price_info['aide']:,} €".replace(',', ' ')],
+                ["PRIX FINAL TTC", f"{final_with_aids:,} €".replace(',', ' ')]
             ]
             
-            c.setFillColor(colors.Color(0.95, 0.95, 0.95))
-            for row_idx, row in enumerate(rows_data):
-                y = table_y - (row_idx + 1) * 25
-                for col_idx, cell in enumerate(row):
-                    x = 60 + sum(col_widths[:col_idx])
-                    # Colorer la colonne économies en vert
-                    fill_color = colors.Color(0.9, 1, 0.9) if col_idx == 3 else colors.Color(0.95, 0.95, 0.95)
-                    c.setFillColor(fill_color)
-                    c.rect(x, y, col_widths[col_idx], 25, fill=1, stroke=1)
-                    
-                    c.setFillColor(colors.black)
-                    c.setFont("Helvetica", 9)
-                    # Centrer le texte manuellement
-                    text_width = len(cell) * 3  # Approximation
-                    c.drawString(x + (col_widths[col_idx] - text_width)/2, y + 8, cell)
+            # Ajouter la remise si applicable
+            if discount_amount > 0:
+                price_data.insert(2, ["Remise exceptionnelle", f"- {discount_amount:,} €".replace(',', ' ')])
+            
+            price_table = Table(price_data, colWidths=[4*inch, 2.5*inch])
+            price_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('BACKGROUND', (0, -1), (-1, -1), colors.Color(0.95, 0.6, 0.1)),
+                ('TEXTCOLOR', (0, -1), (-1, -1), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 14),
+                ('FONTSIZE', (0, -1), (-1, -1), 16),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BOTTOMPADDING', (0, -1), (-1, -1), 12),
+                ('BACKGROUND', (0, 1), (-1, -2), colors.Color(0.98, 0.98, 0.98)),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('FONTSIZE', (0, 1), (-1, -2), 12)
+            ]))
+            content.append(price_table)
+            content.append(Spacer(1, 30))
         
-        # Footer FRH
-        c.setFillColor(colors.Color(0.2, 0.2, 0.2))
-        c.setFont("Helvetica", 9)
-        footer_text = f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['phone']}"
-        c.drawString(width/2 - len(footer_text)*2.5, 30, footer_text)
-        
-        c.showPage()
-        
-        # ================================================================
-        # PAGE 10 - COÛT kWh ET AMORTISSEMENT (STYLE SYRIUS)
-        # ================================================================
-        
-        c.setFillColor(colors.white)
-        c.rect(0, 0, width, height, fill=1, stroke=0)
-        
-        # En-tête avec logo
-        try:
-            response = requests.get(logo_url, timeout=10)
-            if response.status_code == 200:
-                logo_buffer = BytesIO(response.content)
-                c.drawImage(ImageReader(logo_buffer), width-200, height-80, width=120, height=50)
-        except:
-            pass
-        
-        # Titre
-        c.setFillColor(colors.Color(0.0, 0.3, 0.6))
-        c.setFont("Helvetica-Bold", 20)
-        c.drawString(60, height-120, "RENTABILITÉ DE VOTRE INSTALLATION")
+        # Analyse économique
+        content.append(Paragraph("📈 VOS ÉCONOMIES D'ÉNERGIE", heading_style))
         
         if calculation_results:
-            # Calculs rentabilité
-            total_production_20_years = calculation_results.get('annual_production', 8000) * 20
-            total_investment = price_info['ttc'] - discount_amount if 'price_info' in locals() else 15900
-            cost_per_kwh = total_investment / total_production_20_years
-            payback_years = total_investment / calculation_results.get('estimated_savings', 2000)
+            monthly_savings = calculation_results.get('estimated_savings', 2166) / 12
+            annual_edf = client_data.get('annual_edf_payment', 2640)
             
-            # Zone mise en valeur (style Syrius)
-            c.setFillColor(colors.Color(0.9, 0.95, 1))
-            c.setStrokeColor(colors.Color(0.0, 0.3, 0.6))
-            c.setLineWidth(2)
-            c.rect(60, height-250, width-120, 80, fill=1, stroke=1)
+            savings_data = [
+                ["COMPARAISON", "SANS PV", "AVEC PV", "ÉCONOMIES"],
+                ["Facture mensuelle", f"{client_data.get('monthly_edf_payment', 220)} €", f"{client_data.get('monthly_edf_payment', 220) - monthly_savings:.0f} €", f"{monthly_savings:.0f} €"],
+                ["Facture annuelle", f"{annual_edf} €", f"{annual_edf - calculation_results.get('estimated_savings', 2166):.0f} €", f"{calculation_results.get('estimated_savings', 2166):.0f} €"],
+                ["Sur 20 ans", f"{annual_edf * 20:,} €".replace(',', ' '), f"{(annual_edf - calculation_results.get('estimated_savings', 2166)) * 20:,} €".replace(',', ' '), f"{calculation_results.get('estimated_savings', 2166) * 20:,} €".replace(',', ' ')]
+            ]
             
-            # Coût du kWh produit
-            c.setFillColor(colors.Color(0.0, 0.3, 0.6))
-            c.setFont("Helvetica-Bold", 18)
-            c.drawString(80, height-200, f"Coût du kWh produit : {cost_per_kwh:.3f} €")
+            savings_table = Table(savings_data, colWidths=[2*inch, 1.5*inch, 1.5*inch, 1.5*inch])
+            savings_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.2, 0.4, 0.8)),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('BACKGROUND', (3, 1), (3, -1), colors.Color(0.9, 1, 0.9)),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 11),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('FONTSIZE', (0, 1), (-1, -1), 10)
+            ]))
+            content.append(savings_table)
+            content.append(Spacer(1, 20))
             
-            c.setFont("Helvetica", 12)
-            c.drawString(80, height-220, f"(Tarif EDF actuel : ~0.20 €/kWh)")
-            
-            # Durée d'amortissement
-            c.setFont("Helvetica-Bold", 18)
-            c.drawString(80, height-240, f"Durée d'amortissement : {payback_years:.1f} ans")
-            
-            # Informations complémentaires
-            c.setFillColor(colors.black)
-            c.setFont("Helvetica", 11)
-            c.drawString(80, height-280, f"Production totale sur 20 ans : {total_production_20_years:,} kWh".replace(',', ' '))
-            c.drawString(80, height-300, f"Économies totales sur 20 ans : {calculation_results.get('estimated_savings', 2000) * 20:,} €".replace(',', ' '))
+            # Rentabilité
+            if 'price_info' in locals():
+                payback_years = (final_ttc - price_info['aide']) / calculation_results.get('estimated_savings', 2166)
+                content.append(Paragraph(f"💡 <b>Durée d'amortissement estimée : {payback_years:.1f} ans</b>", bold_style))
         
-        # Footer FRH
-        c.setFillColor(colors.Color(0.2, 0.2, 0.2))
-        c.setFont("Helvetica", 9)
-        footer_text = f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['phone']}"
-        c.drawString(width/2 - len(footer_text)*2.5, 30, footer_text)
-        
-        c.showPage()
+        content.append(PageBreak())
         
         # ================================================================
-        # PAGE 11 - DEVIS FINAL (STYLE SYRIUS)
+        # PAGE 4 - DEVIS FINAL
         # ================================================================
         
-        c.setFillColor(colors.white)
-        c.rect(0, 0, width, height, fill=1, stroke=0)
-        
-        # En-tête avec logo FRH
-        try:
-            response = requests.get(logo_url, timeout=10)
-            if response.status_code == 200:
-                logo_buffer = BytesIO(response.content)
-                c.drawImage(ImageReader(logo_buffer), 60, height-80, width=150, height=60)
-        except:
-            pass
-        
-        # DEVIS (pas Bon de commande)
-        c.setFillColor(colors.Color(0.0, 0.3, 0.6))
-        c.setFont("Helvetica-Bold", 24)
-        c.drawString(60, height-130, "DEVIS")
+        content.append(Paragraph("DEVIS FINAL", title_style))
+        content.append(Spacer(1, 20))
         
         # Numéro de devis unique
         devis_number = f"FRH-{datetime.now().strftime('%Y%m%d')}-{client_data.get('id', 'XXXX')[:4]}"
-        c.setFont("Helvetica-Bold", 12)
-        c.drawString(width-200, height-130, f"N° {devis_number}")
+        content.append(Paragraph(f"<b>N° de devis :</b> {devis_number}", bold_style))
+        content.append(Paragraph(f"<b>Date :</b> {datetime.now().strftime('%d/%m/%Y')}", bold_style))
+        content.append(Spacer(1, 20))
         
-        # Date
-        c.drawString(width-200, height-150, f"Date : {datetime.now().strftime('%d/%m/%Y')}")
-        
-        # Coordonnées client (style Syrius)
-        c.setFillColor(colors.Color(0.9, 0.9, 0.9))
-        c.rect(60, height-220, 200, 80, fill=1, stroke=1)
-        
-        c.setFillColor(colors.black)
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(70, height-190, "CLIENT :")
-        c.setFont("Helvetica", 10)
-        c.drawString(70, height-205, client_name)
-        c.drawString(70, height-220, client_address[:40])
-        if len(client_address) > 40:
-            c.drawString(70, height-235, client_address[40:])
-        
-        # Coordonnées FRH (style Syrius)
-        c.setFillColor(colors.Color(0.9, 0.9, 0.9))
-        c.rect(width-260, height-220, 200, 80, fill=1, stroke=1)
-        
-        c.setFillColor(colors.black)
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(width-250, height-190, "FRH MARTINIQUE ENVIRONNEMENT")
-        c.setFont("Helvetica", 9)
-        c.drawString(width-250, height-205, FRH_MARTINIQUE_INFO['address'])
-        c.drawString(width-250, height-220, f"Tél: {FRH_MARTINIQUE_INFO['phone']}")
-        c.drawString(width-250, height-235, f"Email: {FRH_MARTINIQUE_INFO['email']}")
-        
-        # Pack sélectionné avec données exactes
+        # Récapitulatif installation
         if calculation_results:
-            kit_power = calculation_results.get('recommended_kit_power', 6)
-            panels_count = calculation_results.get('panels', 16)
+            recap_data = [
+                ["🔧 INSTALLATION PHOTOVOLTAÏQUE", ""],
+                ["Pack sélectionné", f"{kit_power} kWc"],
+                ["Panneaux", f"{panels_count} x POWERNITY 375W"],
+                ["Micro-onduleurs", "TECH 360"],
+                ["Installation", "Pose en surimposition"],
+                ["Raccordement", "Monophasé"],
+                ["Garanties", "Panneaux 25 ans / Onduleurs 12 ans"],
+                ["Main d'œuvre", "Garantie 10 ans"]
+            ]
             
-            c.setFillColor(colors.Color(0.0, 0.3, 0.6))
-            c.setFont("Helvetica-Bold", 14)
-            c.drawString(60, height-280, "INSTALLATION PHOTOVOLTAÏQUE")
+            recap_table = Table(recap_data, colWidths=[4*inch, 2.5*inch])
+            recap_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.95, 0.6, 0.1)),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 14),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.Color(1, 0.98, 0.9)),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('FONTSIZE', (0, 1), (-1, -1), 11)
+            ]))
+            content.append(recap_table)
+            content.append(Spacer(1, 30))
             
-            c.setFillColor(colors.black)
-            c.setFont("Helvetica", 11)
-            y_pos = height - 310
-            c.drawString(80, y_pos, f"• Pack {kit_power} kWc")
-            y_pos -= 15
-            c.drawString(80, y_pos, f"• {panels_count} panneaux POWERNITY 375W")
-            y_pos -= 15
-            c.drawString(80, y_pos, f"• Micro-onduleurs TECH 360")
-            y_pos -= 15
-            c.drawString(80, y_pos, f"• Production estimée : {calculation_results.get('annual_production', 'N/A')} kWh/an")
+            # Prix final répété
+            final_price_data = [
+                ["MONTANT TOTAL TTC", f"{final_with_aids:,} €".replace(',', ' ')]
+            ]
             
-            # Prix final (avec remises si applicable)
-            y_pos -= 30
-            c.setFont("Helvetica-Bold", 12)
-            c.drawString(80, y_pos, f"MONTANT TTC : {final_ttc:,} €".replace(',', ' '))
-            
-            # Remise exceptionnelle (si applicable)
-            if discount_amount > 0:
-                y_pos -= 20
-                c.setFillColor(colors.red)
-                c.drawString(80, y_pos, f"Remise exceptionnelle : -{discount_amount:,} €".replace(',', ' '))
-                c.setFillColor(colors.black)
+            final_price_table = Table(final_price_data, colWidths=[4*inch, 2.5*inch])
+            final_price_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, -1), colors.darkgreen),
+                ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 18),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 15),
+                ('GRID', (0, 0), (-1, -1), 2, colors.white)
+            ]))
+            content.append(final_price_table)
         
-        # Footer avec coordonnées complètes FRH
-        c.setFillColor(colors.Color(0.8, 0.8, 0.8))
-        c.rect(0, 0, width, 60, fill=1, stroke=0)
+        content.append(Spacer(1, 40))
         
-        c.setFillColor(colors.black)
-        c.setFont("Helvetica", 8)
+        # Informations légales FRH
+        legal_data = [
+            ["📋 INFORMATIONS LÉGALES", ""],
+            ["SIRET", FRH_MARTINIQUE_INFO['siret']],
+            ["N° TVA Intracommunautaire", FRH_MARTINIQUE_INFO['tva_intra']],
+            ["RCS", FRH_MARTINIQUE_INFO['rcs']],
+            ["Code NAF", FRH_MARTINIQUE_INFO['naf']],
+            ["N° de convention", FRH_MARTINIQUE_INFO['convention_number']],
+            ["Assurance", FRH_MARTINIQUE_INFO['warranty']]
+        ]
         
-        # Ligne 1
-        text1 = f"FRH MARTINIQUE ENVIRONNEMENT - {FRH_MARTINIQUE_INFO['address']}"
-        c.drawString(width/2 - len(text1)*2, 40, text1)
+        legal_table = Table(legal_data, colWidths=[3*inch, 3.5*inch])
+        legal_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.5, 0.5, 0.5)),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.Color(0.95, 0.95, 0.95)),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTSIZE', (0, 1), (-1, -1), 10)
+        ]))
+        content.append(legal_table)
         
-        # Ligne 2
-        text2 = f"Tél: {FRH_MARTINIQUE_INFO['phone']} - Email: {FRH_MARTINIQUE_INFO['email']} - Web: {FRH_MARTINIQUE_INFO['website']}"
-        c.drawString(width/2 - len(text2)*2, 28, text2)
-        
-        # Ligne 3
-        text3 = f"SIRET: {FRH_MARTINIQUE_INFO['siret']} - N° TVA: {FRH_MARTINIQUE_INFO['tva_intra']} - RCS: {FRH_MARTINIQUE_INFO['rcs']}"
-        c.drawString(width/2 - len(text3)*2, 16, text3)
-        
-        # Ligne 4
-        text4 = f"N° Convention: {FRH_MARTINIQUE_INFO['convention_number']} - Code NAF: {FRH_MARTINIQUE_INFO['naf']}"
-        c.drawString(width/2 - len(text4)*2, 4, text4)
-        
-        c.showPage()
-        c.save()
-        
+        # Build PDF
+        doc.build(content)
         buffer.seek(0)
         return buffer.getvalue()
         
     except Exception as e:
-        logging.error(f"Erreur création PDF FRH professionnel Syrius: {e}")
+        logging.error(f"Erreur création PDF FRH simple: {e}")
         raise HTTPException(status_code=500, detail=f"Erreur génération PDF: {str(e)}")
 
 @api_router.get("/generate-frh-pdf/{client_id}")
 async def generate_frh_pdf(client_id: str):
     """
-    Génère un PDF FRH Martinique de qualité professionnelle reproduisant le design Syrius
+    Génère un PDF FRH Martinique simple mais professionnel
     """
     try:
         # Récupérer les données client
@@ -2153,8 +2057,8 @@ async def generate_frh_pdf(client_id: str):
         # Récupérer les résultats de calcul
         calculation_results = client_data.get('calculation_results', {})
         
-        # Générer le PDF professionnel FRH style Syrius
-        pdf_content = create_professional_frh_syrius_pdf(client_data, calculation_results)
+        # Générer le PDF simple et professionnel
+        pdf_content = create_simple_professional_frh_pdf(client_data, calculation_results)
         
         # Nom du fichier avec date
         filename = f"devis_frh_martinique_{client_data.get('last_name', 'client')}_{datetime.now().strftime('%Y%m%d')}.pdf"
