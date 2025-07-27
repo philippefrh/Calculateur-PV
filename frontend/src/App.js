@@ -1752,7 +1752,7 @@ Cordialement`);
             className={`devis-button ${isGeneratingDevis ? 'generating' : ''}`}
             disabled={isGeneratingDevis}
           >
-            {isGeneratingDevis ? '⏳ Génération...' : '📋 Générer le Devis PDF'}
+            {isGeneratingDevis ? '⏳ Génération FRH...' : '📋 Générer Devis FRH Martinique'}
           </button>
           <button type="button" onClick={sendToExpert} className="expert-button">
             👨‍💼 Prendre RDV avec un Expert
