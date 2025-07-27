@@ -1062,16 +1062,16 @@ const ConsumptionForm = ({
                       <div 
                         key={kit.power} 
                         className={`kit-card ${selectedKit?.power === kit.power ? 'selected' : ''}`}
-                        onClick={() => handleSelectKit(kit)}
                       >
                         <div className="kit-header">
                           <h5>Kit {kit.power}kW</h5>
                           <div className="kit-header-right">
-                            <div className="discount-buttons">
+                            <div className="discount-buttons" onClick={(e) => e.stopPropagation()}>
                               <button 
                                 className={`discount-button ${kitDiscounts[kit.power] === 'R1' ? 'active' : ''}`}
                                 onClick={(e) => toggleKitDiscount(kit.power, 'R1', e)}
                                 title="Remise de 1000€"
+                                type="button"
                               >
                                 R1
                               </button>
@@ -1079,6 +1079,7 @@ const ConsumptionForm = ({
                                 className={`discount-button ${kitDiscounts[kit.power] === 'R2' ? 'active' : ''}`}
                                 onClick={(e) => toggleKitDiscount(kit.power, 'R2', e)}
                                 title="Remise de 2000€"
+                                type="button"
                               >
                                 R2
                               </button>
@@ -1086,6 +1087,7 @@ const ConsumptionForm = ({
                                 className={`discount-button ${kitDiscounts[kit.power] === 'R3' ? 'active' : ''}`}
                                 onClick={(e) => toggleKitDiscount(kit.power, 'R3', e)}
                                 title="Remise de 3000€"
+                                type="button"
                               >
                                 R3
                               </button>
@@ -1094,7 +1096,7 @@ const ConsumptionForm = ({
                           </div>
                         </div>
                         
-                        <div className="kit-details">
+                        <div className="kit-clickable-area" onClick={() => handleSelectKit(kit)}>
                           <div className="kit-detail-row">
                             <span>Surface totale:</span>
                             <span>{kit.surface}m²</span>
