@@ -2353,13 +2353,26 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       
       // Ajouter le kit manuel si sélectionné
       if (formData.useManualKit && formData.manualKit) {
+        console.log('🚨 DEBUG FINAL: Kit manuel détecté !');
+        console.log('🚨 DEBUG FINAL: formData.manualKit =', formData.manualKit);
+        console.log('🚨 DEBUG FINAL: Power =', formData.manualKit.power);
+        console.log('🚨 DEBUG FINAL: Has discount =', formData.manualKit.hasDiscount);
+        console.log('🚨 DEBUG FINAL: Discount amount =', formData.manualKit.discountAmount);
+        
         calculationUrl += `&manual_kit_power=${formData.manualKit.power}`;
         
         // Ajouter les informations de remise si applicable
         if (formData.manualKit.hasDiscount) {
           calculationUrl += `&discount_amount=${formData.manualKit.discountAmount}`;
+          console.log('🚨 DEBUG FINAL: Remise ajoutée à l\'URL !');
         }
+        
+        console.log('🚨 DEBUG FINAL: URL finale =', calculationUrl);
+      } else {
+        console.log('🚨 DEBUG FINAL: AUCUN kit manuel - useManualKit =', formData.useManualKit, 'manualKit =', formData.manualKit);
       }
+      
+      console.log('🚨 DEBUG FINAL: Appel API avec URL =', calculationUrl);
       
       const calculationResponse = await axios.post(calculationUrl);
       
