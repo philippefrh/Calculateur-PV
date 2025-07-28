@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Response
+from fastapi import FastAPI, APIRouter, HTTPException, Response, UploadFile, File, Form
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -37,6 +37,9 @@ from pypdf import PdfReader, PdfWriter
 
 # OpenAI Vision imports - Updated LLMChat to LlmChat
 from emergentintegrations.llm.chat import ImageContent, UserMessage, LlmChat
+
+# fal.ai client for solar panel visualization
+import fal_client
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
