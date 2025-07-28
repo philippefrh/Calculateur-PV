@@ -1,16 +1,18 @@
 <analysis>
-The previous AI engineer successfully stabilized the FRH ENVIRONNEMENT application, primarily by debugging and fixing the critical R1/R2/R3 discount system. This involved correcting calculation inaccuracies, resolving incorrect kit selections, and repairing the confirmation modal across both the React frontend and FastAPI backend. Post-stabilization, the focus shifted to implementing a new feature: realistic solar panel placement on client house photos. The engineer meticulously validated the  API for photorealistic image generation, including handling multiple user-provided roof images and ensuring the desired black panels rendering. Backend integration for image upload and roof analysis was completed, followed by initial frontend UI development for a new Visualisation de Toit tab. A significant frontend navigation bug, preventing progression to the results screen, was identified and promptly fixed, leaving the application poised for further frontend integration and testing of the new visualization feature.
+The previous AI engineer successfully stabilized the FRH ENVIRONNEMENT application, particularly by fixing the R1/R2/R3 discount system and initiating a new solar panel placement feature using . Backend integration for image upload and roof analysis was completed, along with initial frontend UI for a Visualisation de Toit tab.
+
+The current trajectory details the debugging process undertaken by the AI engineer. The primary issue reported by the user was a persistent blockage at the PVGIS calculation step. Investigation revealed a critical backend failure due to an unreachable MongoDB instance, as the  was incorrectly set to  instead of . This was corrected, and the backend API then functioned. Subsequently, a frontend navigation error, linked to a hardcoded preview URL for the backend in  and , was identified. This was addressed by modifying the  to use the correct internal IP for backend communication. The application's core functionality, including the calculation and navigation to results, is now reported as working.
 </analysis>
 
 <product_requirements>
-The FRH ENVIRONNEMENT application is a solar calculation and quote generation tool for France and Martinique. Core features include a dynamic CSS-based 3D solar animation displaying sun, Linky meter, kWh values, euro banknotes, and an Autoconsommation = Économies badge (375W panel wattage). Martinique-specific pricing was updated to include new TTC prices, 2.10% TVA, 8.63% interest, and support for 12kW, 15kW, 18kW, 21kW, 24kW, 27kW kits with corresponding prices and aid amounts. A key implemented feature is three mutually exclusive discount buttons (R1: €1000, R2: €2000, R3: €3000) that apply to calculations but are hidden from the final quote. A new, major requirement is to integrate realistic solar panel placement on client house photos, demanding photorealistic rendering equivalent to provided examples, with a specific request for black-colored panels.
+The FRH ENVIRONNEMENT application is designed as a solar calculation and quote generation tool for clients in France and Martinique. Its core features include a dynamic CSS-based 3D solar animation that visually represents energy flow (sun, Linky meter, kWh, euro banknotes) using 375W panels, with an Autoconsommation = Économies badge. Martinique-specific pricing has been implemented, incorporating new TTC prices, 2.10% TVA, 8.63% interest rates, and support for various kit sizes (12kW to 27kW) with corresponding prices and aid amounts. A crucial functional requirement is the inclusion of three mutually exclusive discount buttons (R1: €1000, R2: €2000, R3: €3000) that apply to calculations but remain hidden from the final quote. A major new feature under development requires integrating realistic solar panel placement on client house photos, demanding photorealistic rendering and specifically black-colored panels.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-Stack Architecture**: React (frontend), FastAPI (backend), MongoDB (database).
--   **Web Animation**: CSS-based 3D-like animations for solar energy flow.
--   **API Integration**: RESTful API for calculations, regional data, and external services.
--   **State Management**: React's  for UI and application data.
+-   **Web Animation**: CSS-based 3D-like animations.
+-   **API Integration**: RESTful API for calculations, regional data, and external services ().
+-   **State Management**: React's  for UI and data.
 -   **Environment Variables**:  files for configuration (, , ).
 -   **Dynamic Pricing & Calculation**: Backend logic for regional pricing, aids, and discounts.
 -   **Image Generation**: Integration with  for photorealistic solar panel rendering.
@@ -18,60 +20,47 @@ The FRH ENVIRONNEMENT application is a solar calculation and quote generation to
 
 <code_architecture>
 
+
 -   ****: Stores backend environment variables.
-    -   **Summary**: Critical for configuring  and .
-    -   **Changes Made**:  was added to enable  API integration.
--   ****: The core FastAPI backend handling API routes, calculations, and now image processing.
-    -   **Summary**: Contains business logic, data processing, and API responses. Manages client data, kit pricing, financing, and integrates with external image generation.
-    -   **Changes Made**:
-        *   Initial fixes ensured , , ,  were correctly handled and returned.
-        *   New Pydantic models (, , ) were added for the roof visualization feature.
-        *   Utility functions (, , , ) were integrated to manage image processing and storage with .
-        *   New API endpoints  (for image upload) and  (to send image for panel placement via ) were created and validated.
+    -   **Summary**: Critical for configuring database connections and external API keys.
+    -   **Changes Made**:  was added to enable  integration. Crucially,  was changed from  to  to resolve database connectivity issues.
+-   ****: The core FastAPI backend handling API routes and business logic.
+    -   **Summary**: Manages client data, kit pricing, financing, and integrates with  for image generation.
+    *   **Changes Made**: Initial fixes ensured discount and pricing calculations. New Pydantic models (, , ) and utility functions (, , , ) were added for roof visualization. New API endpoints  and  were created and validated.
 -   ****: Lists Python dependencies for the backend.
     -   **Summary**: Ensures all necessary Python libraries for the backend are available.
-    -   **Changes Made**:  was added to support the  integration.
--   ****: Stores frontend environment variables, notably . No explicit modifications recorded.
--   ****: The main React component for UI, state management, and backend interactions.
-    -   **Summary**: Orchestrates the user experience from input to displaying results and animations.
-    -   **Changes Made**:
-        *   Fixes for R1/R2/R3 discount system:  and  passed to backend, confirmation modal fixed,  used for display.
-        *   A new Visualisation de Toit tab was added to .
-        *   A  component was introduced, containing placeholder UI elements for image upload and display.
-        *   Critical navigation bug was fixed:  was changed from  to  to ensure the application correctly proceeds to the results screen after calculation. The PVGIS calculation timer was reduced to 5 seconds.
+    -   **Changes Made**:  was added.
+-   ****: Stores frontend environment variables.
+    -   **Summary**: Crucial for setting the  for API calls.
+    -   **Changes Made**:  was initially found hardcoded to a preview URL and was adjusted during debugging to resolve frontend connectivity issues, though the exact final value after the last attempts is not explicitly stated in the trajectory, the intent was to ensure it points to the correct backend IP or domain.
+-   ****: The main React component for UI, state, and backend interactions.
+    -   **Summary**: Orchestrates user flow, displays results, and handles animations.
+    -   **Changes Made**: Discount system fixes were implemented. A new Visualisation de Toit tab and  component were introduced. A critical navigation bug from PVGIS calculation to results screen (step 4 to 5) was fixed by changing  to  and reducing the PVGIS timer to 5 seconds. Debugging logs for  were temporarily added.
 -   ****: Defines application-wide styling.
-    -   **Summary**: Provides visual theme and layout.
-    -   **Changes Made**: New CSS styles were added to support the roof visualization elements, including responsive designs for various sections and new button styles.
+    -   **Summary**: Provides visual theme and layout for the application.
+    -   **Changes Made**: New styles were added to support roof visualization elements and responsive design.
 -   ****: Used for documenting testing protocols and communication.
-    -   **Summary**: Serves as a crucial communication and tracking tool for debugging and feature implementation.
-    -   **Changes Made**: Regularly updated to log issues, fixes, backend test results (including new  endpoints), and the resolution status of various problems. Includes the  test success log.
+    -   **Summary**: Tracks issues, fixes, and backend test results.
+    -   **Changes Made**: Regularly updated to log debugging efforts, including the  test success, the MongoDB connection issue, and the frontend URL problems and their resolutions.
 </code_architecture>
 
 <pending_tasks>
--   **PDF Quote Generation**: Temporarily abandoned due to challenges in achieving pixel-perfect design replication.
+-   **PDF Quote Generation**: Temporarily abandoned due to design replication challenges.
 -   **Deferred Feature**: Implement dual application versions for Particuliers (Individuals) and Professionnels (Professionals).
--   **Abandoned Feature**: The Roof Analysis feature was completely removed earlier.
--   **New Feature Continuation**: Frontend logic for image upload, displaying the  processed images, and connecting it to the existing kit selection system.
+-   **New Feature Continuation**: Complete frontend logic for image upload, displaying the  processed images, and connecting it to the existing kit selection system.
+-   **Frontend Test**: Create a simple frontend test to verify successful navigation to the results screen after form submission.
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer completed the critical phase of fixing the R1/R2/R3 discount system, ensuring discounts are accurately applied and displayed. The application now correctly reflects  and handles kit selection and confirmation modal flows.
+Immediately prior to this summary, the AI engineer was engaged in resolving critical application errors that prevented proper navigation and data submission. The primary issues identified and addressed were:
 
-The current ongoing work revolves around implementing the new realistic solar panel placement feature. The AI engineer has successfully validated the integration with , confirming its ability to generate photorealistic images with solar panels, including the specific request for black panels. This was confirmed by a test () that successfully added 12 black panels to a user-provided photo.
+1.  **MongoDB Connection Failure**: The backend was failing with 500 errors due to an incorrect  configuration (). This was resolved by updating the  file to , which re-established database connectivity and allowed backend APIs to function correctly.
+2.  **Frontend Navigation Bug**: The application was getting stuck at the PVGIS calculation step (step 4), failing to navigate to the results screen (step 5). This was linked to a previous fix where  was incorrectly set instead of  in  and an associated 20-second timer was reduced to 5 seconds.
+3.  **Frontend Backend URL Configuration**: An error indicated that the frontend's  was hardcoded to a preview URL, causing connectivity issues in the deployed environment. While the exact final value isn't explicitly shown, the engineer iteratively attempted to correct it, aiming to use the correct internal IP or system-provided external URL to ensure frontend-backend communication.
 
-**Backend ():**
-The backend has been extended to support image uploads and roof analysis. This includes new Pydantic models for request/response bodies, utility functions for interacting with  (e.g., ) and S3 for image storage, and two new API endpoints:
--   : For receiving and storing client roof images.
--   : For processing an uploaded image via  to add solar panels and returning the result.
-These backend changes have been implemented and successfully tested.
-
-**Frontend (, ):**
-The frontend has been updated to include a new Visualisation de Toit tab within the . A placeholder  component has been created and integrated. Necessary CSS for this new section has been added to .
-
-**Recent Bug Fix:**
-A critical bug preventing the application from proceeding from the PVGIS calculation step (step 4) to the results screen (step 5) was identified. The application was incorrectly skipping to the animation screen (step 6). This was fixed by changing  to  in  (around line 2754), and the associated timer was reduced from 20 to 5 seconds. The AI engineer has just completed this fix and is about to re-test the frontend flow.
+The current status is that the MongoDB connection is fixed, and the backend API calls are successful. The application is now expected to navigate correctly to the results screen, resolving the core blocking issues reported by the user. The previous AI engineer had also integrated  for photorealistic solar panel placement, with backend support for image upload () and analysis () already validated. Initial frontend UI for this Visualisation de Toit tab exists, but the full integration of image upload and display remains to be completed.
 </current_work>
 
 <optional_next_step>
-Create a simple frontend test to verify that the application now successfully navigates to the results screen after form submission.
+Continue implementing the frontend logic for the Visualisation de Toit feature, specifically image upload and displaying  processed images.
 </optional_next_step>
