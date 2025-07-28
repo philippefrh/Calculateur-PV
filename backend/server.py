@@ -2240,7 +2240,7 @@ async def upload_roof_image(file: UploadFile = File(...)):
             error_message=f"Upload error: {str(e)}"
         )
 
-@api_router.post("/api/generate-roof-visualization", response_model=RoofVisualizationResponse)
+@api_router.post("/generate-roof-visualization", response_model=RoofVisualizationResponse)
 async def generate_roof_visualization(request: RoofVisualizationRequest):
     """
     Generate photorealistic solar panel visualization on a roof image
