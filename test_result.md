@@ -740,6 +740,8 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Implémentation complète du système de remises R1/R2/R3 terminée. Backend modifié pour supporter les paramètres discount_amount (1000€, 2000€, 3000€) dans tous les calculs de financement. Frontend mis à jour avec 3 boutons mutuellement exclusifs et logique de gestion des remises. Prêt pour test backend complet."
+  - agent: "main"
+    message: "🔧 PROBLÈME CRITIQUE RÉSOLU - MongoDB inaccessible causait l'erreur 500 sur /api/clients. Changé MONGO_URL de 'mongodb://mongodb:27017' vers 'mongodb://localhost:27017' dans .env. Application maintenant fonctionnelle - création client et calculs PVGIS opérationnels."
   - agent: "testing"
     message: "❌ CRITICAL FORM VALIDATION ISSUE IDENTIFIED - FRH ENVIRONNEMENT navigation test reveals form validation blocking progression. Step 1 (Personal Information) form validation prevents advancement to Step 2 despite fields being filled. The 'Nom' field consistently shows 'Please fill out this field' validation error even when populated with 'Martin'. This prevents testing of the complete navigation workflow as requested. Form validation logic needs investigation - may be related to field naming, validation timing, or React state management. Unable to complete full navigation test due to this blocking issue."ctly to results. This causes success screen to last ~1 second instead of 20 seconds and skips 3D animation entirely. SOLUTION: Remove/modify 1-second timer in handleCalculationComplete to allow proper 20-second success screen duration and animation flow."
   - agent: "testing"
