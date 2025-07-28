@@ -2761,7 +2761,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   useEffect(() => {
     if (!isCalculating && calculationResults && !successTimerRef.current) {
       successTimerRef.current = setTimeout(() => {
-        setCurrentStep(5); // Aller vers les résultats d'abord
+        setCurrentStep('results'); // Aller vers les résultats d'abord
       }, 5000);
     }
     
