@@ -729,8 +729,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Système de remises R1/R2/R3 avec boutons mutuellement exclusifs"
-    - "Interface utilisateur avec 3 boutons R1/R2/R3 mutuellement exclusifs"
+    - "Roof Image Upload Endpoint (POST /api/upload-roof-image)"
+    - "Roof Visualization Generation with fal.ai (POST /api/generate-roof-visualization)"
+    - "fal.ai Integration and OmniGen V2 Model Usage"
   stuck_tasks:
     - "Aucune tâche bloquée actuellement"
   test_all: false
