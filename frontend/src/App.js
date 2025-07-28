@@ -1280,6 +1280,276 @@ const ConsumptionForm = ({
   );
 };
 
+// Composant de visualisation de toit avec panneaux solaires
+const RoofVisualization = ({ results, selectedRegion, formData }) => {
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileInput = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleImageUpload(e.target.files[0]);
+    }
+  };
+
+  const handleImageUpload = async (file) => {
+    try {
+      setIsUploading(true);
+      setError(null);
+
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Upload to backend
+      const response = await axios.post(`${API}/upload-roof-image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.success) {
+        setUploadedImage({
+          data: response.data.image_data,
+          size: response.data.file_size,
+          name: file.name
+        });
+        setGeneratedImageUrl(null); // Reset generated image
+      } else {
+        setError(response.data.error_message || 'Erreur lors du téléchargement');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      setError('Erreur lors du téléchargement de l\'image');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const generateVisualization = async () => {
+    if (!uploadedImage) return;
+
+    try {
+      setIsGenerating(true);
+      setError(null);
+
+      const kitPower = formData.useManualKit && formData.manualKit ? 
+        formData.manualKit.power : 
+        (results?.kit_power || 6);
+
+      const requestData = {
+        image_data: uploadedImage.data,
+        kit_power: kitPower,
+        region: selectedRegion
+      };
+
+      const response = await axios.post(`${API}/generate-roof-visualization`, requestData);
+
+      if (response.data.success) {
+        setGeneratedImageUrl(response.data.generated_image_url);
+      } else {
+        setError(response.data.error_message || 'Erreur lors de la génération');
+      }
+    } catch (error) {
+      console.error('Generation error:', error);
+      setError('Erreur lors de la génération de la visualisation');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const kitPower = formData.useManualKit && formData.manualKit ? 
+    formData.manualKit.power : 
+    (results?.kit_power || 6);
+    
+  const panelCount = selectedRegion === "martinique" ? 
+    (results?.panels || kitPower * 2.67) : 
+    (results?.panels || kitPower * 2);
+
+  return (
+    <div className="tab-content">
+      <div className="roof-visualization-container">
+        <div className="visualization-header">
+          <h3>🏠 Visualisation de votre toit avec panneaux solaires</h3>
+          <p>Téléchargez une photo de votre maison pour voir à quoi ressembleront vos <strong>{Math.round(panelCount)} panneaux solaires noirs</strong> ({kitPower}kW)</p>
+        </div>
+
+        {/* Zone d'upload */}
+        {!uploadedImage && (
+          <div 
+            className={`upload-zone ${dragActive ? 'drag-active' : ''}`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+          >
+            <div className="upload-content">
+              <div className="upload-icon">📷</div>
+              <h4>Glissez votre photo de maison ici</h4>
+              <p>ou</p>
+              <label className="upload-button">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileInput}
+                  style={{ display: 'none' }}
+                />
+                Choisir un fichier
+              </label>
+              <p className="upload-note">Formats acceptés: JPG, PNG (max 10MB)</p>
+            </div>
+          </div>
+        )}
+
+        {/* Image téléchargée */}
+        {uploadedImage && (
+          <div className="uploaded-image-section">
+            <div className="image-container">
+              <h4>📸 Votre photo</h4>
+              <img 
+                src={uploadedImage.data} 
+                alt="Maison téléchargée" 
+                className="uploaded-image"
+              />
+              <div className="image-info">
+                <p><strong>Nom:</strong> {uploadedImage.name}</p>
+                <p><strong>Taille:</strong> {Math.round(uploadedImage.size / 1024)} KB</p>
+              </div>
+            </div>
+
+            <div className="generate-section">
+              <button
+                className="generate-button"
+                onClick={generateVisualization}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <div className="loading-spinner"></div>
+                    Génération en cours...
+                  </>
+                ) : (
+                  <>
+                    ✨ Générer la visualisation
+                  </>
+                )}
+              </button>
+              
+              <div className="generation-info">
+                <p><strong>Kit sélectionné:</strong> {kitPower}kW ({Math.round(panelCount)} panneaux noirs)</p>
+                <p><strong>Région:</strong> {selectedRegion === 'martinique' ? '🇲🇶 Martinique' : '🇫🇷 France'}</p>
+              </div>
+
+              <button
+                className="change-image-button"
+                onClick={() => {
+                  setUploadedImage(null);
+                  setGeneratedImageUrl(null);
+                  setError(null);
+                }}
+              >
+                📷 Changer d'image
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Image générée */}
+        {generatedImageUrl && (
+          <div className="generated-image-section">
+            <h4>✨ Votre maison avec panneaux solaires</h4>
+            <div className="before-after">
+              <div className="before-image">
+                <h5>Avant</h5>
+                <img 
+                  src={uploadedImage.data} 
+                  alt="Avant installation" 
+                  className="comparison-image"
+                />
+              </div>
+              <div className="after-image">
+                <h5>Après - {Math.round(panelCount)} panneaux noirs ({kitPower}kW)</h5>
+                <img 
+                  src={generatedImageUrl} 
+                  alt="Avec panneaux solaires" 
+                  className="comparison-image"
+                />
+              </div>
+            </div>
+            
+            <div className="visualization-actions">
+              <a 
+                href={generatedImageUrl} 
+                download={`toit-solaire-${kitPower}kw.jpg`}
+                className="download-button"
+              >
+                💾 Télécharger l'image
+              </a>
+              <button
+                className="regenerate-button"
+                onClick={generateVisualization}
+                disabled={isGenerating}
+              >
+                🔄 Régénérer
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Erreurs */}
+        {error && (
+          <div className="error-message">
+            <span className="error-icon">⚠️</span>
+            {error}
+          </div>
+        )}
+
+        {/* États de chargement */}
+        {isUploading && (
+          <div className="loading-message">
+            <div className="loading-spinner"></div>
+            Téléchargement en cours...
+          </div>
+        )}
+
+        {/* Conseils */}
+        <div className="visualization-tips">
+          <h4>💡 Conseils pour une meilleure visualisation</h4>
+          <ul>
+            <li>• Utilisez une photo prise de face avec un bon éclairage</li>
+            <li>• Assurez-vous que le toit est bien visible</li>
+            <li>• Évitez les photos prises de trop loin ou de trop près</li>
+            <li>• Les panneaux générés seront toujours de couleur noire</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Écran de résultats - Version Premium avec génération PDF
 const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, formData }) => {
   const [activeTab, setActiveTab] = useState('overview');
