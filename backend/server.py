@@ -2192,6 +2192,123 @@ def create_simple_professional_frh_pdf(client_data: dict, calculation_results: d
         logging.error(f"Erreur création PDF FRH simple: {e}")
         raise HTTPException(status_code=500, detail=f"Erreur génération PDF: {str(e)}")
 
+# ================================================================
+# ROOF VISUALIZATION ENDPOINTS
+# ================================================================
+
+@api_router.post("/api/upload-roof-image", response_model=ImageUploadResponse)
+async def upload_roof_image(file: UploadFile = File(...)):
+    """
+    Upload a roof image for solar panel visualization
+    """
+    try:
+        # Check file type
+        if not file.content_type.startswith('image/'):
+            return ImageUploadResponse(
+                success=False,
+                error_message="File must be an image"
+            )
+        
+        # Check file size (limit to 10MB)
+        file_content = await file.read()
+        if len(file_content) > 10 * 1024 * 1024:  # 10MB limit
+            return ImageUploadResponse(
+                success=False,
+                error_message="Image file too large (max 10MB)"
+            )
+        
+        # Convert to base64
+        base64_image = convert_uploaded_file_to_base64(file_content, file.content_type)
+        
+        # Validate image format
+        if not validate_image_format(base64_image):
+            return ImageUploadResponse(
+                success=False,
+                error_message="Invalid image format"
+            )
+        
+        return ImageUploadResponse(
+            success=True,
+            image_data=base64_image,
+            file_size=len(file_content)
+        )
+        
+    except Exception as e:
+        logging.error(f"Error uploading roof image: {str(e)}")
+        return ImageUploadResponse(
+            success=False,
+            error_message=f"Upload error: {str(e)}"
+        )
+
+@api_router.post("/api/generate-roof-visualization", response_model=RoofVisualizationResponse)
+async def generate_roof_visualization(request: RoofVisualizationRequest):
+    """
+    Generate photorealistic solar panel visualization on a roof image
+    """
+    try:
+        # Validate image format
+        if not validate_image_format(request.image_data):
+            return RoofVisualizationResponse(
+                success=False,
+                error_message="Invalid image format. Please provide base64 encoded image."
+            )
+        
+        # Validate kit power
+        if request.region == "martinique":
+            valid_powers = [3, 6, 9, 12, 15, 18, 21, 24, 27]
+        else:
+            valid_powers = list(SOLAR_KITS.keys())
+        
+        if request.kit_power not in valid_powers:
+            return RoofVisualizationResponse(
+                success=False,
+                error_message=f"Invalid kit power. Valid options for {request.region}: {valid_powers}"
+            )
+        
+        # Generate visualization using fal.ai
+        result = await generate_solar_panel_visualization(
+            image_data=request.image_data,
+            kit_power=request.kit_power,
+            region=request.region
+        )
+        
+        if result["success"]:
+            # Get kit information
+            if request.region == "martinique":
+                region_kits = REGIONS_CONFIG["martinique"]["kits"]
+                kit_key = f"kit_{request.kit_power}kw"
+                kit_info = region_kits.get(kit_key, {})
+            else:
+                kit_info = SOLAR_KITS.get(request.kit_power, {})
+            
+            return RoofVisualizationResponse(
+                success=True,
+                generated_image_url=result["generated_image_url"],
+                original_image_data=request.image_data,
+                kit_info={
+                    "power": request.kit_power,
+                    "panels": result["panel_count"],
+                    "region": request.region,
+                    **kit_info
+                }
+            )
+        else:
+            return RoofVisualizationResponse(
+                success=False,
+                error_message=result["error_message"]
+            )
+        
+    except Exception as e:
+        logging.error(f"Error generating roof visualization: {str(e)}")
+        return RoofVisualizationResponse(
+            success=False,
+            error_message=f"Generation error: {str(e)}"
+        )
+
+# ================================================================
+# END ROOF VISUALIZATION ENDPOINTS
+# ================================================================
+
 @api_router.get("/generate-frh-pdf/{client_id}")
 async def generate_frh_pdf(client_id: str):
     """
