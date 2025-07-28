@@ -279,6 +279,25 @@ class PVGISData(BaseModel):
     monthly_data: List[dict]
     orientation_factor: float
 
+# Roof Visualization Models
+class RoofVisualizationRequest(BaseModel):
+    image_data: str  # base64 encoded image
+    kit_power: int  # Selected kit power (3, 6, 9, etc.)
+    region: str = "france"  # france or martinique
+
+class RoofVisualizationResponse(BaseModel):
+    success: bool
+    generated_image_url: Optional[str] = None
+    original_image_data: Optional[str] = None
+    kit_info: Optional[Dict[str, Any]] = None
+    error_message: Optional[str] = None
+
+class ImageUploadResponse(BaseModel):
+    success: bool
+    image_data: Optional[str] = None  # base64 encoded
+    file_size: Optional[int] = None
+    error_message: Optional[str] = None
+
 # Solar Kit Pricing
 SOLAR_KITS = {
     3: {"price": 14900, "panels": 6},
