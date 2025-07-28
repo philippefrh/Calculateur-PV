@@ -1,0 +1,14 @@
+TEST VALIDATION FAL.AI
+======================
+Original image: https://customer-assets.emergentagent.com/job_frh-discount-system/artifacts/85oefc5z_Essais%20sur%20cette%20toiture.jpg
+Generated image: https://v3.fal.media/files/elephant/N2OkriCe1Tpn_4aTQYQ8N.jpeg
+Prompt used: Add 12 realistic black solar panels on the roof of this house. The solar panels should be:
+- Photorealistic and professional quality like real installations
+- Properly aligned on the roof tiles
+- With natural shadows and reflections
+- Modern black rectangular panels (like Powernity 375W)
+- Arranged in optimal rows on the available roof space
+- Realistic integration that matches the architectural style
+- Same quality as professional solar installation photos
+Model: fal-ai/omnigen-v2
+Status: SUCCESS
