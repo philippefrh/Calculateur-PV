@@ -1754,15 +1754,21 @@ async def get_region_kits(region_name: str):
             })
         return {"kits": kits}
     else:
-        # Pour la France, récupérer les kits depuis la base de données (logique existante)
-        kits = db.kits.find()
-        kits_list = await kits.to_list(length=100)
-        
-        # Convertir ObjectId en string pour JSON
-        for kit in kits_list:
-            kit["_id"] = str(kit["_id"])
-            
-        return {"kits": kits_list}
+        # Pour la France, utiliser les kits fixes depuis SOLAR_KITS
+        kits = []
+        for power, kit_data in SOLAR_KITS.items():
+            kits.append({
+                "id": f"kit_{power}kw",
+                "name": f"Kit {power}kW",
+                "power": power,
+                "panels": kit_data["panels"],
+                "price_ht": kit_data["price"],  # Prix HT 
+                "price_ttc": kit_data["price"],  # Prix TTC identique pour France
+                "aid_amount": 0,  # À calculer dynamiquement
+                "surface": kit_data["panels"] * 2.1,  # Surface en m²
+                "co2_savings": 2500  # CO2 économisé par an en kilos
+            })
+        return {"kits": kits}
 
 # Endpoints pour la gestion des modes de calcul
 @api_router.get("/calculation-modes")
