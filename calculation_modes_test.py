@@ -9,7 +9,7 @@ import json
 import time
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://0da09fb6-0d81-43a5-99be-4dd596bc24dc.preview.emergentagent.com/api"
+BACKEND_URL = "https://53e569bc-dd7c-4cc2-8ba6-7536f9032dc9.preview.emergentagent.com/api"
 
 class CalculationModesSpecificTester:
     def __init__(self):

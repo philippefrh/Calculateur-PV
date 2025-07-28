@@ -6,7 +6,7 @@ Test Martinique fixes using existing client
 import requests
 import json
 
-BACKEND_URL = "https://0da09fb6-0d81-43a5-99be-4dd596bc24dc.preview.emergentagent.com/api"
+BACKEND_URL = "https://53e569bc-dd7c-4cc2-8ba6-7536f9032dc9.preview.emergentagent.com/api"
 
 def test_martinique_fixes_with_existing_client():
     session = requests.Session()
