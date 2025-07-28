@@ -339,8 +339,8 @@ class RoofVisualizationTester:
                                 f"❌ Invalid fal.ai generated URL: {generated_url}", data)
                     return
                 
-                # Check if URL looks like fal.ai format
-                if "fal.ai" not in generated_url and "cdn" not in generated_url:
+                # Check if URL looks like fal.ai format (fal.media is the CDN for fal.ai)
+                if "fal.ai" not in generated_url and "fal.media" not in generated_url:
                     self.log_test("Fal.ai Integration & Black Panels", False, 
                                 f"❌ Generated URL doesn't appear to be from fal.ai: {generated_url}", data)
                     return
