@@ -6,6 +6,16 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Debug: log backend URL
+console.log('🔍 BACKEND_URL:', BACKEND_URL);
+console.log('🔍 API:', API);
+
+// Verify backend URL is configured
+if (!BACKEND_URL) {
+  console.error('❌ REACT_APP_BACKEND_URL is not configured!');
+  alert('Erreur de configuration: URL backend non configurée');
+}
+
 // Logo d'autonomie - Composant principal demandé
 const AutonomyLogo = () => (
   <div className="autonomy-logo-container">
