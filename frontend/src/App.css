@@ -4024,3 +4024,358 @@ body::after {
   box-shadow: 0 6px 12px rgba(156, 39, 176, 0.4);
   background: linear-gradient(135deg, #8e24aa, #6a1b9a);
 }
+
+/* =============================================================================
+   STYLES POUR LA VISUALISATION DE TOIT
+   ============================================================================= */
+
+.roof-visualization-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.visualization-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.visualization-header h3 {
+  color: #2c5530;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.visualization-header p {
+  color: #666;
+  font-size: 1rem;
+}
+
+/* Zone d'upload */
+.upload-zone {
+  border: 3px dashed #4caf50;
+  border-radius: 15px;
+  padding: 60px 20px;
+  text-align: center;
+  background: rgba(76, 175, 80, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.upload-zone:hover,
+.upload-zone.drag-active {
+  border-color: #2e7d32;
+  background: rgba(76, 175, 80, 0.1);
+  transform: translateY(-2px);
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: #4caf50;
+}
+
+.upload-button {
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.upload-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4);
+}
+
+.upload-note {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Section image téléchargée */
+.uploaded-image-section {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 30px;
+  margin: 30px 0;
+}
+
+.image-container h4 {
+  color: #2c5530;
+  margin-bottom: 15px;
+}
+
+.uploaded-image {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.image-info {
+  margin-top: 15px;
+  padding: 15px;
+  background: rgba(76, 175, 80, 0.05);
+  border-radius: 8px;
+}
+
+.image-info p {
+  color: #666;
+  margin-bottom: 5px;
+}
+
+/* Section génération */
+.generate-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.generate-button {
+  background: linear-gradient(135deg, #ff6b35, #e55722);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.generate-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(255, 107, 53, 0.4);
+}
+
+.generate-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.generation-info {
+  padding: 15px;
+  background: rgba(255, 107, 53, 0.05);
+  border-radius: 8px;
+  border-left: 4px solid #ff6b35;
+}
+
+.generation-info p {
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.change-image-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.change-image-button:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* Section image générée */
+.generated-image-section {
+  margin: 40px 0;
+}
+
+.generated-image-section h4 {
+  color: #2c5530;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.3rem;
+}
+
+.before-after {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.before-image,
+.after-image {
+  text-align: center;
+}
+
+.before-image h5,
+.after-image h5 {
+  color: #2c5530;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.comparison-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.visualization-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.download-button {
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.download-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4);
+}
+
+.regenerate-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.regenerate-button:hover:not(:disabled) {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+/* Messages d'erreur et de chargement */
+.error-message {
+  background: #ffe6e6;
+  border: 1px solid #ffcccc;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 20px 0;
+  color: #d32f2f;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.error-icon {
+  font-size: 1.2rem;
+}
+
+.loading-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 30px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #4caf50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Conseils */
+.visualization-tips {
+  background: rgba(76, 175, 80, 0.05);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  border-radius: 10px;
+  padding: 25px;
+  margin: 40px 0;
+}
+
+.visualization-tips h4 {
+  color: #2c5530;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.visualization-tips ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.visualization-tips li {
+  color: #666;
+  margin-bottom: 8px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.visualization-tips li::before {
+  content: '💡';
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .uploaded-image-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .before-after {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .upload-zone {
+    padding: 40px 20px;
+  }
+
+  .visualization-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .download-button,
+  .regenerate-button {
+    width: 100%;
+    max-width: 250px;
+    text-align: center;
+  }
+}
