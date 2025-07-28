@@ -2105,6 +2105,10 @@ Cordialement`);
         </div>
       )}
 
+      {activeTab === 'visualization' && (
+        <RoofVisualization results={results} selectedRegion={selectedRegion} formData={formData} />
+      )}
+
       <div className="results-footer">
         <div className="action-buttons">
           <button type="button" onClick={onPrevious} className="prev-button">⬅️ Modifier les données</button>
