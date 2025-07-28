@@ -2191,11 +2191,6 @@ Cordialement`);
         </div>
       </div>
     </div>
-      
-      {activeTab === 'visualization' && (
-        <RoofVisualization results={results} selectedRegion={selectedRegion} formData={formData} />
-      )}
-    </div>
   );
 };
 
