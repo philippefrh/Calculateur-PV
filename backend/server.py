@@ -2196,7 +2196,7 @@ def create_simple_professional_frh_pdf(client_data: dict, calculation_results: d
 # ROOF VISUALIZATION ENDPOINTS
 # ================================================================
 
-@api_router.post("/api/upload-roof-image", response_model=ImageUploadResponse)
+@api_router.post("/upload-roof-image", response_model=ImageUploadResponse)
 async def upload_roof_image(file: UploadFile = File(...)):
     """
     Upload a roof image for solar panel visualization
