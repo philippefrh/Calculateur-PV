@@ -1499,6 +1499,12 @@ Cordialement`);
           >
             💰 Analyse financière
           </button>
+          <button 
+            className={`tab-button ${activeTab === 'visualization' ? 'active' : ''}`}
+            onClick={() => setActiveTab('visualization')}
+          >
+            🏠 Visualisation Toit
+          </button>
         </div>
       </div>
       
