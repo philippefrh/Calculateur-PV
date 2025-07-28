@@ -6043,6 +6043,17 @@ class SolarCalculatorTester:
         self.test_roof_analysis_fallback_mechanism()
         self.test_roof_analysis_realistic_rendering()
         
+        # NEW ROOF VISUALIZATION ENDPOINTS TESTING (Review Request Focus)
+        print("\n🏠 NEW ROOF VISUALIZATION ENDPOINTS TESTING - FAL.AI INTEGRATION")
+        print("-" * 70)
+        print("🎯 TESTING: POST /api/upload-roof-image & POST /api/generate-roof-visualization")
+        self.test_roof_image_upload()
+        self.test_roof_visualization_generation_france()
+        self.test_roof_visualization_generation_martinique()
+        self.test_roof_visualization_different_kit_powers()
+        self.test_roof_visualization_error_handling()
+        self.test_fal_ai_integration_and_black_panels()
+        
         # Print summary
         print("\n" + "=" * 80)
         print("📊 TEST SUMMARY")
