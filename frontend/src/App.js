@@ -2747,11 +2747,11 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     setIsDemoMode(!isDemoMode);
   };
 
-  // Timer de 20 secondes pour l'écran de succès - VA VERS L'ANIMATION
+  // Timer de 20 secondes pour l'écran de succès - VA VERS LES RÉSULTATS
   useEffect(() => {
     if (!isCalculating && calculationResults && !successTimerRef.current) {
       successTimerRef.current = setTimeout(() => {
-        setCurrentStep(6); // Aller vers l'animation au lieu des résultats
+        setCurrentStep(5); // Aller vers les résultats d'abord
       }, 20000);
     }
     
