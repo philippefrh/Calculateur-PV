@@ -679,14 +679,15 @@ async def generate_solar_panel_visualization(image_data: str, kit_power: int, re
 
 def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImage.Image:
     """
-    Add realistic solar panels directly on the roof with improved positioning and correct perspective
+    Add realistic 3D solar panels with proper roof perspective and elevation effect
+    Based on real installation examples with professional 3D rendering
     
     Args:
         image: Original PIL Image
         panel_count: Number of panels to add
     
     Returns:
-        Modified PIL Image with solar panels
+        Modified PIL Image with realistic 3D solar panels
     """
     try:
         # Work with a copy of the original image
@@ -694,106 +695,185 @@ def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImag
         width, height = result_image.size
         draw = ImageDraw.Draw(result_image)
         
-        # Much more conservative roof area - ensure panels stay within roof bounds
-        roof_start_y = int(height * 0.18)  # Start lower to avoid sky/top edge
-        roof_end_y = int(height * 0.48)    # End much higher to avoid bottom edge  
-        roof_start_x = int(width * 0.25)   # Bigger left margin
-        roof_end_x = int(width * 0.75)     # Bigger right margin
+        # More precise roof area detection based on typical house proportions
+        roof_start_y = int(height * 0.16)   # Sky area
+        roof_end_y = int(height * 0.52)     # Bottom of roof area  
+        roof_start_x = int(width * 0.22)    # Left margin
+        roof_end_x = int(width * 0.78)      # Right margin
         
-        # Calculate available roof space (more conservative)
-        available_width = roof_end_x - roof_start_x
-        available_height = roof_end_y - roof_start_y
+        # Calculate roof dimensions
+        roof_width = roof_end_x - roof_start_x
+        roof_height = roof_end_y - roof_start_y
         
-        # For 16 panels, try 4x4 layout first
-        panels_per_row = 4
-        rows = 4
+        # Roof slope simulation (typical 30-45 degree slope)
+        roof_slope_angle = 35  # degrees
+        slope_factor = 0.6  # Perspective factor for 3D effect
         
-        # Calculate panel dimensions - smaller to ensure fit
-        panel_width = int(available_width / panels_per_row * 0.75)  # 75% to leave more space
-        panel_height = int(panel_width / 1.4)  # More square ratio for better fit
+        # Optimize panel layout for the count (4x4 for 16 panels)
+        if panel_count <= 12:
+            cols, rows = 4, 3
+        elif panel_count <= 16:
+            cols, rows = 4, 4
+        elif panel_count <= 20:
+            cols, rows = 5, 4
+        else:
+            cols, rows = 6, 4
         
-        # Calculate spacing
-        spacing_x = int((available_width - panels_per_row * panel_width) / (panels_per_row + 1))
-        spacing_y = int((available_height - rows * panel_height) / (rows + 1))
+        # Calculate panel dimensions with 3D perspective
+        base_panel_width = int(roof_width / cols * 0.80)  # 80% to leave spacing
+        base_panel_height = int(base_panel_width / 1.65)  # Realistic solar panel ratio
         
-        # Ensure everything fits - if not, scale down more
-        total_width_needed = panels_per_row * panel_width + (panels_per_row - 1) * spacing_x
-        total_height_needed = rows * panel_height + (rows - 1) * spacing_y
+        # Spacing between panels
+        spacing_x = int((roof_width - cols * base_panel_width) / (cols + 1))
+        spacing_y = int((roof_height - rows * base_panel_height) / (rows + 1))
         
-        if total_width_needed > available_width * 0.9 or total_height_needed > available_height * 0.9:
-            scale = min(available_width * 0.9 / total_width_needed, available_height * 0.9 / total_height_needed)
-            panel_width = int(panel_width * scale)
-            panel_height = int(panel_height * scale)
-            spacing_x = int(spacing_x * scale)
-            spacing_y = int(spacing_y * scale)
+        # 3D elevation parameters
+        panel_thickness = max(3, base_panel_width // 25)  # Panel thickness for 3D effect
+        shadow_offset = max(2, base_panel_width // 30)    # Shadow offset for depth
         
-        # Calculate starting position to center the panel array
-        total_width = panels_per_row * panel_width + (panels_per_row - 1) * spacing_x
-        total_height = rows * panel_height + (rows - 1) * spacing_y
-        start_x = roof_start_x + (available_width - total_width) // 2
-        start_y = roof_start_y + (available_height - total_height) // 2
+        # Calculate starting position
+        start_x = roof_start_x + spacing_x
+        start_y = roof_start_y + spacing_y
         
-        # Place panels with simple rectangular approach (no complex perspective for now)
         panels_placed = 0
         
         for row in range(rows):
             if panels_placed >= panel_count:
                 break
                 
-            for col in range(panels_per_row):
+            for col in range(cols):
                 if panels_placed >= panel_count:
                     break
                 
-                # Simple rectangular positioning
-                x = start_x + col * (panel_width + spacing_x)
-                y = start_y + row * (panel_height + spacing_y)
+                # Calculate base position
+                base_x = start_x + col * (base_panel_width + spacing_x)
+                base_y = start_y + row * (base_panel_height + spacing_y)
                 
-                # Draw panel frame (thin aluminum border)
-                frame_thickness = 2
-                draw.rectangle([x-frame_thickness, y-frame_thickness, 
-                              x+panel_width+frame_thickness, y+panel_height+frame_thickness], 
-                              fill=(200, 200, 200))
+                # Apply roof slope perspective (3D transformation)
+                # Panels get narrower towards the top (following roof slope)
+                perspective_reduction = row * slope_factor * 0.15
                 
-                # Draw main panel (dark blue/black)
-                draw.rectangle([x, y, x+panel_width, y+panel_height], 
-                              fill=(12, 20, 35))
+                # Panel corners with 3D perspective
+                top_width = base_panel_width - int(perspective_reduction * base_panel_width)
+                bottom_width = base_panel_width
                 
-                # Add solar cell grid (6x10 cells)
-                cells_x = 6
-                cells_y = 10
-                cell_width = panel_width // cells_x
-                cell_height = panel_height // cells_y
+                # Calculate 3D panel corners
+                top_left_x = base_x + int(perspective_reduction * base_panel_width / 2)
+                top_right_x = top_left_x + top_width
+                bottom_left_x = base_x
+                bottom_right_x = base_x + bottom_width
                 
-                # Vertical grid lines
+                top_y = base_y
+                bottom_y = base_y + base_panel_height
+                
+                # STEP 1: Draw shadow first (behind the panel)
+                shadow_points = [
+                    (top_left_x + shadow_offset, top_y + shadow_offset),
+                    (top_right_x + shadow_offset, top_y + shadow_offset),
+                    (bottom_right_x + shadow_offset, bottom_y + shadow_offset),
+                    (bottom_left_x + shadow_offset, bottom_y + shadow_offset)
+                ]
+                draw.polygon(shadow_points, fill=(0, 0, 0, 80))  # Semi-transparent shadow
+                
+                # STEP 2: Draw panel frame (aluminum mounting rails)
+                frame_thickness = 3
+                frame_points = [
+                    (top_left_x - frame_thickness, top_y - frame_thickness),
+                    (top_right_x + frame_thickness, top_y - frame_thickness),
+                    (bottom_right_x + frame_thickness, bottom_y + frame_thickness),
+                    (bottom_left_x - frame_thickness, bottom_y + frame_thickness)
+                ]
+                draw.polygon(frame_points, fill=(180, 180, 185))  # Aluminum color
+                
+                # STEP 3: Draw main panel surface (dark blue/black)
+                panel_points = [
+                    (top_left_x, top_y),
+                    (top_right_x, top_y),  
+                    (bottom_right_x, bottom_y),
+                    (bottom_left_x, bottom_y)
+                ]
+                draw.polygon(panel_points, fill=(8, 15, 30))  # Deep dark blue/black
+                
+                # STEP 4: Add 3D depth effect (right and bottom edges)
+                # Right edge (3D depth)
+                right_edge_points = [
+                    (top_right_x, top_y),
+                    (top_right_x + panel_thickness, top_y - panel_thickness),
+                    (bottom_right_x + panel_thickness, bottom_y - panel_thickness),
+                    (bottom_right_x, bottom_y)
+                ]
+                draw.polygon(right_edge_points, fill=(5, 10, 20))  # Darker for depth
+                
+                # Bottom edge (3D depth)  
+                bottom_edge_points = [
+                    (bottom_left_x, bottom_y),
+                    (bottom_right_x, bottom_y),
+                    (bottom_right_x + panel_thickness, bottom_y - panel_thickness),
+                    (bottom_left_x + panel_thickness, bottom_y - panel_thickness)
+                ]
+                draw.polygon(bottom_edge_points, fill=(3, 8, 15))  # Even darker for depth
+                
+                # STEP 5: Add solar cell grid with perspective
+                cells_x, cells_y = 6, 10
+                
+                # Vertical grid lines (following perspective)
                 for i in range(1, cells_x):
-                    line_x = x + i * cell_width
-                    draw.line([line_x, y, line_x, y+panel_height], fill=(25, 35, 50), width=1)
+                    ratio = i / cells_x
+                    line_top_x = int(top_left_x + ratio * (top_right_x - top_left_x))
+                    line_bottom_x = int(bottom_left_x + ratio * (bottom_right_x - bottom_left_x))
+                    draw.line([line_top_x, top_y, line_bottom_x, bottom_y], 
+                             fill=(20, 30, 45), width=1)
                 
-                # Horizontal grid lines
+                # Horizontal grid lines (following perspective)
                 for i in range(1, cells_y):
-                    line_y = y + i * cell_height
-                    draw.line([x, line_y, x+panel_width, line_y], fill=(25, 35, 50), width=1)
+                    ratio = i / cells_y
+                    line_left_x = int(top_left_x + ratio * (bottom_left_x - top_left_x))
+                    line_right_x = int(top_right_x + ratio * (bottom_right_x - top_right_x))
+                    line_y = int(top_y + ratio * (bottom_y - top_y))
+                    draw.line([line_left_x, line_y, line_right_x, line_y], 
+                             fill=(20, 30, 45), width=1)
                 
-                # Add subtle top reflection
-                reflection_height = max(1, panel_height // 6)
-                draw.rectangle([x, y, x+panel_width, y+reflection_height], 
-                              fill=(40, 60, 85))
+                # STEP 6: Add glass reflection effect (top portion)
+                reflection_height = max(2, base_panel_height // 6)
+                reflection_top_width = int(top_width * 0.9)
+                reflection_bottom_width = int(top_width * 0.7)
                 
-                # Add small corner markings for realism
-                corner_size = max(3, panel_width // 30)
-                # Top-left corner
-                draw.rectangle([x+corner_size, y+corner_size, x+corner_size*2, y+corner_size*2], 
-                              fill=(60, 60, 60))
-                # Top-right corner  
-                draw.rectangle([x+panel_width-corner_size*2, y+corner_size, x+panel_width-corner_size, y+corner_size*2], 
-                              fill=(60, 60, 60))
+                refl_top_left_x = top_left_x + (top_width - reflection_top_width) // 2
+                refl_top_right_x = refl_top_left_x + reflection_top_width
+                refl_bottom_left_x = top_left_x + (top_width - reflection_bottom_width) // 2
+                refl_bottom_right_x = refl_bottom_left_x + reflection_bottom_width
+                
+                reflection_points = [
+                    (refl_top_left_x, top_y),
+                    (refl_top_right_x, top_y),
+                    (refl_bottom_right_x, top_y + reflection_height),
+                    (refl_bottom_left_x, top_y + reflection_height)
+                ]
+                
+                # Create subtle glass reflection
+                overlay = PILImage.new('RGBA', (width, height), (0, 0, 0, 0))
+                overlay_draw = ImageDraw.Draw(overlay)
+                overlay_draw.polygon(reflection_points, fill=(60, 90, 130, 25))  # Light blue reflection
+                result_image = PILImage.alpha_composite(result_image.convert('RGBA'), overlay).convert('RGB')
+                draw = ImageDraw.Draw(result_image)
+                
+                # STEP 7: Add mounting hardware details (corner clamps)
+                clamp_size = max(2, base_panel_width // 40)
+                # Top-left clamp
+                draw.rectangle([top_left_x - clamp_size, top_y - clamp_size, 
+                              top_left_x + clamp_size, top_y + clamp_size], 
+                              fill=(120, 120, 125))
+                # Top-right clamp  
+                draw.rectangle([top_right_x - clamp_size, top_y - clamp_size,
+                              top_right_x + clamp_size, top_y + clamp_size],
+                              fill=(120, 120, 125))
                 
                 panels_placed += 1
         
         return result_image
         
     except Exception as e:
-        logging.error(f"Error adding solar panels: {str(e)}")
+        logging.error(f"Error adding 3D solar panels: {str(e)}")
         return image  # Return original image if error
 
 def optimize_panel_layout(panel_count: int, available_width: int, available_height: int) -> Dict[str, int]:
