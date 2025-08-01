@@ -1,66 +1,75 @@
 <analysis>
-The previous AI engineer successfully stabilized the FRH ENVIRONNEMENT application, particularly by fixing the R1/R2/R3 discount system and initiating a new solar panel placement feature using . Backend integration for image upload and roof analysis was completed, along with initial frontend UI for a Visualisation de Toit tab.
-
-The current trajectory details the debugging process undertaken by the AI engineer. The primary issue reported by the user was a persistent blockage at the PVGIS calculation step. Investigation revealed a critical backend failure due to an unreachable MongoDB instance, as the  was incorrectly set to  instead of . This was corrected, and the backend API then functioned. Subsequently, a frontend navigation error, linked to a hardcoded preview URL for the backend in  and , was identified. This was addressed by modifying the  to use the correct internal IP for backend communication. The application's core functionality, including the calculation and navigation to results, is now reported as working.
+The previous AI engineer successfully stabilized the core FRH ENVIRONNEMENT application before shifting focus to a new feature: photorealistic solar panel visualization. Initially,  was integrated, but generative models (, , ) failed to perform direct image editing, instead creating new roofs. This led to a critical pivot to a local OpenCV/PIL solution, eliminating external API dependencies and costs. The subsequent work focused on refining the local rendering: adjusting panel size, ensuring precise positioning without overflow, and critically, achieving accurate 3D perspective and inclination (panels appearing as parallelograms). A persistent challenge remains: the Avant/Après (Before/After) image display, despite numerous attempts to remove it from  and full service restarts, strongly suggesting a deep caching or overlooked frontend rendering issue.
 </analysis>
 
 <product_requirements>
-The FRH ENVIRONNEMENT application is designed as a solar calculation and quote generation tool for clients in France and Martinique. Its core features include a dynamic CSS-based 3D solar animation that visually represents energy flow (sun, Linky meter, kWh, euro banknotes) using 375W panels, with an Autoconsommation = Économies badge. Martinique-specific pricing has been implemented, incorporating new TTC prices, 2.10% TVA, 8.63% interest rates, and support for various kit sizes (12kW to 27kW) with corresponding prices and aid amounts. A crucial functional requirement is the inclusion of three mutually exclusive discount buttons (R1: €1000, R2: €2000, R3: €3000) that apply to calculations but remain hidden from the final quote. A major new feature under development requires integrating realistic solar panel placement on client house photos, demanding photorealistic rendering and specifically black-colored panels.
+The FRH ENVIRONNEMENT application is a solar calculation and quote generation tool for clients in France and Martinique. It includes a dynamic CSS 3D solar animation and integrates Martinique-specific pricing (TTC, TVA, interest, 12kW-27kW kits with aids). Three mutually exclusive discount buttons (R1: €1000, R2: €2000, R3: €3000) apply to calculations.
+
+A major new feature involves integrating realistic, photorealistic black-colored solar panel placement visualizations on client house photos. The user explicitly requires panels to be superimposed *directly* onto the uploaded client's roof, maintaining the original house and perspective, and not generating a new house or a separate after image. The visualization must show panels with realistic 3D effect, inclination matching the roof slope, correct dimensions (1.71m H x 1.10m W), proper positioning without exceeding roof boundaries, and an overall professional aesthetic matching provided reference photos. The application must correctly calculate, display results, and allow kit selection.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-Stack Architecture**: React (frontend), FastAPI (backend), MongoDB (database).
--   **Web Animation**: CSS-based 3D-like animations.
--   **API Integration**: RESTful API for calculations, regional data, and external services ().
--   **State Management**: React's  for UI and data.
--   **Environment Variables**:  files for configuration (, , ).
+-   **Image Processing**: Initially  (OmniGen V2, Flux LoRA, Stable Diffusion XL) for AI-driven image generation; pivoted to local OpenCV and PIL for precise image manipulation (superposition, perspective transformation).
+-   **Web Animation**: CSS-based 3D-like animations for energy flow.
+-   **API Integration**: RESTful API for calculations, regional data.
+-   **State Management**: React's  for UI and application flow.
+-   **Environment Variables**:  files for , , .
 -   **Dynamic Pricing & Calculation**: Backend logic for regional pricing, aids, and discounts.
--   **Image Generation**: Integration with  for photorealistic solar panel rendering.
 </key_technical_concepts>
 
 <code_architecture>
 
-
--   ****: Stores backend environment variables.
-    -   **Summary**: Critical for configuring database connections and external API keys.
-    -   **Changes Made**:  was added to enable  integration. Crucially,  was changed from  to  to resolve database connectivity issues.
--   ****: The core FastAPI backend handling API routes and business logic.
-    -   **Summary**: Manages client data, kit pricing, financing, and integrates with  for image generation.
-    *   **Changes Made**: Initial fixes ensured discount and pricing calculations. New Pydantic models (, , ) and utility functions (, , , ) were added for roof visualization. New API endpoints  and  were created and validated.
--   ****: Lists Python dependencies for the backend.
-    -   **Summary**: Ensures all necessary Python libraries for the backend are available.
-    -   **Changes Made**:  was added.
+-   ****: Stores  and .
+    -   **Summary**: Central for backend configuration and API keys.
+    -   **Changes Made**:  was added.  corrected to .
+-   ****: The core backend logic handling API routes.
+    -   **Summary**: Manages calculations, data, and image visualization.
+    -   **Changes Made**:
+        -   Initial  integration: Pydantic models for roof analysis,  function. Endpoints  and  were created.
+        -    updated to use  constant for France data.
+        -   Multiple changes to  function:
+            -   Initial prompt adjustments for .
+            -   Model changes from  to , then .
+            -   Complete overhaul to use local  and  for direct image superposition, abandoning .
+            -   Extensive iterative adjustments to panel positioning, size (using 1.71m x 1.10m dimensions), 3D effect (shadows, thickness), perspective (parallelogram shape, inclination simulation), and visual rendering (color, grid, reflections, frame).
+-   ****: Lists Python dependencies.
+    -   **Summary**: Ensures required Python libraries are installed.
+    -   **Changes Made**:  was added,  and  (PIL) were added after the pivot to local image processing.
 -   ****: Stores frontend environment variables.
-    -   **Summary**: Crucial for setting the  for API calls.
-    -   **Changes Made**:  was initially found hardcoded to a preview URL and was adjusted during debugging to resolve frontend connectivity issues, though the exact final value after the last attempts is not explicitly stated in the trajectory, the intent was to ensure it points to the correct backend IP or domain.
--   ****: The main React component for UI, state, and backend interactions.
-    -   **Summary**: Orchestrates user flow, displays results, and handles animations.
-    -   **Changes Made**: Discount system fixes were implemented. A new Visualisation de Toit tab and  component were introduced. A critical navigation bug from PVGIS calculation to results screen (step 4 to 5) was fixed by changing  to  and reducing the PVGIS timer to 5 seconds. Debugging logs for  were temporarily added.
--   ****: Defines application-wide styling.
-    -   **Summary**: Provides visual theme and layout for the application.
-    -   **Changes Made**: New styles were added to support roof visualization elements and responsive design.
--   ****: Used for documenting testing protocols and communication.
-    -   **Summary**: Tracks issues, fixes, and backend test results.
-    -   **Changes Made**: Regularly updated to log debugging efforts, including the  test success, the MongoDB connection issue, and the frontend URL problems and their resolutions.
+    -   **Summary**: Defines  for frontend API calls.
+    -   **Changes Made**:  was changed to  for correct backend communication.
+-   ****: The main React application component.
+    -   **Summary**: Manages UI, state, user flow, and backend interactions.
+    -   **Changes Made**: Fixed discount system. Introduced Visualisation de Toit tab and  component. Fixed navigation bug  to . PVGIS timer reduced.
+    -   Attempts were made to remove the before-after image comparison UI, transitioning to a single final image display, though this issue persists.
+-   ****: Used for documenting testing and communication.
+    -   **Summary**: Tracks issues, fixes, backend test results, and user feedback.
+    -   **Changes Made**: Regularly updated to log debugging efforts related to  testing, MongoDB connection, frontend URL, navigation, and the iterative refinements of the solar panel visualization.
 </code_architecture>
 
 <pending_tasks>
--   **PDF Quote Generation**: Temporarily abandoned due to design replication challenges.
--   **Deferred Feature**: Implement dual application versions for Particuliers (Individuals) and Professionnels (Professionals).
--   **New Feature Continuation**: Complete frontend logic for image upload, displaying the  processed images, and connecting it to the existing kit selection system.
--   **Frontend Test**: Create a simple frontend test to verify successful navigation to the results screen after form submission.
+-   **PDF Quote Generation**: Temporarily abandoned.
+-   **Deferred Feature**: Implement dual application versions (Particuliers and Professionnels).
+-   **Frontend Test**: Create a simple frontend test to verify navigation to results.
+-   **Solar Panel Visualization Refinement**:
+    -   Resolve persistent Avant/Après UI display issue in frontend.
+    -   Perfect the 3D perspective and inclination of solar panels to precisely match roof slope as per user's reference photos.
+    -   Ensure panels are sized and positioned to completely fit within roof boundaries without overflow.
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer was engaged in resolving critical application errors that prevented proper navigation and data submission. The primary issues identified and addressed were:
+Immediately prior to this summary, the AI engineer was deep into refining the solar panel visualization feature, having abandoned  for a local OpenCV/PIL approach due to persistent issues with generative AI models not performing direct image editing. The primary goal is to superimpose 16 black solar panels (1.71m H x 1.10m W) onto the user's uploaded roof photo, ensuring they:
+1.  Are precisely scaled and positioned to fill the roof area without overflow (current feedback suggests some overflow persists, especially on the bottom right).
+2.  Accurately follow the roof's inclination and perspective, appearing as pronounced parallelograms with realistic 3D depth, shadows, and reflections, matching the user's reference photos.
+3.  Are displayed as a single, final image on the frontend, rather than a Before/After comparison.
 
-1.  **MongoDB Connection Failure**: The backend was failing with 500 errors due to an incorrect  configuration (). This was resolved by updating the  file to , which re-established database connectivity and allowed backend APIs to function correctly.
-2.  **Frontend Navigation Bug**: The application was getting stuck at the PVGIS calculation step (step 4), failing to navigate to the results screen (step 5). This was linked to a previous fix where  was incorrectly set instead of  in  and an associated 20-second timer was reduced to 5 seconds.
-3.  **Frontend Backend URL Configuration**: An error indicated that the frontend's  was hardcoded to a preview URL, causing connectivity issues in the deployed environment. While the exact final value isn't explicitly shown, the engineer iteratively attempted to correct it, aiming to use the correct internal IP or system-provided external URL to ensure frontend-backend communication.
-
-The current status is that the MongoDB connection is fixed, and the backend API calls are successful. The application is now expected to navigate correctly to the results screen, resolving the core blocking issues reported by the user. The previous AI engineer had also integrated  for photorealistic solar panel placement, with backend support for image upload () and analysis () already validated. Initial frontend UI for this Visualisation de Toit tab exists, but the full integration of image upload and display remains to be completed.
+Despite numerous iterative adjustments to the backend's image processing logic in  (including precise margin calculations, 3D transformations, and rendering nuances) and attempts to modify  and restart services, two critical issues persist:
+-   The frontend still displays an Avant/Après comparison, indicating a potential deeper caching problem or an unlocated piece of rendering logic.
+-   The panel perspective and positioning, though significantly improved, are still not perfectly aligning with the user's expectations or the provided reference images, especially concerning inclination and avoiding overflow.
+The current work is stalled at this point, with the user expressing frustration and requesting to resume the next day.
 </current_work>
 
 <optional_next_step>
-Continue implementing the frontend logic for the Visualisation de Toit feature, specifically image upload and displaying  processed images.
+I will re-examine the entire frontend codebase to definitively locate and resolve the persistent Avant/Après display, and then refine the panel rendering algorithm for perfect 3D inclination and positioning.
 </optional_next_step>

@@ -12,7 +12,7 @@ import io
 import base64
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://b8492487-6736-43d6-b38d-2b86cc85b75d.preview.emergentagent.com/api"
+BACKEND_URL = "https://3c730e74-b603-4563-b76c-9eaef48b0e46.preview.emergentagent.com/api"
 
 class RoofVisualizationTester:
     def __init__(self):
