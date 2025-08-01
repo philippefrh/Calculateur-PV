@@ -648,23 +648,22 @@ async def generate_solar_panel_visualization(image_data: str, kit_power: int, re
         # Get panel count for the kit
         panel_count = get_panel_count_by_kit_power(kit_power, region)
         
-        # Create detailed prompt for photorealistic solar panel placement
-        prompt = f"""Add exactly {panel_count} realistic black solar panels on the roof of this house. The solar panels should be:
+        # Create detailed prompt for direct image editing and panel integration
+        prompt = f"""EDIT this exact image by adding exactly {panel_count} realistic black solar panels DIRECTLY onto the existing roof shown in this photo. Do NOT change anything else about the image. Requirements:
 
-- HIGH QUALITY photorealistic black rectangular solar panels
-- Professional installation quality identical to real solar installations
-- Properly aligned and spaced on the roof surface
-- Natural shadows, reflections and lighting
-- Panels arranged in optimal geometric rows
-- Modern matte black finish (like Powernity 375W panels)
-- Realistic mounting hardware and rail systems
-- Perfect integration with existing roof architecture
-- Professional architectural photography quality
+- Keep the EXACT same house, roof, and background from the original photo
+- Add ONLY the solar panels on top of the existing roof tiles/surface  
+- BLACK rectangular solar panels (Powernity 375W style)
+- Panels must follow the exact roof slope and perspective shown
+- Professional installation with realistic mounting rails
+- Natural shadows and reflections matching the original lighting
+- Preserve all original details: walls, windows, surroundings, sky
+- Result must look like the SAME house with panels added, not a different house
 - Each panel approximately 2m x 1m in realistic proportions
 - Panels flush-mounted following roof contours
-- Natural weathering and realistic surface textures
+- Modern matte black finish with realistic surface textures
 
-IMPORTANT: The result must look identical to professional solar installation photos with perfect photorealistic quality."""
+CRITICAL: This is an image EDITING task - modify the existing photo by adding panels, do not generate a new house or roof."""
 
         # Use OmniGen V2 for image editing (adding panels to existing image)
         handler = await fal_client.submit_async(
