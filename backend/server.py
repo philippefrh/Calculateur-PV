@@ -665,9 +665,9 @@ async def generate_solar_panel_visualization(image_data: str, kit_power: int, re
 
 CRITICAL: This is an image EDITING task - modify the existing photo by adding panels, do not generate a new house or roof."""
 
-        # Use OmniGen V2 for image editing (adding panels to existing image)
+        # Use Flux LoRA for real image editing (adding panels to existing image)
         handler = await fal_client.submit_async(
-            "fal-ai/omnigen-v2",
+            "fal-ai/flux-lora",
             arguments={
                 "prompt": prompt,
                 "image_url": image_data,
@@ -675,7 +675,8 @@ CRITICAL: This is an image EDITING task - modify the existing photo by adding pa
                 "num_inference_steps": 50,
                 "seed": 42,
                 "output_format": "jpeg",
-                "output_quality": 90
+                "output_quality": 90,
+                "strength": 0.8  # How much to modify the original image (0.8 = strong editing)
             }
         )
         
