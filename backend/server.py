@@ -679,15 +679,15 @@ async def generate_solar_panel_visualization(image_data: str, kit_power: int, re
 
 def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImage.Image:
     """
-    Add solar panels with ultra-conservative positioning to stay within roof bounds
-    Mimicking real installations with precise placement and realistic 3D effect
+    Add solar panels with REAL dimensions (1.71m x 1.10m) scaled to roof size
+    Using true proportions to maximize roof surface utilization
     
     Args:
         image: Original PIL Image
         panel_count: Number of panels to add
     
     Returns:
-        Modified PIL Image with perfectly positioned solar panels
+        Modified PIL Image with properly scaled realistic solar panels
     """
     try:
         # Work with a copy of the original image
@@ -695,58 +695,80 @@ def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImag
         width, height = result_image.size
         draw = ImageDraw.Draw(result_image)
         
-        # ULTRA CONSERVATIVE roof area - ensure NO spillover
-        # Much smaller area to guarantee panels stay within roof bounds
-        roof_start_y = int(height * 0.22)  # Start much lower (more sky margin)
-        roof_end_y = int(height * 0.45)    # End much higher (big bottom margin)
-        roof_start_x = int(width * 0.28)   # Huge left margin
-        roof_end_x = int(width * 0.72)     # Huge right margin
+        # REAL SOLAR PANEL DIMENSIONS
+        # Standard panel: 1.71m (height) x 1.10m (width)
+        real_panel_ratio = 1.71 / 1.10  # = 1.55:1
+        
+        # Define usable roof area (conservative but not too small)
+        roof_start_y = int(height * 0.18)   # Sky margin
+        roof_end_y = int(height * 0.50)     # Bottom margin  
+        roof_start_x = int(width * 0.24)    # Left margin
+        roof_end_x = int(width * 0.76)      # Right margin
         
         roof_width = roof_end_x - roof_start_x
         roof_height = roof_end_y - roof_start_y
         
-        # Layout for 16 panels - prioritize staying within bounds
-        cols, rows = 4, 4
+        # Layout for 16 panels - try different arrangements
+        possible_layouts = [
+            (4, 4),  # 4 columns, 4 rows
+            (2, 8),  # 2 columns, 8 rows  
+            (8, 2),  # 8 columns, 2 rows
+        ]
         
-        # Much smaller panels to ensure they fit perfectly
-        panel_width = int(roof_width / cols * 0.70)  # Only 70% of available space
-        panel_height = int(panel_width / 1.6)         # Standard ratio
+        best_layout = None
+        best_panel_size = 0
         
-        # Ensure panels+spacing fit within roof area
-        total_panels_width = cols * panel_width
-        total_panels_height = rows * panel_height
+        # Find the layout that gives the biggest panels while fitting in roof
+        for cols, rows in possible_layouts:
+            if cols * rows >= panel_count:
+                # Calculate panel size for this layout
+                # Leave 10% spacing between panels
+                available_width_per_panel = roof_width / cols * 0.90
+                available_height_per_panel = roof_height / rows * 0.90
+                
+                # Calculate panel size respecting real ratio (1.55:1)
+                # Try fitting by width first
+                panel_width_by_width = available_width_per_panel
+                panel_height_by_width = panel_width_by_width * real_panel_ratio
+                
+                # Try fitting by height  
+                panel_height_by_height = available_height_per_panel
+                panel_width_by_height = panel_height_by_height / real_panel_ratio
+                
+                # Choose the smaller size to ensure it fits
+                if panel_height_by_width <= available_height_per_panel:
+                    # Width is the limiting factor
+                    panel_width = panel_width_by_width
+                    panel_height = panel_height_by_width
+                else:
+                    # Height is the limiting factor
+                    panel_width = panel_width_by_height  
+                    panel_height = panel_height_by_height
+                
+                # Check if this gives bigger panels than previous layouts
+                panel_area = panel_width * panel_height
+                if panel_area > best_panel_size:
+                    best_panel_size = panel_area
+                    best_layout = (cols, rows, int(panel_width), int(panel_height))
         
-        # Calculate maximum spacing that fits
-        max_spacing_x = (roof_width - total_panels_width) // (cols + 1) if cols > 0 else 0
-        max_spacing_y = (roof_height - total_panels_height) // (rows + 1) if rows > 0 else 0
+        if not best_layout:
+            # Fallback to 4x4
+            best_layout = (4, 4, roof_width // 6, roof_height // 6)
         
-        # Use conservative spacing
-        spacing_x = min(max_spacing_x, panel_width // 5)
-        spacing_y = min(max_spacing_y, panel_height // 5)
+        cols, rows, panel_width, panel_height = best_layout
         
-        # If still doesn't fit, scale down panels more
-        total_width_needed = total_panels_width + (cols - 1) * spacing_x
-        total_height_needed = total_panels_height + (rows - 1) * spacing_y
+        # Calculate spacing
+        spacing_x = max(5, (roof_width - cols * panel_width) // (cols + 1))
+        spacing_y = max(5, (roof_height - rows * panel_height) // (rows + 1))
         
-        if total_width_needed > roof_width or total_height_needed > roof_height:
-            scale_x = roof_width / total_width_needed if total_width_needed > 0 else 1
-            scale_y = roof_height / total_height_needed if total_height_needed > 0 else 1
-            scale = min(scale_x, scale_y) * 0.85  # Extra 15% margin
-            
-            panel_width = int(panel_width * scale)
-            panel_height = int(panel_height * scale)
-            spacing_x = int(spacing_x * scale)
-            spacing_y = int(spacing_y * scale)
+        # Calculate starting position (centered)
+        total_width = cols * panel_width + (cols - 1) * spacing_x
+        total_height = rows * panel_height + (rows - 1) * spacing_y
+        start_x = roof_start_x + (roof_width - total_width) // 2
+        start_y = roof_start_y + (roof_height - total_height) // 2
         
-        # Calculate final starting position (centered)
-        final_total_width = cols * panel_width + (cols - 1) * spacing_x
-        final_total_height = rows * panel_height + (rows - 1) * spacing_y
-        
-        start_x = roof_start_x + (roof_width - final_total_width) // 2
-        start_y = roof_start_y + (roof_height - final_total_height) // 2
-        
-        # Simple 3D effect parameters
-        depth = max(2, panel_width // 20)  # 3D depth effect
+        # 3D effect parameters scaled to panel size
+        depth = max(3, panel_width // 15)  # 3D depth proportional to panel size
         
         panels_placed = 0
         
@@ -762,70 +784,96 @@ def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImag
                 x = start_x + col * (panel_width + spacing_x)
                 y = start_y + row * (panel_height + spacing_y)
                 
-                # Basic 3D effect - simple but effective
-                # Step 1: Draw shadow on roof
-                shadow_x = x + depth
-                shadow_y = y + depth
-                draw.rectangle([shadow_x, shadow_y, shadow_x + panel_width, shadow_y + panel_height],
-                              fill=(0, 0, 0, 40))
+                # 3D Effect - Realistic depth and shadows
+                # Step 1: Draw shadow on roof surface
+                shadow_offset = depth
+                draw.rectangle([x + shadow_offset, y + shadow_offset, 
+                              x + panel_width + shadow_offset, y + panel_height + shadow_offset],
+                              fill=(0, 0, 0))
                 
-                # Step 2: Draw 3D depth edges
-                # Right edge
+                # Create shadow transparency
+                overlay = PILImage.new('RGBA', (width, height), (0, 0, 0, 0))
+                overlay_draw = ImageDraw.Draw(overlay)
+                overlay_draw.rectangle([x + shadow_offset, y + shadow_offset, 
+                                      x + panel_width + shadow_offset, y + panel_height + shadow_offset],
+                                      fill=(0, 0, 0, 50))
+                result_image = PILImage.alpha_composite(result_image.convert('RGBA'), overlay).convert('RGB')
+                draw = ImageDraw.Draw(result_image)
+                
+                # Step 2: Draw 3D side faces for elevation effect
+                # Right side face
                 draw.polygon([
                     (x + panel_width, y),
                     (x + panel_width + depth, y - depth),
                     (x + panel_width + depth, y + panel_height - depth),
                     (x + panel_width, y + panel_height)
-                ], fill=(3, 8, 15))
+                ], fill=(2, 6, 12))  # Dark side
                 
-                # Bottom edge  
+                # Bottom side face
                 draw.polygon([
                     (x, y + panel_height),
                     (x + panel_width, y + panel_height),
                     (x + panel_width + depth, y + panel_height - depth),
                     (x + depth, y + panel_height - depth)
-                ], fill=(1, 5, 10))
+                ], fill=(1, 4, 8))   # Darker bottom
                 
-                # Step 3: Draw main panel surface
+                # Step 3: Draw aluminum frame
+                frame_thickness = max(2, panel_width // 40)
+                draw.rectangle([x - frame_thickness, y - frame_thickness,
+                              x + panel_width + frame_thickness, y + panel_height + frame_thickness],
+                              fill=(180, 180, 185))  # Aluminum color
+                
+                # Step 4: Draw main panel surface (dark blue/black)
                 draw.rectangle([x, y, x + panel_width, y + panel_height],
-                              fill=(8, 18, 35))  # Dark blue/black
+                              fill=(6, 15, 28))  # Dark blue/black panel
                 
-                # Step 4: Draw aluminum frame
-                frame_width = 2
-                draw.rectangle([x - frame_width, y - frame_width, 
-                              x + panel_width + frame_width, y + panel_height + frame_width],
-                              fill=(170, 170, 175))
-                
-                # Redraw panel over frame
-                draw.rectangle([x, y, x + panel_width, y + panel_height],
-                              fill=(8, 18, 35))
-                
-                # Step 5: Add cell grid
+                # Step 5: Add realistic solar cell grid 
+                # Real panels have 6x10 or 6x12 cells
                 cells_x, cells_y = 6, 10
-                cell_w = panel_width // cells_x
-                cell_h = panel_height // cells_y
+                cell_width = panel_width // cells_x
+                cell_height = panel_height // cells_y
+                
+                # Draw grid lines
+                grid_color = (16, 25, 38)
                 
                 # Vertical lines
                 for i in range(1, cells_x):
-                    line_x = x + i * cell_w
-                    draw.line([line_x, y, line_x, y + panel_height], fill=(18, 28, 45), width=1)
+                    line_x = x + i * cell_width
+                    draw.line([line_x, y, line_x, y + panel_height], fill=grid_color, width=1)
                 
                 # Horizontal lines
                 for i in range(1, cells_y):
-                    line_y = y + i * cell_h
-                    draw.line([x, line_y, x + panel_width, line_y], fill=(18, 28, 45), width=1)
+                    line_y = y + i * cell_height
+                    draw.line([x, line_y, x + panel_width, line_y], fill=grid_color, width=1)
                 
-                # Step 6: Add glass reflection (top portion)
-                reflection_height = panel_height // 4
-                draw.rectangle([x, y, x + panel_width, y + reflection_height],
-                              fill=(25, 45, 70))
+                # Step 6: Add glass reflection effect (realistic)
+                reflection_height = panel_height // 5
+                reflection_gradient = PILImage.new('RGBA', (width, height), (0, 0, 0, 0))
+                reflection_draw = ImageDraw.Draw(reflection_gradient)
+                reflection_draw.rectangle([x, y, x + panel_width, y + reflection_height],
+                                        fill=(35, 55, 85, 35))  # Light blue reflection
+                result_image = PILImage.alpha_composite(result_image.convert('RGBA'), reflection_gradient).convert('RGB')
+                draw = ImageDraw.Draw(result_image)
+                
+                # Step 7: Add corner mounting details
+                corner_size = max(2, panel_width // 30)
+                corner_color = (120, 120, 125)
+                
+                # Four corner clamps
+                positions = [(x, y), (x + panel_width - corner_size, y),
+                           (x, y + panel_height - corner_size), 
+                           (x + panel_width - corner_size, y + panel_height - corner_size)]
+                
+                for corner_x, corner_y in positions:
+                    draw.rectangle([corner_x, corner_y, corner_x + corner_size, corner_y + corner_size],
+                                  fill=corner_color)
                 
                 panels_placed += 1
         
         return result_image
         
     except Exception as e:
-        logging.error(f"Error adding conservative solar panels: {str(e)}")
+        logging.error(f"Error adding properly scaled solar panels: {str(e)}")
         return image
 
 def optimize_panel_layout(panel_count: int, available_width: int, available_height: int) -> Dict[str, int]:
