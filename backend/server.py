@@ -665,9 +665,9 @@ async def generate_solar_panel_visualization(image_data: str, kit_power: int, re
 
 CRITICAL: This is an image EDITING task - modify the existing photo by adding panels, do not generate a new house or roof."""
 
-        # Use FLUX General Image-to-Image for real image editing (transforming existing image)
+        # Use Stable Diffusion XL for image-to-image editing
         handler = await fal_client.submit_async(
-            "fal-ai/flux/general/image-to-image",
+            "fal-ai/stable-diffusion-xl",
             arguments={
                 "prompt": prompt,
                 "image_url": image_data,
@@ -676,7 +676,7 @@ CRITICAL: This is an image EDITING task - modify the existing photo by adding pa
                 "seed": 42,
                 "output_format": "jpeg",
                 "output_quality": 90,
-                "strength": 0.75  # How much to modify the original image (0.75 = moderate editing)
+                "strength": 0.7  # Strength for image-to-image transformation
             }
         )
         
