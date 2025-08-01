@@ -1491,23 +1491,21 @@ const RoofVisualization = ({ results, selectedRegion, formData }) => {
         {generatedImageUrl && (
           <div className="generated-image-section">
             <h4>✨ Votre maison avec panneaux solaires</h4>
-            <div className="before-after">
-              <div className="before-image">
-                <h5>Avant</h5>
-                <img 
-                  src={uploadedImage.data} 
-                  alt="Avant installation" 
-                  className="comparison-image"
-                />
-              </div>
-              <div className="after-image">
-                <h5>Après - {Math.round(panelCount)} panneaux noirs ({kitPower}kW)</h5>
-                <img 
-                  src={generatedImageUrl} 
-                  alt="Avec panneaux solaires" 
-                  className="comparison-image"
-                />
-              </div>
+            <div className="final-result">
+              <h5>🏠 Votre maison avec {Math.round(panelCount)} panneaux solaires noirs ({kitPower}kW)</h5>
+              <img 
+                src={generatedImageUrl} 
+                alt="Votre maison avec panneaux solaires" 
+                className="final-image"
+                style={{
+                  width: '100%',
+                  maxWidth: '600px',
+                  height: 'auto',
+                  border: '2px solid #4CAF50',
+                  borderRadius: '10px',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+                }}
+              />
             </div>
             
             <div className="visualization-actions">
