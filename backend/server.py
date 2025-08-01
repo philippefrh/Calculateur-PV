@@ -679,15 +679,15 @@ async def generate_solar_panel_visualization(image_data: str, kit_power: int, re
 
 def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImage.Image:
     """
-    Add properly sized solar panels that follow the exact roof slope perspective
-    Creating realistic parallelograms like in reference installation photos
+    Add solar panels with TRUE roof slope perspective creating pronounced parallelograms
+    Matching exactly the reference installation photos with correct left/right incline
     
     Args:
         image: Original PIL Image
         panel_count: Number of panels to add
     
     Returns:
-        Modified PIL Image with realistic roof-following solar panels
+        Modified PIL Image with properly inclined parallelogram solar panels
     """
     try:
         # Work with a copy of the original image
@@ -698,65 +698,48 @@ def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImag
         # REAL SOLAR PANEL DIMENSIONS: 1.71m x 1.10m
         real_panel_ratio = 1.71 / 1.10  # = 1.55:1
         
-        # REASONABLE roof area (not too conservative - need bigger panels!)
-        roof_start_y = int(height * 0.16)   # Sky margin
-        roof_end_y = int(height * 0.52)     # Bottom margin  
-        roof_start_x = int(width * 0.22)    # Left margin
-        roof_end_x = int(width * 0.78)      # Right margin
+        # ULTRA CONSERVATIVE roof area to prevent ANY spillover
+        roof_start_y = int(height * 0.18)   # Sky margin
+        roof_end_y = int(height * 0.48)     # Big bottom margin  
+        roof_start_x = int(width * 0.26)    # Big left margin
+        roof_end_x = int(width * 0.74)      # Big right margin
         
         roof_width = roof_end_x - roof_start_x
         roof_height = roof_end_y - roof_start_y
         
-        # Layout optimization - try different arrangements for 16 panels
-        layouts = [
-            (4, 4),  # 4x4 square
-            (8, 2),  # 8x2 wide
-            (2, 8),  # 2x8 tall
-        ]
+        # Layout for 16 panels - use 4x4 for better control
+        cols, rows = 4, 4
         
-        best_layout = None
-        best_panel_area = 0
+        # Calculate panel size (more conservative to prevent spillover)
+        base_panel_width = int(roof_width / cols * 0.80)  # 80% utilization
+        base_panel_height = int(base_panel_width * real_panel_ratio)
         
-        # Find layout that gives biggest panels
-        for cols, rows in layouts:
-            if cols * rows >= panel_count:
-                # Calculate maximum panel size for this layout
-                max_panel_width = int(roof_width / cols * 0.88)  # 88% utilization
-                calculated_panel_height = int(max_panel_width * real_panel_ratio)
-                max_panel_height = int(roof_height / rows * 0.88)
-                
-                # Choose limiting dimension
-                if calculated_panel_height <= max_panel_height:
-                    panel_w = max_panel_width
-                    panel_h = calculated_panel_height
-                else:
-                    panel_h = max_panel_height
-                    panel_w = int(panel_h / real_panel_ratio)
-                
-                area = panel_w * panel_h
-                if area > best_panel_area:
-                    best_panel_area = area
-                    best_layout = (cols, rows, panel_w, panel_h)
+        # Ensure panels fit with generous spacing
+        spacing_x = max(10, (roof_width - cols * base_panel_width) // (cols + 1))
+        spacing_y = max(10, (roof_height - rows * base_panel_height) // (rows + 1))
         
-        if not best_layout:
-            # Fallback
-            best_layout = (4, 4, roof_width // 5, roof_height // 5)
+        # Final safety check - scale down if needed
+        total_width = cols * base_panel_width + (cols - 1) * spacing_x
+        total_height = rows * base_panel_height + (rows - 1) * spacing_y
         
-        cols, rows, panel_width, panel_height = best_layout
-        
-        # Calculate spacing and position
-        spacing_x = max(6, (roof_width - cols * panel_width) // (cols + 1))
-        spacing_y = max(6, (roof_height - rows * panel_height) // (rows + 1))
+        if total_width > roof_width * 0.85 or total_height > roof_height * 0.85:
+            scale = min(roof_width * 0.85 / total_width, roof_height * 0.85 / total_height)
+            base_panel_width = int(base_panel_width * scale)
+            base_panel_height = int(base_panel_height * scale)
+            spacing_x = int(spacing_x * scale)
+            spacing_y = int(spacing_y * scale)
+            
+        # Recalculate final dimensions
+        final_total_width = cols * base_panel_width + (cols - 1) * spacing_x
+        final_total_height = rows * base_panel_height + (rows - 1) * spacing_y
         
         # Centered starting position
-        total_width = cols * panel_width + (cols - 1) * spacing_x
-        total_height = rows * panel_height + (rows - 1) * spacing_y
-        start_x = roof_start_x + (roof_width - total_width) // 2
-        start_y = roof_start_y + (roof_height - total_height) // 2
+        start_x = roof_start_x + (roof_width - final_total_width) // 2
+        start_y = roof_start_y + (roof_height - final_total_height) // 2
         
-        # CRITICAL: Roof slope parameters
-        # From your reference photos, the roof slope creates a strong parallelogram effect
-        roof_slope_shift = int(panel_width * 0.25)  # 25% slope shift (strong perspective)
+        # CRITICAL: Create PRONOUNCED parallelogram effect like in reference photos
+        # Your reference photos show very strong perspective distortion
+        roof_slope_shift = int(base_panel_width * 0.35)  # 35% slope shift (very pronounced)
         
         panels_placed = 0
         
@@ -769,25 +752,27 @@ def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImag
                     break
                 
                 # Base position
-                base_x = start_x + col * (panel_width + spacing_x)
-                base_y = start_y + row * (panel_height + spacing_y)
+                base_x = start_x + col * (base_panel_width + spacing_x)
+                base_y = start_y + row * (base_panel_height + spacing_y)
                 
-                # CREATE PARALLELOGRAM following roof slope
-                # The key insight: top edge shifts left by slope amount
+                # CREATE PRONOUNCED PARALLELOGRAM following roof slope
+                # Key insight from your reference photos: very strong left-right perspective
                 
-                # Panel corners as parallelogram
+                # Panel corners as pronounced parallelogram
+                # Top edge shifts significantly left (following roof incline)
                 top_left_x = base_x - roof_slope_shift
                 top_left_y = base_y
-                top_right_x = base_x + panel_width - roof_slope_shift
+                top_right_x = base_x + base_panel_width - roof_slope_shift
                 top_right_y = base_y
                 
+                # Bottom edge remains normal
                 bottom_left_x = base_x
-                bottom_left_y = base_y + panel_height
-                bottom_right_x = base_x + panel_width
-                bottom_right_y = base_y + panel_height
+                bottom_left_y = base_y + base_panel_height
+                bottom_right_x = base_x + base_panel_width
+                bottom_right_y = base_y + base_panel_height
                 
-                # STEP 1: Draw realistic shadow
-                shadow_offset = 5
+                # STEP 1: Draw pronounced shadow (parallelogram shape)
+                shadow_offset = 6
                 shadow_points = [
                     (top_left_x + shadow_offset, top_left_y + shadow_offset),
                     (top_right_x + shadow_offset, top_right_y + shadow_offset),
@@ -797,55 +782,55 @@ def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImag
                 
                 overlay = PILImage.new('RGBA', (width, height), (0, 0, 0, 0))
                 overlay_draw = ImageDraw.Draw(overlay)
-                overlay_draw.polygon(shadow_points, fill=(0, 0, 0, 60))
+                overlay_draw.polygon(shadow_points, fill=(0, 0, 0, 70))
                 result_image = PILImage.alpha_composite(result_image.convert('RGBA'), overlay).convert('RGB')
                 draw = ImageDraw.Draw(result_image)
                 
-                # STEP 2: Draw 3D depth faces
-                depth = 8
+                # STEP 2: Draw 3D depth faces (pronounced like reference photos)
+                depth = 10  # More pronounced 3D effect
                 
-                # Right side face (3D depth)
+                # Right side face (very visible due to strong perspective)
                 right_face_points = [
                     (top_right_x, top_right_y),
                     (top_right_x + depth, top_right_y - depth),
                     (bottom_right_x + depth, bottom_right_y - depth),
                     (bottom_right_x, bottom_right_y)
                 ]
-                draw.polygon(right_face_points, fill=(3, 8, 15))  # Dark side
+                draw.polygon(right_face_points, fill=(4, 10, 18))  # Dark side
                 
-                # Bottom side face (darker)
+                # Bottom side face (darker for strong depth)
                 bottom_face_points = [
                     (bottom_left_x, bottom_left_y),
                     (bottom_right_x, bottom_right_y),
                     (bottom_right_x + depth, bottom_right_y - depth),
                     (bottom_left_x + depth, bottom_left_y - depth)
                 ]
-                draw.polygon(bottom_face_points, fill=(1, 5, 10))  # Darker bottom
+                draw.polygon(bottom_face_points, fill=(2, 6, 12))  # Darker bottom
                 
-                # STEP 3: Draw aluminum frame
-                frame_thickness = 4
+                # STEP 3: Draw thick aluminum frame (parallelogram)
+                frame_thickness = 5
                 frame_points = [
                     (top_left_x - frame_thickness, top_left_y - frame_thickness),
                     (top_right_x + frame_thickness, top_right_y - frame_thickness),
                     (bottom_right_x + frame_thickness, bottom_right_y + frame_thickness),
                     (bottom_left_x - frame_thickness, bottom_left_y + frame_thickness)
                 ]
-                draw.polygon(frame_points, fill=(160, 160, 165))  # Aluminum
+                draw.polygon(frame_points, fill=(150, 150, 155))  # Aluminum
                 
-                # STEP 4: Draw main panel (PARALLELOGRAM)
+                # STEP 4: Draw main panel (PRONOUNCED PARALLELOGRAM)
                 panel_points = [
                     (top_left_x, top_left_y),
                     (top_right_x, top_right_y),
                     (bottom_right_x, bottom_right_y),
                     (bottom_left_x, bottom_left_y)
                 ]
-                draw.polygon(panel_points, fill=(12, 22, 38))  # Dark blue/black
+                draw.polygon(panel_points, fill=(15, 25, 40))  # Dark blue/black
                 
-                # STEP 5: Solar cell grid following parallelogram
+                # STEP 5: Solar cell grid (following pronounced parallelogram)
                 cells_x, cells_y = 6, 10
-                grid_color = (22, 32, 48)
+                grid_color = (25, 35, 50)
                 
-                # Vertical lines (following slope)
+                # Vertical lines (following strong slope distortion)
                 for i in range(1, cells_x):
                     ratio = i / cells_x
                     line_top_x = int(top_left_x + ratio * (top_right_x - top_left_x))
@@ -856,29 +841,29 @@ def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImag
                 # Horizontal lines (parallel to parallelogram edges)
                 for i in range(1, cells_y):
                     ratio = i / cells_y
-                    # Left side of line
+                    # Left side of line (with slope)
                     line_left_x = int(top_left_x + ratio * (bottom_left_x - top_left_x))
                     line_left_y = int(top_left_y + ratio * (bottom_left_y - top_left_y))
-                    # Right side of line
+                    # Right side of line (with slope)
                     line_right_x = int(top_right_x + ratio * (bottom_right_x - top_right_x))
                     line_right_y = int(top_right_y + ratio * (bottom_right_y - top_right_y))
                     draw.line([line_left_x, line_left_y, line_right_x, line_right_y], 
                              fill=grid_color, width=2)
                 
-                # STEP 6: Glass reflection (following slope)
-                reflection_height = panel_height // 3
+                # STEP 6: Glass reflection (following pronounced slope)
+                reflection_height = base_panel_height // 3
                 reflection_points = [
                     (top_left_x, top_left_y),
                     (top_right_x, top_right_y),
-                    (int(top_right_x + (bottom_right_x - top_right_x) * 0.3), 
+                    (int(top_right_x + (bottom_right_x - top_right_x) * 0.35), 
                      int(top_right_y + reflection_height)),
-                    (int(top_left_x + (bottom_left_x - top_left_x) * 0.3), 
+                    (int(top_left_x + (bottom_left_x - top_left_x) * 0.35), 
                      int(top_left_y + reflection_height))
                 ]
                 
                 reflection_overlay = PILImage.new('RGBA', (width, height), (0, 0, 0, 0))
                 reflection_draw = ImageDraw.Draw(reflection_overlay)
-                reflection_draw.polygon(reflection_points, fill=(50, 80, 120, 40))
+                reflection_draw.polygon(reflection_points, fill=(60, 90, 130, 45))
                 result_image = PILImage.alpha_composite(result_image.convert('RGBA'), reflection_overlay).convert('RGB')
                 draw = ImageDraw.Draw(result_image)
                 
@@ -887,7 +872,7 @@ def add_solar_panels_to_roof(image: PILImage.Image, panel_count: int) -> PILImag
         return result_image
         
     except Exception as e:
-        logging.error(f"Error adding properly sized slope-following solar panels: {str(e)}")
+        logging.error(f"Error adding pronounced slope-following solar panels: {str(e)}")
         return image
 
 def optimize_panel_layout(panel_count: int, available_width: int, available_height: int) -> Dict[str, int]:
