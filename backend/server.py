@@ -665,18 +665,18 @@ async def generate_solar_panel_visualization(image_data: str, kit_power: int, re
 
 CRITICAL: This is an image EDITING task - modify the existing photo by adding panels, do not generate a new house or roof."""
 
-        # Use Flux LoRA for real image editing (adding panels to existing image)
+        # Use FLUX General Image-to-Image for real image editing (transforming existing image)
         handler = await fal_client.submit_async(
-            "fal-ai/flux-lora",
+            "fal-ai/flux/general/image-to-image",
             arguments={
                 "prompt": prompt,
                 "image_url": image_data,
                 "guidance_scale": 7.5,
-                "num_inference_steps": 50,
+                "num_inference_steps": 30,
                 "seed": 42,
                 "output_format": "jpeg",
                 "output_quality": 90,
-                "strength": 0.8  # How much to modify the original image (0.8 = strong editing)
+                "strength": 0.75  # How much to modify the original image (0.75 = moderate editing)
             }
         )
         
