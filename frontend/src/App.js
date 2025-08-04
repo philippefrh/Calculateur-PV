@@ -979,30 +979,6 @@ const ConsumptionForm = ({
     
     setSelectedKit(finalKit);
   };
-      
-      console.log('🔥 DEBUG: Montant de la remise appliquée:', discountAmount);
-      
-      finalKit.priceTTC = kitWithOriginals.originalPriceTTC - discountAmount;
-      finalKit.priceWithAids = kitWithOriginals.originalPriceWithAids - discountAmount;
-      finalKit.hasDiscount = true;
-      finalKit.discountAmount = discountAmount;
-      finalKit.discountType = discountType;
-    } else {
-      // Pas de remise
-      finalKit.hasDiscount = false;
-      finalKit.discountAmount = 0;
-      finalKit.discountType = null;
-    }
-    
-    console.log('🔥 DEBUG: Kit final sélectionné avec remise:', finalKit);
-    setSelectedKit(finalKit);
-    
-    // Mettre à jour le formData avec le kit sélectionné immédiatement
-    setFormData(prev => ({
-      ...prev,
-      selectedManualKit: finalKit
-    }));
-  };
 
   const handleConfirmKitSelection = () => {
     console.log('🔥 DEBUG: handleConfirmKitSelection appelé avec selectedKit:', selectedKit);
