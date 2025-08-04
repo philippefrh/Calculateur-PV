@@ -2755,8 +2755,11 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       
       // Timer simple de 7 secondes puis passer directement à l'animation
       const autoTimer = setTimeout(() => {
-        console.log('🎬 Lancement automatique de l\'animation après 7 secondes - passage direct à l\'étape 6');
+        console.log('🎬 Timer de 7 secondes écoulé - tentative de passage à l\'animation');
+        console.log('🎬 setCurrentStep disponible:', typeof setCurrentStep);
+        console.log('🎬 Avant setCurrentStep(6)');
         setCurrentStep(6);
+        console.log('🎬 Après setCurrentStep(6)');
       }, 7000);
 
       // Countdown visuel séparé
