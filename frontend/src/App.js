@@ -3593,21 +3593,26 @@ function App() {
   if (currentStep === 6) {
     // CORRECTION : Prendre le nombre de panneaux choisi par l'utilisateur
     let panelCount = 12; // Par défaut
+    let batterySelected = false; // Par défaut, pas de batterie
     
     if (formData.useManualKit && formData.manualKit) {
       // Si l'utilisateur a choisi manuellement
-      panelCount = formData.manualKit.panels;
-      console.log(`🔧 Panneau manuel choisi: ${panelCount}`);
-    } else if (calculationResults?.recommended_kit?.panels) {
-      // Si c'est automatique
-      panelCount = calculationResults.recommended_kit.panels;
-      console.log(`🤖 Panneau automatique: ${panelCount}`);
+      panelCount = formData.manualKit.panels || 12;
+      batterySelected = formData.manualKit.hasBattery || false;
+      console.log(`🔋 Kit manuel: ${panelCount} panneaux, Batterie: ${batterySelected}`);
+    } else {
+      // Sinon, utiliser le résultat automatique de PVGIS
+      panelCount = pvgisData?.panels || 12;
+      // Pour l'automatique, vérifier si une batterie était sélectionnée via les données de calcul
+      batterySelected = calculationResults?.battery_selected || false;
+      console.log(`🤖 Panneau automatique: ${panelCount}, Batterie: ${batterySelected}`);
     }
     
     return (
       <div className="App">
         <SolarAnimationCSS 
           panelCount={panelCount}
+          batterySelected={batterySelected}
           onBack={() => setCurrentStep('results')} // Retour aux résultats
           onNext={() => setCurrentStep('results')} // Retour vers les VRAIS résultats (votre page originale)
         />
