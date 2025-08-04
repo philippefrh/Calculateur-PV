@@ -2707,22 +2707,19 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
 
   // Timer automatique pour lancer l'animation après l'écran de succès
   useEffect(() => {
-    if (!isCalculating && calculationResults) {
-      const countdownTimer = setInterval(() => {
-        setAutoCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(countdownTimer);
-            console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
-            setCurrentStep(6); // Lancer automatiquement l'animation
-            return 0;
-          }
-          return prev - 1;
-        });
+    if (!isCalculating && calculationResults && autoCountdown > 0) {
+      const countdownTimer = setTimeout(() => {
+        if (autoCountdown === 1) {
+          console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
+          setCurrentStep(6); // Lancer automatiquement l'animation
+        } else {
+          setAutoCountdown(prev => prev - 1);
+        }
       }, 1000);
 
-      return () => clearInterval(countdownTimer);
+      return () => clearTimeout(countdownTimer);
     }
-  }, [isCalculating, calculationResults]);
+  }, [isCalculating, calculationResults, autoCountdown]);
 
   useEffect(() => {
     const speed = isDemoMode ? 10 : 1000; // 10ms en mode démo, 1000ms normal
