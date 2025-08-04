@@ -5904,6 +5904,379 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Discount System Edge Cases", False, f"Error: {str(e)}")
 
+    def test_battery_functionality_basic(self):
+        """Test basic battery functionality with battery_selected parameter"""
+        if not self.client_id:
+            self.log_test("Battery Functionality Basic", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test 1: Without battery (battery_selected=false)
+            response_no_battery = self.session.post(f"{self.base_url}/calculate/{self.client_id}?battery_selected=false")
+            if response_no_battery.status_code != 200:
+                self.log_test("Battery Functionality Basic", False, f"Failed to get calculation without battery: {response_no_battery.status_code}")
+                return
+            
+            calc_no_battery = response_no_battery.json()
+            
+            # Test 2: With battery (battery_selected=true)
+            response_with_battery = self.session.post(f"{self.base_url}/calculate/{self.client_id}?battery_selected=true")
+            if response_with_battery.status_code != 200:
+                self.log_test("Battery Functionality Basic", False, f"Failed to get calculation with battery: {response_with_battery.status_code}")
+                return
+            
+            calc_with_battery = response_with_battery.json()
+            
+            # Test 3: Without parameter (backward compatibility)
+            response_default = self.session.post(f"{self.base_url}/calculate/{self.client_id}")
+            if response_default.status_code != 200:
+                self.log_test("Battery Functionality Basic", False, f"Failed to get default calculation: {response_default.status_code}")
+                return
+            
+            calc_default = response_default.json()
+            
+            issues = []
+            
+            # Verify battery fields are present in all responses
+            for calc_name, calc_data in [("no_battery", calc_no_battery), ("with_battery", calc_with_battery), ("default", calc_default)]:
+                required_battery_fields = ["battery_selected", "battery_cost", "kit_price_final"]
+                missing_fields = [field for field in required_battery_fields if field not in calc_data]
+                if missing_fields:
+                    issues.append(f"{calc_name} missing battery fields: {missing_fields}")
+            
+            if issues:
+                self.log_test("Battery Functionality Basic", False, f"Missing battery fields: {'; '.join(issues)}")
+                return
+            
+            # Verify battery_selected values
+            if calc_no_battery.get("battery_selected") != False:
+                issues.append(f"battery_selected=false should return False, got {calc_no_battery.get('battery_selected')}")
+            
+            if calc_with_battery.get("battery_selected") != True:
+                issues.append(f"battery_selected=true should return True, got {calc_with_battery.get('battery_selected')}")
+            
+            if calc_default.get("battery_selected") != False:
+                issues.append(f"default should return False for battery_selected, got {calc_default.get('battery_selected')}")
+            
+            # Verify battery_cost values
+            if calc_no_battery.get("battery_cost") != 0:
+                issues.append(f"battery_cost without battery should be 0, got {calc_no_battery.get('battery_cost')}")
+            
+            if calc_with_battery.get("battery_cost") != 5000:
+                issues.append(f"battery_cost with battery should be 5000, got {calc_with_battery.get('battery_cost')}")
+            
+            if calc_default.get("battery_cost") != 0:
+                issues.append(f"default battery_cost should be 0, got {calc_default.get('battery_cost')}")
+            
+            # Verify kit_price_final includes battery cost
+            kit_price_original = calc_no_battery.get("kit_price_original", 0)
+            
+            expected_final_no_battery = kit_price_original
+            expected_final_with_battery = kit_price_original + 5000
+            
+            if abs(calc_no_battery.get("kit_price_final", 0) - expected_final_no_battery) > 1:
+                issues.append(f"kit_price_final without battery should be {expected_final_no_battery}, got {calc_no_battery.get('kit_price_final')}")
+            
+            if abs(calc_with_battery.get("kit_price_final", 0) - expected_final_with_battery) > 1:
+                issues.append(f"kit_price_final with battery should be {expected_final_with_battery}, got {calc_with_battery.get('kit_price_final')}")
+            
+            if issues:
+                self.log_test("Battery Functionality Basic", False, f"Battery functionality issues: {'; '.join(issues)}")
+            else:
+                self.log_test("Battery Functionality Basic", True, 
+                            f"✅ BATTERY FUNCTIONALITY WORKING: Without battery: {calc_no_battery['battery_cost']}€, Final price: {calc_no_battery['kit_price_final']}€. With battery: {calc_with_battery['battery_cost']}€, Final price: {calc_with_battery['kit_price_final']}€ (+5000€ increase). Backward compatibility maintained.", 
+                            {
+                                "no_battery": {"battery_selected": calc_no_battery["battery_selected"], "battery_cost": calc_no_battery["battery_cost"], "kit_price_final": calc_no_battery["kit_price_final"]},
+                                "with_battery": {"battery_selected": calc_with_battery["battery_selected"], "battery_cost": calc_with_battery["battery_cost"], "kit_price_final": calc_with_battery["kit_price_final"]},
+                                "price_increase": calc_with_battery["kit_price_final"] - calc_no_battery["kit_price_final"]
+                            })
+                
+        except Exception as e:
+            self.log_test("Battery Functionality Basic", False, f"Error: {str(e)}")
+
+    def test_battery_with_discounts_combinations(self):
+        """Test battery functionality combined with discount amounts (R1, R2, R3)"""
+        if not self.client_id:
+            self.log_test("Battery + Discounts Combinations", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test scenarios: Battery + different discount combinations
+            test_scenarios = [
+                {"name": "Battery only", "battery": True, "discount": 0},
+                {"name": "Battery + R1", "battery": True, "discount": 1000},
+                {"name": "Battery + R2", "battery": True, "discount": 2000},
+                {"name": "Battery + R3", "battery": True, "discount": 3000},
+                {"name": "No battery, R1", "battery": False, "discount": 1000},
+                {"name": "No battery, R2", "battery": False, "discount": 2000},
+                {"name": "No battery, R3", "battery": False, "discount": 3000},
+            ]
+            
+            results = []
+            issues = []
+            
+            for scenario in test_scenarios:
+                params = f"?battery_selected={str(scenario['battery']).lower()}&discount_amount={scenario['discount']}"
+                response = self.session.post(f"{self.base_url}/calculate/{self.client_id}{params}")
+                
+                if response.status_code != 200:
+                    issues.append(f"{scenario['name']}: HTTP {response.status_code}")
+                    continue
+                
+                calc = response.json()
+                
+                # Verify calculation fields
+                required_fields = ["battery_selected", "battery_cost", "kit_price_original", "kit_price_final", "discount_applied"]
+                missing_fields = [field for field in required_fields if field not in calc]
+                if missing_fields:
+                    issues.append(f"{scenario['name']} missing fields: {missing_fields}")
+                    continue
+                
+                # Calculate expected values
+                kit_price_original = calc.get("kit_price_original", 0)
+                expected_battery_cost = 5000 if scenario["battery"] else 0
+                expected_discount = scenario["discount"]
+                expected_final_price = kit_price_original - expected_discount + expected_battery_cost
+                
+                # Verify values
+                actual_battery_cost = calc.get("battery_cost", 0)
+                actual_discount = calc.get("discount_applied", 0)
+                actual_final_price = calc.get("kit_price_final", 0)
+                actual_battery_selected = calc.get("battery_selected", False)
+                
+                scenario_issues = []
+                
+                if actual_battery_selected != scenario["battery"]:
+                    scenario_issues.append(f"battery_selected: expected {scenario['battery']}, got {actual_battery_selected}")
+                
+                if actual_battery_cost != expected_battery_cost:
+                    scenario_issues.append(f"battery_cost: expected {expected_battery_cost}, got {actual_battery_cost}")
+                
+                if actual_discount != expected_discount:
+                    scenario_issues.append(f"discount_applied: expected {expected_discount}, got {actual_discount}")
+                
+                if abs(actual_final_price - expected_final_price) > 1:
+                    scenario_issues.append(f"kit_price_final: expected {expected_final_price}, got {actual_final_price}")
+                
+                if scenario_issues:
+                    issues.append(f"{scenario['name']}: {'; '.join(scenario_issues)}")
+                
+                results.append({
+                    "scenario": scenario["name"],
+                    "battery_selected": actual_battery_selected,
+                    "battery_cost": actual_battery_cost,
+                    "discount_applied": actual_discount,
+                    "kit_price_original": kit_price_original,
+                    "kit_price_final": actual_final_price,
+                    "net_change": actual_final_price - kit_price_original
+                })
+            
+            if issues:
+                self.log_test("Battery + Discounts Combinations", False, f"Combination issues: {'; '.join(issues)}")
+            else:
+                # Create summary of results
+                summary_lines = []
+                for result in results:
+                    net_change = result["net_change"]
+                    change_str = f"+{net_change}€" if net_change > 0 else f"{net_change}€"
+                    summary_lines.append(f"{result['scenario']}: {result['kit_price_original']}€ → {result['kit_price_final']}€ ({change_str})")
+                
+                self.log_test("Battery + Discounts Combinations", True, 
+                            f"✅ BATTERY + DISCOUNTS COMBINATIONS WORKING: All 7 scenarios tested successfully. Battery adds +5000€, discounts subtract as expected. " + "; ".join(summary_lines), 
+                            results)
+                
+        except Exception as e:
+            self.log_test("Battery + Discounts Combinations", False, f"Error: {str(e)}")
+
+    def test_battery_financing_calculations(self):
+        """Test that financing calculations correctly include battery cost"""
+        if not self.client_id:
+            self.log_test("Battery Financing Calculations", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Get calculation without battery
+            response_no_battery = self.session.post(f"{self.base_url}/calculate/{self.client_id}?battery_selected=false")
+            if response_no_battery.status_code != 200:
+                self.log_test("Battery Financing Calculations", False, f"Failed to get calculation without battery: {response_no_battery.status_code}")
+                return
+            
+            calc_no_battery = response_no_battery.json()
+            
+            # Get calculation with battery
+            response_with_battery = self.session.post(f"{self.base_url}/calculate/{self.client_id}?battery_selected=true")
+            if response_with_battery.status_code != 200:
+                self.log_test("Battery Financing Calculations", False, f"Failed to get calculation with battery: {response_with_battery.status_code}")
+                return
+            
+            calc_with_battery = response_with_battery.json()
+            
+            issues = []
+            
+            # Check financing_options (standard financing)
+            financing_no_battery = calc_no_battery.get("financing_options", [])
+            financing_with_battery = calc_with_battery.get("financing_options", [])
+            
+            if not financing_no_battery or not financing_with_battery:
+                issues.append("Missing financing_options in one or both calculations")
+            else:
+                # Compare 15-year financing option
+                option_15y_no_battery = next((opt for opt in financing_no_battery if opt["duration_years"] == 15), None)
+                option_15y_with_battery = next((opt for opt in financing_with_battery if opt["duration_years"] == 15), None)
+                
+                if not option_15y_no_battery or not option_15y_with_battery:
+                    issues.append("Missing 15-year financing option in one or both calculations")
+                else:
+                    payment_no_battery = option_15y_no_battery["monthly_payment"]
+                    payment_with_battery = option_15y_with_battery["monthly_payment"]
+                    payment_increase = payment_with_battery - payment_no_battery
+                    
+                    # Battery should increase monthly payment (5000€ over 15 years ≈ +28€/month with interest)
+                    if payment_increase < 20 or payment_increase > 40:
+                        issues.append(f"15-year financing payment increase {payment_increase:.2f}€/month seems incorrect for 5000€ battery (expected ~28€/month)")
+            
+            # Check financing_with_aids
+            financing_aids_no_battery = calc_no_battery.get("financing_with_aids", {})
+            financing_aids_with_battery = calc_with_battery.get("financing_with_aids", {})
+            
+            if not financing_aids_no_battery or not financing_aids_with_battery:
+                issues.append("Missing financing_with_aids in one or both calculations")
+            else:
+                payment_aids_no_battery = financing_aids_no_battery.get("monthly_payment", 0)
+                payment_aids_with_battery = financing_aids_with_battery.get("monthly_payment", 0)
+                payment_aids_increase = payment_aids_with_battery - payment_aids_no_battery
+                
+                financed_no_battery = financing_aids_no_battery.get("financed_amount", 0)
+                financed_with_battery = financing_aids_with_battery.get("financed_amount", 0)
+                financed_increase = financed_with_battery - financed_no_battery
+                
+                # Financed amount should increase by exactly 5000€
+                if abs(financed_increase - 5000) > 1:
+                    issues.append(f"Financed amount increase {financed_increase}€ should be 5000€ for battery")
+                
+                # Monthly payment should increase proportionally
+                if payment_aids_increase < 20 or payment_aids_increase > 40:
+                    issues.append(f"Financing with aids payment increase {payment_aids_increase:.2f}€/month seems incorrect for 5000€ battery")
+            
+            # Check all_financing_with_aids
+            all_financing_no_battery = calc_no_battery.get("all_financing_with_aids", [])
+            all_financing_with_battery = calc_with_battery.get("all_financing_with_aids", [])
+            
+            if not all_financing_no_battery or not all_financing_with_battery:
+                issues.append("Missing all_financing_with_aids in one or both calculations")
+            else:
+                # Check that all options show increased payments
+                for i, (option_no_battery, option_with_battery) in enumerate(zip(all_financing_no_battery, all_financing_with_battery)):
+                    duration = option_no_battery.get("duration_years", 0)
+                    payment_no_battery = option_no_battery.get("monthly_payment", 0)
+                    payment_with_battery = option_with_battery.get("monthly_payment", 0)
+                    payment_increase = payment_with_battery - payment_no_battery
+                    
+                    # All options should show increased payments
+                    if payment_increase <= 0:
+                        issues.append(f"{duration}-year option: payment should increase with battery, got {payment_increase:.2f}€")
+                        break
+            
+            if issues:
+                self.log_test("Battery Financing Calculations", False, f"Financing calculation issues: {'; '.join(issues)}")
+            else:
+                # Calculate summary data
+                payment_15y_increase = option_15y_with_battery["monthly_payment"] - option_15y_no_battery["monthly_payment"]
+                aids_payment_increase = payment_aids_with_battery - payment_aids_no_battery
+                financed_amount_increase = financed_with_battery - financed_no_battery
+                
+                self.log_test("Battery Financing Calculations", True, 
+                            f"✅ BATTERY FINANCING CALCULATIONS WORKING: Standard 15y financing: +{payment_15y_increase:.2f}€/month. Financing with aids: +{aids_payment_increase:.2f}€/month (financed amount +{financed_amount_increase}€). All financing options correctly include 5000€ battery cost.", 
+                            {
+                                "standard_15y_increase": payment_15y_increase,
+                                "aids_payment_increase": aids_payment_increase,
+                                "financed_amount_increase": financed_amount_increase,
+                                "battery_cost": 5000
+                            })
+                
+        except Exception as e:
+            self.log_test("Battery Financing Calculations", False, f"Error: {str(e)}")
+
+    def test_battery_with_manual_kit_selection(self):
+        """Test battery functionality with manual kit selection"""
+        if not self.client_id:
+            self.log_test("Battery + Manual Kit Selection", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test with different manual kit powers and battery combinations
+            test_scenarios = [
+                {"kit_power": 6, "battery": False, "discount": 0},
+                {"kit_power": 6, "battery": True, "discount": 0},
+                {"kit_power": 9, "battery": False, "discount": 2000},
+                {"kit_power": 9, "battery": True, "discount": 2000},
+            ]
+            
+            results = []
+            issues = []
+            
+            for scenario in test_scenarios:
+                params = f"?manual_kit_power={scenario['kit_power']}&battery_selected={str(scenario['battery']).lower()}&discount_amount={scenario['discount']}"
+                response = self.session.post(f"{self.base_url}/calculate/{self.client_id}{params}")
+                
+                if response.status_code != 200:
+                    issues.append(f"Kit {scenario['kit_power']}kW, Battery {scenario['battery']}, Discount {scenario['discount']}€: HTTP {response.status_code}")
+                    continue
+                
+                calc = response.json()
+                
+                # Verify kit power is respected
+                actual_kit_power = calc.get("kit_power", 0)
+                if actual_kit_power != scenario["kit_power"]:
+                    issues.append(f"Manual kit power {scenario['kit_power']}kW not respected, got {actual_kit_power}kW")
+                    continue
+                
+                # Verify battery and discount are applied correctly
+                expected_battery_cost = 5000 if scenario["battery"] else 0
+                expected_discount = scenario["discount"]
+                
+                actual_battery_cost = calc.get("battery_cost", 0)
+                actual_discount = calc.get("discount_applied", 0)
+                actual_battery_selected = calc.get("battery_selected", False)
+                
+                scenario_issues = []
+                
+                if actual_battery_selected != scenario["battery"]:
+                    scenario_issues.append(f"battery_selected: expected {scenario['battery']}, got {actual_battery_selected}")
+                
+                if actual_battery_cost != expected_battery_cost:
+                    scenario_issues.append(f"battery_cost: expected {expected_battery_cost}, got {actual_battery_cost}")
+                
+                if actual_discount != expected_discount:
+                    scenario_issues.append(f"discount_applied: expected {expected_discount}, got {actual_discount}")
+                
+                if scenario_issues:
+                    issues.append(f"Kit {scenario['kit_power']}kW scenario: {'; '.join(scenario_issues)}")
+                
+                results.append({
+                    "kit_power": actual_kit_power,
+                    "battery_selected": actual_battery_selected,
+                    "battery_cost": actual_battery_cost,
+                    "discount_applied": actual_discount,
+                    "kit_price_final": calc.get("kit_price_final", 0)
+                })
+            
+            if issues:
+                self.log_test("Battery + Manual Kit Selection", False, f"Manual kit + battery issues: {'; '.join(issues)}")
+            else:
+                # Create summary
+                summary_lines = []
+                for i, result in enumerate(results):
+                    scenario = test_scenarios[i]
+                    summary_lines.append(f"{result['kit_power']}kW kit, Battery: {result['battery_selected']}, Discount: {result['discount_applied']}€, Final: {result['kit_price_final']}€")
+                
+                self.log_test("Battery + Manual Kit Selection", True, 
+                            f"✅ BATTERY + MANUAL KIT SELECTION WORKING: All 4 scenarios tested successfully. Manual kit power respected, battery and discounts applied correctly. " + "; ".join(summary_lines), 
+                            results)
+                
+        except Exception as e:
+            self.log_test("Battery + Manual Kit Selection", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on user-requested endpoints"""
         print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
