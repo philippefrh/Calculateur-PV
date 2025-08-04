@@ -3,7 +3,7 @@
     "test": "API Root",
     "success": true,
     "details": "API accessible, message: Solar Calculator API with PVGIS Integration",
-    "timestamp": "2025-08-04 03:52:57",
+    "timestamp": "2025-08-04 11:58:59",
     "response_data": {
       "message": "Solar Calculator API with PVGIS Integration"
     }
@@ -11,10 +11,10 @@
   {
     "test": "Create Client",
     "success": true,
-    "details": "Client created successfully. ID: fde925cd-a522-4464-8a4a-b4819832f9bd, Coords: 48.8680, 2.3154",
-    "timestamp": "2025-08-04 03:52:58",
+    "details": "Client created successfully. ID: 10ecd715-dba6-492b-bebe-1a87287d23ba, Coords: 48.8680, 2.3154",
+    "timestamp": "2025-08-04 11:59:00",
     "response_data": {
-      "id": "fde925cd-a522-4464-8a4a-b4819832f9bd",
+      "id": "10ecd715-dba6-492b-bebe-1a87287d23ba",
       "first_name": "Jean",
       "last_name": "Dupont",
       "address": "10 Avenue des Champs-\u00c9lys\u00e9es, 75008 Paris",
@@ -35,14 +35,14 @@
       "estimated_production": null,
       "estimated_savings": null,
       "pvgis_data": null,
-      "created_at": "2025-08-04T03:52:58.468770"
+      "created_at": "2025-08-04T11:59:00.192366"
     }
   },
   {
     "test": "Battery Functionality Basic",
     "success": true,
     "details": "\u2705 BATTERY FUNCTIONALITY WORKING: Without battery: 0\u20ac, Final price: 22900\u20ac. With battery: 5000\u20ac, Final price: 27900\u20ac (+5000\u20ac increase). Backward compatibility maintained.",
-    "timestamp": "2025-08-04 03:53:00",
+    "timestamp": "2025-08-04 11:59:02",
     "response_data": {
       "no_battery": {
         "battery_selected": false,
@@ -61,7 +61,7 @@
     "test": "Battery + Discounts Combinations",
     "success": true,
     "details": "\u2705 BATTERY + DISCOUNTS COMBINATIONS WORKING: All 7 scenarios tested successfully. Battery adds +5000\u20ac, discounts subtract as expected. Battery only: 22900\u20ac \u2192 27900\u20ac (+5000\u20ac); Battery + R1: 22900\u20ac \u2192 26900\u20ac (+4000\u20ac); Battery + R2: 22900\u20ac \u2192 25900\u20ac (+3000\u20ac); Battery + R3: 22900\u20ac \u2192 24900\u20ac (+2000\u20ac); No battery, R1: 22900\u20ac \u2192 21900\u20ac (-1000\u20ac); No battery, R2: 22900\u20ac \u2192 20900\u20ac (-2000\u20ac); No battery, R3: 22900\u20ac \u2192 19900\u20ac (-3000\u20ac)",
-    "timestamp": "2025-08-04 03:53:04",
+    "timestamp": "2025-08-04 11:59:06",
     "response_data": [
       {
         "scenario": "Battery only",
@@ -132,7 +132,7 @@
     "test": "Battery Financing Calculations",
     "success": true,
     "details": "\u2705 BATTERY FINANCING CALCULATIONS WORKING: Standard 15y financing: +39.44\u20ac/month. Financing with aids: +39.43\u20ac/month (financed amount +5000.0\u20ac). All financing options correctly include 5000\u20ac battery cost.",
-    "timestamp": "2025-08-04 03:53:05",
+    "timestamp": "2025-08-04 11:59:08",
     "response_data": {
       "standard_15y_increase": 39.44,
       "aids_payment_increase": 39.42999999999998,
@@ -144,7 +144,7 @@
     "test": "Battery + Manual Kit Selection",
     "success": true,
     "details": "\u2705 BATTERY + MANUAL KIT SELECTION WORKING: All 4 scenarios tested successfully. Manual kit power respected, battery and discounts applied correctly. 6kW kit, Battery: False, Discount: 0\u20ac, Final: 22900\u20ac; 6kW kit, Battery: True, Discount: 0\u20ac, Final: 27900\u20ac; 9kW kit, Battery: False, Discount: 2000\u20ac, Final: 27900\u20ac; 9kW kit, Battery: True, Discount: 2000\u20ac, Final: 32900\u20ac",
-    "timestamp": "2025-08-04 03:53:07",
+    "timestamp": "2025-08-04 11:59:10",
     "response_data": [
       {
         "kit_power": 6,
