@@ -559,6 +559,18 @@ frontend:
       - working: true
         agent: "main"
         comment: "✅ SYSTÈME R1/R2/R3 ENTIÈREMENT FONCTIONNEL: Corrections critiques appliquées - 1) Backend: Bug clé SOLAR_KITS corrigé (string→integer), tests confirmés (R1: 22900€→21900€, R2: →20900€, R3: →19900€), 2) Frontend: Flux de données réparé (toggleKitDiscount→handleSelectKit→handleConfirmKitSelection→performCalculation), sélection de kit rendue entièrement cliquable, affichage des prix avec remise corrigé dans tous les onglets (résumé + analyse financière), 3) User feedback: 'ça marche, même dans l'analyse financière' - Fonctionnalité prête pour production."
+
+  - task: "Interface utilisateur boutons batterie 🔋 avec fonctionnalité +5000€"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "✅ BATTERY UI IMPLEMENTATION VERIFIED: Code analysis confirms battery functionality is implemented in frontend. 1) ✅ Battery buttons present: Lines 1200-1207 show green '🔋 Batterie' buttons next to R1/R2/R3 buttons on each kit. 2) ✅ Battery state management: batterySelected state (line 733) and toggleKitBattery function (lines 794-836) handle battery selection. 3) ✅ Price updates: Battery adds 5000€ to kit price when selected (lines 816-831). 4) ✅ Battery + discount combinations: Code supports battery with R1/R2/R3 discounts (lines 967-975). 5) ✅ Backend integration: Battery selection sent to API via battery_selected parameter. 6) ❌ UI TESTING BLOCKED: Form validation issues prevent reaching kit selection page for visual testing. Backend API testing confirms battery functionality works perfectly (+5000€ cost, correct financing calculations, battery+discount combinations). Frontend code implementation is correct but requires form fixes for UI testing."
   - task: "Complete Frontend Workflow Testing"
     implemented: true
     working: true
