@@ -2710,17 +2710,17 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     if (!isCalculating && calculationResults) {
       console.log('🎬 Écran de succès affiché, préparation du lancement automatique de l\'animation');
       
-      // Réinitialiser le countdown
-      setAutoCountdown(5);
+      // Réinitialiser le countdown à 7 secondes comme demandé
+      setAutoCountdown(7);
       
-      // Timer simple de 5 secondes
+      // Timer simple de 7 secondes puis appeler onComplete
       const autoTimer = setTimeout(() => {
         console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
-        setCurrentStep(6);
-      }, 5000);
+        onComplete(calculationResults); // Appeler onComplete au lieu de setCurrentStep(6)
+      }, 7000);
 
       // Countdown visuel séparé
-      let currentCount = 5;
+      let currentCount = 7;
       const countdownTimer = setInterval(() => {
         currentCount--;
         setAutoCountdown(currentCount);
