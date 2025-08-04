@@ -2750,10 +2750,15 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       // Réinitialiser le countdown à 7 secondes comme demandé
       setAutoCountdown(7);
       
-      // Timer simple de 7 secondes puis appeler onComplete
+      // Timer simple de 7 secondes puis passer directement à l'animation
       const autoTimer = setTimeout(() => {
         console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
-        onComplete(calculationResults); // Appeler onComplete au lieu de setCurrentStep(6)
+        // D'abord appeler onComplete pour sauvegarder les résultats
+        onComplete(calculationResults);
+        // Puis passer à l'animation
+        setTimeout(() => {
+          setCurrentStep(6);
+        }, 100);
       }, 7000);
 
       // Countdown visuel séparé
