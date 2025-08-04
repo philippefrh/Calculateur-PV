@@ -1766,6 +1766,12 @@ Cordialement`);
             📊 Vue d'ensemble
           </button>
           <button 
+            className={`tab-button ${activeTab === 'animation' ? 'active' : ''}`}
+            onClick={() => setActiveTab('animation')}
+          >
+            🎬 Animation Panneaux
+          </button>
+          <button 
             className={`tab-button ${activeTab === 'technical' ? 'active' : ''}`}
             onClick={() => setActiveTab('technical')}
           >
@@ -1781,7 +1787,7 @@ Cordialement`);
             className={`tab-button ${activeTab === 'visualization' ? 'active' : ''}`}
             onClick={() => setActiveTab('visualization')}
           >
-            🏠 Visualisation Toit
+            📷 Visualisation Toit (fal.ai)
           </button>
         </div>
       </div>
