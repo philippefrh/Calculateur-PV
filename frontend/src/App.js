@@ -1728,6 +1728,27 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, fo
     return closestOption;
   };
 
+  const getOptimalFinancingWithAids = () => {
+    if (!results || !results.all_financing_with_aids) return results?.financing_with_aids || null;
+    
+    // Trouver la mensualité avec aides la plus proche de l'économie mensuelle
+    const monthlySavings = results.monthly_savings || 0;
+    let closestOption = results.all_financing_with_aids[0];
+    let smallestDifference = Math.abs(results.all_financing_with_aids[0].monthly_payment - monthlySavings);
+    
+    results.all_financing_with_aids.forEach(option => {
+      const difference = Math.abs(option.monthly_payment - monthlySavings);
+      if (difference < smallestDifference) {
+        smallestDifference = difference;
+        closestOption = option;
+      }
+    });
+    
+    console.log(`💰 Financement optimal avec aides choisi: ${closestOption.duration_years} ans, ${Math.round(closestOption.monthly_payment)}€/mois (le plus proche de ${Math.round(monthlySavings)}€ d'économies)`);
+    
+    return closestOption;
+  };
+
   const optimalFinancing = getOptimalFinancing();
 
   const sendToExpert = () => {
