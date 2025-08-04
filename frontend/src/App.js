@@ -2112,7 +2112,7 @@ Cordialement`);
               </div>
               <div className="financial-item">
                 <span className="financial-label">⏱️ Retour sur investissement:</span>
-                <span className="financial-value">{Math.round(((results.discount_applied > 0 ? results.kit_price_final : results.kit_price) - results.total_aids) / results.estimated_savings)} ans</span>
+                <span className="financial-value">{Math.round((((results.discount_applied > 0 || results.battery_selected) ? results.kit_price_final : results.kit_price) - results.total_aids) / results.estimated_savings)} ans</span>
               </div>
             </div>
 
