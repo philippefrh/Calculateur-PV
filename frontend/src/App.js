@@ -1750,6 +1750,7 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, fo
   };
 
   const optimalFinancing = getOptimalFinancing();
+  const optimalFinancingWithAids = getOptimalFinancingWithAids();
 
   const sendToExpert = () => {
     const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
