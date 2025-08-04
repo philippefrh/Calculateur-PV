@@ -2658,7 +2658,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   const [isCalculating, setIsCalculating] = useState(true);
   const [currentAnimation, setCurrentAnimation] = useState(0);
   const [isDemoMode, setIsDemoMode] = useState(false);
-  const [autoCountdown, setAutoCountdown] = useState(5);
+  const [autoCountdown, setAutoCountdown] = useState(7);
   const successTimerRef = useRef(null);
 
   // Phases d'explication pendant les 2 minutes avec animations
