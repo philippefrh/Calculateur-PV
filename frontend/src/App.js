@@ -1915,12 +1915,12 @@ Cordialement`);
             <div className="financial-item">
               <span className="financial-icon">💳</span>
               <span className="financial-label">Reste à financer:</span>
-              <span className="financial-value">{results.financing_with_aids?.financed_amount?.toLocaleString()} €</span>
+              <span className="financial-value">{optimalFinancingWithAids?.financed_amount?.toLocaleString()} €</span>
             </div>
             <div className="financial-item">
               <span className="financial-icon">⏱️</span>
               <span className="financial-label">Retour sur investissement:</span>
-              <span className="financial-value">{Math.round(results.financing_with_aids?.duration_years)} ans</span>
+              <span className="financial-value">{Math.round(optimalFinancingWithAids?.duration_years || 0)} ans</span>
             </div>
           </div>
         </div>
