@@ -6360,6 +6360,14 @@ class SolarCalculatorTester:
         self.test_all_financing_with_aids_calculation()
         self.test_autoconsumption_surplus_distribution()
         
+        # BATTERY FUNCTIONALITY TESTS - NEW FEATURE
+        print("\n🔋 BATTERY FUNCTIONALITY TESTS - NEW FEATURE")
+        print("-" * 60)
+        self.test_battery_functionality_basic()
+        self.test_battery_with_discounts_combinations()
+        self.test_battery_financing_calculations()
+        self.test_battery_with_manual_kit_selection()
+        
         # PDF generation tests
         self.test_pdf_generation_financing_tables()
         
