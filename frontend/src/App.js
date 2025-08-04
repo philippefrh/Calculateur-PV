@@ -2912,18 +2912,8 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
 
   // Timer de 5 secondes pour l'écran de succès - VA VERS LES RÉSULTATS
   useEffect(() => {
-    if (!isCalculating && calculationResults && !successTimerRef.current) {
-      successTimerRef.current = setTimeout(() => {
-        setCurrentStep('results'); // Aller vers les résultats d'abord
-      }, 5000);
-    }
-    
-    return () => {
-      if (successTimerRef.current) {
-        clearTimeout(successTimerRef.current);
-        successTimerRef.current = null;
-      }
-    };
+    // Supprimer ce timer qui entre en conflit avec le timer de 7 secondes de l'écran de succès
+    // Le timer de 7 secondes dans CalculationScreen gère maintenant la redirection vers l'animation
   }, [isCalculating, calculationResults]);
 
   if (!isCalculating && calculationResults) {
