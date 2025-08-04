@@ -1159,7 +1159,9 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
             "annual_edf_bill": annual_edf_bill,
             "discount_applied": discount_amount or 0,  # ✅ AJOUT: Retourner la remise appliquée
             "kit_price_original": kit_price,  # ✅ AJOUT: Prix original avant remise
-            "kit_price_final": kit_price - (discount_amount or 0)  # ✅ AJOUT: Prix final après remise
+            "kit_price_final": kit_price - (discount_amount or 0) + battery_cost,  # ✅ AJOUT: Prix final après remise + batterie
+            "battery_selected": battery_selected or False,  # ✅ AJOUT: Statut de la batterie
+            "battery_cost": battery_cost  # ✅ AJOUT: Coût de la batterie
         })
         
         return result
