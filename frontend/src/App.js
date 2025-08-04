@@ -1217,16 +1217,17 @@ const ConsumptionForm = ({
                           </div>
                           <div className="kit-detail-row">
                             <span>Prix TTC:</span>
-                            <span>
-                              {kitDiscounts[kit.power] ? (
+                            <span className="kit-price">
+                              {kitDiscounts[kit.power] || batterySelected[kit.power] ? (
                                 <>
                                   <span style={{textDecoration: 'line-through', color: '#999', fontSize: '0.9em'}}>
                                     {kit.originalPriceTTC.toLocaleString()}€
                                   </span>
                                   {' '}
-                                  <span style={{color: '#e74c3c', fontWeight: 'bold'}}>
+                                  <span style={{color: '#27ae60', fontWeight: 'bold'}}>
                                     {(() => {
                                       const discountType = kitDiscounts[kit.power];
+                                      const hasBattery = batterySelected[kit.power];
                                       let discountAmount = 0;
                                       switch (discountType) {
                                         case 'R1': discountAmount = 1000; break;
@@ -1234,9 +1235,16 @@ const ConsumptionForm = ({
                                         case 'R3': discountAmount = 3000; break;
                                         default: discountAmount = 0;
                                       }
-                                      return (kit.originalPriceTTC - discountAmount).toLocaleString() + '€';
+                                      const batteryPrice = hasBattery ? 5000 : 0;
+                                      const finalPrice = kit.originalPriceTTC - discountAmount + batteryPrice;
+                                      return finalPrice.toLocaleString() + '€';
                                     })()}
                                   </span>
+                                  {batterySelected[kit.power] && (
+                                    <span style={{color: '#2ecc71', fontSize: '0.8em', marginLeft: '5px'}}>
+                                      (+Batterie)
+                                    </span>
+                                  )}
                                 </>
                               ) : (
                                 <span>{kit.priceTTC.toLocaleString()}€</span>
@@ -1246,7 +1254,7 @@ const ConsumptionForm = ({
                           <div className="kit-detail-row">
                             <span>Prix avec aides:</span>
                             <span className="price-with-aids">
-                              {kitDiscounts[kit.power] ? (
+                              {kitDiscounts[kit.power] || batterySelected[kit.power] ? (
                                 <>
                                   <span style={{textDecoration: 'line-through', color: '#999', fontSize: '0.9em'}}>
                                     {kit.originalPriceWithAids.toLocaleString()}€
@@ -1255,6 +1263,7 @@ const ConsumptionForm = ({
                                   <span style={{color: '#27ae60', fontWeight: 'bold'}}>
                                     {(() => {
                                       const discountType = kitDiscounts[kit.power];
+                                      const hasBattery = batterySelected[kit.power];
                                       let discountAmount = 0;
                                       switch (discountType) {
                                         case 'R1': discountAmount = 1000; break;
@@ -1262,9 +1271,16 @@ const ConsumptionForm = ({
                                         case 'R3': discountAmount = 3000; break;
                                         default: discountAmount = 0;
                                       }
-                                      return (kit.originalPriceWithAids - discountAmount).toLocaleString() + '€';
+                                      const batteryPrice = hasBattery ? 5000 : 0;
+                                      const finalPrice = kit.originalPriceWithAids - discountAmount + batteryPrice;
+                                      return finalPrice.toLocaleString() + '€';
                                     })()}
                                   </span>
+                                  {batterySelected[kit.power] && (
+                                    <span style={{color: '#2ecc71', fontSize: '0.8em', marginLeft: '5px'}}>
+                                      (+Batterie)
+                                    </span>
+                                  )}
                                 </>
                               ) : (
                                 <span>{kit.priceWithAids.toLocaleString()}€</span>
