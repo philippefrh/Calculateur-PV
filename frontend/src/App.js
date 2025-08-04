@@ -3602,7 +3602,7 @@ function App() {
       console.log(`🔋 Kit manuel: ${panelCount} panneaux, Batterie: ${batterySelected}`);
     } else {
       // Sinon, utiliser le résultat automatique de PVGIS
-      panelCount = pvgisData?.panels || 12;
+      panelCount = calculationResults?.recommended_kit?.panels || 12;
       // Pour l'automatique, vérifier si une batterie était sélectionnée via les données de calcul
       batterySelected = calculationResults?.battery_selected || false;
       console.log(`🤖 Panneau automatique: ${panelCount}, Batterie: ${batterySelected}`);
