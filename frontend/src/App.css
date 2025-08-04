@@ -3393,6 +3393,43 @@ body::after {
   transform: scale(0.95);
 }
 
+/* Bouton batterie vert */
+.battery-button {
+  background: #27ae60; /* Vert comme demandé */
+  color: white;
+  border: none;
+  height: 20px; /* Même taille que les boutons de remise */
+  padding: 0 8px; /* Plus large pour contenir le texte */
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  position: relative;
+  white-space: nowrap; /* Éviter que le texte se coupe */
+}
+
+.battery-button:hover {
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(39, 174, 96, 0.3);
+}
+
+.battery-button.active {
+  background: #1e8449; /* Vert plus foncé quand actif */
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(30, 132, 73, 0.5);
+}
+
+.battery-button:active {
+  transform: scale(0.95);
+}
+
 .kit-header h5 {
   color: #2c5530;
   font-size: 1.3rem;
