@@ -780,11 +780,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Roof Image Upload Endpoint (POST /api/upload-roof-image)"
-    - "Roof Visualization Generation with fal.ai (POST /api/generate-roof-visualization)"
-    - "fal.ai Integration and OmniGen V2 Model Usage"
+    - "Interface utilisateur boutons batterie 🔋 avec fonctionnalité +5000€"
+    - "Fonctionnalité batterie avec paramètre battery_selected"
   stuck_tasks:
-    - "Aucune tâche bloquée actuellement"
+    - "Interface utilisateur boutons batterie 🔋 avec fonctionnalité +5000€"
   test_all: false
   test_priority: "high_first"
 
