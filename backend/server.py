@@ -472,7 +472,7 @@ def calculate_optimal_kit_size(annual_consumption: float, roof_surface: float) -
     
     return best_power
 
-def calculate_financing_options(kit_price: float, monthly_savings: float, region: str = "france", discount_amount: float = 0) -> List[Dict]:
+def calculate_financing_options(kit_price: float, monthly_savings: float, region: str = "france", discount_amount: float = 0, battery_cost: float = 0) -> List[Dict]:
     """
     Calculate financing options from 3 to 15 years based on region
     """
@@ -480,8 +480,8 @@ def calculate_financing_options(kit_price: float, monthly_savings: float, region
     taeg = region_config["interest_rates"]["standard"]
     monthly_rate = taeg / 12
     
-    # Apply discount to the kit price
-    discounted_price = kit_price - discount_amount
+    # Appliquer la remise et ajouter le coût batterie si fourni
+    final_price = kit_price - discount_amount + battery_cost
     
     min_duration = region_config["financing"]["min_duration"]
     max_duration = region_config["financing"]["max_duration"]
@@ -493,9 +493,9 @@ def calculate_financing_options(kit_price: float, monthly_savings: float, region
         
         if monthly_rate > 0:
             # Standard loan calculation with discounted price
-            monthly_payment = discounted_price * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
+            monthly_payment = final_price * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
         else:
-            monthly_payment = discounted_price / months
+            monthly_payment = final_price / months
         
         # Calculate if it's close to the monthly savings
         savings_ratio = monthly_payment / monthly_savings if monthly_savings > 0 else float('inf')
