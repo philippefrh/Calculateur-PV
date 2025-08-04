@@ -1709,9 +1709,23 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, fo
 
   const getOptimalFinancing = () => {
     if (!results || !results.financing_options) return null;
-    return results.financing_options.find(option => 
-      option.difference_vs_savings >= -20 && option.difference_vs_savings <= 20
-    ) || results.financing_options[results.financing_options.length - 1];
+    
+    // Trouver la mensualité la plus proche de l'économie mensuelle
+    const monthlySavings = results.monthly_savings || 0;
+    let closestOption = results.financing_options[0];
+    let smallestDifference = Math.abs(results.financing_options[0].monthly_payment - monthlySavings);
+    
+    results.financing_options.forEach(option => {
+      const difference = Math.abs(option.monthly_payment - monthlySavings);
+      if (difference < smallestDifference) {
+        smallestDifference = difference;
+        closestOption = option;
+      }
+    });
+    
+    console.log(`🎯 Financement optimal choisi: ${closestOption.duration_years} ans, ${Math.round(closestOption.monthly_payment)}€/mois (le plus proche de ${Math.round(monthlySavings)}€ d'économies)`);
+    
+    return closestOption;
   };
 
   const optimalFinancing = getOptimalFinancing();
