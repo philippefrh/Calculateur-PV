@@ -2132,7 +2132,7 @@ Cordialement`);
             </ul>
           </div>
           <button 
-            onClick={() => setCurrentStep('animation')} 
+            onClick={() => setCurrentStep(6)} 
             className="animation-launch-btn"
             style={{
               background: 'linear-gradient(45deg, #2ecc71, #27ae60)',
