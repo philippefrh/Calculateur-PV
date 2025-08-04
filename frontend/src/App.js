@@ -1197,6 +1197,14 @@ const ConsumptionForm = ({
                               >
                                 R3
                               </button>
+                              <button 
+                                className={`battery-button ${batterySelected[kit.power] ? 'active' : ''}`}
+                                onClick={(e) => toggleKitBattery(kit.power, e)}
+                                title="Batterie de stockage (+5000€)"
+                                type="button"
+                              >
+                                🔋 Batterie
+                              </button>
                             </div>
                             <span className="kit-panels">{kit.panels} panneaux</span>
                           </div>
