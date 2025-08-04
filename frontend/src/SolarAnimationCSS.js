@@ -137,6 +137,37 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
         </div>
       ))}
       
+      {/* Batterie de stockage - Affichée seulement si sélectionnée */}
+      {batterySelected && (
+        <div className={`solar-battery ${animationStage === 'production' || animationStage === 'savings' || animationStage === 'complete' ? 'active' : ''}`}>
+          <div className="battery-container">
+            <div className="battery-body">
+              <div className="battery-terminal"></div>
+              <div className="battery-level">
+                <div className={`battery-charge ${animationStage === 'production' || animationStage === 'savings' ? 'charging' : ''}`}></div>
+              </div>
+              <div className="battery-label">🔋 Stockage</div>
+            </div>
+            
+            {/* Indicateur de charge */}
+            {(animationStage === 'production' || animationStage === 'savings' || animationStage === 'complete') && (
+              <div className="battery-status">
+                <div className="charge-percentage">85%</div>
+                <div className="charge-text">chargée</div>
+              </div>
+            )}
+            
+            {/* Flux d'énergie vers la batterie */}
+            {producingPanels.length > 0 && (
+              <div className="energy-flow-to-battery">
+                <div className="energy-particle" style={{animationDelay: '0s'}}>⚡</div>
+                <div className="energy-particle" style={{animationDelay: '0.8s'}}>⚡</div>
+                <div className="energy-particle" style={{animationDelay: '1.6s'}}>⚡</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       
       {/* Compteur Linky - AGRANDI */}
