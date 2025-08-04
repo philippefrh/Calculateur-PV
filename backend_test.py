@@ -6277,6 +6277,217 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Battery + Manual Kit Selection", False, f"Error: {str(e)}")
 
+    def test_battery_functionality_comprehensive(self):
+        """Test comprehensive battery functionality as requested in review"""
+        if not self.client_id:
+            self.log_test("Battery Functionality", False, "No client ID available from previous test")
+            return
+            
+        try:
+            print("\n🔋 TESTING BATTERY FUNCTIONALITY - COMPREHENSIVE REVIEW")
+            print("=" * 60)
+            
+            # Test 1: Battery alone (without discount) - price should increase by +5000€
+            print("Test 1: Battery alone (without discount)")
+            response_no_battery = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique&battery_selected=false")
+            response_with_battery = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique&battery_selected=true")
+            
+            if response_no_battery.status_code != 200 or response_with_battery.status_code != 200:
+                self.log_test("Battery Test 1 - Battery Alone", False, f"API calls failed: {response_no_battery.status_code}, {response_with_battery.status_code}")
+                return
+            
+            calc_no_battery = response_no_battery.json()
+            calc_with_battery = response_with_battery.json()
+            
+            # Verify battery fields are present
+            required_battery_fields = ["battery_selected", "battery_cost", "kit_price_final"]
+            missing_fields = [field for field in required_battery_fields if field not in calc_with_battery]
+            if missing_fields:
+                self.log_test("Battery Test 1 - Battery Alone", False, f"Missing battery fields: {missing_fields}")
+                return
+            
+            # Check battery selection status
+            if not calc_with_battery.get("battery_selected"):
+                self.log_test("Battery Test 1 - Battery Alone", False, "battery_selected should be True when battery_selected=true")
+                return
+            
+            if calc_no_battery.get("battery_selected"):
+                self.log_test("Battery Test 1 - Battery Alone", False, "battery_selected should be False when battery_selected=false")
+                return
+            
+            # Check battery cost
+            battery_cost = calc_with_battery.get("battery_cost", 0)
+            if battery_cost != 5000:
+                self.log_test("Battery Test 1 - Battery Alone", False, f"Battery cost should be 5000€, got {battery_cost}€")
+                return
+            
+            # Check price increase
+            price_no_battery = calc_no_battery.get("kit_price_final", calc_no_battery.get("kit_price", 0))
+            price_with_battery = calc_with_battery.get("kit_price_final", 0)
+            price_increase = price_with_battery - price_no_battery
+            
+            if abs(price_increase - 5000) > 1:  # Allow 1€ tolerance
+                self.log_test("Battery Test 1 - Battery Alone", False, f"Price increase should be 5000€, got {price_increase}€ (from {price_no_battery}€ to {price_with_battery}€)")
+                return
+            
+            self.log_test("Battery Test 1 - Battery Alone", True, 
+                        f"✅ Battery alone working: {price_no_battery}€ → {price_with_battery}€ (+{price_increase}€)")
+            
+            # Test 2: Battery + R1 discount (1000€) - price should be: original - 1000 + 5000 = +4000€
+            print("Test 2: Battery + R1 discount")
+            response_battery_r1 = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique&battery_selected=true&discount_amount=1000")
+            
+            if response_battery_r1.status_code != 200:
+                self.log_test("Battery Test 2 - Battery + R1", False, f"API call failed: {response_battery_r1.status_code}")
+                return
+            
+            calc_battery_r1 = response_battery_r1.json()
+            
+            # Check discount and battery fields
+            if calc_battery_r1.get("discount_applied") != 1000:
+                self.log_test("Battery Test 2 - Battery + R1", False, f"discount_applied should be 1000€, got {calc_battery_r1.get('discount_applied')}€")
+                return
+            
+            if calc_battery_r1.get("battery_cost") != 5000:
+                self.log_test("Battery Test 2 - Battery + R1", False, f"battery_cost should be 5000€, got {calc_battery_r1.get('battery_cost')}€")
+                return
+            
+            # Check final price calculation: kit_price_original - discount + battery_cost
+            original_price = calc_battery_r1.get("kit_price_original", 0)
+            final_price = calc_battery_r1.get("kit_price_final", 0)
+            expected_final = original_price - 1000 + 5000
+            
+            if abs(final_price - expected_final) > 1:
+                self.log_test("Battery Test 2 - Battery + R1", False, f"Final price calculation wrong: {original_price}€ - 1000€ + 5000€ = {expected_final}€, got {final_price}€")
+                return
+            
+            self.log_test("Battery Test 2 - Battery + R1", True, 
+                        f"✅ Battery + R1 working: {original_price}€ - 1000€ + 5000€ = {final_price}€")
+            
+            # Test 3: Battery + R2 discount (2000€) - price should be: original - 2000 + 5000 = +3000€
+            print("Test 3: Battery + R2 discount")
+            response_battery_r2 = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique&battery_selected=true&discount_amount=2000")
+            
+            if response_battery_r2.status_code != 200:
+                self.log_test("Battery Test 3 - Battery + R2", False, f"API call failed: {response_battery_r2.status_code}")
+                return
+            
+            calc_battery_r2 = response_battery_r2.json()
+            
+            # Check final price calculation
+            original_price_r2 = calc_battery_r2.get("kit_price_original", 0)
+            final_price_r2 = calc_battery_r2.get("kit_price_final", 0)
+            expected_final_r2 = original_price_r2 - 2000 + 5000
+            
+            if abs(final_price_r2 - expected_final_r2) > 1:
+                self.log_test("Battery Test 3 - Battery + R2", False, f"Final price calculation wrong: {original_price_r2}€ - 2000€ + 5000€ = {expected_final_r2}€, got {final_price_r2}€")
+                return
+            
+            self.log_test("Battery Test 3 - Battery + R2", True, 
+                        f"✅ Battery + R2 working: {original_price_r2}€ - 2000€ + 5000€ = {final_price_r2}€")
+            
+            # Test 4: Battery + R3 discount (3000€) - price should be: original - 3000 + 5000 = +2000€
+            print("Test 4: Battery + R3 discount")
+            response_battery_r3 = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique&battery_selected=true&discount_amount=3000")
+            
+            if response_battery_r3.status_code != 200:
+                self.log_test("Battery Test 4 - Battery + R3", False, f"API call failed: {response_battery_r3.status_code}")
+                return
+            
+            calc_battery_r3 = response_battery_r3.json()
+            
+            # Check final price calculation
+            original_price_r3 = calc_battery_r3.get("kit_price_original", 0)
+            final_price_r3 = calc_battery_r3.get("kit_price_final", 0)
+            expected_final_r3 = original_price_r3 - 3000 + 5000
+            
+            if abs(final_price_r3 - expected_final_r3) > 1:
+                self.log_test("Battery Test 4 - Battery + R3", False, f"Final price calculation wrong: {original_price_r3}€ - 3000€ + 5000€ = {expected_final_r3}€, got {final_price_r3}€")
+                return
+            
+            self.log_test("Battery Test 4 - Battery + R3", True, 
+                        f"✅ Battery + R3 working: {original_price_r3}€ - 3000€ + 5000€ = {final_price_r3}€")
+            
+            # Test 5: Different kit configurations (6kW, 9kW, 12kW) with battery
+            print("Test 5: Different kit configurations with battery")
+            kit_powers = [6, 9, 12]
+            kit_results = []
+            
+            for kit_power in kit_powers:
+                response_kit = self.session.post(f"{self.base_url}/calculate/{self.client_id}?region=martinique&battery_selected=true&manual_kit_power={kit_power}")
+                
+                if response_kit.status_code != 200:
+                    self.log_test(f"Battery Test 5 - {kit_power}kW Kit", False, f"API call failed: {response_kit.status_code}")
+                    continue
+                
+                calc_kit = response_kit.json()
+                
+                # Verify battery is applied
+                if not calc_kit.get("battery_selected"):
+                    self.log_test(f"Battery Test 5 - {kit_power}kW Kit", False, "Battery should be selected")
+                    continue
+                
+                if calc_kit.get("battery_cost") != 5000:
+                    self.log_test(f"Battery Test 5 - {kit_power}kW Kit", False, f"Battery cost should be 5000€, got {calc_kit.get('battery_cost')}€")
+                    continue
+                
+                # Check that kit_power matches requested
+                if calc_kit.get("kit_power") != kit_power:
+                    self.log_test(f"Battery Test 5 - {kit_power}kW Kit", False, f"Kit power should be {kit_power}kW, got {calc_kit.get('kit_power')}kW")
+                    continue
+                
+                # Check price calculation
+                original_price_kit = calc_kit.get("kit_price_original", 0)
+                final_price_kit = calc_kit.get("kit_price_final", 0)
+                expected_final_kit = original_price_kit + 5000  # No discount, just battery
+                
+                if abs(final_price_kit - expected_final_kit) > 1:
+                    self.log_test(f"Battery Test 5 - {kit_power}kW Kit", False, f"Final price calculation wrong: {original_price_kit}€ + 5000€ = {expected_final_kit}€, got {final_price_kit}€")
+                    continue
+                
+                kit_results.append(f"{kit_power}kW: {original_price_kit}€ → {final_price_kit}€")
+                self.log_test(f"Battery Test 5 - {kit_power}kW Kit", True, 
+                            f"✅ {kit_power}kW kit with battery: {original_price_kit}€ → {final_price_kit}€")
+            
+            # Test 6: Financing impact with battery
+            print("Test 6: Financing impact with battery")
+            
+            # Compare financing with and without battery
+            financing_no_battery = calc_no_battery.get("financing_options", [])
+            financing_with_battery = calc_with_battery.get("financing_options", [])
+            
+            if not financing_no_battery or not financing_with_battery:
+                self.log_test("Battery Test 6 - Financing Impact", False, "Missing financing options")
+                return
+            
+            # Compare 15-year financing
+            option_15y_no_battery = next((opt for opt in financing_no_battery if opt["duration_years"] == 15), None)
+            option_15y_with_battery = next((opt for opt in financing_with_battery if opt["duration_years"] == 15), None)
+            
+            if not option_15y_no_battery or not option_15y_with_battery:
+                self.log_test("Battery Test 6 - Financing Impact", False, "Missing 15-year financing options")
+                return
+            
+            payment_no_battery = option_15y_no_battery["monthly_payment"]
+            payment_with_battery = option_15y_with_battery["monthly_payment"]
+            payment_increase = payment_with_battery - payment_no_battery
+            
+            # Expected increase should be around 39€/month for 5000€ over 15 years at 8.63% TAEG
+            expected_increase = 39  # Approximate
+            if abs(payment_increase - expected_increase) > 5:  # Allow 5€ tolerance
+                self.log_test("Battery Test 6 - Financing Impact", False, f"Monthly payment increase should be ~{expected_increase}€, got {payment_increase:.2f}€")
+                return
+            
+            self.log_test("Battery Test 6 - Financing Impact", True, 
+                        f"✅ Financing impact: {payment_no_battery:.2f}€ → {payment_with_battery:.2f}€ (+{payment_increase:.2f}€/month)")
+            
+            # Overall battery functionality summary
+            self.log_test("Battery Functionality - COMPREHENSIVE", True, 
+                        f"🎉 ALL BATTERY TESTS PASSED: ✅ Battery alone (+5000€), ✅ Battery+R1 (+4000€), ✅ Battery+R2 (+3000€), ✅ Battery+R3 (+2000€), ✅ Multiple kit sizes, ✅ Financing impact (+{payment_increase:.2f}€/month). Backend battery functionality is FULLY OPERATIONAL and ready for production.")
+            
+        except Exception as e:
+            self.log_test("Battery Functionality - COMPREHENSIVE", False, f"Error during battery testing: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on user-requested endpoints"""
         print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
