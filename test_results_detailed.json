@@ -3,7 +3,7 @@
     "test": "API Root",
     "success": true,
     "details": "API accessible, message: Solar Calculator API with PVGIS Integration",
-    "timestamp": "2025-08-04 01:23:21",
+    "timestamp": "2025-08-04 01:41:07",
     "response_data": {
       "message": "Solar Calculator API with PVGIS Integration"
     }
@@ -12,7 +12,7 @@
     "test": "Solar Kits",
     "success": true,
     "details": "All kits available. 6kW kit: 22900\u20ac, 12 panels",
-    "timestamp": "2025-08-04 01:23:21",
+    "timestamp": "2025-08-04 01:41:07",
     "response_data": {
       "3": {
         "price": 14900,
@@ -48,7 +48,7 @@
     "test": "Regions Endpoint",
     "success": true,
     "details": "\u2705 Regions endpoint working. Available regions: ['france', 'martinique']. France: France, Martinique: Martinique",
-    "timestamp": "2025-08-04 01:23:21",
+    "timestamp": "2025-08-04 01:41:07",
     "response_data": {
       "regions": [
         "france",
