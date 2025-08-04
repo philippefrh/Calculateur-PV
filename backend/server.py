@@ -570,7 +570,7 @@ def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_s
         "difference_vs_savings": round(monthly_payment - monthly_savings, 2)
     }
 
-def calculate_all_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", discount_amount: float = 0) -> List[Dict]:
+def calculate_all_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", discount_amount: float = 0, battery_cost: float = 0) -> List[Dict]:
     """
     Calculate financing options with aids deducted for all durations (3-15 years) - WITH INTERESTS
     """
@@ -581,11 +581,9 @@ def calculate_all_financing_with_aids(kit_price: float, total_aids: float, month
     min_duration = region_config["financing"]["min_duration"]
     max_duration = region_config["financing"]["max_duration"]
     
-    # Apply discount to the kit price
-    discounted_price = kit_price - discount_amount
-    
-    # Amount to finance after aids and discount
-    financed_amount = discounted_price - total_aids
+    # Calculer le prix final avec remise et batterie, puis retirer les aides
+    final_price_before_aids = kit_price - discount_amount + battery_cost
+    financed_amount = final_price_before_aids - total_aids
     
     options = []
     
