@@ -984,7 +984,7 @@ const ConsumptionForm = ({
     console.log('🔥 DEBUG: handleConfirmKitSelection appelé avec selectedKit:', selectedKit);
     
     if (selectedKit) {
-      // Le kit final est déjà prêt avec toutes les remises appliquées
+      // Le kit final est déjà prêt avec toutes les remises et batterie appliquées
       const finalKit = { ...selectedKit };
       
       console.log('🔥 DEBUG: Kit final à confirmer:', finalKit);
@@ -999,17 +999,18 @@ const ConsumptionForm = ({
       const discountText = finalKit.hasDiscount ? 
         ` (avec remise ${finalKit.discountType} de ${finalKit.discountAmount}€)` : 
         ' (sans remise)';
+      
+      const batteryText = finalKit.hasBattery ? 
+        ` + Batterie (+${finalKit.batteryPrice}€)` : 
+        '';
         
-      alert(`Kit ${finalKit.power}kW sélectionné avec succès${discountText} !`);
+      alert(`Kit ${finalKit.power}kW sélectionné avec succès${discountText}${batteryText} !`);
       
       console.log('🔥 DEBUG: formData.useManualKit:', true);
       console.log('🔥 DEBUG: formData.manualKit:', finalKit);
       
-      // Masquer la modal
       setShowKitSelection(false);
-    } else {
-      console.error('🔥 ERROR: Pas de kit sélectionné pour la confirmation');
-      alert('Erreur: Aucun kit sélectionné. Veuillez sélectionner un kit avant de confirmer.');
+      setSelectedKit(null);
     }
   };
 
