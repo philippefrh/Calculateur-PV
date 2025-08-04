@@ -692,3 +692,167 @@
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(46, 204, 113, 0.6);
 }
+
+/* BATTERIE DE STOCKAGE - Positionnée entre les panneaux et le compteur Linky */
+.solar-battery {
+  position: absolute;
+  bottom: 250px;
+  right: 580px;  /* Entre les panneaux (gauche/centre) et le compteur Linky (right: 320px) */
+  width: 120px;
+  height: 180px;
+  opacity: 0;
+  transform: translateY(30px) scale(0.8);
+  transition: all 1.5s ease;
+  z-index: 55;
+}
+
+.solar-battery.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.battery-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.battery-body {
+  position: relative;
+  width: 80px;
+  height: 120px;
+  background: linear-gradient(to bottom, #2c3e50, #34495e);
+  border: 3px solid #1a252f;
+  border-radius: 15px;
+  margin: 0 auto;
+  box-shadow: 
+    0 8px 16px rgba(0,0,0,0.3),
+    inset 0 2px 4px rgba(255,255,255,0.1);
+}
+
+.battery-terminal {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 8px;
+  background: #95a5a6;
+  border-radius: 3px 3px 0 0;
+  border: 2px solid #7f8c8d;
+}
+
+.battery-level {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  top: 15px;
+  background: #34495e;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.battery-charge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20%;
+  background: linear-gradient(to top, #e74c3c, #f39c12, #2ecc71);
+  border-radius: 8px;
+  transition: height 2s ease;
+}
+
+.battery-charge.charging {
+  height: 85%;
+  animation: battery-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes battery-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(46, 204, 113, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.8);
+  }
+}
+
+.battery-label {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #2c3e50;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.battery-status {
+  position: absolute;
+  right: -60px;
+  top: 20px;
+  background: rgba(46, 204, 113, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  backdrop-filter: blur(5px);
+}
+
+.charge-percentage {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.charge-text {
+  font-size: 12px;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+
+/* Flux d'énergie vers la batterie */
+.energy-flow-to-battery {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 40px;
+  pointer-events: none;
+}
+
+.energy-particle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #f39c12;
+  font-size: 16px;
+  animation: energy-flow-down 2.4s linear infinite;
+  opacity: 0;
+}
+
+@keyframes energy-flow-down {
+  0% {
+    top: -20px;
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  75% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    top: 40px;
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+}
