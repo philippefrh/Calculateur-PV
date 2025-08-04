@@ -997,7 +997,7 @@ async def get_client(client_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/calculate/{client_id}")
-async def calculate_solar_solution(client_id: str, region: str = "france", calculation_mode: str = "realistic", manual_kit_power: Optional[int] = None, discount_amount: Optional[int] = None):
+async def calculate_solar_solution(client_id: str, region: str = "france", calculation_mode: str = "realistic", manual_kit_power: Optional[int] = None, discount_amount: Optional[int] = None, battery_selected: Optional[bool] = None):
     try:
         # Vérifier que la région existe
         if region not in REGIONS_CONFIG:
