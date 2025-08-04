@@ -6089,9 +6089,26 @@ class SolarCalculatorTester:
         
         print("\n" + "=" * 80)
 
+    def run_quick_endpoint_tests(self):
+        """Run quick tests for main endpoints as requested by user"""
+        print("🚀 Testing Main Endpoints for FRH ENVIRONNEMENT Application")
+        print(f"Backend URL: {self.base_url}")
+        print("=" * 80)
+        
+        # Test the 3 main endpoints requested
+        self.test_api_root()
+        self.test_solar_kits()
+        self.test_regions_endpoint()
+        
+        print("=" * 80)
+        self.print_summary()
+        
+        return self.test_results
+
 if __name__ == "__main__":
     tester = SolarCalculatorTester()
-    results = tester.run_all_tests()
+    # Run quick endpoint tests as requested by user
+    results = tester.run_quick_endpoint_tests()
     
     # Save detailed results to file
     with open("/app/test_results_detailed.json", "w") as f:
