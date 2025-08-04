@@ -1924,11 +1924,20 @@ Cordialement`);
               <div className="summary-cell dark">
                 <div className="cell-title">Coût du projet</div>
                 <div className="cell-value">
-                  {results.discount_applied > 0 ? (
+                  {(results.discount_applied > 0 || results.battery_selected) ? (
                     <>
-                      <span style={{textDecoration: 'line-through', color: '#888', fontSize: '0.9em'}}>{results.kit_price_original?.toLocaleString()} €</span>
-                      <br/>
-                      <span style={{color: '#e74c3c', fontWeight: 'bold'}}>{results.kit_price_final?.toLocaleString()} € TTC</span>
+                      {results.kit_price_original && (
+                        <>
+                          <span style={{textDecoration: 'line-through', color: '#888', fontSize: '0.9em'}}>{results.kit_price_original?.toLocaleString()} €</span>
+                          <br/>
+                        </>
+                      )}
+                      <span style={{color: results.discount_applied > 0 ? '#e74c3c' : '#2ecc71', fontWeight: 'bold'}}>
+                        {results.kit_price_final?.toLocaleString()} € TTC
+                        {results.battery_selected && !results.discount_applied && (
+                          <span style={{fontSize: '0.9em', color: '#2ecc71'}}> (+Batterie)</span>
+                        )}
+                      </span>
                     </>
                   ) : (
                     <>{results.kit_price?.toLocaleString()} € TTC</>
