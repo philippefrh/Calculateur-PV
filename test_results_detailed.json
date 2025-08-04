@@ -1,1 +1,85 @@
-null
+[
+  {
+    "test": "API Root",
+    "success": true,
+    "details": "API accessible, message: Solar Calculator API with PVGIS Integration",
+    "timestamp": "2025-08-04 01:23:21",
+    "response_data": {
+      "message": "Solar Calculator API with PVGIS Integration"
+    }
+  },
+  {
+    "test": "Solar Kits",
+    "success": true,
+    "details": "All kits available. 6kW kit: 22900\u20ac, 12 panels",
+    "timestamp": "2025-08-04 01:23:21",
+    "response_data": {
+      "3": {
+        "price": 14900,
+        "panels": 6
+      },
+      "4": {
+        "price": 20900,
+        "panels": 8
+      },
+      "5": {
+        "price": 21900,
+        "panels": 10
+      },
+      "6": {
+        "price": 22900,
+        "panels": 12
+      },
+      "7": {
+        "price": 24900,
+        "panels": 14
+      },
+      "8": {
+        "price": 26900,
+        "panels": 16
+      },
+      "9": {
+        "price": 29900,
+        "panels": 18
+      }
+    }
+  },
+  {
+    "test": "Regions Endpoint",
+    "success": true,
+    "details": "\u2705 Regions endpoint working. Available regions: ['france', 'martinique']. France: France, Martinique: Martinique",
+    "timestamp": "2025-08-04 01:23:21",
+    "response_data": {
+      "regions": [
+        "france",
+        "martinique"
+      ],
+      "regions_data": {
+        "france": {
+          "name": "France",
+          "logo_subtitle": null,
+          "company_info": {
+            "name": "FRH ENVIRONNEMENT",
+            "address": "Adresse France (actuelle)",
+            "phone": "09 85 60 50 51",
+            "email": "direction@francerenovhabitat.com",
+            "tva": "FR52890493737",
+            "subtitle": "FRH ENVIRONNEMENT - \u00c9nergie Solaire Professionnel"
+          }
+        },
+        "martinique": {
+          "name": "Martinique",
+          "logo_subtitle": "R\u00e9gion Martinique",
+          "company_info": {
+            "name": "FRH MARTINIQUE",
+            "address": "11 rue des Arts et M\u00e9tiers\n97200 Fort-de-France",
+            "phone": "09 85 60 50 51",
+            "email": "direction@francerenovhabitat.com",
+            "tva": "FR52890493737",
+            "subtitle": "FRH ENVIRONNEMENT - \u00c9nergie Solaire Professionnel"
+          }
+        }
+      }
+    }
+  }
+]
