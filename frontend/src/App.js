@@ -929,12 +929,15 @@ const ConsumptionForm = ({
     
     // Vérifier s'il y a une remise active pour ce kit
     const discountType = kitDiscounts[kit.power];
+    const hasBattery = batterySelected[kit.power];
     console.log('🔥 DEBUG: Type de remise actif pour ce kit:', discountType);
+    console.log('🔋 DEBUG: Batterie sélectionnée pour ce kit:', hasBattery);
     
     const finalKit = { ...kitWithOriginals };
     
+    // Calculer la remise
+    let discountAmount = 0;
     if (discountType) {
-      let discountAmount = 0;
       switch (discountType) {
         case 'R1':
           discountAmount = 1000;
@@ -948,6 +951,34 @@ const ConsumptionForm = ({
         default:
           discountAmount = 0;
       }
+      
+      console.log('🔥 DEBUG: Montant de la remise appliquée:', discountAmount);
+      
+      finalKit.hasDiscount = true;
+      finalKit.discountAmount = discountAmount;
+      finalKit.discountType = discountType;
+    } else {
+      finalKit.hasDiscount = false;
+      finalKit.discountAmount = 0;
+      finalKit.discountType = null;
+    }
+    
+    // Calculer le coût batterie
+    const batteryPrice = hasBattery ? 5000 : 0;
+    console.log('🔋 DEBUG: Coût batterie:', batteryPrice);
+    
+    finalKit.hasBattery = hasBattery || false;
+    finalKit.batteryPrice = batteryPrice;
+    
+    // Appliquer remise et ajouter batterie aux prix finaux
+    finalKit.priceTTC = finalKit.originalPriceTTC - discountAmount + batteryPrice;
+    finalKit.priceWithAids = finalKit.originalPriceWithAids - discountAmount + batteryPrice;
+    
+    console.log('🔥 DEBUG: Prix TTC final:', finalKit.priceTTC, '(Original:', finalKit.originalPriceTTC, ', Remise:', -discountAmount, ', Batterie:', batteryPrice, ')');
+    console.log('🔥 DEBUG: Prix avec aides final:', finalKit.priceWithAids);
+    
+    setSelectedKit(finalKit);
+  };
       
       console.log('🔥 DEBUG: Montant de la remise appliquée:', discountAmount);
       
