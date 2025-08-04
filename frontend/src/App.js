@@ -2851,6 +2851,16 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   }, [isCalculating, calculationResults]);
 
   if (!isCalculating && calculationResults) {
+    // Timer automatique pour lancer l'animation après 5 secondes
+    useEffect(() => {
+      const autoTimer = setTimeout(() => {
+        console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
+        setCurrentStep(6); // Lancer automatiquement l'animation
+      }, 5000); // 5 secondes
+
+      return () => clearTimeout(autoTimer);
+    }, [calculationResults]);
+
     return (
       <div className="calculation-screen success">
         <div className="success-animation">
@@ -2879,6 +2889,22 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
             <span className="quick-number">{Math.round(calculationResults.estimated_savings)} €</span>
             <span className="quick-label">Économies/an</span>
           </div>
+        </div>
+        
+        {/* Indicateur de démarrage automatique */}
+        <div className="auto-animation-info" style={{
+          position: 'fixed',
+          bottom: '30px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'rgba(46, 204, 113, 0.9)',
+          color: 'white',
+          padding: '10px 20px',
+          borderRadius: '25px',
+          fontSize: '14px',
+          zIndex: 1000
+        }}>
+          🎬 Animation automatique dans 5 secondes...
         </div>
       </div>
     );
