@@ -6574,6 +6574,10 @@ class SolarCalculatorTester:
         # BATTERY FUNCTIONALITY TESTS - NEW FEATURE
         print("\n🔋 BATTERY FUNCTIONALITY TESTS - NEW FEATURE")
         print("-" * 60)
+        
+        # PRIORITY: Comprehensive battery functionality test as requested in review
+        self.test_battery_functionality_comprehensive()
+        
         self.test_battery_functionality_basic()
         self.test_battery_with_discounts_combinations()
         self.test_battery_financing_calculations()
