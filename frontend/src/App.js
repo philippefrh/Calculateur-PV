@@ -2119,8 +2119,47 @@ Cordialement`);
         </div>
       )}
 
+      {activeTab === 'animation' && (
+        <div className="animation-tab-content">
+          <div className="animation-description">
+            <h3>🎬 Animation de votre Installation Solaire</h3>
+            <p>Visualisez votre installation de {formData.useManualKit && formData.manualKit ? formData.manualKit.panels : results?.panels || 'XX'} panneaux solaires avec cette animation gratuite et réaliste :</p>
+            <ul>
+              <li>✅ Installation progressive panneau par panneau</li>
+              <li>✅ Production d'énergie en temps réel</li>
+              <li>✅ Compteur Linky et monitoring mobile</li>
+              <li>✅ Visualisation des économies</li>
+            </ul>
+          </div>
+          <button 
+            onClick={() => setCurrentStep('animation')} 
+            className="animation-launch-btn"
+            style={{
+              background: 'linear-gradient(45deg, #2ecc71, #27ae60)',
+              color: 'white',
+              padding: '15px 30px',
+              fontSize: '1.2em',
+              border: 'none',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              margin: '20px auto',
+              display: 'block',
+              boxShadow: '0 4px 15px rgba(46, 204, 113, 0.3)'
+            }}
+          >
+            🚀 Lancer l'Animation (GRATUIT)
+          </button>
+        </div>
+      )}
+
       {activeTab === 'visualization' && (
-        <RoofVisualization results={results} selectedRegion={selectedRegion} formData={formData} />
+        <div>
+          <div className="fal-description" style={{padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '10px', margin: '20px 0'}}>
+            <h3>📷 Visualisation avec fal.ai (Expérimental)</h3>
+            <p style={{color: '#666'}}>⚠️ Cette fonctionnalité utilise l'IA pour superposer les panneaux sur votre photo de toit. Coûts et résultats variables.</p>
+          </div>
+          <RoofVisualization results={results} selectedRegion={selectedRegion} formData={formData} />
+        </div>
       )}
 
       <div className="results-footer">
