@@ -2932,6 +2932,15 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
           console.log('🚨 DEBUG FINAL: Aucune remise à appliquer');
         }
         
+        // Ajouter les informations de batterie si applicable
+        if (formData.manualKit.hasBattery) {
+          calculationUrl += `&battery_selected=true`;
+          console.log('🚨 DEBUG FINAL: Batterie ajoutée à l\'URL - Coût:', formData.manualKit.batteryPrice);
+        } else {
+          calculationUrl += `&battery_selected=false`;
+          console.log('🚨 DEBUG FINAL: Aucune batterie sélectionnée');
+        }
+        
         console.log('🚨 DEBUG FINAL: URL finale =', calculationUrl);
       } else {
         console.log('🚨 DEBUG FINAL: AUCUN kit manuel détecté');
