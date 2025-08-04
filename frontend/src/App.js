@@ -2705,6 +2705,13 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     }
   ];
 
+  // Réinitialiser le countdown quand les résultats arrivent
+  useEffect(() => {
+    if (!isCalculating && calculationResults) {
+      setAutoCountdown(5); // Réinitialiser à 5 secondes
+    }
+  }, [isCalculating, calculationResults]);
+
   // Timer automatique pour lancer l'animation après l'écran de succès
   useEffect(() => {
     if (!isCalculating && calculationResults && autoCountdown > 0) {
