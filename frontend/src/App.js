@@ -2070,32 +2070,29 @@ Cordialement`);
                 {/* Financement avec aides déduites */}
                 <div className="financing-card highlighted-green">
                   <div className="financing-header">
-                    <h5>💰 Financement optimisé sur {results.financing_with_aids?.duration_years?.toFixed(1)} ans</h5>
+                    <h5>💰 Financement optimisé sur {optimalFinancingWithAids?.duration_years?.toFixed(1)} ans</h5>
                     <span className="recommended-badge green">Avec aides déduites</span>
                   </div>
                   <div className="financing-details">
                     <div className="financing-row">
                       <span>Investissement après aides:</span>
-                      <span className="amount">{results.financing_with_aids?.financed_amount?.toLocaleString()} € TTC</span>
+                      <span className="amount">{optimalFinancingWithAids?.financed_amount?.toLocaleString()} €</span>
                     </div>
                     <div className="financing-row">
-                      <span>Mensualité crédit réduite:</span>
-                      <span className="amount success">{Math.round(results.financing_with_aids?.monthly_payment)} €/mois</span>
+                      <span>Mensualité crédit:</span>
+                      <span className="amount">{Math.round(optimalFinancingWithAids?.monthly_payment)} €/mois</span>
                     </div>
                     <div className="financing-row">
                       <span>Économie EDF:</span>
                       <span className="amount success">{Math.round(results.monthly_savings)} €/mois</span>
                     </div>
                     <div className="financing-row">
-                      <span>Reste à charge optimisé:</span>
-                      <span className="amount success">
-                        {Math.round(results.financing_with_aids?.difference_vs_savings)} €/mois
+                      <span>Reste à charge:</span>
+                      <span className={`amount ${optimalFinancingWithAids?.difference_vs_savings < 0 ? 'success' : 'warning'}`}>
+                        {optimalFinancingWithAids?.difference_vs_savings > 0 ? '+' : ''}{Math.round(optimalFinancingWithAids?.difference_vs_savings)} €/mois
                       </span>
                     </div>
-                  </div>
-                  <div className="financing-benefits">
-                    <p>✅ 6 premiers mois GRATUITS (Rien à débourser pendant les 6 premiers mois)</p>
-                    <p>✅ Aides récupérées: {Math.round(results.total_aids)} € (Aides et Subventions)</p>
+                    <p>✅ 3 premiers mois GRATUITS (rien à débourser pendant les 3 premiers mois)</p>
                     <p>✅ Réinjection des Aides et Subventions récupérées entre le 7ème et 12ème mois</p>
                   </div>
                 </div>
