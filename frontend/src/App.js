@@ -2116,6 +2116,40 @@ Cordialement`);
               </div>
             )}
           </div>
+          
+          {/* Bouton Animation prioritaire */}
+          <div className="animation-highlight" style={{
+            background: 'linear-gradient(135deg, #2ecc71, #27ae60)',
+            borderRadius: '15px',
+            padding: '20px',
+            textAlign: 'center',
+            margin: '20px 0',
+            boxShadow: '0 8px 25px rgba(46, 204, 113, 0.3)',
+            border: '2px solid #2ecc71'
+          }}>
+            <div style={{color: 'white', fontSize: '1.1em', marginBottom: '15px'}}>
+              🎬 <strong>Visualisez votre installation en animation 3D</strong>
+            </div>
+            <div style={{color: '#f0f8f0', fontSize: '0.9em', marginBottom: '15px'}}>
+              Animation gratuite de {formData.useManualKit && formData.manualKit ? formData.manualKit.panels : results?.panels || 'XX'} panneaux • Production en temps réel • Économies visuelles
+            </div>
+            <button 
+              onClick={() => setCurrentStep(6)} 
+              style={{
+                background: 'white',
+                color: '#2ecc71',
+                padding: '12px 25px',
+                fontSize: '1.1em',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+              }}
+            >
+              🚀 Lancer l'Animation Maintenant
+            </button>
+          </div>
         </div>
       )}
 
