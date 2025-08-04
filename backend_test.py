@@ -6089,6 +6089,26 @@ class SolarCalculatorTester:
         
         print("\n" + "=" * 80)
 
+    def print_summary(self):
+        """Print test results summary"""
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        
+        print(f"\n📊 TEST SUMMARY")
+        print(f"Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%" if total_tests > 0 else "No tests run")
+        
+        if failed_tests > 0:
+            print(f"\n❌ FAILED TESTS:")
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"  - {result['test']}: {result['details']}")
+        
+        print("\n" + "=" * 80)
+
     def run_quick_endpoint_tests(self):
         """Run quick tests for main endpoints as requested by user"""
         print("🚀 Testing Main Endpoints for FRH ENVIRONNEMENT Application")
