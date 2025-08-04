@@ -1077,9 +1077,12 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
         annual_edf_bill = monthly_edf_bill * 12
         real_savings_percentage = (annual_savings / annual_edf_bill) * 100 if annual_edf_bill > 0 else 0
         
+        # Calculer le coût batterie si sélectionnée
+        battery_cost = 5000 if battery_selected else 0
+        
         # Calculate financing options with region-specific rates
         kit_price = kit_info['price_ttc'] if region == "martinique" else kit_info['price']
-        financing_options = calculate_financing_options(kit_price, monthly_savings, region, discount_amount or 0)
+        financing_options = calculate_financing_options(kit_price, monthly_savings, region, discount_amount or 0, battery_cost)
         
         # Calculate aids based on region
         if region == "martinique":
@@ -1094,10 +1097,10 @@ async def calculate_solar_solution(client_id: str, region: str = "france", calcu
             total_aids = autoconsumption_aid_total + tva_refund
         
         # Calculate financing options with aids deducted (same duration as optimal financing)
-        financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings, region, financing_options, discount_amount or 0)
+        financing_with_aids = calculate_financing_with_aids(kit_price, total_aids, monthly_savings, region, financing_options, discount_amount or 0, battery_cost)
         
         # Calculate all financing options with aids deducted for all durations
-        all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings, region, discount_amount or 0)
+        all_financing_with_aids = calculate_all_financing_with_aids(kit_price, total_aids, monthly_savings, region, discount_amount or 0, battery_cost)
         
         # Calculer le nombre de panneaux selon la région
         if region == "martinique":
