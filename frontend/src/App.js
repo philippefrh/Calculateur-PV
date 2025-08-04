@@ -2851,14 +2851,23 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   }, [isCalculating, calculationResults]);
 
   if (!isCalculating && calculationResults) {
+    const [autoCountdown, setAutoCountdown] = useState(5);
+    
     // Timer automatique pour lancer l'animation après 5 secondes
     useEffect(() => {
-      const autoTimer = setTimeout(() => {
-        console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
-        setCurrentStep(6); // Lancer automatiquement l'animation
-      }, 5000); // 5 secondes
+      const countdownTimer = setInterval(() => {
+        setAutoCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(countdownTimer);
+            console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
+            setCurrentStep(6); // Lancer automatiquement l'animation
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
 
-      return () => clearTimeout(autoTimer);
+      return () => clearInterval(countdownTimer);
     }, [calculationResults]);
 
     return (
@@ -2891,21 +2900,26 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
           </div>
         </div>
         
-        {/* Indicateur de démarrage automatique */}
-        <div className="auto-animation-info" style={{
-          position: 'fixed',
-          bottom: '30px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: 'rgba(46, 204, 113, 0.9)',
-          color: 'white',
-          padding: '10px 20px',
-          borderRadius: '25px',
-          fontSize: '14px',
-          zIndex: 1000
-        }}>
-          🎬 Animation automatique dans 5 secondes...
-        </div>
+        {/* Indicateur de démarrage automatique avec compte à rebours */}
+        {autoCountdown > 0 && (
+          <div className="auto-animation-info" style={{
+            position: 'fixed',
+            bottom: '30px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(46, 204, 113, 0.9)',
+            color: 'white',
+            padding: '15px 25px',
+            borderRadius: '25px',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            zIndex: 1000,
+            boxShadow: '0 4px 15px rgba(46, 204, 113, 0.3)',
+            border: '2px solid #2ecc71'
+          }}>
+            🎬 Animation automatique dans {autoCountdown} seconde{autoCountdown > 1 ? 's' : ''}...
+          </div>
+        )}
       </div>
     );
   }
