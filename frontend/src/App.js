@@ -2094,12 +2094,14 @@ Cordialement`);
                   <div className="table-header">
                     <span>Durée</span>
                     <span>Mensualité</span>
+                    <span>Économie</span>
                     <span>Différence vs économies</span>
                   </div>
                   {results.financing_options?.map((option, index) => (
                     <div key={index} className="table-row">
                       <span>{option.duration_years} ans</span>
                       <span>{Math.round(option.monthly_payment)} €</span>
+                      <span className="success">{Math.round(results.monthly_savings)} €</span>
                       <span className={Math.abs(option.difference_vs_savings) < 20 ? 'success' : 'warning'}>
                         {option.difference_vs_savings > 0 ? '+' : ''}{Math.round(option.difference_vs_savings)} €/mois
                       </span>
