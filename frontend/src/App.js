@@ -2705,6 +2705,25 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     }
   ];
 
+  // Timer automatique pour lancer l'animation après l'écran de succès
+  useEffect(() => {
+    if (!isCalculating && calculationResults) {
+      const countdownTimer = setInterval(() => {
+        setAutoCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(countdownTimer);
+            console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
+            setCurrentStep(6); // Lancer automatiquement l'animation
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(countdownTimer);
+    }
+  }, [isCalculating, calculationResults]);
+
   useEffect(() => {
     const speed = isDemoMode ? 10 : 1000; // 10ms en mode démo, 1000ms normal
     
