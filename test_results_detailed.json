@@ -3,83 +3,177 @@
     "test": "API Root",
     "success": true,
     "details": "API accessible, message: Solar Calculator API with PVGIS Integration",
-    "timestamp": "2025-08-04 03:52:23",
+    "timestamp": "2025-08-04 03:52:57",
     "response_data": {
       "message": "Solar Calculator API with PVGIS Integration"
     }
   },
   {
-    "test": "Solar Kits",
+    "test": "Create Client",
     "success": true,
-    "details": "All kits available. 6kW kit: 22900\u20ac, 12 panels",
-    "timestamp": "2025-08-04 03:52:23",
+    "details": "Client created successfully. ID: fde925cd-a522-4464-8a4a-b4819832f9bd, Coords: 48.8680, 2.3154",
+    "timestamp": "2025-08-04 03:52:58",
     "response_data": {
-      "3": {
-        "price": 14900,
-        "panels": 6
-      },
-      "4": {
-        "price": 20900,
-        "panels": 8
-      },
-      "5": {
-        "price": 21900,
-        "panels": 10
-      },
-      "6": {
-        "price": 22900,
-        "panels": 12
-      },
-      "7": {
-        "price": 24900,
-        "panels": 14
-      },
-      "8": {
-        "price": 26900,
-        "panels": 16
-      },
-      "9": {
-        "price": 29900,
-        "panels": 18
-      }
+      "id": "fde925cd-a522-4464-8a4a-b4819832f9bd",
+      "first_name": "Jean",
+      "last_name": "Dupont",
+      "address": "10 Avenue des Champs-\u00c9lys\u00e9es, 75008 Paris",
+      "phone": "0123456789",
+      "email": "jean.dupont@example.com",
+      "roof_surface": 60.0,
+      "roof_orientation": "Sud",
+      "velux_count": 2,
+      "heating_system": "Radiateurs \u00e9lectriques",
+      "water_heating_system": "Ballon \u00e9lectrique",
+      "water_heating_capacity": 200,
+      "annual_consumption_kwh": 6500.0,
+      "monthly_edf_payment": 180.0,
+      "annual_edf_payment": 2160.0,
+      "latitude": 48.86801,
+      "longitude": 2.3153905,
+      "recommended_kit_power": null,
+      "estimated_production": null,
+      "estimated_savings": null,
+      "pvgis_data": null,
+      "created_at": "2025-08-04T03:52:58.468770"
     }
   },
   {
-    "test": "Regions Endpoint",
+    "test": "Battery Functionality Basic",
     "success": true,
-    "details": "\u2705 Regions endpoint working. Available regions: ['france', 'martinique']. France: France, Martinique: Martinique",
-    "timestamp": "2025-08-04 03:52:23",
+    "details": "\u2705 BATTERY FUNCTIONALITY WORKING: Without battery: 0\u20ac, Final price: 22900\u20ac. With battery: 5000\u20ac, Final price: 27900\u20ac (+5000\u20ac increase). Backward compatibility maintained.",
+    "timestamp": "2025-08-04 03:53:00",
     "response_data": {
-      "regions": [
-        "france",
-        "martinique"
-      ],
-      "regions_data": {
-        "france": {
-          "name": "France",
-          "logo_subtitle": null,
-          "company_info": {
-            "name": "FRH ENVIRONNEMENT",
-            "address": "Adresse France (actuelle)",
-            "phone": "09 85 60 50 51",
-            "email": "direction@francerenovhabitat.com",
-            "tva": "FR52890493737",
-            "subtitle": "FRH ENVIRONNEMENT - \u00c9nergie Solaire Professionnel"
-          }
-        },
-        "martinique": {
-          "name": "Martinique",
-          "logo_subtitle": "R\u00e9gion Martinique",
-          "company_info": {
-            "name": "FRH MARTINIQUE",
-            "address": "11 rue des Arts et M\u00e9tiers\n97200 Fort-de-France",
-            "phone": "09 85 60 50 51",
-            "email": "direction@francerenovhabitat.com",
-            "tva": "FR52890493737",
-            "subtitle": "FRH ENVIRONNEMENT - \u00c9nergie Solaire Professionnel"
-          }
-        }
-      }
+      "no_battery": {
+        "battery_selected": false,
+        "battery_cost": 0,
+        "kit_price_final": 22900
+      },
+      "with_battery": {
+        "battery_selected": true,
+        "battery_cost": 5000,
+        "kit_price_final": 27900
+      },
+      "price_increase": 5000
     }
+  },
+  {
+    "test": "Battery + Discounts Combinations",
+    "success": true,
+    "details": "\u2705 BATTERY + DISCOUNTS COMBINATIONS WORKING: All 7 scenarios tested successfully. Battery adds +5000\u20ac, discounts subtract as expected. Battery only: 22900\u20ac \u2192 27900\u20ac (+5000\u20ac); Battery + R1: 22900\u20ac \u2192 26900\u20ac (+4000\u20ac); Battery + R2: 22900\u20ac \u2192 25900\u20ac (+3000\u20ac); Battery + R3: 22900\u20ac \u2192 24900\u20ac (+2000\u20ac); No battery, R1: 22900\u20ac \u2192 21900\u20ac (-1000\u20ac); No battery, R2: 22900\u20ac \u2192 20900\u20ac (-2000\u20ac); No battery, R3: 22900\u20ac \u2192 19900\u20ac (-3000\u20ac)",
+    "timestamp": "2025-08-04 03:53:04",
+    "response_data": [
+      {
+        "scenario": "Battery only",
+        "battery_selected": true,
+        "battery_cost": 5000,
+        "discount_applied": 0,
+        "kit_price_original": 22900,
+        "kit_price_final": 27900,
+        "net_change": 5000
+      },
+      {
+        "scenario": "Battery + R1",
+        "battery_selected": true,
+        "battery_cost": 5000,
+        "discount_applied": 1000,
+        "kit_price_original": 22900,
+        "kit_price_final": 26900,
+        "net_change": 4000
+      },
+      {
+        "scenario": "Battery + R2",
+        "battery_selected": true,
+        "battery_cost": 5000,
+        "discount_applied": 2000,
+        "kit_price_original": 22900,
+        "kit_price_final": 25900,
+        "net_change": 3000
+      },
+      {
+        "scenario": "Battery + R3",
+        "battery_selected": true,
+        "battery_cost": 5000,
+        "discount_applied": 3000,
+        "kit_price_original": 22900,
+        "kit_price_final": 24900,
+        "net_change": 2000
+      },
+      {
+        "scenario": "No battery, R1",
+        "battery_selected": false,
+        "battery_cost": 0,
+        "discount_applied": 1000,
+        "kit_price_original": 22900,
+        "kit_price_final": 21900,
+        "net_change": -1000
+      },
+      {
+        "scenario": "No battery, R2",
+        "battery_selected": false,
+        "battery_cost": 0,
+        "discount_applied": 2000,
+        "kit_price_original": 22900,
+        "kit_price_final": 20900,
+        "net_change": -2000
+      },
+      {
+        "scenario": "No battery, R3",
+        "battery_selected": false,
+        "battery_cost": 0,
+        "discount_applied": 3000,
+        "kit_price_original": 22900,
+        "kit_price_final": 19900,
+        "net_change": -3000
+      }
+    ]
+  },
+  {
+    "test": "Battery Financing Calculations",
+    "success": true,
+    "details": "\u2705 BATTERY FINANCING CALCULATIONS WORKING: Standard 15y financing: +39.44\u20ac/month. Financing with aids: +39.43\u20ac/month (financed amount +5000.0\u20ac). All financing options correctly include 5000\u20ac battery cost.",
+    "timestamp": "2025-08-04 03:53:05",
+    "response_data": {
+      "standard_15y_increase": 39.44,
+      "aids_payment_increase": 39.42999999999998,
+      "financed_amount_increase": 5000.0,
+      "battery_cost": 5000
+    }
+  },
+  {
+    "test": "Battery + Manual Kit Selection",
+    "success": true,
+    "details": "\u2705 BATTERY + MANUAL KIT SELECTION WORKING: All 4 scenarios tested successfully. Manual kit power respected, battery and discounts applied correctly. 6kW kit, Battery: False, Discount: 0\u20ac, Final: 22900\u20ac; 6kW kit, Battery: True, Discount: 0\u20ac, Final: 27900\u20ac; 9kW kit, Battery: False, Discount: 2000\u20ac, Final: 27900\u20ac; 9kW kit, Battery: True, Discount: 2000\u20ac, Final: 32900\u20ac",
+    "timestamp": "2025-08-04 03:53:07",
+    "response_data": [
+      {
+        "kit_power": 6,
+        "battery_selected": false,
+        "battery_cost": 0,
+        "discount_applied": 0,
+        "kit_price_final": 22900
+      },
+      {
+        "kit_power": 6,
+        "battery_selected": true,
+        "battery_cost": 5000,
+        "discount_applied": 0,
+        "kit_price_final": 27900
+      },
+      {
+        "kit_power": 9,
+        "battery_selected": false,
+        "battery_cost": 0,
+        "discount_applied": 2000,
+        "kit_price_final": 27900
+      },
+      {
+        "kit_power": 9,
+        "battery_selected": true,
+        "battery_cost": 5000,
+        "discount_applied": 2000,
+        "kit_price_final": 32900
+      }
+    ]
   }
 ]
