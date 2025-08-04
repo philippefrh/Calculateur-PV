@@ -2705,28 +2705,37 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
     }
   ];
 
-  // Réinitialiser le countdown quand les résultats arrivent
+  // Timer automatique pour l'animation - approche simplifiée  
   useEffect(() => {
     if (!isCalculating && calculationResults) {
-      setAutoCountdown(5); // Réinitialiser à 5 secondes
-    }
-  }, [isCalculating, calculationResults]);
+      console.log('🎬 Écran de succès affiché, préparation du lancement automatique de l\'animation');
+      
+      // Réinitialiser le countdown
+      setAutoCountdown(5);
+      
+      // Timer simple de 5 secondes
+      const autoTimer = setTimeout(() => {
+        console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
+        setCurrentStep(6);
+      }, 5000);
 
-  // Timer automatique pour lancer l'animation après l'écran de succès
-  useEffect(() => {
-    if (!isCalculating && calculationResults && autoCountdown > 0) {
-      const countdownTimer = setTimeout(() => {
-        if (autoCountdown === 1) {
-          console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
-          setCurrentStep(6); // Lancer automatiquement l'animation
-        } else {
-          setAutoCountdown(prev => prev - 1);
+      // Countdown visuel séparé
+      let currentCount = 5;
+      const countdownTimer = setInterval(() => {
+        currentCount--;
+        setAutoCountdown(currentCount);
+        
+        if (currentCount <= 0) {
+          clearInterval(countdownTimer);
         }
       }, 1000);
 
-      return () => clearTimeout(countdownTimer);
+      return () => {
+        clearTimeout(autoTimer);
+        clearInterval(countdownTimer);
+      };
     }
-  }, [isCalculating, calculationResults, autoCountdown]);
+  }, [isCalculating, calculationResults]);
 
   useEffect(() => {
     const speed = isDemoMode ? 10 : 1000; // 10ms en mode démo, 1000ms normal
