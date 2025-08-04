@@ -730,6 +730,7 @@ const ConsumptionForm = ({
   const [selectedKit, setSelectedKit] = useState(null);
   const [loadingKits, setLoadingKits] = useState(false);
   const [kitDiscounts, setKitDiscounts] = useState({}); // Gestion des remises par kit (R1, R2, R3)
+  const [batterySelected, setBatterySelected] = useState({}); // Gestion de la sélection de batterie par kit
 
   // Recharger les kits quand la région change
   useEffect(() => {
