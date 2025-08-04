@@ -1877,7 +1877,7 @@ Cordialement`);
               </div>
               <div className="summary-cell dark">
                 <div className="cell-title">Durée d'amortissement *</div>
-                <div className="cell-value">{Math.round(results.financing_with_aids?.duration_years)} années</div>
+                <div className="cell-value">{Math.round(optimalFinancingWithAids?.duration_years || 0)} années</div>
               </div>
               <div className="summary-cell dark">
                 <div className="cell-title">Pourcentage d'économies réel</div>
