@@ -3164,8 +3164,10 @@ function App() {
 
   const handleCalculationComplete = (results) => {
     setCalculationResults(results);
-    // Ne pas rediriger automatiquement - laisser le timer de 20 secondes du CalculationScreen faire son travail
-    // pour afficher l'écran de succès pendant 20 secondes puis aller vers l'animation
+    // Passer automatiquement à l'animation après avoir reçu les résultats
+    setTimeout(() => {
+      setCurrentStep(6); // Aller à l'animation
+    }, 100); // Petit délai pour que les résultats soient bien enregistrés
   };
 
   const handleNewCalculation = () => {
