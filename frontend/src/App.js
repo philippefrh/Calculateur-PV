@@ -790,6 +790,51 @@ const ConsumptionForm = ({
     });
   };
 
+  // Fonction pour gérer la sélection de batterie
+  const toggleKitBattery = (kitPower, event) => {
+    console.log(`🔋 DEBUG: toggleKitBattery - Kit: ${kitPower}kW`);
+    console.log('🔋 DEBUG: État actuel batterySelected:', batterySelected);
+    
+    // ARRÊTER la propagation pour éviter le déclenchement de handleSelectKit
+    event.preventDefault();
+    event.stopPropagation();
+    
+    setBatterySelected(prev => {
+      const newState = {
+        ...prev,
+        [kitPower]: !prev[kitPower] // Basculer l'état de la batterie
+      };
+      
+      console.log(`🔋 DEBUG: ${!prev[kitPower] ? 'Activation' : 'Désactivation'} batterie pour ${kitPower}kW`);
+      console.log('🔋 DEBUG: Nouvel état batterySelected:', newState);
+      
+      // Si nous avons un kit sélectionné et que la batterie change pour ce kit, mettre à jour selectedKit
+      if (selectedKit && selectedKit.power === kitPower) {
+        console.log('🔋 DEBUG: Mise à jour du kit sélectionné avec nouvelle batterie');
+        const updatedKit = { ...selectedKit };
+        
+        const batteryPrice = newState[kitPower] ? 5000 : 0;
+        
+        // Recalculer les prix avec batterie
+        if (updatedKit.hasDiscount) {
+          updatedKit.priceTTC = updatedKit.originalPriceTTC - updatedKit.discountAmount + batteryPrice;
+          updatedKit.priceWithAids = updatedKit.originalPriceWithAids - updatedKit.discountAmount + batteryPrice;
+        } else {
+          updatedKit.priceTTC = updatedKit.originalPriceTTC + batteryPrice;
+          updatedKit.priceWithAids = updatedKit.originalPriceWithAids + batteryPrice;
+        }
+        
+        updatedKit.hasBattery = newState[kitPower];
+        updatedKit.batteryPrice = batteryPrice;
+        
+        setSelectedKit(updatedKit);
+        console.log('🔋 DEBUG: Kit sélectionné mis à jour avec batterie:', updatedKit);
+      }
+      
+      return newState;
+    });
+  };
+
   // Récupérer les kits solaires disponibles selon la région
   const fetchAvailableKits = async () => {
     if (availableKits.length > 0) return; // Déjà chargés
