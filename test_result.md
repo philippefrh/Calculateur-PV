@@ -243,6 +243,18 @@ backend:
         agent: "testing"
         comment: "✅ PDF FOOTER ADDRESS PLACEMENT WORKING: PDF generation successful with footer structure implemented. Code shows proper footer table structure with centered address and logo placement. Regional company info correctly differentiated (FRH ENVIRONNEMENT for France, FRH MARTINIQUE for Martinique). Footer formatting and address placement fixes applied as requested."
 
+  - task: "Fonctionnalité batterie avec paramètre battery_selected"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ BATTERY FUNCTIONALITY FULLY TESTED AND WORKING: Comprehensive testing completed of the newly added battery functionality. 1) ✅ API Endpoint /api/calculate/{client_id} with battery_selected parameter working correctly: battery_selected=true adds 5000€ cost, battery_selected=false adds 0€ cost, backward compatibility maintained (default=false). 2) ✅ Financing calculations correctly include battery cost: Standard 15y financing increases by +39.44€/month, financing with aids increases by +39.43€/month with financed amount +5000€. All financing options (6-15 years) correctly include battery cost. 3) ✅ API response includes all required battery fields: battery_selected (true/false), battery_cost (5000€ if selected, 0€ if not), kit_price_final (correctly calculated as kit_price_original - discount + battery_cost). 4) ✅ Battery + discount combinations working perfectly: Battery only (+5000€), Battery+R1 (+4000€), Battery+R2 (+3000€), Battery+R3 (+2000€), all scenarios tested successfully. 5) ✅ Manual kit selection with battery working: 6kW and 9kW kits tested with/without battery and discounts, all combinations working correctly. Battery functionality is production-ready and meets all requirements from the review request."
+
 backend:
   - task: "API Root Endpoint"
     implemented: true
