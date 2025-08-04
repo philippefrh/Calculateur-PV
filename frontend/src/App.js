@@ -2745,15 +2745,17 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   // Timer automatique pour l'animation - approche simplifiée  
   useEffect(() => {
     if (!isCalculating && calculationResults) {
-      console.log('🎬 Écran de succès affiché, préparation du lancement automatique de l\'animation');
+      console.log('🎬 Écran de succès affiché, sauvegarde des résultats');
+      
+      // Sauvegarder les résultats immédiatement
+      onComplete(calculationResults);
       
       // Réinitialiser le countdown à 7 secondes comme demandé
       setAutoCountdown(7);
       
       // Timer simple de 7 secondes puis passer directement à l'animation
       const autoTimer = setTimeout(() => {
-        console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès - passage direct à l\'étape 6');
-        // Passer directement à l'animation sans appeler onComplete
+        console.log('🎬 Lancement automatique de l\'animation après 7 secondes - passage direct à l\'étape 6');
         setCurrentStep(6);
       }, 7000);
 
