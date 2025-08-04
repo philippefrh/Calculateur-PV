@@ -2852,8 +2852,6 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   }, [isCalculating, calculationResults]);
 
   if (!isCalculating && calculationResults) {
-    const [autoCountdown, setAutoCountdown] = useState(5);
-    
     // Timer automatique pour lancer l'animation après 5 secondes
     useEffect(() => {
       const countdownTimer = setInterval(() => {
