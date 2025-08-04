@@ -6506,10 +6506,33 @@ class SolarCalculatorTester:
         
         return self.test_results
 
+    def run_battery_tests(self):
+        """Run battery functionality tests specifically"""
+        print("🔋 Testing Battery Functionality for FRH ENVIRONNEMENT Solar Calculator")
+        print(f"Backend URL: {self.base_url}")
+        print("=" * 80)
+        
+        # Basic connectivity and client setup
+        self.test_api_root()
+        self.test_create_client()
+        
+        # Battery functionality tests
+        print("\n🔋 BATTERY FUNCTIONALITY TESTS - NEW FEATURE")
+        print("-" * 60)
+        self.test_battery_functionality_basic()
+        self.test_battery_with_discounts_combinations()
+        self.test_battery_financing_calculations()
+        self.test_battery_with_manual_kit_selection()
+        
+        print("=" * 80)
+        self.print_summary()
+        
+        return self.test_results
+
 if __name__ == "__main__":
     tester = SolarCalculatorTester()
-    # Run quick endpoint tests as requested by user
-    results = tester.run_quick_endpoint_tests()
+    # Run battery tests as requested in review
+    results = tester.run_battery_tests()
     
     # Save detailed results to file
     with open("/app/test_results_detailed.json", "w") as f:
