@@ -526,40 +526,45 @@ def find_optimal_duration(financing_options: List[Dict], monthly_savings: float)
     
     return optimal_option["duration_years"]
 
-def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", financing_options: List[Dict] = None, discount_amount: float = 0) -> Dict:
+def calculate_financing_with_aids(kit_price: float, total_aids: float, monthly_savings: float, region: str = "france", financing_options: List[Dict] = None, discount_amount: float = 0, battery_cost: float = 0) -> Dict:
     """
     Calculate financing options with aids deducted - WITH INTERESTS
     """
     region_config = REGIONS_CONFIG.get(region, REGIONS_CONFIG["france"])
     taeg = region_config["interest_rates"]["with_aids"]
+    
+    # Calculer le prix final avec remise et batterie, puis retirer les aides
+    final_price_before_aids = kit_price - discount_amount + battery_cost
+    financed_amount = final_price_before_aids - total_aids
+    
+    if financed_amount <= 0:
+        return {
+            "monthly_payment": 0,
+            "financed_amount": 0,
+            "duration_years": 0,
+            "duration_months": 0,
+            "difference_vs_savings": round(-monthly_savings, 2)
+        }
+    
+    # Get financing options to determine optimal duration
+    if financing_options is None:
+        financing_options = calculate_financing_options(kit_price, monthly_savings, region, discount_amount, battery_cost)
+    
+    # Find optimal financing duration based on the same logic as frontend
+    optimal_duration = find_optimal_duration(financing_options, monthly_savings)
+    
+    # Calculate monthly payment with interest
     monthly_rate = taeg / 12
-    
-    # Apply discount to the kit price
-    discounted_price = kit_price - discount_amount
-    
-    # Amount to finance after aids and discount
-    financed_amount = discounted_price - total_aids
-    
-    # Find optimal duration from financing options
-    optimal_duration = find_optimal_duration(financing_options, monthly_savings) if financing_options else 15
-    
-    # Calculate monthly payment with interests for optimal duration
     months = optimal_duration * 12
+    
     if monthly_rate > 0:
         monthly_payment = financed_amount * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
     else:
         monthly_payment = financed_amount / months
-    
-    # Calculate total cost and interests
-    total_cost = monthly_payment * months
-    total_interests = total_cost - financed_amount
-    
+        
     return {
         "monthly_payment": round(monthly_payment, 2),
-        "total_cost": round(total_cost, 2),
-        "total_interests": round(total_interests, 2),
         "financed_amount": round(financed_amount, 2),
-        "taeg": taeg,
         "duration_years": optimal_duration,
         "duration_months": months,
         "difference_vs_savings": round(monthly_payment - monthly_savings, 2)
