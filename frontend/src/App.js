@@ -2871,23 +2871,6 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   }, [isCalculating, calculationResults]);
 
   if (!isCalculating && calculationResults) {
-    // Timer automatique pour lancer l'animation après 5 secondes
-    useEffect(() => {
-      const countdownTimer = setInterval(() => {
-        setAutoCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(countdownTimer);
-            console.log('🎬 Lancement automatique de l\'animation après l\'écran de succès');
-            setCurrentStep(6); // Lancer automatiquement l'animation
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(countdownTimer);
-    }, [calculationResults]);
-
     return (
       <div className="calculation-screen success">
         <div className="success-animation">
