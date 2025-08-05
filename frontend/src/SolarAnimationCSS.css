@@ -693,11 +693,11 @@
   box-shadow: 0 6px 20px rgba(46, 204, 113, 0.6);
 }
 
-/* BATTERIE DE STOCKAGE - Positionnée entre les panneaux et le compteur Linky - TAILLE AUGMENTÉE */
+/* BATTERIE DE STOCKAGE - Même taille que le Linky et téléphone */
 .solar-battery {
   position: absolute;
   bottom: 240px;
-  right: 580px;  /* Entre les panneaux (gauche/centre) et le compteur Linky (right: 320px) */
+  right: 540px;  /* Ajustement pour meilleur alignement avec les 3 éléments */
   width: 200px;  /* Même taille que le compteur Linky et téléphone */
   height: 400px; /* Même taille que le compteur Linky et téléphone */
   opacity: 0;
