@@ -58,7 +58,7 @@
 /* Nouveau badge pour l'utilisation de la batterie */
 .battery-usage-badge {
   position: absolute;
-  top: 180px; /* Positionné sous l'economy-badge */
+  top: 200px; /* Descendu pour éviter le chevauchement (était 180px) */
   left: 30%; /* Aligné avec l'economy-badge */
   transform: translateX(-50%);
   color: white;
