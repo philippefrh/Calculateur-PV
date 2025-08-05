@@ -2157,7 +2157,7 @@ Cordialement`);
                   <div className="financing-details">
                     <div className="financing-row">
                       <span>Investissement total:</span>
-                      {results.discount_applied > 0 ? (
+                      {(results.discount_applied > 0 || results.battery_selected) ? (
                         <>
                           <span className="amount" style={{textDecoration: 'line-through', color: '#888', fontSize: '0.9em'}}>{results.kit_price_original?.toLocaleString()} €</span>
                           <span className="amount" style={{color: '#e74c3c', fontWeight: 'bold'}}> {results.kit_price_final?.toLocaleString()} € TTC</span>
