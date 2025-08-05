@@ -204,7 +204,7 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
               <div className="battery-terminal"></div>
               <div className="battery-level">
                 <div 
-                  className={`battery-charge ${animationStage === 'production' || animationStage === 'savings' ? 'charging' : ''}`}
+                  className={`battery-charge ${batteryCharging ? 'charging' : 'discharging'}`}
                   style={{ height: `${batteryChargeLevel}%` }}
                 ></div>
               </div>
