@@ -841,11 +841,17 @@ const ConsumptionForm = ({
     
     setLoadingKits(true);
     try {
+      console.log(`🔧 Fetching kits for region: ${selectedRegion}`);
+      console.log(`🔧 API URL: ${API}/regions/${selectedRegion}/kits`);
+      
       const response = await fetch(`${API}/regions/${selectedRegion}/kits`);
+      console.log(`🔧 Response status: ${response.status}`);
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      console.log(`🔧 Received data:`, data);
       const kits = data.kits;
       
       // Transformer les données selon la région
@@ -867,6 +873,7 @@ const ConsumptionForm = ({
           originalPriceWithAids: kit.price_ttc - kit.aid_amount // Prix avec aides original sans remise
         }));
         
+        console.log(`🔧 Processed ${kitsWithDetails.length} Martinique kits`);
         setAvailableKits(kitsWithDetails);
       } else {
         // Pour France, utiliser la logique existante
