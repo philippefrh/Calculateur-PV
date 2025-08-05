@@ -193,11 +193,11 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
               <div className="battery-label">🔋 Stockage</div>
             </div>
             
-            {/* Indicateur de charge */}
+            {/* Indicateur de charge progressive */}
             {(animationStage === 'production' || animationStage === 'savings' || animationStage === 'complete') && (
               <div className="battery-status">
-                <div className="charge-percentage">85%</div>
-                <div className="charge-text">chargée</div>
+                <div className="charge-percentage">{batteryChargeLevel}%</div>
+                <div className="charge-text">{batteryCharging ? 'charge' : 'décharge'}</div>
               </div>
             )}
             
