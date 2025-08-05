@@ -63,6 +63,11 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
       });
     }, 500);
 
+    // Démarrer l'animation progressive de la batterie si elle est sélectionnée
+    if (batterySelected) {
+      startBatteryChargingCycle();
+    }
+
     // Démarrer l'animation des billets après 8 secondes
     setTimeout(() => {
       setAnimationStage('savings');
@@ -80,6 +85,34 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
     setTimeout(() => {
       clearInterval(productionTimer);
       setAnimationStage('complete');
+    }, 25000);
+  };
+
+  // Nouvelle fonction pour l'animation progressive de charge/décharge de la batterie
+  const startBatteryChargingCycle = () => {
+    const batteryTimer = setInterval(() => {
+      setBatteryChargeLevel(prevLevel => {
+        if (batteryCharging) {
+          // Phase de charge : 0% → 100% par paliers de 5%
+          if (prevLevel >= 100) {
+            setBatteryCharging(false); // Passer en décharge
+            return 100;
+          }
+          return prevLevel + 5;
+        } else {
+          // Phase de décharge : 100% → 0% par paliers de 5%
+          if (prevLevel <= 0) {
+            setBatteryCharging(true); // Repasser en charge
+            return 0;
+          }
+          return prevLevel - 5;
+        }
+      });
+    }, 800); // Changement toutes les 800ms pour un cycle complet en ~32 secondes
+
+    // Nettoyage du timer après l'animation complète
+    setTimeout(() => {
+      clearInterval(batteryTimer);
     }, 25000);
   };
 
