@@ -2026,7 +2026,7 @@ Cordialement`);
             <div className="financial-item">
               <span className="financial-icon">💳</span>
               <span className="financial-label">Reste à financer:</span>
-              <span className="financial-value">{optimalFinancingWithAids?.financed_amount?.toLocaleString()} €</span>
+              <span className="financial-value">{optimalFinancingWithAids?.financed_amount?.toLocaleString() || 'N/A'} €</span>
             </div>
             <div className="financial-item">
               <span className="financial-icon">⏱️</span>
