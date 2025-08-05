@@ -127,7 +127,7 @@ frontend:
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "✅ IMPLEMENTED: 1) Remonté l'encadré '85% chargée' (battery-status top: -60px) pour qu'il soit visible au-dessus de la batterie et ne soit plus masqué par le Linky. 2) Ajouté un nouveau badge bleu 'battery-usage-badge' avec le texte 'Batterie de Stockage = Utilisation pour la Nuit : Climatisation, Lumière, TV, PC, chargeur, Frigo, etc.' positionné sous le badge d'autoconsommation. Ce badge ne s'affiche que si la batterie est sélectionnée."
+        comment: "✅ IMPLEMENTED: 1) Remonté l'encadré '85% chargée' (battery-status top: -100px) pour qu'il soit bien visible au-dessus de la batterie et ne soit plus masqué par le Linky. 2) Ajouté un nouveau badge bleu 'battery-usage-badge' avec le texte 'Batterie de Stockage = Utilisation pour la Nuit : Climatisation, Lumière, TV, PC, chargeur, Frigo, etc.' positionné à top: 200px sous le badge d'autoconsommation pour éviter le chevauchement. 3) Redimensionné la batterie (190px x 360px) pour qu'elle ait exactement la même taille que le Linky et le téléphone. Ce badge ne s'affiche que si la batterie est sélectionnée."
     implemented: true
     working: "NA"
     file: "frontend/src/SolarAnimationCSS.css"
