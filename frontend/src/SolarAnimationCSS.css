@@ -783,7 +783,6 @@
 }
 
 .battery-charge.charging {
-  height: 85%;
   animation: battery-pulse 2s ease-in-out infinite alternate;
 }
 
