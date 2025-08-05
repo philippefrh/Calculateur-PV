@@ -41,7 +41,7 @@
 .economy-badge {
   position: absolute;
   top: 130px;
-  left: 50%;
+  left: 30%; /* Décalé vers la gauche (était 50%) */
   transform: translateX(-50%);
   color: white;
   font-size: 1.1em;
