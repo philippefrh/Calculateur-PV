@@ -798,7 +798,7 @@
 
 .battery-label {
   position: absolute;
-  bottom: -60px; /* Ajusté pour container plus grand */
+  bottom: -70px; /* Ajusté pour la nouvelle taille */
   left: 50%;
   transform: translateX(-50%);
   color: #2c3e50;
