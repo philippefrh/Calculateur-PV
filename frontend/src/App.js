@@ -911,7 +911,10 @@ const ConsumptionForm = ({
       // Trier les kits par puissance
       setAvailableKits(prev => [...prev].sort((a, b) => a.power - b.power));
     } catch (error) {
-      console.error('Erreur lors du chargement des kits:', error);
+      console.error('❌ Erreur lors du chargement des kits:', error);
+      console.error('❌ Message d\'erreur:', error.message);
+      console.error('❌ Stack trace:', error.stack);
+      console.error('❌ API URL utilisée:', `${API}/regions/${selectedRegion}/kits`);
       alert('Erreur lors du chargement des kits. Veuillez réessayer.');
     }
     setLoadingKits(false);
