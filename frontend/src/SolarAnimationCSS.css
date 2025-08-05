@@ -55,6 +55,24 @@
   max-width: 500px;
 }
 
+/* Nouveau badge pour l'utilisation de la batterie */
+.battery-usage-badge {
+  position: absolute;
+  top: 180px; /* Positionné sous l'economy-badge */
+  left: 30%; /* Aligné avec l'economy-badge */
+  transform: translateX(-50%);
+  color: white;
+  font-size: 1.0em;
+  font-weight: bold;
+  background: #3498db; /* Bleu pour différencier de l'economy-badge */
+  padding: 10px 20px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  text-align: center;
+  max-width: 600px; /* Plus large pour le texte plus long */
+}
+
 .animation-ground {
   position: absolute;
   bottom: 0;
