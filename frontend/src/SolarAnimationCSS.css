@@ -273,7 +273,7 @@
 .linky-counter {
   position: absolute;
   bottom: 240px;
-  right: 320px;  /* Déplacé à droite, à côté du téléphone */
+  right: 280px;  /* Décalé légèrement vers la droite (était 320px) */
   width: 200px;  /* Même taille que le téléphone */
   height: 400px; /* Même taille que le téléphone */
   background: linear-gradient(to bottom, #7ED321, #5BA81B);
