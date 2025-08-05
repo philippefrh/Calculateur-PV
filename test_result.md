@@ -117,7 +117,17 @@ frontend:
         agent: "main"
         comment: "✅ IMPLEMENTED: Modifié les positions CSS pour décaler vers la gauche (30% au lieu de 50%) les 3 éléments : .animation-title, .animation-status, et .economy-badge. Cela libère de l'espace à droite pour la batterie agrandie."
 
-  - task: "Ajustement animation CSS - Agrandissement batterie et repositionnement"
+  - task: "Ajustement animation CSS - Repositionnement encadré batterie et ajout texte nocturne"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/SolarAnimationCSS.css, frontend/src/SolarAnimationCSS.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ IMPLEMENTED: 1) Remonté l'encadré '85% chargée' (battery-status top: -60px) pour qu'il soit visible au-dessus de la batterie et ne soit plus masqué par le Linky. 2) Ajouté un nouveau badge bleu 'battery-usage-badge' avec le texte 'Batterie de Stockage = Utilisation pour la Nuit : Climatisation, Lumière, TV, PC, chargeur, Frigo, etc.' positionné sous le badge d'autoconsommation. Ce badge ne s'affiche que si la batterie est sélectionnée."
     implemented: true
     working: "NA"
     file: "frontend/src/SolarAnimationCSS.css"
