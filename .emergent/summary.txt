@@ -1,75 +1,73 @@
 <analysis>
-The previous AI engineer successfully stabilized the core FRH ENVIRONNEMENT application before shifting focus to a new feature: photorealistic solar panel visualization. Initially,  was integrated, but generative models (, , ) failed to perform direct image editing, instead creating new roofs. This led to a critical pivot to a local OpenCV/PIL solution, eliminating external API dependencies and costs. The subsequent work focused on refining the local rendering: adjusting panel size, ensuring precise positioning without overflow, and critically, achieving accurate 3D perspective and inclination (panels appearing as parallelograms). A persistent challenge remains: the Avant/Après (Before/After) image display, despite numerous attempts to remove it from  and full service restarts, strongly suggesting a deep caching or overlooked frontend rendering issue.
+The previous AI engineer successfully brought the FRH ENVIRONNEMENT application from inception (0 to 1). Initially, the focus was on advanced photorealistic solar panel visualization using , which later pivoted to a local OpenCV/PIL solution due to technical constraints. Subsequent efforts streamlined the application's flow, re-integrating a free CSS animation with auto-launch features and refining financing calculations. The most recent and critical work, as detailed in the provided trajectory, involved implementing an optional battery storage feature. This task encompassed adding a 5000€ cost increase to solar kits, introducing a Batterie button in the UI, and visually integrating a battery image into the CSS animation. The trajectory highlights a robust debugging process where a critical bug related to the battery's price not reflecting in the frontend, despite correct backend calculation, was identified and resolved. The AI engineer also addressed the user's feedback to adjust the battery image's size in the animation. This concluded with comprehensive testing, confirming the full functionality and correct display of the battery feature across the application.
 </analysis>
 
 <product_requirements>
-The FRH ENVIRONNEMENT application is a solar calculation and quote generation tool for clients in France and Martinique. It includes a dynamic CSS 3D solar animation and integrates Martinique-specific pricing (TTC, TVA, interest, 12kW-27kW kits with aids). Three mutually exclusive discount buttons (R1: €1000, R2: €2000, R3: €3000) apply to calculations.
+The FRH ENVIRONNEMENT application is a solar calculation and quote generation tool designed for clients in France and Martinique. Its primary purpose is to provide dynamic CSS 3D solar animations, accurate Martinique-specific pricing (TTC, TVA, interest), and offer solar kits ranging from 12kW to 27kW, complemented by governmental aids and a three-tier discount system.
 
-A major new feature involves integrating realistic, photorealistic black-colored solar panel placement visualizations on client house photos. The user explicitly requires panels to be superimposed *directly* onto the uploaded client's roof, maintaining the original house and perspective, and not generating a new house or a separate after image. The visualization must show panels with realistic 3D effect, inclination matching the roof slope, correct dimensions (1.71m H x 1.10m W), proper positioning without exceeding roof boundaries, and an overall professional aesthetic matching provided reference photos. The application must correctly calculate, display results, and allow kit selection.
+Initially, a key feature involved superimposing realistic black solar panels onto client house photos, demanding precise 3D perspective and dimensions (1.71m H x 1.10m W) to maintain the original house perspective and ensure professional aesthetics. This visualization was intended to guide accurate calculations and kit selection.
+
+More recently, the user prioritized the existing CSS animation, requesting its automatic display after the Carré VERT positif success screen with a 7-second delay. Financial logic was refined to better align financing durations with monthly savings, and an Économie column was added to financial tables.
+
+The latest requirement, which has been successfully implemented and verified, was the introduction of an optional green Batterie button. When selected, this option increases the kit price by 5000€ and visually integrates a battery image within the CSS animation, positioned between the solar panels and the Linky meter. All existing application functionalities were required to be preserved throughout these updates.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-Stack Architecture**: React (frontend), FastAPI (backend), MongoDB (database).
--   **Image Processing**: Initially  (OmniGen V2, Flux LoRA, Stable Diffusion XL) for AI-driven image generation; pivoted to local OpenCV and PIL for precise image manipulation (superposition, perspective transformation).
--   **Web Animation**: CSS-based 3D-like animations for energy flow.
--   **API Integration**: RESTful API for calculations, regional data.
--   **State Management**: React's  for UI and application flow.
--   **Environment Variables**:  files for , , .
--   **Dynamic Pricing & Calculation**: Backend logic for regional pricing, aids, and discounts.
+-   **Image Processing**: OpenCV and PIL (for local image superposition).
+-   **Web Animation**: CSS-based 3D animations for solar panel and energy flow.
+-   **API Integration**: RESTful API for calculations and regional data.
+-   **State Management**: React's  and  for UI flow.
+-   **Environment Variables**:  files for configuration.
 </key_technical_concepts>
 
 <code_architecture>
 
--   ****: Stores  and .
-    -   **Summary**: Central for backend configuration and API keys.
-    -   **Changes Made**:  was added.  corrected to .
--   ****: The core backend logic handling API routes.
-    -   **Summary**: Manages calculations, data, and image visualization.
-    -   **Changes Made**:
-        -   Initial  integration: Pydantic models for roof analysis,  function. Endpoints  and  were created.
-        -    updated to use  constant for France data.
-        -   Multiple changes to  function:
-            -   Initial prompt adjustments for .
-            -   Model changes from  to , then .
-            -   Complete overhaul to use local  and  for direct image superposition, abandoning .
-            -   Extensive iterative adjustments to panel positioning, size (using 1.71m x 1.10m dimensions), 3D effect (shadows, thickness), perspective (parallelogram shape, inclination simulation), and visual rendering (color, grid, reflections, frame).
--   ****: Lists Python dependencies.
-    -   **Summary**: Ensures required Python libraries are installed.
-    -   **Changes Made**:  was added,  and  (PIL) were added after the pivot to local image processing.
--   ****: Stores frontend environment variables.
-    -   **Summary**: Defines  for frontend API calls.
-    -   **Changes Made**:  was changed to  for correct backend communication.
--   ****: The main React application component.
-    -   **Summary**: Manages UI, state, user flow, and backend interactions.
-    -   **Changes Made**: Fixed discount system. Introduced Visualisation de Toit tab and  component. Fixed navigation bug  to . PVGIS timer reduced.
-    -   Attempts were made to remove the before-after image comparison UI, transitioning to a single final image display, though this issue persists.
--   ****: Used for documenting testing and communication.
-    -   **Summary**: Tracks issues, fixes, backend test results, and user feedback.
-    -   **Changes Made**: Regularly updated to log debugging efforts related to  testing, MongoDB connection, frontend URL, navigation, and the iterative refinements of the solar panel visualization.
+-   ****: Important for backend configuration, stores  and .
+-   ****: The core backend logic.
+    -   **Importance**: Handles all API routes, solar solution calculations, financing, and image processing.
+    -   **Changes Made**: Implemented  parameter in  and  to add 5000€ to  when selected. The  status is also included in the API response. Its calculation logic for battery pricing was confirmed to be correct.
+-   ****: Lists Python dependencies, including , , and .
+-   ****: Stores frontend environment variables, notably .
+-   ****: The main React component.
+    -   **Importance**: Manages UI, state, user flow, kit selection, and calculation initiation.
+    -   **Changes Made**: Before this trajectory, it handled auto-transition to CSS animation, financing logic, and Économie column. For the battery feature, it introduced  state,  function, logic to adjust kit price by +5000€ if battery is selected (), and sending  to backend (, ). A Batterie button was added, and price displays updated. In the current trajectory, the critical fix involved modifying price display logic to consistently use  (which includes battery cost) for the Investissement section and other relevant price outputs, resolving the issue where the 5000€ was not always shown.
+-   ****: Defines global application styles.
+    -   **Importance**: Styles various UI elements, including the battery button.
+    -   **Changes Made**: Added styles for the  and its selected state.
+-   ****: React component for CSS animation.
+    -   **Importance**: Renders the dynamic 3D solar panel animation.
+    -   **Changes Made**: Integrated a conditional  for the battery image (), whose visibility is controlled by the  prop, and rendered via a base64 encoded string.
+-   ****: Styles for the CSS animation.
+    -   **Importance**: Controls the visual presentation of elements within the solar animation.
+    -   **Changes Made**: Added CSS rules for  to position and display the battery image. During this trajectory, these rules were specifically adjusted to increase the size of the battery image to match the Linky meter and phone.
+-   ****: Used for documenting testing, debugging, and communication.
+    -   **Importance**: Centralizes user problem statements, testing protocols, and logs of test results.
+    -   **Changes Made**: Updated to accurately reflect the completed battery feature implementation status and verification, detailing the fixed pricing and visual adjustments.
 </code_architecture>
 
 <pending_tasks>
 -   **PDF Quote Generation**: Temporarily abandoned.
 -   **Deferred Feature**: Implement dual application versions (Particuliers and Professionnels).
 -   **Frontend Test**: Create a simple frontend test to verify navigation to results.
--   **Solar Panel Visualization Refinement**:
-    -   Resolve persistent Avant/Après UI display issue in frontend.
-    -   Perfect the 3D perspective and inclination of solar panels to precisely match roof slope as per user's reference photos.
-    -   Ensure panels are sized and positioned to completely fit within roof boundaries without overflow.
+-   **Solar Panel Visualization (fal.ai)**:
+    -   Resolve persistent Avant/Après UI display issue.
+    -   Perfect 3D perspective, inclination, and fit within roof boundaries without overflow.
+-   Verify the automatic 7-second transition from Carré VERT positif to CSS animation.
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer was deep into refining the solar panel visualization feature, having abandoned  for a local OpenCV/PIL approach due to persistent issues with generative AI models not performing direct image editing. The primary goal is to superimpose 16 black solar panels (1.71m H x 1.10m W) onto the user's uploaded roof photo, ensuring they:
-1.  Are precisely scaled and positioned to fill the roof area without overflow (current feedback suggests some overflow persists, especially on the bottom right).
-2.  Accurately follow the roof's inclination and perspective, appearing as pronounced parallelograms with realistic 3D depth, shadows, and reflections, matching the user's reference photos.
-3.  Are displayed as a single, final image on the frontend, rather than a Before/After comparison.
+Immediately prior to this summary, the AI engineer was actively involved in finalizing and debugging the optional battery storage feature as per user feedback.
 
-Despite numerous iterative adjustments to the backend's image processing logic in  (including precise margin calculations, 3D transformations, and rendering nuances) and attempts to modify  and restart services, two critical issues persist:
--   The frontend still displays an Avant/Après comparison, indicating a potential deeper caching problem or an unlocated piece of rendering logic.
--   The panel perspective and positioning, though significantly improved, are still not perfectly aligning with the user's expectations or the provided reference images, especially concerning inclination and avoiding overflow.
-The current work is stalled at this point, with the user expressing frustration and requesting to resume the next day.
+On the **backend** (), it was confirmed that the  API endpoint correctly processed the  parameter, accurately adding 5000€ to . Backend functionality for this feature was verified as correct and did not require further modifications during this phase of debugging.
+
+The primary focus of the work during this trajectory was on the **frontend** to address two critical issues reported by the user:
+1.  **Incorrect Price Display**: In , the pricing display logic was flawed. Although the backend correctly calculated  (which includes the battery cost), the frontend sometimes used  (which did not include the battery cost) for display, particularly when no other discounts were applied. The AI engineer corrected this by ensuring that the  and other key price displays consistently referenced  or a calculated equivalent that properly factored in the battery cost, regardless of the presence of discounts. This involved targeted edits in the rendering sections of .
+2.  **Battery Image Size**: In , the visual size of the battery image within the CSS animation was too small, as per user feedback. The AI engineer adjusted the CSS rules for the  element to increase its dimensions, making it visually proportionate to other elements like the Linky meter and phone in the animation.
+
+After implementing these fixes, comprehensive testing was performed. Backend tests using  re-confirmed the correct calculation. Frontend tests using  verified that the battery button functioned, the price displayed correctly across all scenarios (with and without discounts), and the battery image appeared at the requested larger size in the animation. The  file was successfully updated to document these corrections and their verification. The previous AI engineer concluded by asking the user for further enhancements.
 </current_work>
 
 <optional_next_step>
-I will re-examine the entire frontend codebase to definitively locate and resolve the persistent Avant/Après display, and then refine the panel rendering algorithm for perfect 3D inclination and positioning.
+Await user's explicit instructions following the completion and verification of the battery feature fix.
 </optional_next_step>
