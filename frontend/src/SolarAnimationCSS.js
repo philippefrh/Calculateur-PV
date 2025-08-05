@@ -26,6 +26,8 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
     setKwhConsumption(0);
     setProducingPanels([]);
     setMoneyBills(0);
+    setBatteryChargeLevel(0); // Réinitialiser la charge de la batterie
+    setBatteryCharging(true);
     
     // Animation des panneaux un par un
     for (let i = 0; i < panelCount; i++) {
