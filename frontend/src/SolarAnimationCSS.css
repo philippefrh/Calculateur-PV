@@ -737,12 +737,12 @@
 
 .battery-body {
   position: relative;
-  width: 190px;   /* Ajusté pour correspondre exactement aux autres éléments */
-  height: 360px;  /* Ajusté pour correspondre exactement aux autres éléments */
+  width: 200px;   /* Ajusté pour être exactement la même taille que le Linky et téléphone */
+  height: 400px;  /* Ajusté pour être exactement la même taille que le Linky et téléphone */
   background: linear-gradient(to bottom, #2c3e50, #34495e);
   border: 6px solid #1a252f;
   border-radius: 30px;
-  margin: 10px auto 0;  /* Centré avec marge top réduite */
+  margin: 0 auto;  /* Centré */
   box-shadow: 
     0 16px 32px rgba(0,0,0,0.3),
     inset 0 4px 8px rgba(255,255,255,0.1);
