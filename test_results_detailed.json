@@ -1,179 +1,189 @@
 [
   {
+    "test": "Create Martinique Test Client",
+    "success": true,
+    "details": "Martinique test client created: Jean Test, Fort-de-France, 6000kWh/an, 180\u20ac/mois. ID: d9844ba5-cbba-4603-9f91-e7d79cd16c5e",
+    "timestamp": "2025-08-05 05:39:06",
+    "response_data": {
+      "id": "d9844ba5-cbba-4603-9f91-e7d79cd16c5e",
+      "first_name": "Jean",
+      "last_name": "Test",
+      "address": "Fort-de-France, Martinique",
+      "phone": "0596123456",
+      "email": "jean.test@example.com",
+      "roof_surface": 80.0,
+      "roof_orientation": "Sud",
+      "velux_count": 1,
+      "heating_system": "Climatisation",
+      "water_heating_system": "Ballon \u00e9lectrique",
+      "water_heating_capacity": 200,
+      "annual_consumption_kwh": 6000.0,
+      "monthly_edf_payment": 180.0,
+      "annual_edf_payment": 1980.0,
+      "latitude": 14.6027962,
+      "longitude": -61.0676724,
+      "recommended_kit_power": null,
+      "estimated_production": null,
+      "estimated_savings": null,
+      "pvgis_data": null,
+      "created_at": "2025-08-05T05:39:06.707617"
+    }
+  },
+  {
     "test": "API Root",
     "success": true,
     "details": "API accessible, message: Solar Calculator API with PVGIS Integration",
-    "timestamp": "2025-08-04 11:58:59",
+    "timestamp": "2025-08-05 05:39:06",
     "response_data": {
       "message": "Solar Calculator API with PVGIS Integration"
     }
   },
   {
-    "test": "Create Client",
-    "success": true,
-    "details": "Client created successfully. ID: 10ecd715-dba6-492b-bebe-1a87287d23ba, Coords: 48.8680, 2.3154",
-    "timestamp": "2025-08-04 11:59:00",
+    "test": "Martinique Kits Endpoint",
+    "success": false,
+    "details": "Expected 3 kits, got 9",
+    "timestamp": "2025-08-05 05:39:06",
     "response_data": {
-      "id": "10ecd715-dba6-492b-bebe-1a87287d23ba",
-      "first_name": "Jean",
-      "last_name": "Dupont",
-      "address": "10 Avenue des Champs-\u00c9lys\u00e9es, 75008 Paris",
-      "phone": "0123456789",
-      "email": "jean.dupont@example.com",
-      "roof_surface": 60.0,
-      "roof_orientation": "Sud",
-      "velux_count": 2,
-      "heating_system": "Radiateurs \u00e9lectriques",
-      "water_heating_system": "Ballon \u00e9lectrique",
-      "water_heating_capacity": 200,
-      "annual_consumption_kwh": 6500.0,
-      "monthly_edf_payment": 180.0,
-      "annual_edf_payment": 2160.0,
-      "latitude": 48.86801,
-      "longitude": 2.3153905,
-      "recommended_kit_power": null,
-      "estimated_production": null,
-      "estimated_savings": null,
-      "pvgis_data": null,
-      "created_at": "2025-08-04T11:59:00.192366"
+      "kits": [
+        {
+          "id": "kit_3kw",
+          "name": "Kit 3kW - R\u00e9sidentiel",
+          "power": 3,
+          "panels": 8,
+          "price_ht": 10900,
+          "price_ttc": 10900,
+          "aid_amount": 5340,
+          "surface": 16.8,
+          "co2_savings": 1635.0
+        },
+        {
+          "id": "kit_6kw",
+          "name": "Kit 6kW - R\u00e9sidentiel+",
+          "power": 6,
+          "panels": 16,
+          "price_ht": 15900,
+          "price_ttc": 15900,
+          "aid_amount": 6480,
+          "surface": 33.6,
+          "co2_savings": 2385.0
+        },
+        {
+          "id": "kit_9kw",
+          "name": "Kit 9kW - Grande r\u00e9sidence",
+          "power": 9,
+          "panels": 24,
+          "price_ht": 18900,
+          "price_ttc": 18900,
+          "aid_amount": 9720,
+          "surface": 50.4,
+          "co2_savings": 2835.0
+        },
+        {
+          "id": "kit_12kw",
+          "name": "Kit 12kW - R\u00e9sidentiel large",
+          "power": 12,
+          "panels": 32,
+          "price_ht": 22900,
+          "price_ttc": 22900,
+          "aid_amount": 9720,
+          "surface": 67.2,
+          "co2_savings": 3435.0
+        },
+        {
+          "id": "kit_15kw",
+          "name": "Kit 15kW - Commercial petit",
+          "power": 15,
+          "panels": 40,
+          "price_ht": 25900,
+          "price_ttc": 25900,
+          "aid_amount": 12150,
+          "surface": 84.0,
+          "co2_savings": 3885.0
+        },
+        {
+          "id": "kit_18kw",
+          "name": "Kit 18kW - Commercial moyen",
+          "power": 18,
+          "panels": 48,
+          "price_ht": 28900,
+          "price_ttc": 28900,
+          "aid_amount": 14580,
+          "surface": 100.8,
+          "co2_savings": 4335.0
+        },
+        {
+          "id": "kit_21kw",
+          "name": "Kit 21kW - Commercial+",
+          "power": 21,
+          "panels": 56,
+          "price_ht": 30900,
+          "price_ttc": 30900,
+          "aid_amount": 17010,
+          "surface": 117.6,
+          "co2_savings": 4635.0
+        },
+        {
+          "id": "kit_24kw",
+          "name": "Kit 24kW - Commercial large",
+          "power": 24,
+          "panels": 64,
+          "price_ht": 32900,
+          "price_ttc": 32900,
+          "aid_amount": 19440,
+          "surface": 134.4,
+          "co2_savings": 4935.0
+        },
+        {
+          "id": "kit_27kw",
+          "name": "Kit 27kW - Commercial XL",
+          "power": 27,
+          "panels": 72,
+          "price_ht": 34900,
+          "price_ttc": 34900,
+          "aid_amount": 21870,
+          "surface": 151.2,
+          "co2_savings": 5235.0
+        }
+      ]
     }
   },
   {
-    "test": "Battery Functionality Basic",
+    "test": "Martinique Calculation (No Battery)",
     "success": true,
-    "details": "\u2705 BATTERY FUNCTIONALITY WORKING: Without battery: 0\u20ac, Final price: 22900\u20ac. With battery: 5000\u20ac, Final price: 27900\u20ac (+5000\u20ac increase). Backward compatibility maintained.",
-    "timestamp": "2025-08-04 11:59:02",
+    "details": "Baseline calculation successful. Kit: 6kW, Price: 15900\u20ac, Battery: False",
+    "timestamp": "2025-08-05 05:39:07",
     "response_data": {
-      "no_battery": {
-        "battery_selected": false,
-        "battery_cost": 0,
-        "kit_price_final": 22900
-      },
-      "with_battery": {
-        "battery_selected": true,
-        "battery_cost": 5000,
-        "kit_price_final": 27900
-      },
-      "price_increase": 5000
+      "kit_power": 6,
+      "kit_price_final": 15900,
+      "battery_selected": false
     }
   },
   {
-    "test": "Battery + Discounts Combinations",
+    "test": "Martinique Calculation (With Battery)",
     "success": true,
-    "details": "\u2705 BATTERY + DISCOUNTS COMBINATIONS WORKING: All 7 scenarios tested successfully. Battery adds +5000\u20ac, discounts subtract as expected. Battery only: 22900\u20ac \u2192 27900\u20ac (+5000\u20ac); Battery + R1: 22900\u20ac \u2192 26900\u20ac (+4000\u20ac); Battery + R2: 22900\u20ac \u2192 25900\u20ac (+3000\u20ac); Battery + R3: 22900\u20ac \u2192 24900\u20ac (+2000\u20ac); No battery, R1: 22900\u20ac \u2192 21900\u20ac (-1000\u20ac); No battery, R2: 22900\u20ac \u2192 20900\u20ac (-2000\u20ac); No battery, R3: 22900\u20ac \u2192 19900\u20ac (-3000\u20ac)",
-    "timestamp": "2025-08-04 11:59:06",
-    "response_data": [
-      {
-        "scenario": "Battery only",
-        "battery_selected": true,
-        "battery_cost": 5000,
-        "discount_applied": 0,
-        "kit_price_original": 22900,
-        "kit_price_final": 27900,
-        "net_change": 5000
-      },
-      {
-        "scenario": "Battery + R1",
-        "battery_selected": true,
-        "battery_cost": 5000,
-        "discount_applied": 1000,
-        "kit_price_original": 22900,
-        "kit_price_final": 26900,
-        "net_change": 4000
-      },
-      {
-        "scenario": "Battery + R2",
-        "battery_selected": true,
-        "battery_cost": 5000,
-        "discount_applied": 2000,
-        "kit_price_original": 22900,
-        "kit_price_final": 25900,
-        "net_change": 3000
-      },
-      {
-        "scenario": "Battery + R3",
-        "battery_selected": true,
-        "battery_cost": 5000,
-        "discount_applied": 3000,
-        "kit_price_original": 22900,
-        "kit_price_final": 24900,
-        "net_change": 2000
-      },
-      {
-        "scenario": "No battery, R1",
-        "battery_selected": false,
-        "battery_cost": 0,
-        "discount_applied": 1000,
-        "kit_price_original": 22900,
-        "kit_price_final": 21900,
-        "net_change": -1000
-      },
-      {
-        "scenario": "No battery, R2",
-        "battery_selected": false,
-        "battery_cost": 0,
-        "discount_applied": 2000,
-        "kit_price_original": 22900,
-        "kit_price_final": 20900,
-        "net_change": -2000
-      },
-      {
-        "scenario": "No battery, R3",
-        "battery_selected": false,
-        "battery_cost": 0,
-        "discount_applied": 3000,
-        "kit_price_original": 22900,
-        "kit_price_final": 19900,
-        "net_change": -3000
-      }
-    ]
-  },
-  {
-    "test": "Battery Financing Calculations",
-    "success": true,
-    "details": "\u2705 BATTERY FINANCING CALCULATIONS WORKING: Standard 15y financing: +39.44\u20ac/month. Financing with aids: +39.43\u20ac/month (financed amount +5000.0\u20ac). All financing options correctly include 5000\u20ac battery cost.",
-    "timestamp": "2025-08-04 11:59:08",
+    "details": "\u2705 BATTERY FUNCTIONALITY WORKING PERFECTLY: Kit 6kW, Original price: 15900\u20ac, Battery cost: +5000\u20ac, Final price: 20900\u20ac (+5000\u20ac increase). Monthly payment increase: +49.62\u20ac/month for 15-year financing.",
+    "timestamp": "2025-08-05 05:39:08",
     "response_data": {
-      "standard_15y_increase": 39.44,
-      "aids_payment_increase": 39.42999999999998,
-      "financed_amount_increase": 5000.0,
-      "battery_cost": 5000
+      "kit_power": 6,
+      "kit_price_original": 15900,
+      "battery_cost": 5000,
+      "kit_price_final": 20900,
+      "price_increase": 5000,
+      "monthly_payment_increase": 49.620000000000005,
+      "battery_selected": true
     }
   },
   {
-    "test": "Battery + Manual Kit Selection",
+    "test": "Martinique Battery + Discount Combination",
     "success": true,
-    "details": "\u2705 BATTERY + MANUAL KIT SELECTION WORKING: All 4 scenarios tested successfully. Manual kit power respected, battery and discounts applied correctly. 6kW kit, Battery: False, Discount: 0\u20ac, Final: 22900\u20ac; 6kW kit, Battery: True, Discount: 0\u20ac, Final: 27900\u20ac; 9kW kit, Battery: False, Discount: 2000\u20ac, Final: 27900\u20ac; 9kW kit, Battery: True, Discount: 2000\u20ac, Final: 32900\u20ac",
-    "timestamp": "2025-08-04 11:59:10",
-    "response_data": [
-      {
-        "kit_power": 6,
-        "battery_selected": false,
-        "battery_cost": 0,
-        "discount_applied": 0,
-        "kit_price_final": 22900
-      },
-      {
-        "kit_power": 6,
-        "battery_selected": true,
-        "battery_cost": 5000,
-        "discount_applied": 0,
-        "kit_price_final": 27900
-      },
-      {
-        "kit_power": 9,
-        "battery_selected": false,
-        "battery_cost": 0,
-        "discount_applied": 2000,
-        "kit_price_final": 27900
-      },
-      {
-        "kit_power": 9,
-        "battery_selected": true,
-        "battery_cost": 5000,
-        "discount_applied": 2000,
-        "kit_price_final": 32900
-      }
-    ]
+    "details": "\u2705 BATTERY + DISCOUNT WORKING: Original 15900\u20ac - 1000\u20ac discount + 5000\u20ac battery = 19900\u20ac final (net +4000\u20ac)",
+    "timestamp": "2025-08-05 05:39:08",
+    "response_data": {
+      "original_price": 15900,
+      "discount": 1000,
+      "battery_cost": 5000,
+      "final_price": 19900,
+      "net_increase": 4000
+    }
   }
 ]
