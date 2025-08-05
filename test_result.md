@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "L'utilisateur demande en français d'ajuster l'animation CSS des panneaux solaires: 1) Décaler vers la gauche (juste avant le soleil) ces 3 lignes de texte : 'Installation de 16 Panneaux Solaires', 'Installation terminée ! Système opérationnel', et 'Autoconsommation = Économie directement sur votre facture'. 2) Agrandir la batterie à la même taille que le Linky et le téléphone. 3) Décaler légèrement le téléphone et le Linky vers la droite pour un alignement parfait des 3 éléments. MISE À JOUR: 4) Remonter l'encadré '85% chargée' pour qu'il soit visible au-dessus de la batterie. 5) Ajouter une ligne sous 'Autoconsommation' avec le texte sur l'utilisation nocturne de la batterie."
+user_problem_statement: "L'utilisateur demande maintenant une animation progressive de charge/décharge de la batterie dans l'animation CSS : 1) Quand les panneaux commencent à produire des kWh, la batterie commence à se charger progressivement jusqu'à 100% avec le logo vert qui monte au même rythme. 2) Le chiffre passe de 0%, 5%, 10%, 15%, 20% etc. jusqu'à 100%. 3) Une fois à 100%, faire le processus inverse (décharge) puis recharge etc. en boucle. 4) Remonter le logo vert de recharge car il est encore masqué par le Linky. 5) Agrandir encore la batterie pour qu'elle ait la même taille que le Linky."
 
 frontend:
   - task: "Ajustement animation CSS - Décalage texte vers la gauche"
