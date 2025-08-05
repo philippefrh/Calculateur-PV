@@ -787,6 +787,10 @@
   animation: battery-pulse 2s ease-in-out infinite alternate;
 }
 
+.battery-charge.discharging {
+  animation: battery-pulse-red 2s ease-in-out infinite alternate;
+}
+
 @keyframes battery-pulse {
   0% {
     box-shadow: 0 0 10px rgba(46, 204, 113, 0.3); /* Doublé */
