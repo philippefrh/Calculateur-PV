@@ -105,6 +105,13 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
         </div>
       )}
       
+      {/* Nouveau badge pour la batterie de stockage - Affiché seulement si batterie sélectionnée */}
+      {showEconomyBadge && batterySelected && (
+        <div className="battery-usage-badge">
+          Batterie de Stockage = Utilisation pour la Nuit : Climatisation , Lumière , TV , PC , chargeur , Frigo , etc..
+        </div>
+      )}
+      
       <div className="animation-ground"></div>
       
       {/* Soleil Animé en haut à gauche */}
