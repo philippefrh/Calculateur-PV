@@ -168,7 +168,7 @@ test_plan:
 
 agent_communication:
   - agent: "main"
-    message: "J'ai effectué les modifications CSS demandées par l'utilisateur : 1) Décalé les 3 lignes de texte vers la gauche (30% au lieu de 50%), 2) Ajusté la batterie pour qu'elle ait la même taille que le Linky et téléphone (200x400px), 3) Repositionné les 3 éléments (batterie, Linky, téléphone) pour un alignement parfait. MISE À JOUR: 4) Remonté l'encadré '85% chargée' au-dessus de la batterie pour qu'il soit visible, 5) Ajouté un badge bleu avec le texte d'utilisation nocturne de la batterie sous le badge d'autoconsommation. Test frontend nécessaire pour vérifier le résultat visuel."
+    message: "J'ai implémenté l'animation progressive de charge/décharge de la batterie demandée par l'utilisateur : 1) Création d'un système de charge progressive de 0% à 100% par paliers de 5% toutes les 800ms, synchronisé avec la production des panneaux. 2) Mise en place d'un cycle continu charge→décharge→recharge en boucle. 3) Le logo vert affiche maintenant le pourcentage progressif et indique 'charge' ou 'décharge'. 4) La barre de charge de la batterie monte et descend visuellement en temps réel. 5) Remonté le logo vert de -100px à -120px pour qu'il soit bien visible au-dessus du Linky. 6) Agrandi la batterie à 200px x 400px pour qu'elle soit exactement la même taille que le Linky et téléphone. Test frontend nécessaire pour vérifier l'animation progressive."
 
 backend:
   - task: "Système de remises R1/R2/R3 avec boutons mutuellement exclusifs"
