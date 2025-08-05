@@ -105,6 +105,18 @@
 user_problem_statement: "L'utilisateur demande maintenant une animation progressive de charge/décharge de la batterie dans l'animation CSS : 1) Quand les panneaux commencent à produire des kWh, la batterie commence à se charger progressivement jusqu'à 100% avec le logo vert qui monte au même rythme. 2) Le chiffre passe de 0%, 5%, 10%, 15%, 20% etc. jusqu'à 100%. 3) Une fois à 100%, faire le processus inverse (décharge) puis recharge etc. en boucle. 4) Remonter le logo vert de recharge car il est encore masqué par le Linky. 5) Agrandir encore la batterie pour qu'elle ait la même taille que le Linky."
 
 frontend:
+  - task: "Animation progressive de charge/décharge de la batterie"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/SolarAnimationCSS.js, frontend/src/SolarAnimationCSS.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ IMPLEMENTED: 1) Ajouté les états `batteryChargeLevel` (0-100%) et `batteryCharging` (true/false) pour tracker la charge progressive. 2) Créé la fonction `startBatteryChargingCycle()` qui fait passer la batterie de 0% à 100% par paliers de 5% toutes les 800ms, puis décharge de 100% à 0% et recommence en boucle. 3) Synchronisé l'animation avec la production des panneaux. 4) Le logo vert affiche maintenant le pourcentage progressif (0%, 5%, 10%...100%) et le texte 'charge'/'décharge'. 5) La hauteur de la barre de charge dans la batterie est maintenant dynamique avec `style={{ height: '${batteryChargeLevel}%' }}`. 6) Remonté le logo vert de -100px à -120px pour qu'il soit bien visible au-dessus du Linky. 7) Agrandi la batterie à 200px x 400px pour qu'elle soit exactement la même taille que le Linky et téléphone."
+frontend:
   - task: "Ajustement animation CSS - Décalage texte vers la gauche"
     implemented: true
     working: "NA"
