@@ -780,11 +780,11 @@
 
 .battery-label {
   position: absolute;
-  bottom: -50px; /* Doublé de -25px */
+  bottom: -60px; /* Ajusté pour container plus grand */
   left: 50%;
   transform: translateX(-50%);
   color: #2c3e50;
-  font-size: 28px; /* Doublé de 14px */
+  font-size: 24px; /* Taille proportionnelle */
   font-weight: bold;
   text-align: center;
   white-space: nowrap;
