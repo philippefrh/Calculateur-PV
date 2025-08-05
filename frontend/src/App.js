@@ -2192,7 +2192,7 @@ Cordialement`);
                   <div className="financing-details">
                     <div className="financing-row">
                       <span>Investissement après aides:</span>
-                      <span className="amount">{optimalFinancingWithAids?.financed_amount?.toLocaleString()} €</span>
+                      <span className="amount">{(((results.discount_applied > 0 || results.battery_selected) ? results.kit_price_final : results.kit_price) - results.total_aids).toLocaleString()} €</span>
                     </div>
                     <div className="financing-row">
                       <span>Mensualité crédit:</span>
