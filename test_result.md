@@ -102,7 +102,50 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "L'utilisateur a demandé de remplacer le bouton 'R' unique (remise de 1000€) par 3 boutons séparés: 'R1' (remise de 1000€), 'R2' (remise de 2000€), et 'R3' (remise de 3000€). Ces boutons doivent être mutuellement exclusifs (un seul actif à la fois), conserver le design discret existant, et ces réductions ne doivent pas apparaître sur le devis final. PLUS: Intégration PDF avec les informations FRH Martinique Environnement."
+user_problem_statement: "L'utilisateur demande en français d'ajuster l'animation CSS des panneaux solaires: 1) Décaler vers la gauche (juste avant le soleil) ces 3 lignes de texte : 'Installation de 16 Panneaux Solaires', 'Installation terminée ! Système opérationnel', et 'Autoconsommation = Économie directement sur votre facture'. 2) Agrandir la batterie à la même taille que le Linky et le téléphone. 3) Décaler légèrement le téléphone et le Linky vers la droite pour un alignement parfait des 3 éléments (batterie, Linky, téléphone) avec la même taille."
+
+frontend:
+  - task: "Ajustement animation CSS - Décalage texte vers la gauche"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/SolarAnimationCSS.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Modifié les positions CSS pour décaler vers la gauche (30% au lieu de 50%) les 3 éléments : .animation-title, .animation-status, et .economy-badge. Cela libère de l'espace à droite pour la batterie agrandie."
+
+  - task: "Ajustement animation CSS - Agrandissement batterie et repositionnement"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/SolarAnimationCSS.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Ajusté la taille de la batterie pour qu'elle soit identique au Linky et téléphone (200px x 400px). Repositionné la batterie (right: 540px), Linky (right: 280px), et téléphone (right: 40px) pour un alignement parfait des 3 éléments avec espacement régulier."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Ajustement animation CSS - Décalage texte vers la gauche"
+    - "Ajustement animation CSS - Agrandissement batterie et repositionnement"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "J'ai effectué les modifications CSS demandées par l'utilisateur : 1) Décalé les 3 lignes de texte vers la gauche (30% au lieu de 50%), 2) Ajusté la batterie pour qu'elle ait la même taille que le Linky et téléphone (200x400px), 3) Repositionné les 3 éléments (batterie, Linky, téléphone) pour un alignement parfait. Test frontend nécessaire pour vérifier le résultat visuel."
 
 backend:
   - task: "Système de remises R1/R2/R3 avec boutons mutuellement exclusifs"
