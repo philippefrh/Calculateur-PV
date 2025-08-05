@@ -64,8 +64,12 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
     }, 500);
 
     // Démarrer l'animation progressive de la batterie si elle est sélectionnée
+    // SYNCHRONISÉ avec le démarrage de la production des panneaux
     if (batterySelected) {
-      startBatteryChargingCycle();
+      setTimeout(() => {
+        console.log("🔋 Démarrage de l'animation de charge de la batterie...");
+        startBatteryChargingCycle();
+      }, 1000); // Démarrer 1 seconde après le début de la production
     }
 
     // Démarrer l'animation des billets après 8 secondes
