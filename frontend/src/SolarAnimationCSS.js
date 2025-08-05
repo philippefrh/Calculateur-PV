@@ -94,40 +94,45 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
 
   // Nouvelle fonction pour l'animation progressive de charge/décharge de la batterie
   const startBatteryChargingCycle = () => {
-    let currentChargeLevel = 0;
-    let isCharging = true;
+    console.log("🔋 Démarrage du cycle de charge/décharge de la batterie");
     
     const batteryTimer = setInterval(() => {
-      if (isCharging) {
-        // Phase de charge : 0% → 100% par paliers de 5%
-        currentChargeLevel += 5;
-        if (currentChargeLevel >= 100) {
-          currentChargeLevel = 100;
-          isCharging = false; // Passer en décharge après 2 secondes à 100%
-          setTimeout(() => {
-            // Continuer le cycle après une pause à 100%
-          }, 2000);
+      setBatteryChargeLevel(prevLevel => {
+        setBatteryCharging(prevCharging => {
+          if (prevCharging) {
+            // Phase de charge : 0% → 100% par paliers de 5%
+            if (prevLevel >= 100) {
+              console.log("🔋 Batterie chargée à 100%, passage en décharge");
+              return false; // Passer en décharge
+            }
+            return true; // Continuer la charge
+          } else {
+            // Phase de décharge : 100% → 0% par paliers de 5%
+            if (prevLevel <= 0) {
+              console.log("🔋 Batterie déchargée à 0%, passage en charge");
+              return true; // Repasser en charge
+            }
+            return false; // Continuer la décharge
+          }
+        });
+        
+        // Calculer le nouveau niveau
+        if (batteryCharging) {
+          const newLevel = Math.min(100, prevLevel + 5);
+          console.log(`🔋 Charge: ${prevLevel}% → ${newLevel}%`);
+          return newLevel;
+        } else {
+          const newLevel = Math.max(0, prevLevel - 5);
+          console.log(`🔋 Décharge: ${prevLevel}% → ${newLevel}%`);
+          return newLevel;
         }
-      } else {
-        // Phase de décharge : 100% → 0% par paliers de 5%
-        currentChargeLevel -= 5;
-        if (currentChargeLevel <= 0) {
-          currentChargeLevel = 0;
-          isCharging = true; // Repasser en charge après 2 secondes à 0%
-          setTimeout(() => {
-            // Continuer le cycle après une pause à 0%
-          }, 2000);
-        }
-      }
-      
-      // Mettre à jour les états pour l'affichage
-      setBatteryChargeLevel(currentChargeLevel);
-      setBatteryCharging(isCharging);
-    }, 1000); // Changement toutes les 1 seconde pour un rythme visible
+      });
+    }, 1000); // Changement toutes les 1 seconde
 
     // Nettoyage du timer après l'animation complète
     setTimeout(() => {
       clearInterval(batteryTimer);
+      console.log("🔋 Cycle de batterie terminé");
     }, 25000);
   };
 
