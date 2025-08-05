@@ -90,25 +90,36 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
 
   // Nouvelle fonction pour l'animation progressive de charge/décharge de la batterie
   const startBatteryChargingCycle = () => {
+    let currentChargeLevel = 0;
+    let isCharging = true;
+    
     const batteryTimer = setInterval(() => {
-      setBatteryChargeLevel(prevLevel => {
-        if (batteryCharging) {
-          // Phase de charge : 0% → 100% par paliers de 5%
-          if (prevLevel >= 100) {
-            setBatteryCharging(false); // Passer en décharge
-            return 100;
-          }
-          return prevLevel + 5;
-        } else {
-          // Phase de décharge : 100% → 0% par paliers de 5%
-          if (prevLevel <= 0) {
-            setBatteryCharging(true); // Repasser en charge
-            return 0;
-          }
-          return prevLevel - 5;
+      if (isCharging) {
+        // Phase de charge : 0% → 100% par paliers de 5%
+        currentChargeLevel += 5;
+        if (currentChargeLevel >= 100) {
+          currentChargeLevel = 100;
+          isCharging = false; // Passer en décharge après 2 secondes à 100%
+          setTimeout(() => {
+            // Continuer le cycle après une pause à 100%
+          }, 2000);
         }
-      });
-    }, 800); // Changement toutes les 800ms pour un cycle complet en ~32 secondes
+      } else {
+        // Phase de décharge : 100% → 0% par paliers de 5%
+        currentChargeLevel -= 5;
+        if (currentChargeLevel <= 0) {
+          currentChargeLevel = 0;
+          isCharging = true; // Repasser en charge après 2 secondes à 0%
+          setTimeout(() => {
+            // Continuer le cycle après une pause à 0%
+          }, 2000);
+        }
+      }
+      
+      // Mettre à jour les états pour l'affichage
+      setBatteryChargeLevel(currentChargeLevel);
+      setBatteryCharging(isCharging);
+    }, 1000); // Changement toutes les 1 seconde pour un rythme visible
 
     // Nettoyage du timer après l'animation complète
     setTimeout(() => {
