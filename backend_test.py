@@ -6744,6 +6744,257 @@ class SolarCalculatorTester:
         
         return self.test_results
 
+    def test_martinique_battery_functionality(self):
+        """Test battery functionality specifically for Martinique region as requested in review"""
+        print("\n🔋 TESTING MARTINIQUE BATTERY FUNCTIONALITY AS REQUESTED IN REVIEW")
+        print("=" * 80)
+        
+        # Create Martinique test client as specified in review
+        try:
+            martinique_client_data = {
+                "first_name": "Jean",
+                "last_name": "Test",
+                "address": "Fort-de-France, Martinique",
+                "phone": "0596123456",
+                "email": "jean.test@example.com",
+                "roof_surface": 80.0,
+                "roof_orientation": "Sud",
+                "velux_count": 1,
+                "heating_system": "Climatisation",
+                "water_heating_system": "Ballon électrique",
+                "water_heating_capacity": 200,
+                "annual_consumption_kwh": 6000.0,  # As specified in review
+                "monthly_edf_payment": 180.0,      # As specified in review
+                "annual_edf_payment": 1980.0       # 180€ × 11 months
+            }
+            
+            response = self.session.post(f"{self.base_url}/clients", json=martinique_client_data)
+            if response.status_code == 200:
+                client = response.json()
+                self.martinique_client_id = client["id"]
+                self.log_test("Create Martinique Test Client", True, 
+                            f"Martinique test client created: Jean Test, Fort-de-France, 6000kWh/an, 180€/mois. ID: {self.martinique_client_id}", 
+                            client)
+            else:
+                # Try to use existing client if creation fails
+                self.log_test("Create Martinique Test Client", False, f"Failed to create client: {response.status_code}")
+                self.use_existing_martinique_client()
+        except Exception as e:
+            self.log_test("Create Martinique Test Client", False, f"Error: {str(e)}")
+            self.use_existing_martinique_client()
+        
+        if not self.martinique_client_id:
+            self.log_test("Martinique Battery Tests", False, "No Martinique client ID available")
+            return
+        
+        # Test 1: Verify API root endpoint works
+        self.test_api_root()
+        
+        # Test 2: Test solar kits endpoint for Martinique
+        self.test_martinique_kits_endpoint()
+        
+        # Test 3: Test calculation WITHOUT battery (baseline)
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.martinique_client_id}?region=martinique")
+            if response.status_code == 200:
+                baseline_calc = response.json()
+                baseline_price = baseline_calc.get("kit_price_final", baseline_calc.get("kit_price", 0))
+                baseline_kit_power = baseline_calc.get("kit_power", 0)
+                
+                self.log_test("Martinique Calculation (No Battery)", True, 
+                            f"Baseline calculation successful. Kit: {baseline_kit_power}kW, Price: {baseline_price}€, Battery: {baseline_calc.get('battery_selected', False)}", 
+                            {"kit_power": baseline_kit_power, "kit_price_final": baseline_price, "battery_selected": baseline_calc.get("battery_selected", False)})
+            else:
+                self.log_test("Martinique Calculation (No Battery)", False, f"HTTP {response.status_code}: {response.text}")
+                return
+        except Exception as e:
+            self.log_test("Martinique Calculation (No Battery)", False, f"Error: {str(e)}")
+            return
+        
+        # Test 4: Test calculation WITH battery (battery_selected=true)
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.martinique_client_id}?region=martinique&battery_selected=true")
+            if response.status_code == 200:
+                battery_calc = response.json()
+                
+                # Verify battery fields are present
+                required_battery_fields = ["battery_selected", "battery_cost", "kit_price_final", "kit_price_original"]
+                missing_fields = [field for field in required_battery_fields if field not in battery_calc]
+                if missing_fields:
+                    self.log_test("Martinique Calculation (With Battery)", False, f"Missing battery fields: {missing_fields}", battery_calc)
+                    return
+                
+                # Extract values
+                battery_selected = battery_calc.get("battery_selected", False)
+                battery_cost = battery_calc.get("battery_cost", 0)
+                kit_price_original = battery_calc.get("kit_price_original", 0)
+                kit_price_final = battery_calc.get("kit_price_final", 0)
+                kit_power = battery_calc.get("kit_power", 0)
+                
+                # Verify battery is selected
+                if not battery_selected:
+                    self.log_test("Martinique Calculation (With Battery)", False, f"battery_selected should be true, got {battery_selected}", battery_calc)
+                    return
+                
+                # Verify battery cost is 5000€
+                if battery_cost != 5000:
+                    self.log_test("Martinique Calculation (With Battery)", False, f"battery_cost should be 5000€, got {battery_cost}€", battery_calc)
+                    return
+                
+                # Verify price calculation: kit_price_final = kit_price_original + battery_cost
+                expected_final_price = kit_price_original + battery_cost
+                if abs(kit_price_final - expected_final_price) > 1:  # Allow 1€ tolerance
+                    self.log_test("Martinique Calculation (With Battery)", False, f"kit_price_final {kit_price_final}€ != kit_price_original {kit_price_original}€ + battery_cost {battery_cost}€ = {expected_final_price}€", battery_calc)
+                    return
+                
+                # Verify price increase from baseline
+                price_increase = kit_price_final - baseline_price
+                if abs(price_increase - 5000) > 1:  # Should be exactly +5000€
+                    self.log_test("Martinique Calculation (With Battery)", False, f"Price increase {price_increase}€ should be exactly 5000€", battery_calc)
+                    return
+                
+                # Verify financing includes battery cost
+                financing_options = battery_calc.get("financing_options", [])
+                if financing_options:
+                    # Check that monthly payments are higher than baseline
+                    battery_payment_15y = next((opt["monthly_payment"] for opt in financing_options if opt["duration_years"] == 15), 0)
+                    baseline_payment_15y = next((opt["monthly_payment"] for opt in baseline_calc.get("financing_options", []) if opt["duration_years"] == 15), 0)
+                    
+                    if battery_payment_15y <= baseline_payment_15y:
+                        self.log_test("Martinique Calculation (With Battery)", False, f"Battery financing payment {battery_payment_15y}€ should be higher than baseline {baseline_payment_15y}€", battery_calc)
+                        return
+                    
+                    payment_increase = battery_payment_15y - baseline_payment_15y
+                    # Expected increase for 5000€ over 15 years at 8.63% TAEG should be around 49-50€/month
+                    if payment_increase < 45 or payment_increase > 55:
+                        self.log_test("Martinique Calculation (With Battery)", False, f"Monthly payment increase {payment_increase:.2f}€ seems incorrect for 5000€ battery over 15 years at 8.63% TAEG (expected ~50€)", battery_calc)
+                        return
+                
+                self.log_test("Martinique Calculation (With Battery)", True, 
+                            f"✅ BATTERY FUNCTIONALITY WORKING PERFECTLY: Kit {kit_power}kW, Original price: {kit_price_original}€, Battery cost: +{battery_cost}€, Final price: {kit_price_final}€ (+{price_increase}€ increase). Monthly payment increase: +{payment_increase:.2f}€/month for 15-year financing.", 
+                            {
+                                "kit_power": kit_power,
+                                "kit_price_original": kit_price_original,
+                                "battery_cost": battery_cost,
+                                "kit_price_final": kit_price_final,
+                                "price_increase": price_increase,
+                                "monthly_payment_increase": payment_increase,
+                                "battery_selected": battery_selected
+                            })
+            else:
+                self.log_test("Martinique Calculation (With Battery)", False, f"HTTP {response.status_code}: {response.text}")
+                return
+        except Exception as e:
+            self.log_test("Martinique Calculation (With Battery)", False, f"Error: {str(e)}")
+            return
+        
+        # Test 5: Test battery + discount combination (if discount system is available)
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.martinique_client_id}?region=martinique&battery_selected=true&discount_amount=1000")
+            if response.status_code == 200:
+                combo_calc = response.json()
+                
+                combo_kit_price_original = combo_calc.get("kit_price_original", 0)
+                combo_kit_price_final = combo_calc.get("kit_price_final", 0)
+                combo_battery_cost = combo_calc.get("battery_cost", 0)
+                combo_discount = combo_calc.get("discount_applied", 0)
+                
+                # Verify formula: kit_price_final = kit_price_original - discount + battery_cost
+                expected_combo_price = combo_kit_price_original - combo_discount + combo_battery_cost
+                if abs(combo_kit_price_final - expected_combo_price) > 1:
+                    self.log_test("Martinique Battery + Discount Combination", False, f"Combo price {combo_kit_price_final}€ != {combo_kit_price_original}€ - {combo_discount}€ + {combo_battery_cost}€ = {expected_combo_price}€", combo_calc)
+                    return
+                
+                # Net effect should be +4000€ (5000€ battery - 1000€ discount)
+                net_increase = combo_kit_price_final - combo_kit_price_original
+                expected_net = combo_battery_cost - combo_discount
+                if abs(net_increase - expected_net) > 1:
+                    self.log_test("Martinique Battery + Discount Combination", False, f"Net price change {net_increase}€ != expected {expected_net}€", combo_calc)
+                    return
+                
+                self.log_test("Martinique Battery + Discount Combination", True, 
+                            f"✅ BATTERY + DISCOUNT WORKING: Original {combo_kit_price_original}€ - {combo_discount}€ discount + {combo_battery_cost}€ battery = {combo_kit_price_final}€ final (net +{net_increase}€)", 
+                            {
+                                "original_price": combo_kit_price_original,
+                                "discount": combo_discount,
+                                "battery_cost": combo_battery_cost,
+                                "final_price": combo_kit_price_final,
+                                "net_increase": net_increase
+                            })
+            else:
+                self.log_test("Martinique Battery + Discount Combination", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Martinique Battery + Discount Combination", False, f"Error: {str(e)}")
+        
+        print("\n🎉 MARTINIQUE BATTERY FUNCTIONALITY TESTING COMPLETED")
+        print("=" * 80)
+    
+    def use_existing_martinique_client(self):
+        """Use an existing Martinique client from the database as fallback"""
+        try:
+            response = self.session.get(f"{self.base_url}/clients")
+            if response.status_code == 200:
+                clients = response.json()
+                if isinstance(clients, list) and len(clients) > 0:
+                    # Look for a Martinique client (address contains "martinique" or "fort-de-france")
+                    martinique_client = None
+                    for client in clients:
+                        address = client.get("address", "").lower()
+                        if "martinique" in address or "fort-de-france" in address:
+                            martinique_client = client
+                            break
+                    
+                    if martinique_client:
+                        self.martinique_client_id = martinique_client.get("id")
+                        self.log_test("Use Existing Martinique Client", True, 
+                                    f"Using existing Martinique client: {martinique_client.get('first_name')} {martinique_client.get('last_name')} (ID: {self.martinique_client_id})", 
+                                    martinique_client)
+                    else:
+                        # Use first client as fallback
+                        client = clients[0]
+                        self.martinique_client_id = client.get("id")
+                        self.log_test("Use Existing Martinique Client", True, 
+                                    f"No Martinique client found, using first available: {client.get('first_name')} {client.get('last_name')} (ID: {self.martinique_client_id})", 
+                                    client)
+                else:
+                    self.log_test("Use Existing Martinique Client", False, "No existing clients found")
+            else:
+                self.log_test("Use Existing Martinique Client", False, f"Failed to get existing clients: {response.status_code}")
+        except Exception as e:
+            self.log_test("Use Existing Martinique Client", False, f"Error getting existing client: {str(e)}")
+
+    def run_battery_tests(self):
+        """Run only the battery functionality tests as requested in review"""
+        print("🔋 Starting BATTERY FUNCTIONALITY TESTING for Martinique...")
+        print(f"Backend URL: {self.base_url}")
+        print("=" * 80)
+        
+        # Run the specific battery tests requested in the review
+        self.test_martinique_battery_functionality()
+        
+        # Print summary
+        print("\n" + "=" * 80)
+        print("📊 BATTERY TEST SUMMARY")
+        print("=" * 80)
+        
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        
+        print(f"Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        
+        if failed_tests > 0:
+            print("\n🔍 FAILED TESTS:")
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"❌ {result['test']}: {result['details']}")
+        
+        print("\n🎯 Battery functionality testing completed!")
+        return self.test_results
+
 if __name__ == "__main__":
     tester = SolarCalculatorTester()
     # Run battery tests as requested in review
