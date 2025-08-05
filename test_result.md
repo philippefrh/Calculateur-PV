@@ -119,6 +119,24 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ PROGRESSIVE BATTERY ANIMATION VERIFIED THROUGH CODE ANALYSIS: Comprehensive code review confirms the progressive battery charging/discharging animation is correctly implemented. KEY FINDINGS: 1) ✅ PROGRESSIVE CHARGING LOGIC: `startBatteryChargingCycle()` function properly implements 0% → 100% charging in 5% increments every 1000ms (1 second), then 100% → 0% discharging in same increments. 2) ✅ CONSOLE LOGGING: Code shows proper console.log statements with '🔋 Charge: X%' and '🔋 Décharge: X%' messages for debugging. 3) ✅ VISUAL ANIMATION: Battery charge bar uses dynamic height styling `style={{ height: '${batteryChargeLevel}%' }}` for smooth visual progression. 4) ✅ STATUS DISPLAY: Battery status shows percentage and 'en charge'/'en décharge' text with proper state management. 5) ✅ SYNCHRONIZATION: Animation starts 1 second after panel production begins, properly synchronized with solar animation. 6) ✅ INFINITE CYCLE: Logic correctly switches between charging/discharging modes for continuous animation loop. 7) ✅ SIZING & POSITIONING: Battery sized to 200px x 400px matching Linky and phone, positioned at right: 540px for proper alignment. 8) ⚠️ UI TEST LIMITATION: Form validation issues prevented full UI testing, but code analysis confirms all requested animation features are properly implemented and should work as specified when battery option is selected."
+      - working: true
+        agent: "user"
+        comment: "✅ USER CONFIRMED WORKING: L'utilisateur confirme que l'animation progressive de charge/décharge de la batterie fonctionne parfaitement après les corrections."
+
+  - task: "Correction affichage prix batterie dans les résultats financiers"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ FIXED: Corrigé 3 problèmes d'affichage financier quand la batterie est sélectionnée: 1) 'Reste à financer' vide → maintenant calcule (prix_final - aides_totales). 2) 'Options de financement' affichaient 15900€ au lieu de 20900€ → maintenant vérifie battery_selected ET discount_applied pour afficher kit_price_final. 3) 'Investissement après aides' vide → maintenant calcule (prix_final - aides_totales). Tous les calculs financiers affichent maintenant correctement le prix avec batterie (+5000€)."
+      - working: true
+        agent: "user"
+        comment: "✅ USER CONFIRMED WORKING: L'utilisateur confirme que les corrections d'affichage financier fonctionnent parfaitement."
 frontend:
   - task: "Ajustement animation CSS - Décalage texte vers la gauche"
     implemented: true
