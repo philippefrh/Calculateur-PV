@@ -156,7 +156,7 @@ test_plan:
 
 agent_communication:
   - agent: "main"
-    message: "J'ai effectué les modifications CSS demandées par l'utilisateur : 1) Décalé les 3 lignes de texte vers la gauche (30% au lieu de 50%), 2) Ajusté la batterie pour qu'elle ait la même taille que le Linky et téléphone (200x400px), 3) Repositionné les 3 éléments (batterie, Linky, téléphone) pour un alignement parfait. Test frontend nécessaire pour vérifier le résultat visuel."
+    message: "J'ai effectué les modifications CSS demandées par l'utilisateur : 1) Décalé les 3 lignes de texte vers la gauche (30% au lieu de 50%), 2) Ajusté la batterie pour qu'elle ait la même taille que le Linky et téléphone (200x400px), 3) Repositionné les 3 éléments (batterie, Linky, téléphone) pour un alignement parfait. MISE À JOUR: 4) Remonté l'encadré '85% chargée' au-dessus de la batterie pour qu'il soit visible, 5) Ajouté un badge bleu avec le texte d'utilisation nocturne de la batterie sous le badge d'autoconsommation. Test frontend nécessaire pour vérifier le résultat visuel."
 
 backend:
   - task: "Système de remises R1/R2/R3 avec boutons mutuellement exclusifs"
