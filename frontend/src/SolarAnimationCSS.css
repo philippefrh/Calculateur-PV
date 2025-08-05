@@ -719,15 +719,15 @@
 
 .battery-body {
   position: relative;
-  width: 160px;   /* Doublé de 80px */
-  height: 240px;  /* Doublé de 120px */
+  width: 180px;   /* Proportionnel au container de 200px */
+  height: 320px;  /* Proportionnel au container de 400px */
   background: linear-gradient(to bottom, #2c3e50, #34495e);
-  border: 6px solid #1a252f;  /* Doublé de 3px */
-  border-radius: 30px;  /* Doublé de 15px */
-  margin: 0 auto;
+  border: 6px solid #1a252f;
+  border-radius: 30px;
+  margin: 20px auto 0;  /* Centré avec marge top pour le label */
   box-shadow: 
-    0 16px 32px rgba(0,0,0,0.3),  /* Doublé */
-    inset 0 4px 8px rgba(255,255,255,0.1);  /* Doublé */
+    0 16px 32px rgba(0,0,0,0.3),
+    inset 0 4px 8px rgba(255,255,255,0.1);
 }
 
 .battery-terminal {
