@@ -159,9 +159,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Ajustement animation CSS - Décalage texte vers la gauche"
-    - "Ajustement animation CSS - Agrandissement batterie et repositionnement"
-    - "Ajustement animation CSS - Repositionnement encadré batterie et ajout texte nocturne"
+    - "Animation progressive de charge/décharge de la batterie"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
