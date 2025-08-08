@@ -1,0 +1,1196 @@
+[
+  {
+    "test": "1. API Root Endpoint",
+    "success": true,
+    "details": "API accessible: Solar Calculator API with PVGIS Integration",
+    "timestamp": "2025-08-08 21:16:34",
+    "response_data": {
+      "message": "Solar Calculator API with PVGIS Integration"
+    }
+  },
+  {
+    "test": "2. Solar Kits Endpoint",
+    "success": true,
+    "details": "Kits disponibles: 7 kits. 6kW: 22900\u20ac, 12 panneaux",
+    "timestamp": "2025-08-08 21:16:34",
+    "response_data": {
+      "3": {
+        "price": 14900,
+        "panels": 6
+      },
+      "4": {
+        "price": 20900,
+        "panels": 8
+      },
+      "5": {
+        "price": 21900,
+        "panels": 10
+      },
+      "6": {
+        "price": 22900,
+        "panels": 12
+      },
+      "7": {
+        "price": 24900,
+        "panels": 14
+      },
+      "8": {
+        "price": 26900,
+        "panels": 16
+      },
+      "9": {
+        "price": 29900,
+        "panels": 18
+      }
+    }
+  },
+  {
+    "test": "3. R\u00e9gions Endpoint",
+    "success": true,
+    "details": "R\u00e9gions disponibles: ['france', 'martinique']",
+    "timestamp": "2025-08-08 21:16:34",
+    "response_data": {
+      "regions": [
+        "france",
+        "martinique"
+      ],
+      "regions_data": {
+        "france": {
+          "name": "France",
+          "logo_subtitle": null,
+          "company_info": {
+            "name": "FRH ENVIRONNEMENT",
+            "address": "Adresse France (actuelle)",
+            "phone": "09 85 60 50 51",
+            "email": "direction@francerenovhabitat.com",
+            "tva": "FR52890493737",
+            "subtitle": "FRH ENVIRONNEMENT - \u00c9nergie Solaire Professionnel"
+          }
+        },
+        "martinique": {
+          "name": "Martinique",
+          "logo_subtitle": "R\u00e9gion Martinique",
+          "company_info": {
+            "name": "FRH MARTINIQUE",
+            "address": "11 rue des Arts et M\u00e9tiers\n97200 Fort-de-France",
+            "phone": "09 85 60 50 51",
+            "email": "direction@francerenovhabitat.com",
+            "tva": "FR52890493737",
+            "subtitle": "FRH ENVIRONNEMENT - \u00c9nergie Solaire Professionnel"
+          }
+        }
+      }
+    }
+  },
+  {
+    "test": "4. Martinique Kits Endpoint",
+    "success": true,
+    "details": "Martinique kits: 9 kits. 6kW: 15900\u20ac, aide 6480\u20ac",
+    "timestamp": "2025-08-08 21:16:34",
+    "response_data": {
+      "kits": [
+        {
+          "id": "kit_3kw",
+          "name": "Kit 3kW - R\u00e9sidentiel",
+          "power": 3,
+          "panels": 8,
+          "price_ht": 10900,
+          "price_ttc": 10900,
+          "aid_amount": 5340,
+          "surface": 16.8,
+          "co2_savings": 1635.0
+        },
+        {
+          "id": "kit_6kw",
+          "name": "Kit 6kW - R\u00e9sidentiel+",
+          "power": 6,
+          "panels": 16,
+          "price_ht": 15900,
+          "price_ttc": 15900,
+          "aid_amount": 6480,
+          "surface": 33.6,
+          "co2_savings": 2385.0
+        },
+        {
+          "id": "kit_9kw",
+          "name": "Kit 9kW - Grande r\u00e9sidence",
+          "power": 9,
+          "panels": 24,
+          "price_ht": 18900,
+          "price_ttc": 18900,
+          "aid_amount": 9720,
+          "surface": 50.4,
+          "co2_savings": 2835.0
+        },
+        {
+          "id": "kit_12kw",
+          "name": "Kit 12kW - R\u00e9sidentiel large",
+          "power": 12,
+          "panels": 32,
+          "price_ht": 22900,
+          "price_ttc": 22900,
+          "aid_amount": 9720,
+          "surface": 67.2,
+          "co2_savings": 3435.0
+        },
+        {
+          "id": "kit_15kw",
+          "name": "Kit 15kW - Commercial petit",
+          "power": 15,
+          "panels": 40,
+          "price_ht": 25900,
+          "price_ttc": 25900,
+          "aid_amount": 12150,
+          "surface": 84.0,
+          "co2_savings": 3885.0
+        },
+        {
+          "id": "kit_18kw",
+          "name": "Kit 18kW - Commercial moyen",
+          "power": 18,
+          "panels": 48,
+          "price_ht": 28900,
+          "price_ttc": 28900,
+          "aid_amount": 14580,
+          "surface": 100.8,
+          "co2_savings": 4335.0
+        },
+        {
+          "id": "kit_21kw",
+          "name": "Kit 21kW - Commercial+",
+          "power": 21,
+          "panels": 56,
+          "price_ht": 30900,
+          "price_ttc": 30900,
+          "aid_amount": 17010,
+          "surface": 117.6,
+          "co2_savings": 4635.0
+        },
+        {
+          "id": "kit_24kw",
+          "name": "Kit 24kW - Commercial large",
+          "power": 24,
+          "panels": 64,
+          "price_ht": 32900,
+          "price_ttc": 32900,
+          "aid_amount": 19440,
+          "surface": 134.4,
+          "co2_savings": 4935.0
+        },
+        {
+          "id": "kit_27kw",
+          "name": "Kit 27kW - Commercial XL",
+          "power": 27,
+          "panels": 72,
+          "price_ht": 34900,
+          "price_ttc": 34900,
+          "aid_amount": 21870,
+          "surface": 151.2,
+          "co2_savings": 5235.0
+        }
+      ]
+    }
+  },
+  {
+    "test": "Create Martinique Client",
+    "success": true,
+    "details": "Client cr\u00e9\u00e9: Jean Martinique, ID: cb4d730a-5a58-40ad-9665-11ae98ecd6b5",
+    "timestamp": "2025-08-08 21:16:34",
+    "response_data": {
+      "id": "cb4d730a-5a58-40ad-9665-11ae98ecd6b5",
+      "first_name": "Jean",
+      "last_name": "Martinique",
+      "address": "Fort-de-France, Martinique",
+      "phone": "0596123456",
+      "email": "jean.martinique@example.com",
+      "roof_surface": 80.0,
+      "roof_orientation": "Sud",
+      "velux_count": 1,
+      "heating_system": "Climatisation",
+      "water_heating_system": "Chauffe-eau solaire",
+      "water_heating_capacity": 300,
+      "annual_consumption_kwh": 7200.0,
+      "monthly_edf_payment": 220.0,
+      "annual_edf_payment": 2640.0,
+      "latitude": 14.6027962,
+      "longitude": -61.0676724,
+      "recommended_kit_power": null,
+      "estimated_production": null,
+      "estimated_savings": null,
+      "pvgis_data": null,
+      "created_at": "2025-08-08T21:16:34.707020"
+    }
+  },
+  {
+    "test": "5. Calcul sans batterie",
+    "success": true,
+    "details": "Calcul r\u00e9ussi: 6kW, 15900\u20ac, aides 6480\u20ac, \u00e9conomies 180.51\u20ac/mois",
+    "timestamp": "2025-08-08 21:16:35",
+    "response_data": {
+      "client_id": "cb4d730a-5a58-40ad-9665-11ae98ecd6b5",
+      "kit_power": 6,
+      "panel_count": 16,
+      "estimated_production": 8902.49,
+      "estimated_savings": 2166.13775679122,
+      "autonomy_percentage": 100.0,
+      "monthly_savings": 180.51147973260166,
+      "financing_options": [
+        {
+          "duration_years": 3,
+          "duration_months": 36,
+          "monthly_payment": 502.88,
+          "savings_ratio": 2.79,
+          "difference_vs_savings": 322.37,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 4,
+          "duration_months": 48,
+          "monthly_payment": 392.88,
+          "savings_ratio": 2.18,
+          "difference_vs_savings": 212.37,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 5,
+          "duration_months": 60,
+          "monthly_payment": 327.21,
+          "savings_ratio": 1.81,
+          "difference_vs_savings": 146.7,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 6,
+          "duration_months": 72,
+          "monthly_payment": 283.69,
+          "savings_ratio": 1.57,
+          "difference_vs_savings": 103.18,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 7,
+          "duration_months": 84,
+          "monthly_payment": 252.84,
+          "savings_ratio": 1.4,
+          "difference_vs_savings": 72.33,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 8,
+          "duration_months": 96,
+          "monthly_payment": 229.9,
+          "savings_ratio": 1.27,
+          "difference_vs_savings": 49.39,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 9,
+          "duration_months": 108,
+          "monthly_payment": 212.23,
+          "savings_ratio": 1.18,
+          "difference_vs_savings": 31.72,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 10,
+          "duration_months": 120,
+          "monthly_payment": 198.24,
+          "savings_ratio": 1.1,
+          "difference_vs_savings": 17.73,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 11,
+          "duration_months": 132,
+          "monthly_payment": 186.94,
+          "savings_ratio": 1.04,
+          "difference_vs_savings": 6.43,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 12,
+          "duration_months": 144,
+          "monthly_payment": 177.65,
+          "savings_ratio": 0.98,
+          "difference_vs_savings": -2.86,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 13,
+          "duration_months": 156,
+          "monthly_payment": 169.9,
+          "savings_ratio": 0.94,
+          "difference_vs_savings": -10.61,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 14,
+          "duration_months": 168,
+          "monthly_payment": 163.36,
+          "savings_ratio": 0.9,
+          "difference_vs_savings": -17.15,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 15,
+          "duration_months": 180,
+          "monthly_payment": 157.79,
+          "savings_ratio": 0.87,
+          "difference_vs_savings": -22.72,
+          "taeg": 0.0863
+        }
+      ],
+      "pvgis_annual_production": 8902.49,
+      "pvgis_monthly_data": [
+        {
+          "month": 1,
+          "E_d": 26.03,
+          "E_m": 806.95,
+          "H(i)_d": 5.61,
+          "H(i)_m": 173.92,
+          "SD_m": 64.47
+        },
+        {
+          "month": 2,
+          "E_d": 27.87,
+          "E_m": 780.44,
+          "H(i)_d": 6.02,
+          "H(i)_m": 168.48,
+          "SD_m": 36.53
+        },
+        {
+          "month": 3,
+          "E_d": 26.81,
+          "E_m": 831.01,
+          "H(i)_d": 5.82,
+          "H(i)_m": 180.39,
+          "SD_m": 31.81
+        },
+        {
+          "month": 4,
+          "E_d": 24.76,
+          "E_m": 742.83,
+          "H(i)_d": 5.4,
+          "H(i)_m": 162.12,
+          "SD_m": 43.01
+        },
+        {
+          "month": 5,
+          "E_d": 22.05,
+          "E_m": 683.62,
+          "H(i)_d": 4.85,
+          "H(i)_m": 150.41,
+          "SD_m": 36.41
+        },
+        {
+          "month": 6,
+          "E_d": 20.49,
+          "E_m": 614.79,
+          "H(i)_d": 4.51,
+          "H(i)_m": 135.35,
+          "SD_m": 28.76
+        },
+        {
+          "month": 7,
+          "E_d": 21.24,
+          "E_m": 658.57,
+          "H(i)_d": 4.67,
+          "H(i)_m": 144.78,
+          "SD_m": 25.0
+        },
+        {
+          "month": 8,
+          "E_d": 22.79,
+          "E_m": 706.48,
+          "H(i)_d": 5.02,
+          "H(i)_m": 155.61,
+          "SD_m": 27.15
+        },
+        {
+          "month": 9,
+          "E_d": 24.45,
+          "E_m": 733.59,
+          "H(i)_d": 5.42,
+          "H(i)_m": 162.55,
+          "SD_m": 40.31
+        },
+        {
+          "month": 10,
+          "E_d": 24.79,
+          "E_m": 768.49,
+          "H(i)_d": 5.46,
+          "H(i)_m": 169.37,
+          "SD_m": 46.09
+        },
+        {
+          "month": 11,
+          "E_d": 25.41,
+          "E_m": 762.16,
+          "H(i)_d": 5.55,
+          "H(i)_m": 166.59,
+          "SD_m": 60.16
+        },
+        {
+          "month": 12,
+          "E_d": 26.24,
+          "E_m": 813.57,
+          "H(i)_d": 5.65,
+          "H(i)_m": 175.16,
+          "SD_m": 48.39
+        }
+      ],
+      "kit_price": 15900,
+      "autoconsumption_kwh": 7567.116499999999,
+      "surplus_kwh": 1335.3735000000001,
+      "autoconsumption_aid": 6480,
+      "tva_refund": 0,
+      "total_aids": 6480,
+      "financing_with_aids": {
+        "monthly_payment": 117.45,
+        "financed_amount": 9420,
+        "duration_years": 10,
+        "duration_months": 120,
+        "difference_vs_savings": -63.06
+      },
+      "all_financing_with_aids": [
+        {
+          "duration_years": 3,
+          "duration_months": 36,
+          "monthly_payment": 297.93,
+          "total_cost": 10725.62,
+          "total_interests": 1305.62,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": 117.42
+        },
+        {
+          "duration_years": 4,
+          "duration_months": 48,
+          "monthly_payment": 232.77,
+          "total_cost": 11172.75,
+          "total_interests": 1752.75,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": 52.25
+        },
+        {
+          "duration_years": 5,
+          "duration_months": 60,
+          "monthly_payment": 193.86,
+          "total_cost": 11631.39,
+          "total_interests": 2211.39,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": 13.34
+        },
+        {
+          "duration_years": 6,
+          "duration_months": 72,
+          "monthly_payment": 168.08,
+          "total_cost": 12101.46,
+          "total_interests": 2681.46,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -12.44
+        },
+        {
+          "duration_years": 7,
+          "duration_months": 84,
+          "monthly_payment": 149.8,
+          "total_cost": 12582.88,
+          "total_interests": 3162.88,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -30.72
+        },
+        {
+          "duration_years": 8,
+          "duration_months": 96,
+          "monthly_payment": 136.2,
+          "total_cost": 13075.54,
+          "total_interests": 3655.54,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -44.31
+        },
+        {
+          "duration_years": 9,
+          "duration_months": 108,
+          "monthly_payment": 125.73,
+          "total_cost": 13579.31,
+          "total_interests": 4159.31,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -54.78
+        },
+        {
+          "duration_years": 10,
+          "duration_months": 120,
+          "monthly_payment": 117.45,
+          "total_cost": 14094.06,
+          "total_interests": 4674.06,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -63.06
+        },
+        {
+          "duration_years": 11,
+          "duration_months": 132,
+          "monthly_payment": 110.75,
+          "total_cost": 14619.63,
+          "total_interests": 5199.63,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -69.76
+        },
+        {
+          "duration_years": 12,
+          "duration_months": 144,
+          "monthly_payment": 105.25,
+          "total_cost": 15155.86,
+          "total_interests": 5735.86,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -75.26
+        },
+        {
+          "duration_years": 13,
+          "duration_months": 156,
+          "monthly_payment": 100.66,
+          "total_cost": 15702.58,
+          "total_interests": 6282.58,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -79.85
+        },
+        {
+          "duration_years": 14,
+          "duration_months": 168,
+          "monthly_payment": 96.78,
+          "total_cost": 16259.59,
+          "total_interests": 6839.59,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -83.73
+        },
+        {
+          "duration_years": 15,
+          "duration_months": 180,
+          "monthly_payment": 93.48,
+          "total_cost": 16826.7,
+          "total_interests": 7406.7,
+          "amount_financed": 9420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -87.03
+        }
+      ],
+      "pvgis_source": "Donn\u00e9es source PVGIS Commission Europ\u00e9enne",
+      "orientation": "Sud",
+      "coordinates": {
+        "lat": 14.6027962,
+        "lon": -61.0676724
+      },
+      "region": "martinique",
+      "region_config": {
+        "name": "Martinique",
+        "logo_subtitle": "R\u00e9gion Martinique",
+        "company_info": {
+          "name": "FRH MARTINIQUE",
+          "address": "11 rue des Arts et M\u00e9tiers\n97200 Fort-de-France",
+          "phone": "09 85 60 50 51",
+          "email": "direction@francerenovhabitat.com",
+          "tva": "FR52890493737",
+          "subtitle": "FRH ENVIRONNEMENT - \u00c9nergie Solaire Professionnel"
+        },
+        "interest_rates": {
+          "standard": 0.0863,
+          "with_aids": 0.0863
+        },
+        "kits": {
+          "kit_3kw": {
+            "power": 3,
+            "panels": 8,
+            "price_ttc": 10900,
+            "aid_amount": 5340,
+            "surface": 16.8,
+            "description": "Kit 3kW - R\u00e9sidentiel"
+          },
+          "kit_6kw": {
+            "power": 6,
+            "panels": 16,
+            "price_ttc": 15900,
+            "aid_amount": 6480,
+            "surface": 33.6,
+            "description": "Kit 6kW - R\u00e9sidentiel+"
+          },
+          "kit_9kw": {
+            "power": 9,
+            "panels": 24,
+            "price_ttc": 18900,
+            "aid_amount": 9720,
+            "surface": 50.4,
+            "description": "Kit 9kW - Grande r\u00e9sidence"
+          },
+          "kit_12kw": {
+            "power": 12,
+            "panels": 32,
+            "price_ttc": 22900,
+            "aid_amount": 9720,
+            "surface": 67.2,
+            "description": "Kit 12kW - R\u00e9sidentiel large"
+          },
+          "kit_15kw": {
+            "power": 15,
+            "panels": 40,
+            "price_ttc": 25900,
+            "aid_amount": 12150,
+            "surface": 84.0,
+            "description": "Kit 15kW - Commercial petit"
+          },
+          "kit_18kw": {
+            "power": 18,
+            "panels": 48,
+            "price_ttc": 28900,
+            "aid_amount": 14580,
+            "surface": 100.8,
+            "description": "Kit 18kW - Commercial moyen"
+          },
+          "kit_21kw": {
+            "power": 21,
+            "panels": 56,
+            "price_ttc": 30900,
+            "aid_amount": 17010,
+            "surface": 117.6,
+            "description": "Kit 21kW - Commercial+"
+          },
+          "kit_24kw": {
+            "power": 24,
+            "panels": 64,
+            "price_ttc": 32900,
+            "aid_amount": 19440,
+            "surface": 134.4,
+            "description": "Kit 24kW - Commercial large"
+          },
+          "kit_27kw": {
+            "power": 27,
+            "panels": 72,
+            "price_ttc": 34900,
+            "aid_amount": 21870,
+            "surface": 151.2,
+            "description": "Kit 27kW - Commercial XL"
+          }
+        },
+        "financing": {
+          "min_duration": 3,
+          "max_duration": 15,
+          "aids_recovery_months": 3
+        }
+      },
+      "calculation_mode": "realistic",
+      "calculation_config": {
+        "name": "Etude 1",
+        "description": "Calculs bas\u00e9s sur les standards du march\u00e9",
+        "autoconsumption_rate": 0.85,
+        "optimization_coefficient": 1.0,
+        "maintenance_savings": 100,
+        "annual_rate_increase": 0.03,
+        "surplus_sale_rate": 0.076,
+        "autonomy_cap": 100
+      },
+      "real_savings_percentage": 82.05067260572802,
+      "autoconsumption_rate": 0.85,
+      "annual_edf_bill": 2640.0,
+      "discount_applied": 0,
+      "kit_price_original": 15900,
+      "kit_price_final": 15900,
+      "battery_selected": false,
+      "battery_cost": 0
+    }
+  },
+  {
+    "test": "6. Calcul avec batterie",
+    "success": true,
+    "details": "\u2705 DONN\u00c9ES TABLEAU D'AMORTISSEMENT COMPL\u00c8TES: Kit 6kW + batterie. Prix: 15900\u20ac + 5000\u20ac = 20900\u20ac. Aides: 6480\u20ac. Investissement net: 14420\u20ac. Mensuel: 180.51\u20ac \u00e9conomies - 143.10\u20ac financement = 37.41\u20ac flux. Retour: 6.7 ans. Production: 8902 kWh/an (7567 auto + 1335 surplus)",
+    "timestamp": "2025-08-08 21:16:36",
+    "response_data": {
+      "client_id": "cb4d730a-5a58-40ad-9665-11ae98ecd6b5",
+      "kit_power": 6,
+      "panel_count": 16,
+      "estimated_production": 8902.49,
+      "estimated_savings": 2166.13775679122,
+      "autonomy_percentage": 100.0,
+      "monthly_savings": 180.51147973260166,
+      "financing_options": [
+        {
+          "duration_years": 3,
+          "duration_months": 36,
+          "monthly_payment": 661.02,
+          "savings_ratio": 3.66,
+          "difference_vs_savings": 480.51,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 4,
+          "duration_months": 48,
+          "monthly_payment": 516.43,
+          "savings_ratio": 2.86,
+          "difference_vs_savings": 335.92,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 5,
+          "duration_months": 60,
+          "monthly_payment": 430.11,
+          "savings_ratio": 2.38,
+          "difference_vs_savings": 249.59,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 6,
+          "duration_months": 72,
+          "monthly_payment": 372.91,
+          "savings_ratio": 2.07,
+          "difference_vs_savings": 192.4,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 7,
+          "duration_months": 84,
+          "monthly_payment": 332.35,
+          "savings_ratio": 1.84,
+          "difference_vs_savings": 151.84,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 8,
+          "duration_months": 96,
+          "monthly_payment": 302.19,
+          "savings_ratio": 1.67,
+          "difference_vs_savings": 121.68,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 9,
+          "duration_months": 108,
+          "monthly_payment": 278.96,
+          "savings_ratio": 1.55,
+          "difference_vs_savings": 98.45,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 10,
+          "duration_months": 120,
+          "monthly_payment": 260.59,
+          "savings_ratio": 1.44,
+          "difference_vs_savings": 80.07,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 11,
+          "duration_months": 132,
+          "monthly_payment": 245.73,
+          "savings_ratio": 1.36,
+          "difference_vs_savings": 65.22,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 12,
+          "duration_months": 144,
+          "monthly_payment": 233.51,
+          "savings_ratio": 1.29,
+          "difference_vs_savings": 53.0,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 13,
+          "duration_months": 156,
+          "monthly_payment": 223.33,
+          "savings_ratio": 1.24,
+          "difference_vs_savings": 42.82,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 14,
+          "duration_months": 168,
+          "monthly_payment": 214.73,
+          "savings_ratio": 1.19,
+          "difference_vs_savings": 34.22,
+          "taeg": 0.0863
+        },
+        {
+          "duration_years": 15,
+          "duration_months": 180,
+          "monthly_payment": 207.41,
+          "savings_ratio": 1.15,
+          "difference_vs_savings": 26.89,
+          "taeg": 0.0863
+        }
+      ],
+      "pvgis_annual_production": 8902.49,
+      "pvgis_monthly_data": [
+        {
+          "month": 1,
+          "E_d": 26.03,
+          "E_m": 806.95,
+          "H(i)_d": 5.61,
+          "H(i)_m": 173.92,
+          "SD_m": 64.47
+        },
+        {
+          "month": 2,
+          "E_d": 27.87,
+          "E_m": 780.44,
+          "H(i)_d": 6.02,
+          "H(i)_m": 168.48,
+          "SD_m": 36.53
+        },
+        {
+          "month": 3,
+          "E_d": 26.81,
+          "E_m": 831.01,
+          "H(i)_d": 5.82,
+          "H(i)_m": 180.39,
+          "SD_m": 31.81
+        },
+        {
+          "month": 4,
+          "E_d": 24.76,
+          "E_m": 742.83,
+          "H(i)_d": 5.4,
+          "H(i)_m": 162.12,
+          "SD_m": 43.01
+        },
+        {
+          "month": 5,
+          "E_d": 22.05,
+          "E_m": 683.62,
+          "H(i)_d": 4.85,
+          "H(i)_m": 150.41,
+          "SD_m": 36.41
+        },
+        {
+          "month": 6,
+          "E_d": 20.49,
+          "E_m": 614.79,
+          "H(i)_d": 4.51,
+          "H(i)_m": 135.35,
+          "SD_m": 28.76
+        },
+        {
+          "month": 7,
+          "E_d": 21.24,
+          "E_m": 658.57,
+          "H(i)_d": 4.67,
+          "H(i)_m": 144.78,
+          "SD_m": 25.0
+        },
+        {
+          "month": 8,
+          "E_d": 22.79,
+          "E_m": 706.48,
+          "H(i)_d": 5.02,
+          "H(i)_m": 155.61,
+          "SD_m": 27.15
+        },
+        {
+          "month": 9,
+          "E_d": 24.45,
+          "E_m": 733.59,
+          "H(i)_d": 5.42,
+          "H(i)_m": 162.55,
+          "SD_m": 40.31
+        },
+        {
+          "month": 10,
+          "E_d": 24.79,
+          "E_m": 768.49,
+          "H(i)_d": 5.46,
+          "H(i)_m": 169.37,
+          "SD_m": 46.09
+        },
+        {
+          "month": 11,
+          "E_d": 25.41,
+          "E_m": 762.16,
+          "H(i)_d": 5.55,
+          "H(i)_m": 166.59,
+          "SD_m": 60.16
+        },
+        {
+          "month": 12,
+          "E_d": 26.24,
+          "E_m": 813.57,
+          "H(i)_d": 5.65,
+          "H(i)_m": 175.16,
+          "SD_m": 48.39
+        }
+      ],
+      "kit_price": 15900,
+      "autoconsumption_kwh": 7567.116499999999,
+      "surplus_kwh": 1335.3735000000001,
+      "autoconsumption_aid": 6480,
+      "tva_refund": 0,
+      "total_aids": 6480,
+      "financing_with_aids": {
+        "monthly_payment": 143.1,
+        "financed_amount": 14420,
+        "duration_years": 15,
+        "duration_months": 180,
+        "difference_vs_savings": -37.41
+      },
+      "all_financing_with_aids": [
+        {
+          "duration_years": 3,
+          "duration_months": 36,
+          "monthly_payment": 456.07,
+          "total_cost": 16418.63,
+          "total_interests": 1998.63,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": 275.56
+        },
+        {
+          "duration_years": 4,
+          "duration_months": 48,
+          "monthly_payment": 356.31,
+          "total_cost": 17103.08,
+          "total_interests": 2683.08,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": 175.8
+        },
+        {
+          "duration_years": 5,
+          "duration_months": 60,
+          "monthly_payment": 296.75,
+          "total_cost": 17805.16,
+          "total_interests": 3385.16,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": 116.24
+        },
+        {
+          "duration_years": 6,
+          "duration_months": 72,
+          "monthly_payment": 257.29,
+          "total_cost": 18524.75,
+          "total_interests": 4104.75,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": 76.78
+        },
+        {
+          "duration_years": 7,
+          "duration_months": 84,
+          "monthly_payment": 229.31,
+          "total_cost": 19261.7,
+          "total_interests": 4841.7,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": 48.79
+        },
+        {
+          "duration_years": 8,
+          "duration_months": 96,
+          "monthly_payment": 208.5,
+          "total_cost": 20015.85,
+          "total_interests": 5595.85,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": 27.99
+        },
+        {
+          "duration_years": 9,
+          "duration_months": 108,
+          "monthly_payment": 192.47,
+          "total_cost": 20787.01,
+          "total_interests": 6367.01,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": 11.96
+        },
+        {
+          "duration_years": 10,
+          "duration_months": 120,
+          "monthly_payment": 179.79,
+          "total_cost": 21574.98,
+          "total_interests": 7154.98,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -0.72
+        },
+        {
+          "duration_years": 11,
+          "duration_months": 132,
+          "monthly_payment": 169.54,
+          "total_cost": 22379.52,
+          "total_interests": 7959.52,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -10.97
+        },
+        {
+          "duration_years": 12,
+          "duration_months": 144,
+          "monthly_payment": 161.11,
+          "total_cost": 23200.38,
+          "total_interests": 8780.38,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -19.4
+        },
+        {
+          "duration_years": 13,
+          "duration_months": 156,
+          "monthly_payment": 154.09,
+          "total_cost": 24037.28,
+          "total_interests": 9617.28,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -26.43
+        },
+        {
+          "duration_years": 14,
+          "duration_months": 168,
+          "monthly_payment": 148.15,
+          "total_cost": 24889.95,
+          "total_interests": 10469.95,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -32.36
+        },
+        {
+          "duration_years": 15,
+          "duration_months": 180,
+          "monthly_payment": 143.1,
+          "total_cost": 25758.08,
+          "total_interests": 11338.08,
+          "amount_financed": 14420,
+          "taeg": 0.0863,
+          "difference_vs_savings": -37.41
+        }
+      ],
+      "pvgis_source": "Donn\u00e9es source PVGIS Commission Europ\u00e9enne",
+      "orientation": "Sud",
+      "coordinates": {
+        "lat": 14.6027962,
+        "lon": -61.0676724
+      },
+      "region": "martinique",
+      "region_config": {
+        "name": "Martinique",
+        "logo_subtitle": "R\u00e9gion Martinique",
+        "company_info": {
+          "name": "FRH MARTINIQUE",
+          "address": "11 rue des Arts et M\u00e9tiers\n97200 Fort-de-France",
+          "phone": "09 85 60 50 51",
+          "email": "direction@francerenovhabitat.com",
+          "tva": "FR52890493737",
+          "subtitle": "FRH ENVIRONNEMENT - \u00c9nergie Solaire Professionnel"
+        },
+        "interest_rates": {
+          "standard": 0.0863,
+          "with_aids": 0.0863
+        },
+        "kits": {
+          "kit_3kw": {
+            "power": 3,
+            "panels": 8,
+            "price_ttc": 10900,
+            "aid_amount": 5340,
+            "surface": 16.8,
+            "description": "Kit 3kW - R\u00e9sidentiel"
+          },
+          "kit_6kw": {
+            "power": 6,
+            "panels": 16,
+            "price_ttc": 15900,
+            "aid_amount": 6480,
+            "surface": 33.6,
+            "description": "Kit 6kW - R\u00e9sidentiel+"
+          },
+          "kit_9kw": {
+            "power": 9,
+            "panels": 24,
+            "price_ttc": 18900,
+            "aid_amount": 9720,
+            "surface": 50.4,
+            "description": "Kit 9kW - Grande r\u00e9sidence"
+          },
+          "kit_12kw": {
+            "power": 12,
+            "panels": 32,
+            "price_ttc": 22900,
+            "aid_amount": 9720,
+            "surface": 67.2,
+            "description": "Kit 12kW - R\u00e9sidentiel large"
+          },
+          "kit_15kw": {
+            "power": 15,
+            "panels": 40,
+            "price_ttc": 25900,
+            "aid_amount": 12150,
+            "surface": 84.0,
+            "description": "Kit 15kW - Commercial petit"
+          },
+          "kit_18kw": {
+            "power": 18,
+            "panels": 48,
+            "price_ttc": 28900,
+            "aid_amount": 14580,
+            "surface": 100.8,
+            "description": "Kit 18kW - Commercial moyen"
+          },
+          "kit_21kw": {
+            "power": 21,
+            "panels": 56,
+            "price_ttc": 30900,
+            "aid_amount": 17010,
+            "surface": 117.6,
+            "description": "Kit 21kW - Commercial+"
+          },
+          "kit_24kw": {
+            "power": 24,
+            "panels": 64,
+            "price_ttc": 32900,
+            "aid_amount": 19440,
+            "surface": 134.4,
+            "description": "Kit 24kW - Commercial large"
+          },
+          "kit_27kw": {
+            "power": 27,
+            "panels": 72,
+            "price_ttc": 34900,
+            "aid_amount": 21870,
+            "surface": 151.2,
+            "description": "Kit 27kW - Commercial XL"
+          }
+        },
+        "financing": {
+          "min_duration": 3,
+          "max_duration": 15,
+          "aids_recovery_months": 3
+        }
+      },
+      "calculation_mode": "realistic",
+      "calculation_config": {
+        "name": "Etude 1",
+        "description": "Calculs bas\u00e9s sur les standards du march\u00e9",
+        "autoconsumption_rate": 0.85,
+        "optimization_coefficient": 1.0,
+        "maintenance_savings": 100,
+        "annual_rate_increase": 0.03,
+        "surplus_sale_rate": 0.076,
+        "autonomy_cap": 100
+      },
+      "real_savings_percentage": 82.05067260572802,
+      "autoconsumption_rate": 0.85,
+      "annual_edf_bill": 2640.0,
+      "discount_applied": 0,
+      "kit_price_original": 15900,
+      "kit_price_final": 20900,
+      "battery_selected": true,
+      "battery_cost": 5000
+    }
+  }
+]
