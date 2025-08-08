@@ -366,6 +366,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ QUICK VERIFICATION COMPLETED: API root endpoint (GET /api) still working correctly after recent modifications. Response: 'Solar Calculator API with PVGIS Integration'. Backend server operational and accessible."
+      - working: true
+        agent: "testing"
+        comment: "✅ AMORTIZATION TABLE TESTING: API Root endpoint working perfectly. Backend accessible at https://2132cfb7-d464-4ed0-bcc9-9d58b8782476.preview.emergentagent.com/api with correct response message."
 
   - task: "Solar Kits Endpoint"
     implemented: true
@@ -387,6 +390,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ QUICK VERIFICATION COMPLETED: Solar kits endpoint (GET /api/solar-kits) still working correctly after recent modifications. All 7 kits (3-9kW) available with correct pricing. 6kW kit: 22900€, 12 panels. Solar kits data structure intact."
+      - working: true
+        agent: "testing"
+        comment: "✅ AMORTIZATION TABLE TESTING: Solar kits endpoint working perfectly. 7 kits disponibles (3-9kW). 6kW kit: 22900€, 12 panneaux. All required data available for amortization calculations."
 
   - task: "Regions Endpoint"
     implemented: true
@@ -399,6 +405,33 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ QUICK TEST VERIFIED: Regions endpoint (GET /api/regions) working correctly. Available regions: ['france', 'martinique']. France: France, Martinique: Martinique. Regional configuration system operational."
+      - working: true
+        agent: "testing"
+        comment: "✅ AMORTIZATION TABLE TESTING: Regions endpoint working perfectly. Available regions: ['france', 'martinique']. Regional configuration system operational for amortization table calculations."
+
+  - task: "Martinique Kits Endpoint"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ AMORTIZATION TABLE TESTING: Martinique kits endpoint working perfectly. 9 kits available with correct pricing. 6kW kit: 15900€, aide 6480€. All data required for Martinique amortization calculations available."
+
+  - task: "Complete Solar Calculation with Battery for Amortization Table"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ AMORTIZATION TABLE DATA COMPLETE: Comprehensive testing completed for Martinique 6kW + Battery scenario. ALL REQUIRED FIELDS VERIFIED: 1) total_aids: 6480€ (subventions totales), 2) monthly_savings: 180.51€ (économies mensuelles), 3) kit_price vs kit_price_final: 15900€ vs 20900€ (avec batterie +5000€), 4) financing_with_aids: 143.10€/mois optimized payment, 5) kit_power: 6kW for surplus resale calculation, 6) Production breakdown: 8902 kWh/an (7567 auto + 1335 surplus). Net investment: 14420€, Monthly cash flow: +37.41€, Payback: 6.7 years. All data necessary for amortization table implementation is working correctly."
 
   - task: "PVGIS Direct Test Endpoint"
     implemented: true
