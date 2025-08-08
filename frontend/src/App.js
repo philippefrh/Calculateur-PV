@@ -2268,6 +2268,162 @@ Cordialement`);
                 </div>
               </div>
             )}
+
+            {/* Tableau d'amortissement avec design identique à l'ancien logiciel */}
+            <div className="amortization-table-section">
+              <h4>📊 Tableau d'amortissement - Récupération de votre investissement</h4>
+              
+              <div className="amortization-container">
+                {/* En-tête organismes */}
+                <div className="organisms-header">
+                  Envois de votre dossier aux différents organismes: Mairie - EDF - Enedis - Service technique - Subventions - Organisme de financement
+                </div>
+
+                {/* Section principale du tableau */}
+                <div className="amortization-main">
+                  {/* Section Installation */}
+                  <div className="installation-section">
+                    <div className="installation-box">
+                      Installation
+                    </div>
+                    
+                    <div className="months-box">
+                      3 mois = 0€
+                    </div>
+                    
+                    <div className="initial-payment-box">
+                      <div className="payment-label">Mensualité initiale</div>
+                      <div className="payment-value">
+                        {Math.round(optimalFinancing?.monthly_payment || 0)} €
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Flèches directionnelles */}
+                  <div className="arrows-section">
+                    <div className="arrow arrow-up">↑</div>
+                    <div className="arrow arrow-down">↓</div>
+                    <div className="arrow arrow-left">←</div>
+                    <div className="arrow arrow-right">→</div>
+                    <div className="arrow arrow-down-2">↓</div>
+                  </div>
+
+                  {/* Section principale avec les calculs */}
+                  <div className="calculations-section">
+                    {/* Ligne principale avec les 5 cases */}
+                    <div className="main-calculation-row">
+                      <div className="calc-box">
+                        <div className="calc-label">Récupération de vos subventions</div>
+                        <div className="calc-value green-box">
+                          {Math.round(results.total_aids || 0)} €
+                        </div>
+                      </div>
+                      
+                      <div className="calc-operator">+</div>
+                      
+                      <div className="calc-box">
+                        <div className="calc-label">Les économies réalisées sur 3 mois</div>
+                        <div className="calc-value green-box">
+                          {Math.round((results.monthly_savings || 0) * 3)} €
+                        </div>
+                      </div>
+                      
+                      <div className="calc-operator">=</div>
+                      
+                      <div className="calc-box">
+                        <div className="calc-label">Reste à financer</div>
+                        <div className="calc-value green-box">
+                          {Math.round((((results.discount_applied > 0 || results.battery_selected) ? results.kit_price_final : results.kit_price) || 0) - (results.total_aids || 0) - ((results.monthly_savings || 0) * 3))} €
+                        </div>
+                      </div>
+                      
+                      <div className="calc-operator">→</div>
+                      
+                      <div className="calc-box">
+                        <div className="calc-label">Nouvelle mensualité</div>
+                        <div className="calc-value green-box">
+                          {Math.round(optimalFinancingWithAids?.monthly_payment || 0)} €
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Ligne du bas avec les 4 cases */}
+                    <div className="bottom-calculation-row">
+                      <div className="calc-box">
+                        <div className="calc-label">Restant sur la facture (abonnement + taxes sur les kWh restant)</div>
+                        <div className="calc-value green-box">
+                          {(() => {
+                            const meterPower = parseInt(formData.meterPower) || 6;
+                            if (meterPower === 6) return '10,16';
+                            if (meterPower === 9) return '13,82';
+                            if (meterPower === 12) return '15,20';
+                            if (meterPower === 15) return '18,90';
+                            if (meterPower === 18) return '24,60';
+                            return (10.16 + (meterPower - 6) * 1.5).toFixed(2);
+                          })()} €/mois
+                        </div>
+                      </div>
+                      
+                      <div className="calc-box">
+                        <div className="calc-label">Économie par mois</div>
+                        <div className="calc-value green-box">
+                          {Math.round(results.monthly_savings || 0)} €
+                        </div>
+                      </div>
+                      
+                      <div className="calc-box">
+                        <div className="calc-label">+ Revente du surplus</div>
+                        <div className="calc-value green-box">
+                          {(() => {
+                            const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
+                            if (kitPower === 3) return '20,21';
+                            if (kitPower === 6) return '40,43';
+                            if (kitPower === 9) return '60,64';
+                            if (kitPower === 12) return '81,40';
+                            if (kitPower === 15) return '100,84';
+                            if (kitPower === 18) return '121,26';
+                            if (kitPower === 21) return '141,26';
+                            if (kitPower === 24) return '161,26';
+                            if (kitPower === 27) return '181,26';
+                            return '0';
+                          })()} €/mois
+                        </div>
+                      </div>
+                      
+                      <div className="calc-box">
+                        <div className="calc-label">=</div>
+                        <div className="calc-value green-box">
+                          {(() => {
+                            const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
+                            let surplusRevenue = 0;
+                            if (kitPower === 3) surplusRevenue = 20.21;
+                            else if (kitPower === 6) surplusRevenue = 40.43;
+                            else if (kitPower === 9) surplusRevenue = 60.64;
+                            else if (kitPower === 12) surplusRevenue = 81.40;
+                            else if (kitPower === 15) surplusRevenue = 100.84;
+                            else if (kitPower === 18) surplusRevenue = 121.26;
+                            else if (kitPower === 21) surplusRevenue = 141.26;
+                            else if (kitPower === 24) surplusRevenue = 161.26;
+                            else if (kitPower === 27) surplusRevenue = 181.26;
+                            return Math.round((results.monthly_savings || 0) + surplusRevenue);
+                          })()} €/mois
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section ÉCO-FINANCEMENT */}
+                  <div className="eco-financing-section">
+                    <div className="eco-financing-title">
+                      ÉCO-FINANCEMENT<br/>
+                      =<br/>
+                      TRANSFERT DE<br/>
+                      CHARGES
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           
           {/* Bouton Animation prioritaire */}
