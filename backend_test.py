@@ -6488,6 +6488,175 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Battery Functionality - COMPREHENSIVE", False, f"Error during battery testing: {str(e)}")
 
+    def test_amortization_table_data(self):
+        """Test comprehensive amortization table data for Martinique client with 6kW + battery"""
+        try:
+            # Create a Martinique client for realistic testing
+            martinique_client_data = {
+                "first_name": "Marie",
+                "last_name": "Dubois", 
+                "address": "Fort-de-France, Martinique",
+                "phone": "0596123456",
+                "email": "marie.dubois@example.com",
+                "roof_surface": 80.0,
+                "roof_orientation": "Sud",
+                "velux_count": 1,
+                "heating_system": "Climatisation",
+                "water_heating_system": "Chauffe-eau solaire",
+                "water_heating_capacity": 300,
+                "annual_consumption_kwh": 7200.0,
+                "monthly_edf_payment": 220.0,
+                "annual_edf_payment": 2640.0
+            }
+            
+            # Create Martinique client
+            response = self.session.post(f"{self.base_url}/clients", json=martinique_client_data)
+            if response.status_code != 200:
+                # Try to use existing client if creation fails
+                clients_response = self.session.get(f"{self.base_url}/clients")
+                if clients_response.status_code == 200:
+                    clients = clients_response.json()
+                    if clients:
+                        self.martinique_client_id = clients[0]["id"]
+                    else:
+                        self.log_test("Amortization Table Data", False, "No clients available for testing")
+                        return
+                else:
+                    self.log_test("Amortization Table Data", False, f"Failed to create or get client: {response.status_code}")
+                    return
+            else:
+                client = response.json()
+                self.martinique_client_id = client["id"]
+            
+            # Test calculation with 6kW manual kit + battery in Martinique
+            calc_params = {
+                "region": "martinique",
+                "manual_kit_power": 6,
+                "battery_selected": True,
+                "discount_amount": 0  # No discount for this test
+            }
+            
+            calc_response = self.session.post(
+                f"{self.base_url}/calculate/{self.martinique_client_id}",
+                params=calc_params
+            )
+            
+            if calc_response.status_code != 200:
+                self.log_test("Amortization Table Data", False, f"Calculation failed: {calc_response.status_code}: {calc_response.text}")
+                return
+            
+            calculation = calc_response.json()
+            
+            # Verify all required fields for amortization table
+            required_fields = [
+                "total_aids", "monthly_savings", "kit_price", "kit_price_final", 
+                "kit_power", "financing_with_aids", "battery_selected", "battery_cost",
+                "autoconsumption_kwh", "surplus_kwh", "estimated_production"
+            ]
+            
+            missing_fields = [field for field in required_fields if field not in calculation]
+            if missing_fields:
+                self.log_test("Amortization Table Data", False, f"Missing required fields: {missing_fields}", calculation)
+                return
+            
+            # Extract key data for amortization table
+            total_aids = calculation["total_aids"]
+            monthly_savings = calculation["monthly_savings"]
+            kit_price = calculation["kit_price"]
+            kit_price_final = calculation["kit_price_final"]
+            kit_power = calculation["kit_power"]
+            battery_selected = calculation["battery_selected"]
+            battery_cost = calculation["battery_cost"]
+            financing_with_aids = calculation["financing_with_aids"]
+            
+            # Validation checks
+            issues = []
+            
+            # 1. Verify battery is selected and cost is 5000€
+            if not battery_selected:
+                issues.append("Battery should be selected")
+            if battery_cost != 5000:
+                issues.append(f"Battery cost should be 5000€, got {battery_cost}€")
+            
+            # 2. Verify kit_price_final = kit_price + battery_cost (no discount)
+            expected_final_price = kit_price + battery_cost
+            if abs(kit_price_final - expected_final_price) > 1:
+                issues.append(f"kit_price_final {kit_price_final}€ != kit_price {kit_price}€ + battery_cost {battery_cost}€ = {expected_final_price}€")
+            
+            # 3. Verify 6kW kit in Martinique
+            if kit_power != 6:
+                issues.append(f"Expected 6kW kit, got {kit_power}kW")
+            
+            # Expected values for 6kW Martinique kit
+            expected_kit_price = 15900  # 6kW Martinique price
+            expected_aids = 6480       # 6kW Martinique aids
+            
+            if abs(kit_price - expected_kit_price) > 1:
+                issues.append(f"6kW kit price should be {expected_kit_price}€, got {kit_price}€")
+            if abs(total_aids - expected_aids) > 1:
+                issues.append(f"6kW kit aids should be {expected_aids}€, got {total_aids}€")
+            
+            # 4. Verify financing_with_aids has optimized monthly_payment
+            if "monthly_payment" not in financing_with_aids:
+                issues.append("Missing monthly_payment in financing_with_aids")
+            else:
+                monthly_payment = financing_with_aids["monthly_payment"]
+                financed_amount = financing_with_aids.get("financed_amount", 0)
+                
+                # Should be financed_amount = kit_price_final - total_aids
+                expected_financed = kit_price_final - total_aids
+                if abs(financed_amount - expected_financed) > 1:
+                    issues.append(f"Financed amount {financed_amount}€ != {kit_price_final}€ - {total_aids}€ = {expected_financed}€")
+                
+                # Monthly payment should be > simple division (includes interest)
+                simple_division = financed_amount / 180 if financed_amount > 0 else 0  # 15 years
+                if monthly_payment <= simple_division:
+                    issues.append(f"Monthly payment {monthly_payment}€ should include interest (> {simple_division:.2f}€)")
+            
+            # 5. Verify surplus calculation data for resale
+            autoconsumption_kwh = calculation.get("autoconsumption_kwh", 0)
+            surplus_kwh = calculation.get("surplus_kwh", 0)
+            estimated_production = calculation.get("estimated_production", 0)
+            
+            if abs((autoconsumption_kwh + surplus_kwh) - estimated_production) > 1:
+                issues.append(f"Autoconsumption {autoconsumption_kwh} + surplus {surplus_kwh} != production {estimated_production}")
+            
+            # 6. Verify monthly_savings is realistic
+            if monthly_savings <= 0:
+                issues.append("Monthly savings should be positive")
+            elif monthly_savings < 100 or monthly_savings > 400:
+                issues.append(f"Monthly savings {monthly_savings:.2f}€ seems unrealistic for 6kW + battery")
+            
+            if issues:
+                self.log_test("Amortization Table Data", False, f"Validation issues: {'; '.join(issues)}", calculation)
+            else:
+                # Calculate key metrics for amortization table
+                net_investment = kit_price_final - total_aids
+                monthly_payment = financing_with_aids["monthly_payment"]
+                monthly_cash_flow = monthly_savings - monthly_payment
+                payback_months = net_investment / monthly_savings if monthly_savings > 0 else 0
+                
+                self.log_test("Amortization Table Data", True, 
+                            f"✅ AMORTIZATION TABLE DATA COMPLETE: Martinique 6kW + Battery. Kit: {kit_price}€ + {battery_cost}€ = {kit_price_final}€. Aids: {total_aids}€. Net investment: {net_investment}€. Monthly: {monthly_savings:.2f}€ savings - {monthly_payment:.2f}€ payment = {monthly_cash_flow:.2f}€ cash flow. Payback: {payback_months/12:.1f} years. Production: {estimated_production:.0f} kWh/year ({autoconsumption_kwh:.0f} auto + {surplus_kwh:.0f} surplus)", 
+                            {
+                                "kit_power": kit_power,
+                                "kit_price": kit_price,
+                                "battery_cost": battery_cost,
+                                "kit_price_final": kit_price_final,
+                                "total_aids": total_aids,
+                                "net_investment": net_investment,
+                                "monthly_savings": monthly_savings,
+                                "monthly_payment": monthly_payment,
+                                "monthly_cash_flow": monthly_cash_flow,
+                                "payback_years": payback_months/12,
+                                "estimated_production": estimated_production,
+                                "autoconsumption_kwh": autoconsumption_kwh,
+                                "surplus_kwh": surplus_kwh
+                            })
+                
+        except Exception as e:
+            self.log_test("Amortization Table Data", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on user-requested endpoints"""
         print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
