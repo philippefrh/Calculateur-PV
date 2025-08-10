@@ -824,7 +824,7 @@
 .battery-status {
   position: absolute;
   right: -120px; /* Doublé de -60px */
-  top: -120px;    /* Remonté encore plus pour être bien visible au-dessus du Linky (était -100px) */
+  top: -160px;    /* Remonté encore plus pour éviter le chevauchement avec la batterie (était -120px) */
   background: rgba(46, 204, 113, 0.9);
   color: white;
   padding: 16px 24px; /* Doublé de 8px 12px */
