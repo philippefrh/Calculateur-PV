@@ -3494,6 +3494,9 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
           <div className="autonomy-text-compact">
             POURCENTAGE D'AUTONOMIE DE COULEUR VERT TROUVÉ = Permet l'envois de votre dossier en commission
           </div>
+          <div className="positif-button">
+            POSITIF
+          </div>
         </div>
 
         {/* Écran de succès original - inchangé */}
