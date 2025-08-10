@@ -2014,7 +2014,7 @@ Cordialement`);
             <div className="financial-item">
               <span className="financial-icon">🎁</span>
               <span className="financial-label">Aides totales:</span>
-              <span className="financial-value aides">-{results.total_aids?.toLocaleString()} €</span>
+              <span className="financial-value aides">-{(results.total_aids || 0).toLocaleString()} €</span>
             </div>
             <div className="financial-item">
               <span className="financial-icon">💳</span>
