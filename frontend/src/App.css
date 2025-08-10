@@ -3598,19 +3598,19 @@ body::after {
   box-shadow: 0 4px 8px rgba(255,152,0,0.3);
 }
 
-/* Styles pour le tableau d'amortissement - ULTRA ÉLARGI AU MAXIMUM + TEXTES EN BLEU */
+/* Styles pour le tableau d'amortissement - HORIZONTAL FORCÉ */
 .amortization-table-section {
   margin: 30px 0;
-  padding: 10px; /* Padding minimal pour maximum d'espace */
+  padding: 10px;
   background: white;
   border-radius: 10px;
   border: 1px solid #ddd;
-  width: 100%;
+  width: 100% !important;
   box-sizing: border-box;
 }
 
 .amortization-table-section h4 {
-  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
+  color: #2196f3;
   margin-bottom: 20px;
   text-align: center;
   font-size: 1.2rem;
@@ -3623,198 +3623,212 @@ body::after {
   border-radius: 5px;
   margin-bottom: 25px;
   font-size: 0.9rem;
-  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
+  color: #333;
   border: 1px solid #ddd;
   font-weight: normal;
   line-height: 1.4;
 }
 
-/* Layout ULTRA-ÉLARGI - utilise 99% de l'espace disponible */
+/* Layout ULTRA-ÉLARGI - FORCÉ HORIZONTAL */
 .amortization-ultra-wide {
   background: white;
-  padding: 30px 5px; /* Marges ultra-minimales (≈2mm) */
+  padding: 20px 5px !important;
   border: 2px solid #4caf50;
   border-radius: 10px;
   position: relative;
-  min-height: 580px;
-  width: 99%; /* UTILISE 99% DE LA LARGEUR TOTALE */
+  min-height: 500px;
+  width: 98% !important;
   margin: 0 auto;
   box-sizing: border-box;
+  display: block !important;
 }
 
-/* Première ligne ULTRA-ÉLARGIE */
+/* Première ligne HORIZONTAL FORCÉ */
 .top-row-ultra {
-  display: flex;
-  justify-content: space-between;
-  align-items: center; /* MÊME NIVEAU pour toutes les cases */
-  margin-bottom: 50px;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 40px;
   position: relative;
   gap: 20px;
-  width: 100%;
+  width: 100% !important;
 }
 
 /* Cases avec CONTOUR VERT uniquement */
 .box-outline {
-  background: white;
-  border: 3px solid #4caf50;
-  color: #2196f3; /* TEXTE EN BLEU comme ÉCO-FINANCEMENT */
-  padding: 16px 20px;
+  background: white !important;
+  border: 3px solid #4caf50 !important;
+  color: #2196f3 !important;
+  padding: 16px 20px !important;
   border-radius: 5px;
   text-align: center;
   font-weight: bold;
   font-size: 1rem;
   line-height: 1.3;
+  display: inline-block !important;
 }
 
-/* Case verte remplie (seulement pour 3 mois = 0€) */
+/* Case verte remplie pour 3 mois = 0€ */
 .box-green {
-  background: #4caf50;
-  color: white;
-  padding: 16px 20px;
+  background: #4caf50 !important;
+  color: white !important;
+  padding: 16px 20px !important;
   border-radius: 5px;
   text-align: center;
   font-weight: bold;
   font-size: 1.2rem;
+  display: inline-block !important;
 }
 
 .installation-box {
-  flex: 1;
-  min-width: 200px;
+  flex: 1 !important;
+  min-width: 200px !important;
+  max-width: 300px !important;
 }
 
 .months-zero-box {
-  flex: 1;
-  min-width: 200px;
+  flex: 1 !important;
+  min-width: 200px !important;
+  max-width: 300px !important;
   font-size: 1.4rem;
 }
 
 /* Mensualité initiale AU MÊME NIVEAU avec CONTOUR VERT seulement */
 .initial-payment-same-level {
-  flex: 1;
-  min-width: 220px;
-  background: white !important; /* CONTOUR VERT seulement */
-  border: 3px solid #4caf50;
-  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
+  flex: 1 !important;
+  min-width: 200px !important;
+  max-width: 300px !important;
+  background: white !important;
+  border: 3px solid #4caf50 !important;
+  color: #2196f3 !important;
   font-size: 1rem;
 }
 
-/* Flèches ULTRA-ÉLARGIES */
+/* Flèches */
 .exact-arrows-ultra {
   position: absolute;
-  top: 120px;
+  top: 100px;
   left: 0;
   right: 0;
   height: 60px;
+  z-index: 1;
 }
 
 .arrow-1, .arrow-2, .arrow-3 {
   position: absolute;
-  font-size: 2.2rem;
+  font-size: 2rem;
   color: #999;
 }
 
 .arrow-1 {
-  left: 20%;
+  left: 25%;
   top: 0;
 }
 
 .arrow-2 {
-  left: 20%;
+  left: 25%;
   top: 30px;
 }
 
 .arrow-horizontal-ultra {
   position: absolute;
-  left: 25%;
+  left: 30%;
   top: 15px;
   font-size: 1rem;
   color: #999;
-  width: 50%; /* ULTRA ÉLARGI */
+  width: 40%;
   text-align: center;
 }
 
 .arrow-3 {
-  right: 20%;
+  right: 25%;
   top: 30px;
 }
 
-/* Deuxième ligne ULTRA-ÉLARGIE avec 6 cases */
+/* Deuxième ligne HORIZONTAL FORCÉ */
 .main-row-ultra {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin: 90px 0 50px 0;
-  gap: 8px; /* Gap minimal pour plus d'espace */
-  width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  margin: 80px 0 40px 0;
+  gap: 5px !important;
+  width: 100% !important;
+  flex-wrap: nowrap !important;
 }
 
 .calc-item-ultra {
   text-align: center;
-  flex: 1;
-  min-width: 140px;
+  flex: 1 !important;
+  min-width: 120px !important;
+  max-width: 160px !important;
 }
 
 .label-ultra {
-  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
-  font-size: 0.8rem;
-  margin-bottom: 12px;
-  line-height: 1.2;
-  height: 45px;
+  color: #2196f3 !important;
+  font-size: 0.75rem;
+  margin-bottom: 8px;
+  line-height: 1.1;
+  height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold; /* GRAS pour tous les labels */
+  font-weight: bold;
   text-align: center;
 }
 
 .value-box-ultra {
-  min-height: 60px;
+  min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
-  background: white;
-  border: 3px solid #4caf50;
-  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
+  font-size: 0.9rem;
+  background: white !important;
+  border: 3px solid #4caf50 !important;
+  color: #2196f3 !important;
   font-weight: bold;
-  padding: 10px 8px;
+  padding: 8px 4px;
 }
 
-/* Opérateurs CENTRÉS entre les cases */
+/* Opérateurs CENTRÉS */
 .operator-centered {
-  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
-  font-size: 2rem;
+  color: #2196f3 !important;
+  font-size: 1.5rem;
   font-weight: bold;
-  align-self: center; /* CENTRÉ entre les cases */
-  margin: 0 5px;
-  flex-shrink: 0;
-  display: flex;
+  align-self: center !important;
+  margin: 0 3px;
+  flex-shrink: 0 !important;
+  display: flex !important;
   align-items: center;
-  height: 100px; /* Hauteur pour centrer avec les cases */
+  justify-content: center;
+  height: 80px;
 }
 
-/* Troisième ligne ULTRA-ÉLARGIE */
+/* Troisième ligne HORIZONTAL FORCÉ */
 .bottom-row-ultra {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 50px;
-  gap: 15px;
-  width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  margin-bottom: 40px;
+  gap: 10px !important;
+  width: 100% !important;
+  flex-wrap: nowrap !important;
 }
 
-/* ÉCO-FINANCEMENT repositionné pour l'espace élargi */
+/* ÉCO-FINANCEMENT repositionné */
 .eco-financing-ultra {
   position: absolute;
-  top: 90px;
-  right: 20px;
+  top: 80px;
+  right: 15px;
   background: white;
   border: 3px solid #2196f3;
   border-radius: 8px;
-  padding: 20px 15px;
+  padding: 15px 10px;
   text-align: center;
-  width: 160px;
-  height: 120px;
+  width: 140px;
+  height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -3825,55 +3839,72 @@ body::after {
 .eco-title {
   color: #2196f3;
   font-weight: bold;
-  font-size: 0.9rem;
-  margin-bottom: 8px;
-  line-height: 1.1;
+  font-size: 0.8rem;
+  margin-bottom: 5px;
+  line-height: 1;
 }
 
 .eco-equal {
   color: #2196f3;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
-  margin: 8px 0;
+  margin: 5px 0;
 }
 
 .eco-subtitle {
   color: #2196f3;
   font-weight: bold;
-  font-size: 0.8rem;
-  line-height: 1.2;
+  font-size: 0.7rem;
+  line-height: 1.1;
   text-align: center;
 }
 
-/* Responsive ULTRA-ÉLARGI */
+/* FORCER HORIZONTAL même sur petits écrans */
 @media (max-width: 1400px) {
   .amortization-ultra-wide {
-    width: 98%;
-    padding: 25px 3px;
+    width: 96% !important;
+    padding: 15px 3px !important;
   }
   
   .main-row-ultra {
-    gap: 6px;
+    gap: 3px !important;
+  }
+  
+  .calc-item-ultra {
+    min-width: 110px !important;
+  }
+  
+  .label-ultra {
+    font-size: 0.7rem;
   }
 }
 
 @media (max-width: 1200px) {
   .amortization-ultra-wide {
-    width: 97%;
-    padding: 20px 3px;
-    min-height: auto;
+    width: 95% !important;
+    padding: 15px 2px !important;
   }
   
   .top-row-ultra,
   .main-row-ultra,
   .bottom-row-ultra {
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
   }
   
   .calc-item-ultra {
-    min-width: 80%;
+    min-width: 100px !important;
+  }
+  
+  .label-ultra {
+    font-size: 0.65rem;
+    height: 30px;
+  }
+  
+  .value-box-ultra {
+    font-size: 0.8rem;
+    min-height: 45px;
   }
   
   .exact-arrows-ultra {
@@ -3881,8 +3912,9 @@ body::after {
   }
   
   .eco-financing-ultra {
-    position: static;
-    margin: 20px auto 0;
+    width: 120px;
+    height: 90px;
+    padding: 10px 8px;
   }
 }
 
