@@ -7,7 +7,7 @@ import requests
 import json
 
 # Backend URL
-BACKEND_URL = "https://f99668c5-b6b6-4d31-b6cd-4f4b8f1cbb60.preview.emergentagent.com/api"
+BACKEND_URL = "https://cc1f1852-4d52-483e-ba79-8b70c79f011e.preview.emergentagent.com/api"
 
 def test_exact_20880_scenario():
     """Test to get as close as possible to 20880€ financed amount"""
