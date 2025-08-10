@@ -1,11 +1,9 @@
 <analysis>
-The AI engineer's trajectory shows a focused effort on the FRH ENVIRONNEMENT application. Initially, work concentrated on implementing a progressive battery charge/discharge animation in  and , involving iterative styling and logic adjustments to meet visual requirements. This phase was interrupted by a critical Erreur lors du chargement des kits issue. The focus then shifted to resolving significant front-end financial display bugs in , where fields like Reste à financer, Investissement après aides, and Options de financement were showing incorrect or empty values, especially when the battery feature was active. The engineer successfully corrected these calculations to reflect  and  accurately, which the user confirmed as working. The conversation ended with the user initiating a new request for integrating an amortization table, providing an example image and awaiting further clarification.
+The AI engineer's trajectory chronicles the development of the FRH ENVIRONNEMENT application, initially focusing on a progressive battery charge/discharge animation in  and . This involved refining visual elements and logic. A pivot occurred due to Erreur lors du chargement des kits and subsequent critical financial display bugs in . The engineer successfully resolved these by ensuring accurate calculation and display of Reste à financer, Investissement après aides, and Options de financement based on  and . The user confirmed these fixes. The most recent phase involved integrating an amortization table. After initially misinterpreting the visual design, the engineer corrected the HTML and CSS in  and  to precisely match the user's provided reference image, successfully achieving the desired visual layout. The next logical step is to implement the detailed calculations for this newly structured amortization table.
 </analysis>
 
 <product_requirements>
-The FRH ENVIRONNEMENT application, designed for clients in France and Martinique, facilitates solar calculation and quote generation. Key features include dynamic CSS 3D solar animations, region-specific pricing (Martinique: TTC, TVA, interest), solar kits (12kW-27kW), government aids, and a three-tier discount system. A requirement is the automatic display of the CSS animation post-Carré VERT positif screen after a 7-second delay. Financial logic was refined to align with monthly savings, adding an Économie column.
-
-The most recent core feature implemented before this trajectory was an optional Batterie button that adds 5000€ to the kit price and integrates a battery image into the CSS animation. During this trajectory, the user explicitly requested enhancing the battery feature with a progressive charge/discharge animation (0-100% in 5% increments, then inverse, then loop), synchronized with panel production. Visual requirements included ensuring the green percentage label moves with the charge, is not hidden by the Linky meter, and the battery image is enlarged to match the Linky's size. Subsequent work also involved resolving financial display inconsistencies caused by the battery option.
+The FRH ENVIRONNEMENT application aims to generate solar calculation quotes for clients in France and Martinique. Core features include dynamic CSS 3D solar animations, region-specific pricing (Martinique: TTC, TVA, interest), solar kit selection (12kW-27kW), government aids, and a three-tier discount system. A key display requirement is the automatic CSS animation post-Carré VERT positif after a 7-second delay. Financial logic previously incorporated monthly savings with an Économie column. Recently, an optional Batterie feature was added, incurring a 5000€ cost and integrating a battery image into the animation. The user requested enhancing this with a progressive charge/discharge animation (0-100% in 5% increments, then inverse, then loop) synchronized with panel production, ensuring the green percentage label moves correctly and the battery image is enlarged. Financial display inconsistencies related to the battery option (Reste à financer empty, Options de financement incorrect, Investissement après aides empty) were explicitly fixed. The current major request is to integrate an amortization table into the Analyse financière tab, visually mirroring an old software's design, and performing specific calculations based on existing app data (, , average monthly savings, etc.), including details like Récupération de votre subvention, Économies réalisées sur 3 mois, Reste à financer, Nouvelle mensualité, Mensualité initiale, and Revente de surplus based on kit power. Modifications to text labels (e.g., EDF addition, Organisme de financement replacement) and a specific calculation for Restant sur la facture based on meter power were also specified.
 </product_requirements>
 
 <key_technical_concepts>
@@ -13,27 +11,29 @@ The most recent core feature implemented before this trajectory was an optional 
 -   **Web Animation**: CSS-based 3D animations, React  and  for dynamic UI.
 -   **API Integration**: RESTful API for financial calculations and data retrieval.
 -   **Environment Variables**: Configuration via  files.
--   **Testing & Debugging**: Iterative testing using .
+-   **UI/UX Design**: Pixel-perfect reproduction of existing visual elements.
 </key_technical_concepts>
 
 <code_architecture>
 
--   ****: Stores  and .
--   ****: Contains core backend logic for API routes, solar calculations, and financing. It handles the  parameter by adding 5000€ to . No direct code changes were made in this trajectory, but its backend functionality was implicitly confirmed.
+-   ****: Stores  and . Critical for database connection and external API access.
+-   ****: Contains core backend logic for API routes, solar calculations, and financing, implicitly handling .
 -   ****: Stores  for frontend API calls.
--   ****: The primary React component managing UI, state, user flow, kit selection, and financial result display.
+-   ****: Primary React component managing UI, state, user flow, kit selection, and financial display.
     -   **Importance**: Central to user interaction and data presentation.
-    -   **Changes Made**: Extensive debugging logs were added to  to diagnose kit loading issues. Crucially, fixes for financial display inconsistencies were implemented:  now correctly uses  when  is true, and Reste à financer and Investissement après aides fields are explicitly calculated as  to ensure accurate display.
--   ****: Defines global application styles. No direct changes in this trajectory relevant to the problem at hand.
--   ****: React component responsible for rendering and managing the dynamic 3D solar panel animation and battery elements.
-    -   **Importance**: Manages the visual presentation and interactive behavior of the animation, particularly the battery charge.
-    -   **Changes Made**: Integrated a conditional  for the battery image. Multiple iterations of refactoring were done for the progressive battery charge/discharge animation logic, utilizing  and  to manage  (0-100% in 5% steps) and . A  JSX element was added, conditionally rendered.
--   ****: Manages styles for the CSS animation elements, controlling their visual presentation, positioning, and sizing.
-    -   **Importance**: Critical for the visual accuracy and responsiveness of the animation.
-    -   **Changes Made**: Extensive updates included adjusting  properties for , , and  for left shifting; modifying  and  for  and  to resize the battery image and fine-tuning  and  properties for precise alignment; repositioning the percentage label ( property) for full visibility; and adding new CSS rules for the  for positioning and styling.
+    -   **Changes Made**: Previously, extensive debugging logs and fixes for financial display inconsistencies were implemented. Most recently, structural HTML elements for the new amortization table were added within the financial tab, specifically below the Financement optimisé section, to match the user's provided visual reference.
+-   ****: Defines global application styles.
+    -   **Importance**: Critical for the overall visual accuracy and responsiveness of the application, including the new amortization table.
+    -   **Changes Made**: Previously, no direct changes were relevant to the problem. Most recently, extensive CSS rules were added/modified to style the newly introduced amortization table components, focusing on precise positioning, sizing, colors, and layout (e.g., green rectangular cases, gray arrows, 6 mois = 0€ section, ÉCO-FINANCEMENT section) to achieve a pixel-perfect match with the legacy software's design.
+-   ****: React component for 3D solar animation and battery elements.
+    -   **Importance**: Manages visual presentation and interactive battery charge.
+    -   **Changes Made**: Integrated conditional  for battery image and refactored logic for progressive charge/discharge animation.
+-   ****: Manages styles for CSS animation elements.
+    -   **Importance**: Critical for visual accuracy and responsiveness of the animation.
+    -   **Changes Made**: Adjusted  properties for , , ; modified  and  for  and ; fine-tuned  and  for alignment, and added new rules for .
 -   ****: Used for documenting testing, debugging, and communication.
     -   **Importance**: Centralizes user problem statements, testing protocols, and logs of test results.
-    -   **Changes Made**: Continuously updated to reflect implemented fixes and successful verifications of UI and financial adjustments.
+    -   **Changes Made**: Continuously updated to reflect implemented fixes and successful verifications of UI and financial adjustments, as well as the progress on the amortization table's visual integration.
 </code_architecture>
 
 <pending_tasks>
@@ -42,19 +42,21 @@ The most recent core feature implemented before this trajectory was an optional 
 -   Create a simple frontend test for navigation to results.
 -   Resolve Avant/Après UI display and perfect 3D perspective/fit for solar panel visualization (fal.ai).
 -   Verify 7-second transition from Carré VERT positif to CSS animation.
+-   Implement specific calculations for the amortization table based on user requirements.
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer was focused on resolving critical front-end display issues within the  application, specifically regarding financial calculations when the optional battery storage feature was selected. The primary goal was to fix three identified problems in : Reste à financer appearing empty, Options de financement showing an incorrect price (15900€ instead of 20900€ with battery), and Investissement après aides appearing empty.
+Immediately prior to this summary, the AI engineer was focused on implementing a new amortization table feature within the  application. This task was initiated by the user requesting an amortization table visually identical to their old software, with specific calculation requirements.
 
-To address these, the engineer modified :
--   For Options de financement, the display logic was updated to use  (which includes battery cost) when  was true, ensuring the correct total price.
--   For Reste à financer and Investissement après aides, the calculation was explicitly set to . This direct calculation ensured values were always displayed correctly, bypassing potential issues with .
+The work progressed as follows:
+1.  **Initial Plan Confirmation (Chat Message 6):** The AI engineer confirmed understanding of the user's precise visual and calculation requirements for the amortization table, including its placement in the Analyse financière tab and the use of existing app data.
+2.  **Visual Correction Iteration (Chat Message 34-39):** After an initial attempt, the user reported that the visual reproduction was incorrect and provided reference images. The engineer acknowledged the mistake, identifying that the previous attempt used a modern grid layout instead of the precise rectangular cases, specific positioning, and arrows of the old software.
+3.  **HTML and CSS Refinement:** To address the visual discrepancies, the engineer made changes to both  (Chat Message 38) and  (Chat Message 36) to rebuild the amortization table's structure and styling. The aim was to achieve a pixel-perfect match, including elements like the 6 mois = 0€ section and the ÉCO-FINANCEMENT = TRANSFERT DE CHARGES section.
+4.  **Frontend Visual Confirmation (Chat Message 40-41):** A frontend test was conducted, which successfully confirmed that the new amortization table now accurately reproduces the visual design of the user's old software. The application is functional and the backend was also confirmed to be working correctly.
 
-Before these financial fixes, significant effort was also put into implementing and debugging a progressive battery charge/discharge animation. This involved multiple refactorings of animation logic in  and styling adjustments in  to achieve the desired visual effect (e.g., precise sizing, positioning, percentage display). Although the animation code logic was functional, a larger Erreur lors du chargement des kits issue emerged, causing a pivot to the financial display bugs. The user confirmed the successful resolution of these financial display issues.
+The current state is that the amortization table has been successfully integrated into the Analyse financière tab with the exact desired visual layout and styling, matching the provided reference images. The next step is to implement the detailed financial calculations within this visually complete structure.
 </current_work>
 
 <optional_next_step>
-Integrate the amortization table into the application, starting by clarifying user requirements based on the provided image.
+Implement all specific calculations for the amortization table as detailed in Chat Message 5.
 </optional_next_step>
-
