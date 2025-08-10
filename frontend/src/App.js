@@ -2019,7 +2019,7 @@ Cordialement`);
             <div className="financial-item">
               <span className="financial-icon">💳</span>
               <span className="financial-label">Reste à financer:</span>
-              <span className="financial-value">{(((results.discount_applied > 0 || results.battery_selected) ? results.kit_price_final : results.kit_price) - results.total_aids).toLocaleString()} €</span>
+              <span className="financial-value" style={{color: '#2ecc71', fontWeight: 'bold'}}>{(((results.discount_applied > 0 || results.battery_selected) ? results.kit_price_final : results.kit_price) - results.total_aids).toLocaleString()} €</span>
             </div>
             <div className="financial-item">
               <span className="financial-icon">⏱️</span>
