@@ -1850,7 +1850,7 @@ Suite à mon étude solaire personnalisée, je souhaiterais prendre rendez-vous 
 
 Résumé de mon étude :
 - Kit recommandé : ${kitPower}kW (${results.panel_count} panneaux)
-- Production estimée : ${Math.round(results.estimated_production)} kWh/an
+- Production estimée : ${Math.round(results.estimated_production || 0)} kWh/an
 - Autonomie : ${Math.round(results.autonomy_percentage)}%
 - Économies : ${Math.round(results.estimated_savings)} €/an
 - Investissement : ${results.kit_price?.toLocaleString()} € TTC
