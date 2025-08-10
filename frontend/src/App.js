@@ -2698,44 +2698,47 @@ Cordialement`);
                   </div>
                 </div>
 
-                {/* ÉCO-FINANCEMENT */}
+                {/* ÉCO-FINANCEMENT - DÉPLACÉ COMPLÈTEMENT À DROITE ET AGRANDI */}
                 <div style={{
                   position: 'absolute',
-                  top: '80px',
-                  right: '15px',
+                  top: '60px',
+                  right: '-80px', // Complètement sur le côté droit
                   background: 'white',
                   border: '3px solid #2196f3',
-                  borderRadius: '8px',
-                  padding: '15px 10px',
+                  borderRadius: '10px',
+                  padding: '25px 20px', // Agrandi
                   textAlign: 'center',
-                  width: '130px',
-                  height: '90px',
+                  width: '180px', // Plus large
+                  height: '140px', // Plus haut
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)', // Ombre pour le mettre en valeur
+                  zIndex: '20'
                 }}>
                   <div style={{
                     color: '#2196f3',
                     fontWeight: 'bold',
-                    fontSize: '0.8rem',
-                    marginBottom: '5px'
+                    fontSize: '1rem', // Plus gros
+                    marginBottom: '8px',
+                    lineHeight: '1.2'
                   }}>
                     ÉCO-FINANCEMENT
                   </div>
                   <div style={{
                     color: '#2196f3',
-                    fontSize: '1.3rem',
+                    fontSize: '1.8rem', // Plus gros
                     fontWeight: 'bold',
-                    margin: '5px 0'
+                    margin: '10px 0'
                   }}>
                     =
                   </div>
                   <div style={{
                     color: '#2196f3',
                     fontWeight: 'bold',
-                    fontSize: '0.7rem',
-                    lineHeight: '1.1'
+                    fontSize: '0.9rem', // Plus gros
+                    lineHeight: '1.3'
                   }}>
                     TRANSFERT DE<br/>CHARGES
                   </div>
