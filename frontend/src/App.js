@@ -2102,7 +2102,7 @@ Cordialement`);
                     )}
                   </>
                 ) : (
-                  <span className="financial-value">{results.kit_price?.toLocaleString()} € TTC</span>
+                  <span className="financial-value">{(results.kit_price || 0).toLocaleString()} € TTC</span>
                 )}
               </div>
               <div className="financial-item">
