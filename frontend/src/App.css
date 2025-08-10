@@ -3694,14 +3694,14 @@ body::after {
   font-size: 1.4rem;
 }
 
-/* Mensualité initiale AU MÊME NIVEAU avec CONTOUR VERT seulement */
+/* Mensualité initiale AU MÊME NIVEAU avec FOND VERT comme "3 mois = 0€" */
 .initial-payment-same-level {
   flex: 1 !important;
   min-width: 200px !important;
   max-width: 300px !important;
-  background: white !important;
+  background: #4caf50 !important;
   border: 3px solid #4caf50 !important;
-  color: #2196f3 !important;
+  color: white !important;
   font-size: 1rem;
 }
 
