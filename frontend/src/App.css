@@ -3825,13 +3825,6 @@ body::after {
     max-width: 200px;
   }
 }
-    gap: 15px;
-  }
-  
-  .arrow-up, .arrow-down, .arrow-left, .arrow-right, .arrow-down-2 {
-    display: none; /* Masquer les flèches sur mobile */
-  }
-}
 
 @media (max-width: 768px) {
   .calc-box {
