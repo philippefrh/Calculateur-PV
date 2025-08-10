@@ -542,6 +542,7 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
             <option value="">Sélectionnez votre système</option>
             <option value="Ballon électrique standard">⚡ Ballon électrique standard</option>
             <option value="Ballon thermodynamique">🔄 Ballon thermodynamique</option>
+            <option value="Ballon solaire">☀️ Ballon solaire</option>
           </select>
           {errors.waterHeatingSystem && <span className="error-message">{errors.waterHeatingSystem}</span>}
         </div>
