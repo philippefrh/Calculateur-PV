@@ -2269,95 +2269,318 @@ Cordialement`);
               </div>
             )}
 
-            {/* Tableau d'amortissement - REPRODUCTION EXACTE VISUEL ANCIEN LOGICIEL */}
-            <div className="amortization-table-section">
-              <h4>📊 Tableau d'amortissement - Récupération de votre investissement</h4>
+            {/* Tableau d'amortissement - EXACTEMENT comme l'image de référence */}
+            <div className="amortization-simple">
+              <h4 style={{color: '#2196f3', textAlign: 'center', marginBottom: '20px'}}>📊 Tableau d'amortissement - Récupération de votre investissement</h4>
               
-              {/* En-tête organismes AVEC TEXTES EN GRAS */}
-              <div className="organisms-header">
+              {/* En-tête organismes */}
+              <div style={{
+                textAlign: 'center', 
+                background: '#f8f8f8', 
+                padding: '12px', 
+                borderRadius: '5px', 
+                marginBottom: '25px', 
+                fontSize: '0.9rem', 
+                color: '#333', 
+                border: '1px solid #ddd'
+              }}>
                 Envois de votre dossier aux différents organismes: <strong>Mairie</strong> - <strong>EDF</strong> - <strong>Service technique</strong> - <strong>Subventions</strong> - <strong>Organisme de financement</strong>
               </div>
 
-              {/* Container MAXIMUM élargi - utilise 98% de la largeur */}
-              <div className="amortization-ultra-wide">
+              {/* Container principal ÉLARGI */}
+              <div style={{
+                background: 'white',
+                padding: '20px 10px',
+                border: '2px solid #4caf50',
+                borderRadius: '10px',
+                position: 'relative',
+                width: '95%',
+                margin: '0 auto',
+                minHeight: '450px'
+              }}>
                 
-                {/* Première ligne: Installation, 3 mois = 0€, Mensualité initiale AU MÊME NIVEAU */}
-                <div className="top-row-ultra">
-                  <div className="box-outline installation-box">
+                {/* Première ligne: Installation, 3 mois = 0€, Mensualité initiale */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '40px',
+                  gap: '20px'
+                }}>
+                  <div style={{
+                    background: 'white',
+                    border: '3px solid #4caf50',
+                    color: '#2196f3',
+                    padding: '15px 20px',
+                    borderRadius: '5px',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    flex: '1',
+                    maxWidth: '250px'
+                  }}>
                     Installation
                   </div>
-                  <div className="box-green months-zero-box">
+                  
+                  <div style={{
+                    background: '#4caf50',
+                    color: 'white',
+                    padding: '15px 20px',
+                    borderRadius: '5px',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '1.2rem',
+                    flex: '1',
+                    maxWidth: '250px'
+                  }}>
                     3 mois = 0€
                   </div>
-                  {/* Mensualité initiale AU MÊME NIVEAU avec CONTOUR VERT uniquement */}
-                  <div className="box-outline initial-payment-same-level">
+                  
+                  <div style={{
+                    background: 'white',
+                    border: '3px solid #4caf50',
+                    color: '#2196f3',
+                    padding: '15px 20px',
+                    borderRadius: '5px',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    flex: '1',
+                    maxWidth: '250px'
+                  }}>
                     Mensualité initiale<br/>
                     <strong>{Math.round(optimalFinancing?.monthly_payment || 0)} €</strong>
                   </div>
                 </div>
 
-                {/* Flèches exactes */}
-                <div className="exact-arrows-ultra">
-                  <div className="arrow-1">↑</div>
-                  <div className="arrow-2">↓</div>
-                  <div className="arrow-horizontal-ultra">←――――――――――――――――――――――――――――――――――――――――――――――――――――――――→</div>
-                  <div className="arrow-3">↓</div>
-                </div>
-
-                {/* Deuxième ligne: 6 cases avec opérateurs CENTRÉS */}
-                <div className="main-row-ultra">
-                  <div className="calc-item-ultra">
-                    <div className="label-ultra">Récupération des subventions</div>
-                    <div className="box-outline value-box-ultra">
+                {/* Deuxième ligne: 6 cases principales */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-end',
+                  marginBottom: '40px',
+                  gap: '8px',
+                  flexWrap: 'nowrap'
+                }}>
+                  <div style={{textAlign: 'center', flex: '1', minWidth: '120px'}}>
+                    <div style={{
+                      color: '#2196f3',
+                      fontSize: '0.75rem',
+                      marginBottom: '8px',
+                      fontWeight: 'bold',
+                      height: '35px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      Récupération des subventions
+                    </div>
+                    <div style={{
+                      background: 'white',
+                      border: '3px solid #4caf50',
+                      color: '#2196f3',
+                      padding: '12px 8px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                      minHeight: '45px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
                       {Math.round(results.total_aids || 0)} €
                     </div>
                   </div>
                   
-                  <div className="operator-centered">+</div>
+                  <div style={{
+                    color: '#2196f3',
+                    fontSize: '1.5rem',
+                    fontWeight: 'bold',
+                    alignSelf: 'center',
+                    margin: '0 3px'
+                  }}>+</div>
                   
-                  <div className="calc-item-ultra">
-                    <div className="label-ultra">Les économies réalisées sur les 3 premiers mois</div>
-                    <div className="box-outline value-box-ultra">
+                  <div style={{textAlign: 'center', flex: '1', minWidth: '120px'}}>
+                    <div style={{
+                      color: '#2196f3',
+                      fontSize: '0.75rem',
+                      marginBottom: '8px',
+                      fontWeight: 'bold',
+                      height: '35px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      Les économies réalisées sur les 3 premiers mois
+                    </div>
+                    <div style={{
+                      background: 'white',
+                      border: '3px solid #4caf50',
+                      color: '#2196f3',
+                      padding: '12px 8px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                      minHeight: '45px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
                       {Math.round((results.monthly_savings || 0) * 3)} €
                     </div>
                   </div>
                   
-                  <div className="operator-centered">=</div>
+                  <div style={{
+                    color: '#2196f3',
+                    fontSize: '1.5rem',
+                    fontWeight: 'bold',
+                    alignSelf: 'center',
+                    margin: '0 3px'
+                  }}>=</div>
                   
-                  <div className="calc-item-ultra">
-                    <div className="label-ultra">Total</div>
-                    <div className="box-outline value-box-ultra">
+                  <div style={{textAlign: 'center', flex: '1', minWidth: '120px'}}>
+                    <div style={{
+                      color: '#2196f3',
+                      fontSize: '0.75rem',
+                      marginBottom: '8px',
+                      fontWeight: 'bold',
+                      height: '35px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      Total
+                    </div>
+                    <div style={{
+                      background: 'white',
+                      border: '3px solid #4caf50',
+                      color: '#2196f3',
+                      padding: '12px 8px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                      minHeight: '45px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
                       {Math.round((results.total_aids || 0) + ((results.monthly_savings || 0) * 3))} €
                     </div>
                   </div>
                   
-                  <div className="operator-centered">→</div>
+                  <div style={{
+                    color: '#2196f3',
+                    fontSize: '1.5rem',
+                    fontWeight: 'bold',
+                    alignSelf: 'center',
+                    margin: '0 3px'
+                  }}>→</div>
                   
-                  <div className="calc-item-ultra">
-                    <div className="label-ultra">Reste à financer</div>
-                    <div className="box-outline value-box-ultra">
+                  <div style={{textAlign: 'center', flex: '1', minWidth: '120px'}}>
+                    <div style={{
+                      color: '#2196f3',
+                      fontSize: '0.75rem',
+                      marginBottom: '8px',
+                      fontWeight: 'bold',
+                      height: '35px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      Reste à financer
+                    </div>
+                    <div style={{
+                      background: 'white',
+                      border: '3px solid #4caf50',
+                      color: '#2196f3',
+                      padding: '12px 8px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                      minHeight: '45px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
                       {Math.round((((results.discount_applied > 0 || results.battery_selected) ? results.kit_price_final : results.kit_price) || 0) - (results.total_aids || 0) - ((results.monthly_savings || 0) * 3))} €
                     </div>
                   </div>
                   
-                  <div className="operator-centered">→</div>
+                  <div style={{
+                    color: '#2196f3',
+                    fontSize: '1.5rem',
+                    fontWeight: 'bold',
+                    alignSelf: 'center',
+                    margin: '0 3px'
+                  }}>→</div>
                   
-                  <div className="calc-item-ultra">
-                    <div className="label-ultra">Nouvelle mensualité</div>
-                    <div className="box-outline value-box-ultra">
+                  <div style={{textAlign: 'center', flex: '1', minWidth: '120px'}}>
+                    <div style={{
+                      color: '#2196f3',
+                      fontSize: '0.75rem',
+                      marginBottom: '8px',
+                      fontWeight: 'bold',
+                      height: '35px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      Nouvelle mensualité
+                    </div>
+                    <div style={{
+                      background: 'white',
+                      border: '3px solid #4caf50',
+                      color: '#2196f3',
+                      padding: '12px 8px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                      minHeight: '45px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
                       {Math.round(optimalFinancingWithAids?.monthly_payment || 0)} €
                     </div>
                   </div>
                 </div>
 
-                {/* Troisième ligne: 4 cases avec 18% restants */}
-                <div className="bottom-row-ultra">
-                  <div className="calc-item-ultra">
-                    <div className="label-ultra">18% restants (abonnement + consommation résiduelle)</div>
-                    <div className="box-outline value-box-ultra">
+                {/* Troisième ligne: 4 cases avec 18% */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-end',
+                  marginBottom: '40px',
+                  gap: '15px',
+                  flexWrap: 'nowrap'
+                }}>
+                  <div style={{textAlign: 'center', flex: '1', minWidth: '140px'}}>
+                    <div style={{
+                      color: '#2196f3',
+                      fontSize: '0.75rem',
+                      marginBottom: '8px',
+                      fontWeight: 'bold',
+                      height: '35px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      18% restants (abonnement + consommation résiduelle)
+                    </div>
+                    <div style={{
+                      background: 'white',
+                      border: '3px solid #4caf50',
+                      color: '#2196f3',
+                      padding: '12px 8px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      fontSize: '0.85rem',
+                      minHeight: '45px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
                       {(() => {
-                        const meterPower = parseInt(formData.meterPower) || 6;
-                        // Calcul sur 18% au lieu de 21%
                         const monthlyEDF = parseInt(formData.monthlyEDFPayment) || 250;
                         const restant18 = Math.round(monthlyEDF * 0.18);
                         return restant18 + '€/mois';
@@ -2365,16 +2588,62 @@ Cordialement`);
                     </div>
                   </div>
                   
-                  <div className="calc-item-ultra">
-                    <div className="label-ultra">Économie par mois</div>
-                    <div className="box-outline value-box-ultra">
+                  <div style={{textAlign: 'center', flex: '1', minWidth: '140px'}}>
+                    <div style={{
+                      color: '#2196f3',
+                      fontSize: '0.75rem',
+                      marginBottom: '8px',
+                      fontWeight: 'bold',
+                      height: '35px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      Économie par mois
+                    </div>
+                    <div style={{
+                      background: 'white',
+                      border: '3px solid #4caf50',
+                      color: '#2196f3',
+                      padding: '12px 8px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                      minHeight: '45px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
                       {Math.round(results.monthly_savings || 0)} €
                     </div>
                   </div>
                   
-                  <div className="calc-item-ultra">
-                    <div className="label-ultra">+ Revente du surplus</div>
-                    <div className="box-outline value-box-ultra">
+                  <div style={{textAlign: 'center', flex: '1', minWidth: '140px'}}>
+                    <div style={{
+                      color: '#2196f3',
+                      fontSize: '0.75rem',
+                      marginBottom: '8px',
+                      fontWeight: 'bold',
+                      height: '35px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      + Revente du surplus
+                    </div>
+                    <div style={{
+                      background: 'white',
+                      border: '3px solid #4caf50',
+                      color: '#2196f3',
+                      padding: '12px 8px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                      minHeight: '45px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
                       {(() => {
                         const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
                         if (kitPower === 3) return '20,21';
@@ -2388,9 +2657,32 @@ Cordialement`);
                     </div>
                   </div>
                   
-                  <div className="calc-item-ultra">
-                    <div className="label-ultra">=</div>
-                    <div className="box-outline value-box-ultra">
+                  <div style={{textAlign: 'center', flex: '1', minWidth: '140px'}}>
+                    <div style={{
+                      color: '#2196f3',
+                      fontSize: '0.75rem',
+                      marginBottom: '8px',
+                      fontWeight: 'bold',
+                      height: '35px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      =
+                    </div>
+                    <div style={{
+                      background: 'white',
+                      border: '3px solid #4caf50',
+                      color: '#2196f3',
+                      padding: '12px 8px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                      minHeight: '45px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
                       {(() => {
                         const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
                         let surplusRevenue = 40.43;
@@ -2406,11 +2698,47 @@ Cordialement`);
                   </div>
                 </div>
 
-                {/* ÉCO-FINANCEMENT repositionné */}
-                <div className="eco-financing-ultra">
-                  <div className="eco-title">ÉCO-FINANCEMENT</div>
-                  <div className="eco-equal">=</div>
-                  <div className="eco-subtitle">TRANSFERT DE<br/>CHARGES</div>
+                {/* ÉCO-FINANCEMENT */}
+                <div style={{
+                  position: 'absolute',
+                  top: '80px',
+                  right: '15px',
+                  background: 'white',
+                  border: '3px solid #2196f3',
+                  borderRadius: '8px',
+                  padding: '15px 10px',
+                  textAlign: 'center',
+                  width: '130px',
+                  height: '90px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}>
+                  <div style={{
+                    color: '#2196f3',
+                    fontWeight: 'bold',
+                    fontSize: '0.8rem',
+                    marginBottom: '5px'
+                  }}>
+                    ÉCO-FINANCEMENT
+                  </div>
+                  <div style={{
+                    color: '#2196f3',
+                    fontSize: '1.3rem',
+                    fontWeight: 'bold',
+                    margin: '5px 0'
+                  }}>
+                    =
+                  </div>
+                  <div style={{
+                    color: '#2196f3',
+                    fontWeight: 'bold',
+                    fontSize: '0.7rem',
+                    lineHeight: '1.1'
+                  }}>
+                    TRANSFERT DE<br/>CHARGES
+                  </div>
                 </div>
               </div>
             </div>
