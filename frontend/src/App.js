@@ -2275,7 +2275,7 @@ Cordialement`);
               
               {/* En-tête organismes AVEC TEXTES EN GRAS */}
               <div className="organisms-header">
-                Envois de votre dossier aux différents organismes: <strong>Mairie</strong> - Bâtiments de France - Enedis - <strong>EDF</strong> - <strong>Service technique</strong> - Subventions - <strong>Organisme de financement</strong>
+                Envois de votre dossier aux différents organismes: <strong>Mairie</strong> - <strong>EDF</strong> - <strong>Service technique</strong> - <strong>Subventions</strong> - <strong>Organisme de financement</strong>
               </div>
 
               {/* Container principal élargi pour éviter les chevauchements */}
