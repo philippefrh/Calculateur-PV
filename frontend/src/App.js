@@ -3489,10 +3489,20 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
   if (!isCalculating && calculationResults) {
     return (
       <div className="calculation-screen success">
-        <div className="success-animation">
-          <div className="success-circle">✅</div>
-          <div className="success-text">
-            <h2>🎉 Calcul terminé avec succès !</h2>
+        <div className="success-content-wrapper">
+          {/* Encart vert à gauche */}
+          <div className="green-autonomy-box">
+            <div className="autonomy-text-large">
+              POURCENTAGE D'AUTONOMIE DE COULEUR VERT TROUVÉ = Permet l'envois de votre dossier en commission
+            </div>
+          </div>
+          
+          {/* Contenu principal à droite */}
+          <div className="main-success-content">
+            <div className="success-animation">
+              <div className="success-circle">✅</div>
+              <div className="success-text">
+                <h2>🎉 Calcul terminé avec succès !</h2>
             <p>Votre solution solaire personnalisée est prête</p>
             <p className="commission-text">Ce % d'économie et d'autonomie de couleur verte permet le dépôt de votre dossier aux différentes commissions pour qu'il puisse être validé</p>
           </div>
