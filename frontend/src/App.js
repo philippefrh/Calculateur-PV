@@ -2521,9 +2521,9 @@ Cordialement`);
                       Nouvelle mensualité diminuée sur {optimalFinancingWithAids?.duration_months || 72} mois ({Math.round((optimalFinancingWithAids?.duration_months || 72) / 12)} ans)
                     </div>
                     <div style={{
-                      background: 'white',
+                      background: '#4caf50',
                       border: '3px solid #4caf50',
-                      color: '#2196f3',
+                      color: 'white',
                       padding: '12px 8px',
                       borderRadius: '5px',
                       fontWeight: 'bold',
