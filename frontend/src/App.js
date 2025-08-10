@@ -2341,7 +2341,7 @@ Cordialement`);
                     flex: '1',
                     maxWidth: '250px'
                   }}>
-                    Mensualité initiale à partir du 4ème mois sur 108 mois (9 ans)<br/>
+                    Mensualité initiale à partir du 4ème mois sur {optimalFinancing?.duration_months || 144} mois ({Math.round((optimalFinancing?.duration_months || 144) / 12)} ans)<br/>
                     <strong>{Math.round(optimalFinancing?.monthly_payment || 0)} €</strong>
                   </div>
                 </div>
