@@ -2278,119 +2278,122 @@ Cordialement`);
                 Envois de votre dossier aux différents organismes: <strong>Mairie</strong> - <strong>EDF</strong> - <strong>Service technique</strong> - <strong>Subventions</strong> - <strong>Organisme de financement</strong>
               </div>
 
-              {/* Container principal élargi pour éviter les chevauchements */}
-              <div className="amortization-exact-layout-wide">
+              {/* Container MAXIMUM élargi - utilise 98% de la largeur */}
+              <div className="amortization-ultra-wide">
                 
-                {/* Première ligne: Installation, 3 mois = 0€, Mensualité initiale */}
-                <div className="top-row-wide">
+                {/* Première ligne: Installation, 3 mois = 0€, Mensualité initiale AU MÊME NIVEAU */}
+                <div className="top-row-ultra">
                   <div className="box-outline installation-box">
                     Installation
                   </div>
                   <div className="box-green months-zero-box">
                     3 mois = 0€
                   </div>
-                  <div className="right-section">
-                    <div className="payment-label">Mensualité initiale</div>
-                    <div className="box-green payment-amount">
-                      {Math.round(optimalFinancing?.monthly_payment || 0)} €
-                    </div>
+                  {/* Mensualité initiale AU MÊME NIVEAU avec CONTOUR VERT uniquement */}
+                  <div className="box-outline initial-payment-same-level">
+                    Mensualité initiale<br/>
+                    <strong>{Math.round(optimalFinancing?.monthly_payment || 0)} €</strong>
                   </div>
                 </div>
 
-                {/* Flèches exactes comme sur la photo */}
-                <div className="exact-arrows-wide">
+                {/* Flèches exactes */}
+                <div className="exact-arrows-ultra">
                   <div className="arrow-1">↑</div>
                   <div className="arrow-2">↓</div>
-                  <div className="arrow-horizontal-wide">←――――――――――――――――――――――――――――――――――――――――――――――――――→</div>
+                  <div className="arrow-horizontal-ultra">←――――――――――――――――――――――――――――――――――――――――――――――――――――――――→</div>
                   <div className="arrow-3">↓</div>
                 </div>
 
-                {/* Deuxième ligne: 6 cases avec opérateurs (AJOUT case TOTAL) */}
-                <div className="main-row-wide">
-                  <div className="calc-item">
-                    <div className="label">Récupération des subventions</div>
-                    <div className="box-outline value-box">
+                {/* Deuxième ligne: 6 cases avec opérateurs CENTRÉS */}
+                <div className="main-row-ultra">
+                  <div className="calc-item-ultra">
+                    <div className="label-ultra">Récupération des subventions</div>
+                    <div className="box-outline value-box-ultra">
                       {Math.round(results.total_aids || 0)} €
                     </div>
                   </div>
                   
-                  <div className="operator">+</div>
+                  <div className="operator-centered">+</div>
                   
-                  <div className="calc-item">
-                    <div className="label">Les économies réalisées sur les 3 premiers mois</div>
-                    <div className="box-outline value-box">
+                  <div className="calc-item-ultra">
+                    <div className="label-ultra">Les économies réalisées sur les 3 premiers mois</div>
+                    <div className="box-outline value-box-ultra">
                       {Math.round((results.monthly_savings || 0) * 3)} €
                     </div>
                   </div>
                   
-                  <div className="operator">=</div>
+                  <div className="operator-centered">=</div>
                   
-                  {/* NOUVELLE CASE TOTAL */}
-                  <div className="calc-item">
-                    <div className="label">Total</div>
-                    <div className="box-outline value-box">
+                  <div className="calc-item-ultra">
+                    <div className="label-ultra">Total</div>
+                    <div className="box-outline value-box-ultra">
                       {Math.round((results.total_aids || 0) + ((results.monthly_savings || 0) * 3))} €
                     </div>
                   </div>
                   
-                  <div className="operator">→</div>
+                  <div className="operator-centered">→</div>
                   
-                  <div className="calc-item">
-                    <div className="label">Reste à financer</div>
-                    <div className="box-outline value-box">
+                  <div className="calc-item-ultra">
+                    <div className="label-ultra">Reste à financer</div>
+                    <div className="box-outline value-box-ultra">
                       {Math.round((((results.discount_applied > 0 || results.battery_selected) ? results.kit_price_final : results.kit_price) || 0) - (results.total_aids || 0) - ((results.monthly_savings || 0) * 3))} €
                     </div>
                   </div>
                   
-                  <div className="operator">→</div>
+                  <div className="operator-centered">→</div>
                   
-                  <div className="calc-item">
-                    <div className="label">Nouvelle mensualité</div>
-                    <div className="box-outline value-box">
+                  <div className="calc-item-ultra">
+                    <div className="label-ultra">Nouvelle mensualité</div>
+                    <div className="box-outline value-box-ultra">
                       {Math.round(optimalFinancingWithAids?.monthly_payment || 0)} €
                     </div>
                   </div>
                 </div>
 
-                {/* Troisième ligne: 4 cases AVEC VRAI CALCUL DE REVENTE */}
-                <div className="bottom-row-wide">
-                  <div className="calc-item">
-                    <div className="label">21% restants (abonnement + consommation résiduelle)</div>
-                    <div className="box-outline value-box large-text">
-                      554€ par = 46€/mois
+                {/* Troisième ligne: 4 cases avec 18% restants */}
+                <div className="bottom-row-ultra">
+                  <div className="calc-item-ultra">
+                    <div className="label-ultra">18% restants (abonnement + consommation résiduelle)</div>
+                    <div className="box-outline value-box-ultra">
+                      {(() => {
+                        const meterPower = parseInt(formData.meterPower) || 6;
+                        // Calcul sur 18% au lieu de 21%
+                        const monthlyEDF = parseInt(formData.monthlyEDFPayment) || 250;
+                        const restant18 = Math.round(monthlyEDF * 0.18);
+                        return restant18 + '€/mois';
+                      })()}
                     </div>
                   </div>
                   
-                  <div className="calc-item">
-                    <div className="label">Économie par mois</div>
-                    <div className="box-outline value-box">
+                  <div className="calc-item-ultra">
+                    <div className="label-ultra">Économie par mois</div>
+                    <div className="box-outline value-box-ultra">
                       {Math.round(results.monthly_savings || 0)} €
                     </div>
                   </div>
                   
-                  <div className="calc-item">
-                    <div className="label">+ Revente du surplus</div>
-                    <div className="box-outline value-box">
+                  <div className="calc-item-ultra">
+                    <div className="label-ultra">+ Revente du surplus</div>
+                    <div className="box-outline value-box-ultra">
                       {(() => {
                         const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
-                        // Calcul revente surplus selon puissance kit (6kW = 16 panneaux)
                         if (kitPower === 3) return '20,21';
-                        if (kitPower === 6) return '40,43'; // 6kW = 16 panneaux
+                        if (kitPower === 6) return '40,43';
                         if (kitPower === 9) return '60,64';
                         if (kitPower === 12) return '81,40';
                         if (kitPower === 15) return '100,84';
                         if (kitPower === 18) return '121,26';
-                        return '40,43'; // défaut 6kW
+                        return '40,43';
                       })()} €/mois
                     </div>
                   </div>
                   
-                  <div className="calc-item">
-                    <div className="label">=</div>
-                    <div className="box-outline value-box">
+                  <div className="calc-item-ultra">
+                    <div className="label-ultra">=</div>
+                    <div className="box-outline value-box-ultra">
                       {(() => {
                         const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
-                        let surplusRevenue = 40.43; // défaut 6kW
+                        let surplusRevenue = 40.43;
                         if (kitPower === 3) surplusRevenue = 20.21;
                         else if (kitPower === 6) surplusRevenue = 40.43;
                         else if (kitPower === 9) surplusRevenue = 60.64;
@@ -2403,8 +2406,8 @@ Cordialement`);
                   </div>
                 </div>
 
-                {/* ÉCO-FINANCEMENT - REPOSITIONNÉ pour éviter chevauchement */}
-                <div className="eco-financing-repositioned">
+                {/* ÉCO-FINANCEMENT repositionné */}
+                <div className="eco-financing-ultra">
                   <div className="eco-title">ÉCO-FINANCEMENT</div>
                   <div className="eco-equal">=</div>
                   <div className="eco-subtitle">TRANSFERT DE<br/>CHARGES</div>
