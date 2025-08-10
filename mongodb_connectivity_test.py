@@ -9,7 +9,7 @@ import json
 import time
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://6843aeb1-b7fa-4f3a-94e4-7e571b085fd3.preview.emergentagent.com/api"
+BACKEND_URL = "https://7dfb9bc9-2fb9-4499-8d5a-a2f2594971bb.preview.emergentagent.com/api"
 
 def test_mongodb_connectivity():
     """Test the specific MongoDB connectivity issue mentioned in the request"""
