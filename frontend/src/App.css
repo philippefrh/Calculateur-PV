@@ -3631,6 +3631,7 @@ body::after {
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 5px;
+  position: relative; /* Ajouté pour le positionnement de l'ÉCO-FINANCEMENT */
 }
 
 /* Première ligne: Installation, 6 mois = 0€, Mensualité initiale */
