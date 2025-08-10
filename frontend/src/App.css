@@ -4757,3 +4757,60 @@ body::after {
     text-align: center;
   }
 }
+
+/* Layout pour l'écran de succès avec encart vert à gauche */
+.success-content-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Encart vert à gauche */
+.green-autonomy-box {
+  background: #4caf50;
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  font-weight: bold;
+  text-align: center;
+  min-width: 350px;
+  max-width: 400px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  border: 2px solid #4caf50;
+}
+
+.autonomy-text-large {
+  font-size: 1.1rem;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Contenu principal à droite */
+.main-success-content {
+  flex: 1;
+  min-width: 400px;
+}
+
+/* Responsive pour écrans plus petits */
+@media (max-width: 1024px) {
+  .success-content-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .green-autonomy-box {
+    min-width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .main-success-content {
+    width: 100%;
+  }
+}
