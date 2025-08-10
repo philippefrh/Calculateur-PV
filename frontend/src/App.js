@@ -1971,7 +1971,7 @@ Cordialement`);
             <div className="summary-row">
               <div className="summary-cell dark">
                 <div className="cell-title">Production annuelle du PV</div>
-                <div className="cell-value">{Math.round(results.estimated_production).toLocaleString()} kWh</div>
+                <div className="cell-value">{Math.round(results.estimated_production || 0).toLocaleString()} kWh</div>
               </div>
               <div className="summary-cell dark">
                 <div className="cell-title">Durée d'amortissement *</div>
