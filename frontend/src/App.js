@@ -2699,48 +2699,48 @@ Cordialement`);
                 </div>
               </div>
 
-              {/* ÉCO-FINANCEMENT - COMPLÈTEMENT À DROITE DE L'ÉCRAN, EN DEHORS DU TABLEAU */}
+              {/* ÉCO-FINANCEMENT - AJUSTÉ POUR RESTER DANS LE CARRÉ BLANC */}
               <div style={{
-                position: 'fixed', // Position fixe par rapport à l'écran
+                position: 'fixed',
                 top: '50%',
-                right: '20px', // Complètement à droite de l'écran
-                transform: 'translateY(-50%)', // Centré verticalement
+                right: '20px',
+                transform: 'translateY(-50%)',
                 background: 'white',
                 border: '4px solid #2196f3',
                 borderRadius: '12px',
-                padding: '30px 25px', // Très agrandi
+                padding: '20px 15px', // Padding réduit pour que le texte rentre
                 textAlign: 'center',
-                width: '200px', // Plus large
-                height: '160px', // Plus haut
+                width: '180px',
+                height: '140px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                boxShadow: '0 6px 16px rgba(33, 150, 243, 0.3)', // Ombre bleue pour le mettre en valeur
-                zIndex: '1000' // Au-dessus de tout
+                boxShadow: '0 6px 16px rgba(33, 150, 243, 0.3)',
+                zIndex: '1000'
               }}>
                 <div style={{
                   color: '#2196f3',
                   fontWeight: 'bold',
-                  fontSize: '1.2rem', // Plus gros
-                  marginBottom: '12px',
-                  lineHeight: '1.2'
+                  fontSize: '1rem', // Taille ajustée
+                  marginBottom: '8px',
+                  lineHeight: '1.1' // Espacement réduit
                 }}>
                   ÉCO-FINANCEMENT
                 </div>
                 <div style={{
                   color: '#2196f3',
-                  fontSize: '2.5rem', // Très gros
+                  fontSize: '2rem', // Taille réduite
                   fontWeight: 'bold',
-                  margin: '15px 0'
+                  margin: '8px 0' // Marges réduites
                 }}>
                   =
                 </div>
                 <div style={{
                   color: '#2196f3',
                   fontWeight: 'bold',
-                  fontSize: '1rem', // Plus gros
-                  lineHeight: '1.3'
+                  fontSize: '0.9rem', // Taille ajustée
+                  lineHeight: '1.1' // Espacement réduit
                 }}>
                   TRANSFERT DE<br/>CHARGES
                 </div>
