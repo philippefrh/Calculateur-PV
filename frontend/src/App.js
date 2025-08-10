@@ -1995,15 +1995,7 @@ Cordialement`);
               <span className="financial-label">Investissement:</span>
               {(results.discount_applied > 0 || results.battery_selected) ? (
                 <>
-                  {results.kit_price_original && (
-                    <>
-                      <span className="financial-value original-price" style={{textDecoration: 'line-through', color: '#888'}}>{results.kit_price_original?.toLocaleString()} €</span>
-                      <span className="financial-value" style={{color: results.discount_applied > 0 ? '#e74c3c' : '#2ecc71', fontWeight: 'bold'}}> {results.kit_price_final?.toLocaleString()} € TTC</span>
-                    </>
-                  )}
-                  {!results.kit_price_original && (
-                    <span className="financial-value" style={{color: '#2ecc71', fontWeight: 'bold'}}>{results.kit_price_final?.toLocaleString()} € TTC (+Batterie)</span>
-                  )}
+                  <span className="financial-value" style={{color: '#2ecc71', fontWeight: 'bold'}}>{results.kit_price_final?.toLocaleString()} € TTC</span>
                   {results.discount_applied > 0 && (
                     <span className="discount-badge" style={{background: '#e74c3c', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', marginLeft: '8px'}}>
                       -{results.discount_applied} €
