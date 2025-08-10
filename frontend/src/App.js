@@ -2294,7 +2294,7 @@ Cordialement`);
                 border: '2px solid #4caf50',
                 borderRadius: '10px',
                 position: 'relative',
-                width: '95%',
+                width: '85%', // Réduit pour laisser place à l'ÉCO-FINANCEMENT
                 margin: '0 auto',
                 minHeight: '450px'
               }}>
@@ -2697,51 +2697,52 @@ Cordialement`);
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* ÉCO-FINANCEMENT - DÉPLACÉ COMPLÈTEMENT À DROITE ET AGRANDI */}
+              {/* ÉCO-FINANCEMENT - COMPLÈTEMENT À DROITE DE L'ÉCRAN, EN DEHORS DU TABLEAU */}
+              <div style={{
+                position: 'fixed', // Position fixe par rapport à l'écran
+                top: '50%',
+                right: '20px', // Complètement à droite de l'écran
+                transform: 'translateY(-50%)', // Centré verticalement
+                background: 'white',
+                border: '4px solid #2196f3',
+                borderRadius: '12px',
+                padding: '30px 25px', // Très agrandi
+                textAlign: 'center',
+                width: '200px', // Plus large
+                height: '160px', // Plus haut
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                boxShadow: '0 6px 16px rgba(33, 150, 243, 0.3)', // Ombre bleue pour le mettre en valeur
+                zIndex: '1000' // Au-dessus de tout
+              }}>
                 <div style={{
-                  position: 'absolute',
-                  top: '60px',
-                  right: '-80px', // Complètement sur le côté droit
-                  background: 'white',
-                  border: '3px solid #2196f3',
-                  borderRadius: '10px',
-                  padding: '25px 20px', // Agrandi
-                  textAlign: 'center',
-                  width: '180px', // Plus large
-                  height: '140px', // Plus haut
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)', // Ombre pour le mettre en valeur
-                  zIndex: '20'
+                  color: '#2196f3',
+                  fontWeight: 'bold',
+                  fontSize: '1.2rem', // Plus gros
+                  marginBottom: '12px',
+                  lineHeight: '1.2'
                 }}>
-                  <div style={{
-                    color: '#2196f3',
-                    fontWeight: 'bold',
-                    fontSize: '1rem', // Plus gros
-                    marginBottom: '8px',
-                    lineHeight: '1.2'
-                  }}>
-                    ÉCO-FINANCEMENT
-                  </div>
-                  <div style={{
-                    color: '#2196f3',
-                    fontSize: '1.8rem', // Plus gros
-                    fontWeight: 'bold',
-                    margin: '10px 0'
-                  }}>
-                    =
-                  </div>
-                  <div style={{
-                    color: '#2196f3',
-                    fontWeight: 'bold',
-                    fontSize: '0.9rem', // Plus gros
-                    lineHeight: '1.3'
-                  }}>
-                    TRANSFERT DE<br/>CHARGES
-                  </div>
+                  ÉCO-FINANCEMENT
+                </div>
+                <div style={{
+                  color: '#2196f3',
+                  fontSize: '2.5rem', // Très gros
+                  fontWeight: 'bold',
+                  margin: '15px 0'
+                }}>
+                  =
+                </div>
+                <div style={{
+                  color: '#2196f3',
+                  fontWeight: 'bold',
+                  fontSize: '1rem', // Plus gros
+                  lineHeight: '1.3'
+                }}>
+                  TRANSFERT DE<br/>CHARGES
                 </div>
               </div>
             </div>
