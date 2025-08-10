@@ -2525,7 +2525,7 @@ Cordialement`);
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      Nouvelle mensualité
+                      Nouvelle mensualité diminuée sur 48 mois (4 ans)
                     </div>
                     <div style={{
                       background: 'white',
