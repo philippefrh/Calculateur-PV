@@ -3859,30 +3859,31 @@ body::after {
   text-align: center;
 }
 
-/* Responsive ÉLARGI */
+/* Responsive ULTRA-ÉLARGI */
 @media (max-width: 1400px) {
   .amortization-exact-layout-wide {
-    padding: 30px 40px;
-    max-width: 100%;
+    padding: 30px 10px; /* Marges encore plus petites */
+    width: calc(100% - 20px);
   }
   
   .main-row-wide {
-    gap: 8px;
+    gap: 12px;
   }
   
   .calc-item {
-    min-width: 140px;
+    min-width: 150px;
   }
   
   .label {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
   }
 }
 
 @media (max-width: 1200px) {
   .amortization-exact-layout-wide {
-    padding: 25px;
+    padding: 25px 10px; /* Maximum d'espace utilisé */
     min-height: auto;
+    width: calc(100% - 20px);
   }
   
   .top-row-wide,
@@ -3895,7 +3896,7 @@ body::after {
   
   .calc-item {
     max-width: 100%;
-    min-width: 200px;
+    min-width: 250px; /* Plus large sur mobile aussi */
   }
   
   .exact-arrows-wide {
@@ -3905,7 +3906,23 @@ body::after {
   .eco-financing-repositioned {
     position: static;
     margin: 20px auto 0;
-    width: 200px;
+    width: 220px; /* Plus large sur mobile */
+  }
+}
+
+@media (max-width: 768px) {
+  .amortization-exact-layout-wide {
+    padding: 20px 5px; /* Marges minimales sur mobile */
+    width: calc(100% - 10px);
+  }
+  
+  .calc-item {
+    min-width: 200px;
+  }
+  
+  .value-box {
+    font-size: 1rem;
+    min-height: 50px;
   }
 }
 
