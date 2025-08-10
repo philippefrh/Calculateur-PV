@@ -114,20 +114,20 @@ class SolarCalculatorTester:
         """Test client creation with realistic French data"""
         try:
             client_data = {
-                "first_name": "Jean",
-                "last_name": "Dupont",
-                "address": "10 Avenue des Champs-Élysées, 75008 Paris",
-                "phone": "0123456789",  # Added required phone field
-                "email": "jean.dupont@example.com",  # Added required email field
-                "roof_surface": 60.0,
+                "first_name": "Marie",
+                "last_name": "Martin",
+                "address": "75008 Paris",
+                "phone": "0659597690",
+                "email": "marie@test.com",
+                "roof_surface": 80.0,
                 "roof_orientation": "Sud",
-                "velux_count": 2,
+                "velux_count": 0,
                 "heating_system": "Radiateurs électriques",
-                "water_heating_system": "Ballon électrique",
+                "water_heating_system": "Ballon électrique standard",
                 "water_heating_capacity": 200,
-                "annual_consumption_kwh": 6500.0,
-                "monthly_edf_payment": 180.0,
-                "annual_edf_payment": 2160.0
+                "annual_consumption_kwh": 8500.0,
+                "monthly_edf_payment": 320.0,
+                "annual_edf_payment": 3840.0
             }
             
             response = self.session.post(f"{self.base_url}/clients", json=client_data)
