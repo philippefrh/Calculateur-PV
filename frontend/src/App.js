@@ -1961,7 +1961,7 @@ Cordialement`);
               </div>
               <div className="summary-cell dark">
                 <div className="cell-title">Prime à l'autoconsommation</div>
-                <div className="cell-value">{results.total_aids?.toLocaleString()} €</div>
+                <div className="cell-value">{(results.total_aids || 0).toLocaleString()} €</div>
               </div>
               <div className="summary-cell green">
                 <div className="cell-title">Coût réel du projet</div>
