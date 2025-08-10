@@ -1965,7 +1965,7 @@ Cordialement`);
               </div>
               <div className="summary-cell green">
                 <div className="cell-title">Coût réel du projet</div>
-                <div className="cell-value">{results.financing_with_aids?.financed_amount?.toLocaleString()} €</div>
+                <div className="cell-value">{(results.financing_with_aids?.financed_amount || 0).toLocaleString()} €</div>
               </div>
             </div>
             <div className="summary-row">
