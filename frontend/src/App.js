@@ -2518,7 +2518,7 @@ Cordialement`);
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      Nouvelle mensualité diminuée sur 48 mois (4 ans)
+                      Nouvelle mensualité diminuée sur {optimalFinancingWithAids?.duration_months || 72} mois ({Math.round((optimalFinancingWithAids?.duration_months || 72) / 12)} ans)
                     </div>
                     <div style={{
                       background: 'white',
