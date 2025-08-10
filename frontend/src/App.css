@@ -3598,17 +3598,19 @@ body::after {
   box-shadow: 0 4px 8px rgba(255,152,0,0.3);
 }
 
-/* Styles pour le tableau d'amortissement - REPRODUCTION EXACTE VISUEL ANCIEN LOGICIEL ÉLARGI */
+/* Styles pour le tableau d'amortissement - ULTRA ÉLARGI AU MAXIMUM + TEXTES EN BLEU */
 .amortization-table-section {
   margin: 30px 0;
-  padding: 25px;
+  padding: 10px; /* Padding minimal pour maximum d'espace */
   background: white;
   border-radius: 10px;
   border: 1px solid #ddd;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .amortization-table-section h4 {
-  color: #333;
+  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
   margin-bottom: 20px;
   text-align: center;
   font-size: 1.2rem;
@@ -3617,218 +3619,202 @@ body::after {
 .organisms-header {
   text-align: center;
   background: #f8f8f8;
-  padding: 12px 20px;
+  padding: 12px 10px;
   border-radius: 5px;
   margin-bottom: 25px;
   font-size: 0.9rem;
-  color: #555;
+  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
   border: 1px solid #ddd;
   font-weight: normal;
   line-height: 1.4;
 }
 
-/* Layout exact reproduction ULTRA-ÉLARGI pour maximum d'espace */
-.amortization-exact-layout-wide {
+/* Layout ULTRA-ÉLARGI - utilise 99% de l'espace disponible */
+.amortization-ultra-wide {
   background: white;
-  padding: 40px 15px; /* Marges minimales (≈1cm) */
+  padding: 30px 5px; /* Marges ultra-minimales (≈2mm) */
   border: 2px solid #4caf50;
   border-radius: 10px;
   position: relative;
-  min-height: 550px;
-  width: calc(100% - 30px); /* Utilise toute la largeur - marges */
-  max-width: none; /* Suppression de la limite de largeur */
+  min-height: 580px;
+  width: 99%; /* UTILISE 99% DE LA LARGEUR TOTALE */
   margin: 0 auto;
   box-sizing: border-box;
 }
 
 /* Première ligne ULTRA-ÉLARGIE */
-.top-row-wide {
+.top-row-ultra {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 40px;
+  align-items: center; /* MÊME NIVEAU pour toutes les cases */
+  margin-bottom: 50px;
   position: relative;
-  gap: 60px; /* Maximum d'espace entre les éléments */
+  gap: 20px;
+  width: 100%;
 }
 
-/* Cases avec CONTOUR VERT uniquement (pas remplies) */
+/* Cases avec CONTOUR VERT uniquement */
 .box-outline {
   background: white;
   border: 3px solid #4caf50;
-  color: #333;
-  padding: 14px 20px; /* Plus de padding */
+  color: #2196f3; /* TEXTE EN BLEU comme ÉCO-FINANCEMENT */
+  padding: 16px 20px;
   border-radius: 5px;
   text-align: center;
   font-weight: bold;
   font-size: 1rem;
+  line-height: 1.3;
 }
 
-/* Cases vertes remplies (seulement pour 3 mois = 0€ et mensualités) */
+/* Case verte remplie (seulement pour 3 mois = 0€) */
 .box-green {
   background: #4caf50;
   color: white;
-  padding: 14px 20px; /* Plus de padding */
+  padding: 16px 20px;
   border-radius: 5px;
   text-align: center;
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .installation-box {
-  min-width: 180px; /* Plus large */
   flex: 1;
+  min-width: 200px;
 }
 
 .months-zero-box {
-  min-width: 180px; /* Plus large */
   flex: 1;
+  min-width: 200px;
   font-size: 1.4rem;
-  background: #4caf50;
-  color: white;
 }
 
-.right-section {
+/* Mensualité initiale AU MÊME NIVEAU avec CONTOUR VERT seulement */
+.initial-payment-same-level {
   flex: 1;
-  min-width: 240px; /* Plus large */
-  text-align: center;
+  min-width: 220px;
+  background: white !important; /* CONTOUR VERT seulement */
+  border: 3px solid #4caf50;
+  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
+  font-size: 1rem;
 }
 
-.payment-label {
-  color: #666;
-  font-size: 1rem; /* Plus grand */
-  margin-bottom: 10px;
-  font-weight: normal;
-}
-
-.payment-amount {
-  background: #4caf50;
-  color: white;
-  padding: 14px 20px; /* Plus de padding */
-  border-radius: 5px;
-  font-weight: bold;
-  font-size: 1.3rem; /* Plus grand */
-}
-
-/* Flèches exactes ULTRA-ÉLARGIES */
-.exact-arrows-wide {
+/* Flèches ULTRA-ÉLARGIES */
+.exact-arrows-ultra {
   position: absolute;
   top: 120px;
   left: 0;
   right: 0;
-  height: 50px;
+  height: 60px;
+}
+
+.arrow-1, .arrow-2, .arrow-3 {
+  position: absolute;
+  font-size: 2.2rem;
+  color: #999;
 }
 
 .arrow-1 {
-  position: absolute;
-  left: 180px; /* Ajusté pour plus d'espace */
+  left: 20%;
   top: 0;
-  font-size: 2rem;
-  color: #999;
 }
 
 .arrow-2 {
-  position: absolute;
-  left: 180px;
-  top: 25px;
-  font-size: 2rem;
-  color: #999;
+  left: 20%;
+  top: 30px;
 }
 
-.arrow-horizontal-wide {
+.arrow-horizontal-ultra {
   position: absolute;
-  left: 220px;
-  top: 12px;
+  left: 25%;
+  top: 15px;
   font-size: 1rem;
   color: #999;
-  width: calc(100% - 500px); /* Maximum d'espace pour la flèche */
+  width: 50%; /* ULTRA ÉLARGI */
   text-align: center;
 }
 
 .arrow-3 {
-  position: absolute;
-  right: 180px; /* Ajusté pour plus d'espace */
-  top: 25px;
-  font-size: 2rem;
-  color: #999;
+  right: 20%;
+  top: 30px;
 }
 
 /* Deuxième ligne ULTRA-ÉLARGIE avec 6 cases */
-.main-row-wide {
+.main-row-ultra {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin: 80px 0 40px 0;
-  gap: 15px; /* Plus d'espace entre les éléments */
+  margin: 90px 0 50px 0;
+  gap: 8px; /* Gap minimal pour plus d'espace */
+  width: 100%;
 }
 
-.calc-item {
+.calc-item-ultra {
   text-align: center;
   flex: 1;
-  min-width: 180px; /* Plus large pour 6 cases */
-  max-width: 220px;
+  min-width: 140px;
 }
 
-.label {
-  color: #666;
-  font-size: 0.8rem; /* Légèrement plus grand */
-  margin-bottom: 10px;
-  line-height: 1.3;
-  height: 40px; /* Plus de hauteur */
+.label-ultra {
+  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
+  font-size: 0.8rem;
+  margin-bottom: 12px;
+  line-height: 1.2;
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: normal;
+  font-weight: bold; /* GRAS pour tous les labels */
   text-align: center;
 }
 
-.value-box {
-  min-height: 55px; /* Plus haut */
+.value-box-ultra {
+  min-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem; /* Plus grand */
+  font-size: 1.1rem;
   background: white;
   border: 3px solid #4caf50;
-  color: #333;
-  padding: 8px 10px; /* Plus de padding */
+  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
+  font-weight: bold;
+  padding: 10px 8px;
 }
 
-.operator {
-  color: #333;
-  font-size: 1.8rem;
+/* Opérateurs CENTRÉS entre les cases */
+.operator-centered {
+  color: #2196f3; /* BLEU comme ÉCO-FINANCEMENT */
+  font-size: 2rem;
   font-weight: bold;
-  align-self: flex-end;
-  margin-bottom: 28px;
-  padding: 0 10px;
+  align-self: center; /* CENTRÉ entre les cases */
+  margin: 0 5px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  height: 100px; /* Hauteur pour centrer avec les cases */
 }
 
 /* Troisième ligne ULTRA-ÉLARGIE */
-.bottom-row-wide {
+.bottom-row-ultra {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 40px;
-  gap: 25px; /* Maximum d'espace */
+  margin-bottom: 50px;
+  gap: 15px;
+  width: 100%;
 }
 
-.large-text {
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-/* ÉCO-FINANCEMENT repositionné avec plus d'espace */
-.eco-financing-repositioned {
+/* ÉCO-FINANCEMENT repositionné pour l'espace élargi */
+.eco-financing-ultra {
   position: absolute;
-  top: 80px;
-  right: 40px; /* Plus d'espace depuis le bord */
+  top: 90px;
+  right: 20px;
   background: white;
   border: 3px solid #2196f3;
   border-radius: 8px;
-  padding: 20px 15px; /* Plus de padding */
+  padding: 20px 15px;
   text-align: center;
-  width: 150px; /* Légèrement plus large */
-  height: 115px;
+  width: 160px;
+  height: 120px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -3861,68 +3847,42 @@ body::after {
 
 /* Responsive ULTRA-ÉLARGI */
 @media (max-width: 1400px) {
-  .amortization-exact-layout-wide {
-    padding: 30px 10px; /* Marges encore plus petites */
-    width: calc(100% - 20px);
+  .amortization-ultra-wide {
+    width: 98%;
+    padding: 25px 3px;
   }
   
-  .main-row-wide {
-    gap: 12px;
-  }
-  
-  .calc-item {
-    min-width: 150px;
-  }
-  
-  .label {
-    font-size: 0.75rem;
+  .main-row-ultra {
+    gap: 6px;
   }
 }
 
 @media (max-width: 1200px) {
-  .amortization-exact-layout-wide {
-    padding: 25px 10px; /* Maximum d'espace utilisé */
+  .amortization-ultra-wide {
+    width: 97%;
+    padding: 20px 3px;
     min-height: auto;
-    width: calc(100% - 20px);
   }
   
-  .top-row-wide,
-  .main-row-wide,
-  .bottom-row-wide {
+  .top-row-ultra,
+  .main-row-ultra,
+  .bottom-row-ultra {
     flex-direction: column;
     gap: 15px;
     align-items: center;
   }
   
-  .calc-item {
-    max-width: 100%;
-    min-width: 250px; /* Plus large sur mobile aussi */
+  .calc-item-ultra {
+    min-width: 80%;
   }
   
-  .exact-arrows-wide {
+  .exact-arrows-ultra {
     display: none;
   }
   
-  .eco-financing-repositioned {
+  .eco-financing-ultra {
     position: static;
     margin: 20px auto 0;
-    width: 220px; /* Plus large sur mobile */
-  }
-}
-
-@media (max-width: 768px) {
-  .amortization-exact-layout-wide {
-    padding: 20px 5px; /* Marges minimales sur mobile */
-    width: calc(100% - 10px);
-  }
-  
-  .calc-item {
-    min-width: 200px;
-  }
-  
-  .value-box {
-    font-size: 1rem;
-    min-height: 50px;
   }
 }
 
