@@ -1995,7 +1995,7 @@ Cordialement`);
               <span className="financial-label">Investissement:</span>
               {(results.discount_applied > 0 || results.battery_selected) ? (
                 <>
-                  <span className="financial-value" style={{color: '#2ecc71', fontWeight: 'bold'}}>{results.kit_price_final?.toLocaleString()} € TTC</span>
+                  <span className="financial-value" style={{color: '#2ecc71', fontWeight: 'bold'}}>{(results.kit_price_final || 0).toLocaleString()} € TTC</span>
                   {results.discount_applied > 0 && (
                     <span className="discount-badge" style={{background: '#e74c3c', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '10px', marginLeft: '8px'}}>
                       -{results.discount_applied} €
