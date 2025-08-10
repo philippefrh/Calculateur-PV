@@ -2550,7 +2550,7 @@ Cordialement`);
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'flex-end',
-                  marginBottom: '40px',
+                  marginBottom: '30px', // Réduit pour faire place à l'ÉCO-FINANCEMENT en dessous
                   gap: '15px',
                   flexWrap: 'nowrap'
                 }}>
@@ -2697,52 +2697,26 @@ Cordialement`);
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* ÉCO-FINANCEMENT - AJUSTÉ POUR RESTER DANS LE CARRÉ BLANC */}
-              <div style={{
-                position: 'fixed',
-                top: '50%',
-                right: '20px',
-                transform: 'translateY(-50%)',
-                background: 'white',
-                border: '4px solid #2196f3',
-                borderRadius: '12px',
-                padding: '20px 15px', // Padding réduit pour que le texte rentre
-                textAlign: 'center',
-                width: '180px',
-                height: '140px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                boxShadow: '0 6px 16px rgba(33, 150, 243, 0.3)',
-                zIndex: '1000'
-              }}>
+                {/* ÉCO-FINANCEMENT - EN DESSOUS, SUR TOUTE LA LARGEUR, EN UNE LIGNE */}
                 <div style={{
-                  color: '#2196f3',
-                  fontWeight: 'bold',
-                  fontSize: '1rem', // Taille ajustée
-                  marginBottom: '8px',
-                  lineHeight: '1.1' // Espacement réduit
+                  background: 'white',
+                  border: '3px solid #2196f3',
+                  borderRadius: '8px',
+                  padding: '20px',
+                  textAlign: 'center',
+                  width: '100%',
+                  marginTop: '20px',
+                  marginBottom: '20px'
                 }}>
-                  ÉCO-FINANCEMENT
-                </div>
-                <div style={{
-                  color: '#2196f3',
-                  fontSize: '2rem', // Taille réduite
-                  fontWeight: 'bold',
-                  margin: '8px 0' // Marges réduites
-                }}>
-                  =
-                </div>
-                <div style={{
-                  color: '#2196f3',
-                  fontWeight: 'bold',
-                  fontSize: '0.9rem', // Taille ajustée
-                  lineHeight: '1.1' // Espacement réduit
-                }}>
-                  TRANSFERT DE<br/>CHARGES
+                  <div style={{
+                    color: '#2196f3',
+                    fontWeight: 'bold',
+                    fontSize: '1.2rem',
+                    letterSpacing: '1px'
+                  }}>
+                    ÉCO-FINANCEMENT = TRANSFERT DE CHARGES
+                  </div>
                 </div>
               </div>
             </div>
