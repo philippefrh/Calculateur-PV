@@ -2273,21 +2273,21 @@ Cordialement`);
             <div className="amortization-table-section">
               <h4>📊 Tableau d'amortissement - Récupération de votre investissement</h4>
               
-              {/* En-tête organismes */}
+              {/* En-tête organismes AVEC TEXTES EN GRAS */}
               <div className="organisms-header">
-                Envois de votre dossier aux différents organismes: Mairie - Bâtiments de France - Enedis - Service technique - Subventions - Domofinance
+                Envois de votre dossier aux différents organismes: <strong>Mairie</strong> - Bâtiments de France - Enedis - <strong>EDF</strong> - <strong>Service technique</strong> - Subventions - <strong>Organisme de financement</strong>
               </div>
 
-              {/* Container principal reproduisant exactement l'image */}
-              <div className="amortization-exact-layout">
+              {/* Container principal élargi pour éviter les chevauchements */}
+              <div className="amortization-exact-layout-wide">
                 
-                {/* Première ligne: Installation, 6 mois = 0€, Mensualité initiale */}
-                <div className="top-row">
+                {/* Première ligne: Installation, 3 mois = 0€, Mensualité initiale */}
+                <div className="top-row-wide">
                   <div className="box-outline installation-box">
                     Installation
                   </div>
                   <div className="box-green months-zero-box">
-                    6 mois = 0€
+                    3 mois = 0€
                   </div>
                   <div className="right-section">
                     <div className="payment-label">Mensualité initiale</div>
@@ -2298,15 +2298,15 @@ Cordialement`);
                 </div>
 
                 {/* Flèches exactes comme sur la photo */}
-                <div className="exact-arrows">
+                <div className="exact-arrows-wide">
                   <div className="arrow-1">↑</div>
                   <div className="arrow-2">↓</div>
-                  <div className="arrow-horizontal">←――――――――――――――――――――――――――――――――――――→</div>
+                  <div className="arrow-horizontal-wide">←――――――――――――――――――――――――――――――――――――――――――――――――――→</div>
                   <div className="arrow-3">↓</div>
                 </div>
 
-                {/* Deuxième ligne: 5 cases avec opérateurs comme sur la photo */}
-                <div className="main-row">
+                {/* Deuxième ligne: 6 cases avec opérateurs (AJOUT case TOTAL) */}
+                <div className="main-row-wide">
                   <div className="calc-item">
                     <div className="label">Récupération des subventions</div>
                     <div className="box-outline value-box">
@@ -2317,18 +2317,28 @@ Cordialement`);
                   <div className="operator">+</div>
                   
                   <div className="calc-item">
-                    <div className="label">Les économies réalisées sur 6 mois</div>
+                    <div className="label">Les économies réalisées sur les 3 premiers mois</div>
                     <div className="box-outline value-box">
-                      {Math.round((results.monthly_savings || 0) * 6)} €
+                      {Math.round((results.monthly_savings || 0) * 3)} €
                     </div>
                   </div>
                   
                   <div className="operator">=</div>
                   
+                  {/* NOUVELLE CASE TOTAL */}
+                  <div className="calc-item">
+                    <div className="label">Total</div>
+                    <div className="box-outline value-box">
+                      {Math.round((results.total_aids || 0) + ((results.monthly_savings || 0) * 3))} €
+                    </div>
+                  </div>
+                  
+                  <div className="operator">→</div>
+                  
                   <div className="calc-item">
                     <div className="label">Reste à financer</div>
                     <div className="box-outline value-box">
-                      {Math.round((((results.discount_applied > 0 || results.battery_selected) ? results.kit_price_final : results.kit_price) || 0) - (results.total_aids || 0))} €
+                      {Math.round((((results.discount_applied > 0 || results.battery_selected) ? results.kit_price_final : results.kit_price) || 0) - (results.total_aids || 0) - ((results.monthly_savings || 0) * 3))} €
                     </div>
                   </div>
                   
@@ -2342,8 +2352,8 @@ Cordialement`);
                   </div>
                 </div>
 
-                {/* Troisième ligne: 4 cases comme sur la photo */}
-                <div className="bottom-row">
+                {/* Troisième ligne: 4 cases AVEC VRAI CALCUL DE REVENTE */}
+                <div className="bottom-row-wide">
                   <div className="calc-item">
                     <div className="label">21% restants (abonnement + consommation résiduelle)</div>
                     <div className="box-outline value-box large-text">
@@ -2361,20 +2371,40 @@ Cordialement`);
                   <div className="calc-item">
                     <div className="label">+ Revente du surplus</div>
                     <div className="box-outline value-box">
-                      0 €/mois
+                      {(() => {
+                        const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
+                        // Calcul revente surplus selon puissance kit (6kW = 16 panneaux)
+                        if (kitPower === 3) return '20,21';
+                        if (kitPower === 6) return '40,43'; // 6kW = 16 panneaux
+                        if (kitPower === 9) return '60,64';
+                        if (kitPower === 12) return '81,40';
+                        if (kitPower === 15) return '100,84';
+                        if (kitPower === 18) return '121,26';
+                        return '40,43'; // défaut 6kW
+                      })()} €/mois
                     </div>
                   </div>
                   
                   <div className="calc-item">
                     <div className="label">=</div>
                     <div className="box-outline value-box">
-                      {Math.round(results.monthly_savings || 0)} €/mois
+                      {(() => {
+                        const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
+                        let surplusRevenue = 40.43; // défaut 6kW
+                        if (kitPower === 3) surplusRevenue = 20.21;
+                        else if (kitPower === 6) surplusRevenue = 40.43;
+                        else if (kitPower === 9) surplusRevenue = 60.64;
+                        else if (kitPower === 12) surplusRevenue = 81.40;
+                        else if (kitPower === 15) surplusRevenue = 100.84;
+                        else if (kitPower === 18) surplusRevenue = 121.26;
+                        return Math.round((results.monthly_savings || 0) + surplusRevenue);
+                      })()} €/mois
                     </div>
                   </div>
                 </div>
 
-                {/* ÉCO-FINANCEMENT - TAILLE ET POSITION EXACTES comme sur la photo */}
-                <div className="eco-financing-exact">
+                {/* ÉCO-FINANCEMENT - REPOSITIONNÉ pour éviter chevauchement */}
+                <div className="eco-financing-repositioned">
                   <div className="eco-title">ÉCO-FINANCEMENT</div>
                   <div className="eco-equal">=</div>
                   <div className="eco-subtitle">TRANSFERT DE<br/>CHARGES</div>
