@@ -3784,9 +3784,9 @@ body::after {
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
-  background: white !important;
+  background: #4caf50 !important;
   border: 3px solid #4caf50 !important;
-  color: #2196f3 !important;
+  color: white !important;
   font-weight: bold;
   padding: 8px 4px;
 }
