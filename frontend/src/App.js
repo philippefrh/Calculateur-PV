@@ -2788,7 +2788,7 @@ Cordialement`);
                     // Calcul : économies mensuelles × 12 × 20
                     const monthlySavings = results.monthly_savings || 0;
                     const total20YearsSavings = Math.round(monthlySavings * 12 * 20);
-                    return total20YearsSavings.toLocaleString() + ' €';
+                    return (total20YearsSavings || 0).toLocaleString() + ' €';
                   })()}
                 </div>
 
