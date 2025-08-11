@@ -2753,7 +2753,7 @@ Cordialement`);
                     const annualBill = monthlyBill * 12;
                     // Formule pour 5% d'augmentation sur 20 ans : montant_initial × ((1.05^20 - 1) / 0.05)
                     const total20Years = Math.round(annualBill * ((Math.pow(1.05, 20) - 1) / 0.05));
-                    return total20Years.toLocaleString() + ' €';
+                    return (total20Years || 0).toLocaleString() + ' €';
                   })()}
                 </div>
 
