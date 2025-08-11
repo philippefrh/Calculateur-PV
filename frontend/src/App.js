@@ -2860,7 +2860,7 @@ Cordialement`);
                 }}>
                   {(() => {
                     // Calcul : revente surplus mensuelle × 12 × 20
-                    const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
+                    const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : (results.kit_power || 6);
                     let monthlySurplusRevenue = 40.43;
                     if (kitPower === 3) monthlySurplusRevenue = 20.21;
                     else if (kitPower === 6) monthlySurplusRevenue = 40.43;
@@ -2870,7 +2870,7 @@ Cordialement`);
                     else if (kitPower === 18) monthlySurplusRevenue = 121.26;
                     
                     const total20YearsSurplus = Math.round(monthlySurplusRevenue * 12 * 20);
-                    return total20YearsSurplus.toLocaleString() + ' €';
+                    return (total20YearsSurplus || 0).toLocaleString() + ' €';
                   })()}
                 </div>
 
