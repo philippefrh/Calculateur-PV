@@ -2827,7 +2827,7 @@ Cordialement`);
                     const annualBillWithPV = newMonthlyBill * 12;
                     // Formule pour 5% d'augmentation sur 20 ans
                     const total20YearsWithPV = Math.round(annualBillWithPV * ((Math.pow(1.05, 20) - 1) / 0.05));
-                    return total20YearsWithPV.toLocaleString() + ' €';
+                    return (total20YearsWithPV || 0).toLocaleString() + ' €';
                   })()}
                 </div>
 
