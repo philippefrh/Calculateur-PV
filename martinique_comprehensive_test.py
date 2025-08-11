@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://f9c5afe9-48c6-4ec1-bea6-55f70aad44ab.preview.emergentagent.com/api"
+BACKEND_URL = "https://64c71565-dabd-45f6-8c54-c3a1db89a41d.preview.emergentagent.com/api"
 
 class MartiniqueComprehensiveTest:
     def __init__(self):
