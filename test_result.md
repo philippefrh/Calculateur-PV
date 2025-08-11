@@ -105,7 +105,18 @@
 user_problem_statement: "L'utilisateur demande maintenant une animation progressive de charge/décharge de la batterie dans l'animation CSS : 1) Quand les panneaux commencent à produire des kWh, la batterie commence à se charger progressivement jusqu'à 100% avec le logo vert qui monte au même rythme. 2) Le chiffre passe de 0%, 5%, 10%, 15%, 20% etc. jusqu'à 100%. 3) Une fois à 100%, faire le processus inverse (décharge) puis recharge etc. en boucle. 4) Remonter le logo vert de recharge car il est encore masqué par le Linky. 5) Agrandir encore la batterie pour qu'elle ait la même taille que le Linky."
 
 frontend:
-  - task: "Animation progressive de charge/décharge de la batterie"
+frontend:
+  - task: "Nouveau visuel 20 ans - Reproduction exacte de l'image fournie par l'utilisateur"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Créé le nouveau visuel 20 ans reproduisant exactement l'image fournie par l'utilisateur avec 6 cases (2 colonnes, 6 rangées) : 1) '20 ans de factures sans PV' (calcul: facture mensuelle × 12 × 20 ans avec augmentation 5% par an), 2) 'Économies générées sur 20 ans' FOND VERT (économies mensuelles × 12 × 20), 3) '20 ans de factures avec PV' FOND VERT (18% restants × 12 × 20 ans avec augmentation 5% par an), 4) 'Dont revente surplus sur 20 ans' FOND VERT (revente mensuelle selon puissance kit × 12 × 20), 5) 'Montant moyen de vos factures mensuelle sans PV' (montant mensuel actuel), 6) 'Montant moyen de vos factures mensuelle avec PV' FOND VERT (18% restants). Intégré exactement en dessous du 'Tableau d'amortissement - Récupération de votre investissement'. Cases oranges remplacées par vertes comme demandé. Calculs dynamiques intégrés avec les données existantes du logiciel."
     implemented: true
     working: true
     file: "frontend/src/SolarAnimationCSS.js, frontend/src/SolarAnimationCSS.css"
