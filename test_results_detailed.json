@@ -2,10 +2,10 @@
   {
     "test": "Create Martinique Test Client",
     "success": true,
-    "details": "Martinique test client created: Jean Test, Fort-de-France, 6000kWh/an, 180\u20ac/mois. ID: 5008b8a3-abea-4f83-a099-271ffad2306c",
-    "timestamp": "2025-08-11 02:39:01",
+    "details": "Martinique test client created: Jean Test, Fort-de-France, 6000kWh/an, 180\u20ac/mois. ID: 5e3d35bd-cc09-4d02-8658-119d28f95b21",
+    "timestamp": "2025-08-11 03:46:53",
     "response_data": {
-      "id": "5008b8a3-abea-4f83-a099-271ffad2306c",
+      "id": "5e3d35bd-cc09-4d02-8658-119d28f95b21",
       "first_name": "Jean",
       "last_name": "Test",
       "address": "Fort-de-France, Martinique",
@@ -26,14 +26,14 @@
       "estimated_production": null,
       "estimated_savings": null,
       "pvgis_data": null,
-      "created_at": "2025-08-11T02:39:01.657379"
+      "created_at": "2025-08-11T03:46:53.175011"
     }
   },
   {
     "test": "API Root",
     "success": true,
     "details": "API accessible, message: Solar Calculator API with PVGIS Integration",
-    "timestamp": "2025-08-11 02:39:01",
+    "timestamp": "2025-08-11 03:46:53",
     "response_data": {
       "message": "Solar Calculator API with PVGIS Integration"
     }
@@ -42,7 +42,7 @@
     "test": "Martinique Kits Endpoint",
     "success": false,
     "details": "Expected 3 kits, got 9",
-    "timestamp": "2025-08-11 02:39:01",
+    "timestamp": "2025-08-11 03:46:53",
     "response_data": {
       "kits": [
         {
@@ -151,7 +151,7 @@
     "test": "Martinique Calculation (No Battery)",
     "success": true,
     "details": "Baseline calculation successful. Kit: 6kW, Price: 15900\u20ac, Battery: False",
-    "timestamp": "2025-08-11 02:39:02",
+    "timestamp": "2025-08-11 03:46:53",
     "response_data": {
       "kit_power": 6,
       "kit_price_final": 15900,
@@ -162,7 +162,7 @@
     "test": "Martinique Calculation (With Battery)",
     "success": true,
     "details": "\u2705 BATTERY FUNCTIONALITY WORKING PERFECTLY: Kit 6kW, Original price: 15900\u20ac, Battery cost: +5000\u20ac, Final price: 20900\u20ac (+5000\u20ac increase). Monthly payment increase: +49.62\u20ac/month for 15-year financing.",
-    "timestamp": "2025-08-11 02:39:03",
+    "timestamp": "2025-08-11 03:46:54",
     "response_data": {
       "kit_power": 6,
       "kit_price_original": 15900,
@@ -177,7 +177,7 @@
     "test": "Martinique Battery + Discount Combination",
     "success": true,
     "details": "\u2705 BATTERY + DISCOUNT WORKING: Original 15900\u20ac - 1000\u20ac discount + 5000\u20ac battery = 19900\u20ac final (net +4000\u20ac)",
-    "timestamp": "2025-08-11 02:39:03",
+    "timestamp": "2025-08-11 03:46:55",
     "response_data": {
       "original_price": 15900,
       "discount": 1000,
