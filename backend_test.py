@@ -6657,6 +6657,165 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Amortization Table Data", False, f"Error: {str(e)}")
 
+    def test_martinique_6kw_battery_pricing(self):
+        """Test rapide du backend pour vérifier les calculs de prix Martinique 6kW + batterie"""
+        try:
+            # Create a Martinique client for testing
+            martinique_client_data = {
+                "first_name": "Jean",
+                "last_name": "Martinique",
+                "address": "Fort-de-France, Martinique",
+                "phone": "0696123456",
+                "email": "jean.martinique@test.com",
+                "roof_surface": 60.0,
+                "roof_orientation": "Sud",
+                "velux_count": 0,
+                "heating_system": "Climatisation",
+                "water_heating_system": "Ballon électrique",
+                "water_heating_capacity": 200,
+                "annual_consumption_kwh": 7200.0,
+                "monthly_edf_payment": 220.0,
+                "annual_edf_payment": 2640.0
+            }
+            
+            # Create client
+            client_response = self.session.post(f"{self.base_url}/clients", json=martinique_client_data)
+            if client_response.status_code == 200:
+                client = client_response.json()
+                martinique_client_id = client["id"]
+                self.log_test("Create Martinique Client", True, f"Client créé: {martinique_client_id}", client)
+            else:
+                # Try to use existing client
+                clients_response = self.session.get(f"{self.base_url}/clients")
+                if clients_response.status_code == 200:
+                    clients = clients_response.json()
+                    if clients:
+                        martinique_client_id = clients[0]["id"]
+                        self.log_test("Use Existing Client for Martinique Test", True, f"Using client: {martinique_client_id}")
+                    else:
+                        self.log_test("Martinique 6kW + Battery Pricing", False, "No client available for testing")
+                        return
+                else:
+                    self.log_test("Martinique 6kW + Battery Pricing", False, "Failed to create or get client")
+                    return
+            
+            # Test 1: 6kW sans batterie (baseline)
+            response_no_battery = self.session.post(
+                f"{self.base_url}/calculate/{martinique_client_id}",
+                params={"region": "martinique", "manual_kit_power": 6, "battery_selected": False}
+            )
+            
+            if response_no_battery.status_code != 200:
+                self.log_test("Martinique 6kW + Battery Pricing", False, f"Failed baseline calculation: {response_no_battery.status_code}")
+                return
+            
+            calc_no_battery = response_no_battery.json()
+            
+            # Test 2: 6kW avec batterie
+            response_with_battery = self.session.post(
+                f"{self.base_url}/calculate/{martinique_client_id}",
+                params={"region": "martinique", "manual_kit_power": 6, "battery_selected": True}
+            )
+            
+            if response_with_battery.status_code != 200:
+                self.log_test("Martinique 6kW + Battery Pricing", False, f"Failed battery calculation: {response_with_battery.status_code}")
+                return
+            
+            calc_with_battery = response_with_battery.json()
+            
+            # Vérifications des prix
+            issues = []
+            
+            # Vérifier kit_price_original (doit être identique dans les deux cas)
+            kit_price_original_no_battery = calc_no_battery.get("kit_price_original", 0)
+            kit_price_original_with_battery = calc_with_battery.get("kit_price_original", 0)
+            
+            if kit_price_original_no_battery != 15900:
+                issues.append(f"kit_price_original sans batterie: attendu 15900€, obtenu {kit_price_original_no_battery}€")
+            
+            if kit_price_original_with_battery != 15900:
+                issues.append(f"kit_price_original avec batterie: attendu 15900€, obtenu {kit_price_original_with_battery}€")
+            
+            if kit_price_original_no_battery != kit_price_original_with_battery:
+                issues.append(f"kit_price_original doit être identique: sans batterie {kit_price_original_no_battery}€ vs avec batterie {kit_price_original_with_battery}€")
+            
+            # Vérifier kit_price_final
+            kit_price_final_no_battery = calc_no_battery.get("kit_price_final", 0)
+            kit_price_final_with_battery = calc_with_battery.get("kit_price_final", 0)
+            
+            if kit_price_final_no_battery != 15900:
+                issues.append(f"kit_price_final sans batterie: attendu 15900€, obtenu {kit_price_final_no_battery}€")
+            
+            if kit_price_final_with_battery != 20900:
+                issues.append(f"kit_price_final avec batterie: attendu 20900€ (15900 + 5000), obtenu {kit_price_final_with_battery}€")
+            
+            # Vérifier battery_selected et battery_cost
+            battery_selected_no_battery = calc_no_battery.get("battery_selected", None)
+            battery_selected_with_battery = calc_with_battery.get("battery_selected", None)
+            battery_cost_no_battery = calc_no_battery.get("battery_cost", 0)
+            battery_cost_with_battery = calc_with_battery.get("battery_cost", 0)
+            
+            if battery_selected_no_battery != False:
+                issues.append(f"battery_selected sans batterie: attendu False, obtenu {battery_selected_no_battery}")
+            
+            if battery_selected_with_battery != True:
+                issues.append(f"battery_selected avec batterie: attendu True, obtenu {battery_selected_with_battery}")
+            
+            if battery_cost_no_battery != 0:
+                issues.append(f"battery_cost sans batterie: attendu 0€, obtenu {battery_cost_no_battery}€")
+            
+            if battery_cost_with_battery != 5000:
+                issues.append(f"battery_cost avec batterie: attendu 5000€, obtenu {battery_cost_with_battery}€")
+            
+            # Vérifier que les financements sont recalculés avec le nouveau prix
+            financing_no_battery = calc_no_battery.get("financing_with_aids", {})
+            financing_with_battery = calc_with_battery.get("financing_with_aids", {})
+            
+            monthly_payment_no_battery = financing_no_battery.get("monthly_payment", 0)
+            monthly_payment_with_battery = financing_with_battery.get("monthly_payment", 0)
+            
+            # Le paiement mensuel avec batterie doit être plus élevé
+            if monthly_payment_with_battery <= monthly_payment_no_battery:
+                issues.append(f"Paiement mensuel avec batterie ({monthly_payment_with_battery}€) doit être > sans batterie ({monthly_payment_no_battery}€)")
+            
+            # Calculer la différence attendue (environ +49€/mois pour +5000€ sur 15 ans à 8.63%)
+            expected_increase = monthly_payment_with_battery - monthly_payment_no_battery
+            if expected_increase < 40 or expected_increase > 60:
+                issues.append(f"Augmentation mensuelle {expected_increase:.2f}€ semble incorrecte (attendu ~49€ pour +5000€)")
+            
+            if issues:
+                self.log_test("Martinique 6kW + Battery Pricing", False, f"Problèmes détectés: {'; '.join(issues)}", {
+                    "sans_batterie": {
+                        "kit_price_original": kit_price_original_no_battery,
+                        "kit_price_final": kit_price_final_no_battery,
+                        "battery_selected": battery_selected_no_battery,
+                        "battery_cost": battery_cost_no_battery,
+                        "monthly_payment": monthly_payment_no_battery
+                    },
+                    "avec_batterie": {
+                        "kit_price_original": kit_price_original_with_battery,
+                        "kit_price_final": kit_price_final_with_battery,
+                        "battery_selected": battery_selected_with_battery,
+                        "battery_cost": battery_cost_with_battery,
+                        "monthly_payment": monthly_payment_with_battery
+                    }
+                })
+            else:
+                self.log_test("Martinique 6kW + Battery Pricing", True, 
+                            f"✅ CALCULS DE PRIX MARTINIQUE 6kW + BATTERIE VÉRIFIÉS: kit_price_original={kit_price_original_with_battery}€ (identique), kit_price_final sans batterie={kit_price_final_no_battery}€, avec batterie={kit_price_final_with_battery}€ (+5000€), paiement mensuel +{expected_increase:.2f}€/mois. Tous les calculs backend fonctionnent correctement après suppression des prix barrés.", 
+                            {
+                                "kit_price_original": kit_price_original_with_battery,
+                                "kit_price_final_no_battery": kit_price_final_no_battery,
+                                "kit_price_final_with_battery": kit_price_final_with_battery,
+                                "battery_cost": battery_cost_with_battery,
+                                "monthly_increase": expected_increase,
+                                "monthly_payment_no_battery": monthly_payment_no_battery,
+                                "monthly_payment_with_battery": monthly_payment_with_battery
+                            })
+                
+        except Exception as e:
+            self.log_test("Martinique 6kW + Battery Pricing", False, f"Erreur: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on user-requested endpoints"""
         print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
