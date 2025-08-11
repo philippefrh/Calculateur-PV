@@ -2702,6 +2702,255 @@ Cordialement`);
                 </div>
               </div>
             </div>
+
+            {/* NOUVEAU VISUEL 20 ANS - Reproduit exactement l'image fournie */}
+            <div style={{ 
+              margin: '30px 0', 
+              padding: '20px', 
+              background: 'white',
+              borderRadius: '10px',
+              border: '2px solid #ddd',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+            }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '15px',
+                maxWidth: '1000px',
+                margin: '0 auto'
+              }}>
+                
+                {/* Ligne 1: 20 ans de factures sans PV */}
+                <div style={{
+                  background: '#557568', // Gris vert foncé comme l'image
+                  color: 'white',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.1rem',
+                  lineHeight: '1.3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  20 ans de factures<br />sans PV
+                </div>
+                <div style={{
+                  background: 'white',
+                  border: '2px solid #ccc',
+                  color: '#333',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {(() => {
+                    // Calcul : facture mensuelle × 12 × 20 ans avec augmentation 5% par an
+                    const monthlyBill = parseInt(formData.monthlyEDFPayment) || 250;
+                    const annualBill = monthlyBill * 12;
+                    // Formule pour 5% d'augmentation sur 20 ans : montant_initial × ((1.05^20 - 1) / 0.05)
+                    const total20Years = Math.round(annualBill * ((Math.pow(1.05, 20) - 1) / 0.05));
+                    return total20Years.toLocaleString() + ' €';
+                  })()}
+                </div>
+
+                {/* Ligne 2: Économies générées sur 20 ans (FOND VERT) */}
+                <div style={{
+                  background: '#4caf50', // VERT au lieu d'orange comme demandé
+                  color: 'white',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.1rem',
+                  lineHeight: '1.3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  Économies générées<br />sur 20 ans
+                </div>
+                <div style={{
+                  background: 'white',
+                  border: '2px solid #ccc',
+                  color: '#333',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {(() => {
+                    // Calcul : économies mensuelles × 12 × 20
+                    const monthlySavings = results.monthly_savings || 0;
+                    const total20YearsSavings = Math.round(monthlySavings * 12 * 20);
+                    return total20YearsSavings.toLocaleString() + ' €';
+                  })()}
+                </div>
+
+                {/* Ligne 3: 20 ans de factures avec PV (FOND VERT) */}
+                <div style={{
+                  background: '#4caf50', // VERT comme demandé
+                  color: 'white',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.1rem',
+                  lineHeight: '1.3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  20 ans de factures<br />avec PV
+                </div>
+                <div style={{
+                  background: 'white',
+                  border: '2px solid #ccc',
+                  color: '#333',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {(() => {
+                    // Calcul : nouvelle facture mensuelle × 12 × 20 ans avec augmentation 5% par an
+                    const monthlyBill = parseInt(formData.monthlyEDFPayment) || 250;
+                    const restant18 = Math.round(monthlyBill * 0.18);
+                    const newMonthlyBill = restant18;
+                    const annualBillWithPV = newMonthlyBill * 12;
+                    // Formule pour 5% d'augmentation sur 20 ans
+                    const total20YearsWithPV = Math.round(annualBillWithPV * ((Math.pow(1.05, 20) - 1) / 0.05));
+                    return total20YearsWithPV.toLocaleString() + ' €';
+                  })()}
+                </div>
+
+                {/* Ligne 4: Dont revente surplus sur 20 ans (FOND VERT) */}
+                <div style={{
+                  background: '#4caf50', // VERT comme demandé
+                  color: 'white',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.1rem',
+                  lineHeight: '1.3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  Dont revente surplus<br />sur 20 ans
+                </div>
+                <div style={{
+                  background: 'white',
+                  border: '2px solid #ccc',
+                  color: '#333',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {(() => {
+                    // Calcul : revente surplus mensuelle × 12 × 20
+                    const kitPower = formData.useManualKit && formData.manualKit ? formData.manualKit.power : results.kit_power;
+                    let monthlySurplusRevenue = 40.43;
+                    if (kitPower === 3) monthlySurplusRevenue = 20.21;
+                    else if (kitPower === 6) monthlySurplusRevenue = 40.43;
+                    else if (kitPower === 9) monthlySurplusRevenue = 60.64;
+                    else if (kitPower === 12) monthlySurplusRevenue = 81.40;
+                    else if (kitPower === 15) monthlySurplusRevenue = 100.84;
+                    else if (kitPower === 18) monthlySurplusRevenue = 121.26;
+                    
+                    const total20YearsSurplus = Math.round(monthlySurplusRevenue * 12 * 20);
+                    return total20YearsSurplus.toLocaleString() + ' €';
+                  })()}
+                </div>
+
+                {/* Ligne 5: Montant moyen factures mensuelle sans PV */}
+                <div style={{
+                  background: '#557568', // Gris vert foncé comme l'image
+                  color: 'white',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.1rem',
+                  lineHeight: '1.3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  Montant moyen de vos factures<br />mensuelle sans PV
+                </div>
+                <div style={{
+                  background: 'white',
+                  border: '2px solid #ccc',
+                  color: '#333',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {parseInt(formData.monthlyEDFPayment) || 250} €
+                </div>
+
+                {/* Ligne 6: Montant moyen factures mensuelle avec PV (FOND VERT) */}
+                <div style={{
+                  background: '#4caf50', // VERT au lieu d'orange comme demandé
+                  color: 'white',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.1rem',
+                  lineHeight: '1.3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  Montant moyen de vos factures<br />mensuelle avec PV
+                </div>
+                <div style={{
+                  background: 'white',
+                  border: '2px solid #ccc',
+                  color: '#333',
+                  padding: '30px 20px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {(() => {
+                    // Calcul : 18% restants (abonnement + consommation résiduelle)
+                    const monthlyBill = parseInt(formData.monthlyEDFPayment) || 250;
+                    const restant18 = Math.round(monthlyBill * 0.18);
+                    return restant18 + ' €';
+                  })()}
+                </div>
+              </div>
+              
+              {/* Texte en bas comme dans l'image */}
+              <div style={{
+                textAlign: 'center',
+                marginTop: '15px',
+                color: '#888',
+                fontSize: '0.9rem',
+                fontStyle: 'italic'
+              }}>
+                Valeurs sur la base d'hypothèses - Montants moyens basés sur la première année
+              </div>
+            </div>
           </div>
           
           {/* Bouton Animation prioritaire */}
