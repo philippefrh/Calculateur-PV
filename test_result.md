@@ -234,6 +234,18 @@ agent_communication:
     message: "🎯 BACKEND TESTING COMPLETED FOR 20-YEAR VISUAL SUPPORT: Conducted comprehensive backend testing as specifically requested in review after implementation of new 20-year financial visual component. RESULTS: ✅ ALL BACKEND FUNCTIONALITY WORKING PERFECTLY (100% SUCCESS RATE). 1) ✅ API CONNECTIVITY: Backend fully accessible and responding correctly to all requests. 2) ✅ SOLAR CALCULATION DATA: All required fields available for 20-year calculations (kit_power: 7kW, monthly_savings: 163.84€, estimated_production: 8040 kWh, kit_price: 24900€, autonomy_percentage: 100%, surplus_kwh: 1206, autoconsumption_kwh: 6834, annual_edf_bill: 2640€). 3) ✅ 20-YEAR CALCULATIONS VERIFIED: Monthly savings 163.84€ → 20-year total savings 39,320€, Surplus 20-year resale 1,833€. 4) ✅ BATTERY FUNCTIONALITY: Working correctly (without battery: 24,900€, with battery: 29,900€ +5,000€ exactly as expected). 5) ✅ MARTINIQUE REGION SUPPORT: All data available (6kW kit 15,900€, monthly savings 141.62€, 20-year calculations: factures sans PV 87,294€, économies générées 33,989€, factures avec PV 3,739€, revente surplus 1,571€, montant mensuel sans PV 220€, montant mensuel avec PV 9.42€). 6) ✅ FINANCING CALCULATIONS: Working correctly (monthly payment 152.69€, financed amount 19,360€). 7) ✅ NO REGRESSIONS: Comprehensive regression testing completed - all 12 backend endpoints tested successfully (API Root, Solar Kits, Regions, France/Martinique regions, calculations, battery, discounts) with 100% pass rate. CONCLUSION: The backend fully supports the new 20-year visual component with all required data fields and calculations working perfectly. No regressions detected in existing functionality."
 
 backend:
+  - task: "Nouveau endpoint PDF France Renov Martinique"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ FRANCE RENOV MARTINIQUE PDF ENDPOINT FULLY TESTED AND WORKING: Comprehensive testing completed of the new /api/generate-france-renov-martinique-pdf/{client_id} endpoint as requested in review. RESULTS: 🎯 ALL 6 MAIN REQUIREMENTS ACHIEVED (100% SUCCESS). 1) ✅ API ENDPOINT FUNCTIONAL: HTTP 200 response, proper PDF generation without errors. 2) ✅ PDF GENERATION SUCCESS: 4,632 bytes PDF generated successfully in SYRIUS format (compact vs 170,000 bytes regular PDF). 3) ✅ RETURNS PROPER PDF: Content-Type application/pdf, valid PDF header (%PDF), proper filename format (etude_solaire_[client]_YYYYMMDD.pdf). 4) ✅ CLIENT DATA INTEGRATION: Dynamic client information correctly integrated (name, address, consumption data, solar calculations). 5) ✅ SYRIUS FORMAT RESPECTED: Compact PDF format with France Renov Martinique branding, Martinique-specific calculations, proper header/footer structure. 6) ✅ NO REGRESSIONS: All other endpoints tested and working correctly, existing PDF endpoint still functional (170,365 bytes). Fixed 'total_cost' calculation issue in PDF generation. The new endpoint forces Martinique region calculations and generates PDFs with France Renov Martinique specific formatting and contact information."
+
   - task: "Vérification backend après modifications tableau d'amortissement"
     implemented: true
     working: true
