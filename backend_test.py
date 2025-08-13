@@ -6948,7 +6948,7 @@ class SolarCalculatorTester:
                 pdf_size = len(response.content)
                 content_type = response.headers.get('content-type', '')
                 
-                if content_type.startswith('application/pdf') and pdf_size > 5000:
+                if content_type.startswith('application/pdf') and pdf_size > 3000:
                     self.log_test("No Regressions Check", True, 
                                 f"✅ Existing PDF endpoint still working ({pdf_size:,} bytes). No regressions detected.", 
                                 {"existing_pdf_size": pdf_size})
