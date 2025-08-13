@@ -6919,6 +6919,13 @@ class SolarCalculatorTester:
         # PDF generation tests
         self.test_pdf_generation_financing_tables()
         
+        # NEW: France Renov Martinique PDF tests
+        print("\n🏢 TESTING FRANCE RENOV MARTINIQUE PDF ENDPOINT - NEW FEATURE")
+        print("-" * 70)
+        self.test_france_renov_martinique_pdf()
+        self.test_france_renov_martinique_pdf_with_martinique_client()
+        self.test_no_regressions_other_endpoints()
+        
         # Region system tests
         self.test_regions_endpoint()
         self.test_france_region_config()
