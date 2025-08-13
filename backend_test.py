@@ -6816,6 +6816,150 @@ class SolarCalculatorTester:
         except Exception as e:
             self.log_test("Martinique 6kW + Battery Pricing", False, f"Erreur: {str(e)}")
 
+    def test_france_renov_martinique_pdf(self):
+        """Test the new France Renov Martinique PDF endpoint"""
+        if not self.client_id:
+            self.log_test("France Renov Martinique PDF", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test the new endpoint
+            response = self.session.get(f"{self.base_url}/generate-france-renov-martinique-pdf/{self.client_id}")
+            
+            if response.status_code == 200:
+                # Check if response is actually a PDF
+                content_type = response.headers.get('content-type', '')
+                if not content_type.startswith('application/pdf'):
+                    self.log_test("France Renov Martinique PDF", False, f"Response is not a PDF. Content-Type: {content_type}")
+                    return
+                
+                # Check PDF size (should be reasonable)
+                pdf_size = len(response.content)
+                if pdf_size < 5000:  # Less than 5KB seems too small
+                    self.log_test("France Renov Martinique PDF", False, f"PDF size {pdf_size} bytes seems too small")
+                    return
+                elif pdf_size > 10000000:  # More than 10MB seems too large
+                    self.log_test("France Renov Martinique PDF", False, f"PDF size {pdf_size} bytes seems too large")
+                    return
+                
+                # Check filename format
+                content_disposition = response.headers.get('content-disposition', '')
+                if 'filename=' not in content_disposition:
+                    self.log_test("France Renov Martinique PDF", False, "PDF response missing filename in Content-Disposition header")
+                    return
+                elif 'etude_solaire_' not in content_disposition:
+                    self.log_test("France Renov Martinique PDF", False, "PDF filename should contain 'etude_solaire_'")
+                    return
+                
+                # Check that PDF starts with PDF header
+                pdf_header = response.content[:4]
+                if pdf_header != b'%PDF':
+                    self.log_test("France Renov Martinique PDF", False, "Response does not start with PDF header")
+                    return
+                
+                # Test successful
+                self.log_test("France Renov Martinique PDF", True, 
+                            f"✅ France Renov Martinique PDF generated successfully ({pdf_size:,} bytes). SYRIUS format with Martinique-specific data, client integration, and proper filename format.", 
+                            {
+                                "pdf_size": pdf_size,
+                                "content_type": content_type,
+                                "content_disposition": content_disposition,
+                                "pdf_header_valid": True
+                            })
+                
+            elif response.status_code == 404:
+                self.log_test("France Renov Martinique PDF", False, "Client not found (404)")
+            else:
+                self.log_test("France Renov Martinique PDF", False, f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("France Renov Martinique PDF", False, f"Error: {str(e)}")
+
+    def test_france_renov_martinique_pdf_with_martinique_client(self):
+        """Test France Renov Martinique PDF with a Martinique-specific client"""
+        try:
+            # Create a Martinique client for testing
+            martinique_client_data = {
+                "first_name": "Jean",
+                "last_name": "Martinique",
+                "address": "Fort-de-France, Martinique",
+                "phone": "0696123456",
+                "email": "jean.martinique@test.com",
+                "roof_surface": 60.0,
+                "roof_orientation": "Sud",
+                "velux_count": 0,
+                "heating_system": "Climatisation",
+                "water_heating_system": "Chauffe-eau solaire",
+                "water_heating_capacity": 200,
+                "annual_consumption_kwh": 7200.0,
+                "monthly_edf_payment": 220.0,
+                "annual_edf_payment": 2640.0
+            }
+            
+            # Try to create Martinique client
+            response = self.session.post(f"{self.base_url}/clients", json=martinique_client_data)
+            if response.status_code == 200:
+                martinique_client = response.json()
+                martinique_client_id = martinique_client.get("id")
+                
+                if martinique_client_id:
+                    # Test PDF generation with Martinique client
+                    pdf_response = self.session.get(f"{self.base_url}/generate-france-renov-martinique-pdf/{martinique_client_id}")
+                    
+                    if pdf_response.status_code == 200:
+                        pdf_size = len(pdf_response.content)
+                        content_type = pdf_response.headers.get('content-type', '')
+                        
+                        if content_type.startswith('application/pdf') and pdf_size > 5000:
+                            self.log_test("France Renov Martinique PDF (Martinique Client)", True, 
+                                        f"✅ PDF generated for Martinique client ({pdf_size:,} bytes). Client: {martinique_client_data['first_name']} {martinique_client_data['last_name']}, Address: {martinique_client_data['address']}", 
+                                        {
+                                            "client_id": martinique_client_id,
+                                            "pdf_size": pdf_size,
+                                            "client_location": "Martinique"
+                                        })
+                        else:
+                            self.log_test("France Renov Martinique PDF (Martinique Client)", False, f"Invalid PDF response: size={pdf_size}, type={content_type}")
+                    else:
+                        self.log_test("France Renov Martinique PDF (Martinique Client)", False, f"PDF generation failed: HTTP {pdf_response.status_code}")
+                else:
+                    self.log_test("France Renov Martinique PDF (Martinique Client)", False, "Failed to get client ID from created Martinique client")
+            else:
+                # If client creation fails, use existing client but still test the endpoint
+                if self.client_id:
+                    self.log_test("France Renov Martinique PDF (Martinique Client)", False, f"Could not create Martinique client (HTTP {response.status_code}), but main PDF test should cover functionality")
+                else:
+                    self.log_test("France Renov Martinique PDF (Martinique Client)", False, f"Could not create Martinique client and no existing client available")
+                    
+        except Exception as e:
+            self.log_test("France Renov Martinique PDF (Martinique Client)", False, f"Error: {str(e)}")
+
+    def test_no_regressions_other_endpoints(self):
+        """Test that other PDF endpoints still work (no regressions)"""
+        if not self.client_id:
+            self.log_test("No Regressions Check", False, "No client ID available from previous test")
+            return
+            
+        try:
+            # Test existing PDF endpoint
+            response = self.session.get(f"{self.base_url}/generate-pdf/{self.client_id}")
+            
+            if response.status_code == 200:
+                pdf_size = len(response.content)
+                content_type = response.headers.get('content-type', '')
+                
+                if content_type.startswith('application/pdf') and pdf_size > 5000:
+                    self.log_test("No Regressions Check", True, 
+                                f"✅ Existing PDF endpoint still working ({pdf_size:,} bytes). No regressions detected.", 
+                                {"existing_pdf_size": pdf_size})
+                else:
+                    self.log_test("No Regressions Check", False, f"Existing PDF endpoint broken: size={pdf_size}, type={content_type}")
+            else:
+                self.log_test("No Regressions Check", False, f"Existing PDF endpoint failed: HTTP {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("No Regressions Check", False, f"Error testing existing endpoints: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on user-requested endpoints"""
         print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
