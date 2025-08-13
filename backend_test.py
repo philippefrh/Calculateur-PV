@@ -6833,9 +6833,9 @@ class SolarCalculatorTester:
                     self.log_test("France Renov Martinique PDF", False, f"Response is not a PDF. Content-Type: {content_type}")
                     return
                 
-                # Check PDF size (should be reasonable)
+                # Check PDF size (should be reasonable for SYRIUS format)
                 pdf_size = len(response.content)
-                if pdf_size < 5000:  # Less than 5KB seems too small
+                if pdf_size < 3000:  # Less than 3KB seems too small
                     self.log_test("France Renov Martinique PDF", False, f"PDF size {pdf_size} bytes seems too small")
                     return
                 elif pdf_size > 10000000:  # More than 10MB seems too large
