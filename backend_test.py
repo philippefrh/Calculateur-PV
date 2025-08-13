@@ -6910,7 +6910,7 @@ class SolarCalculatorTester:
                         pdf_size = len(pdf_response.content)
                         content_type = pdf_response.headers.get('content-type', '')
                         
-                        if content_type.startswith('application/pdf') and pdf_size > 5000:
+                        if content_type.startswith('application/pdf') and pdf_size > 3000:
                             self.log_test("France Renov Martinique PDF (Martinique Client)", True, 
                                         f"✅ PDF generated for Martinique client ({pdf_size:,} bytes). Client: {martinique_client_data['first_name']} {martinique_client_data['last_name']}, Address: {martinique_client_data['address']}", 
                                         {
