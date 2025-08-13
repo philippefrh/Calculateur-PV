@@ -1738,11 +1738,15 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         if financing_options:
             optimal_financing = min(financing_options, key=lambda x: abs(x['monthly_payment'] - monthly_savings))
             
+            # Calculate total cost manually since it's not in regular financing options
+            total_cost = optimal_financing['monthly_payment'] * optimal_financing['duration_months']
+            credit_cost = total_cost - reste_a_financer
+            
             financing_data = [
                 ['Financement optimal:', f"{optimal_financing['duration_years']} ans"],
                 ['Mensualité:', f"{optimal_financing['monthly_payment']:.0f} € / mois"],
                 ['Économies nettes:', f"{monthly_savings - optimal_financing['monthly_payment']:.0f} € / mois"],
-                ['Coût total du crédit:', f"{optimal_financing['total_cost'] - reste_a_financer:.0f} €"]
+                ['Coût total du crédit:', f"{credit_cost:.0f} €"]
             ]
         else:
             financing_data = [
