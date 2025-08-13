@@ -1728,6 +1728,67 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, fo
     }
   };
 
+  const generateFranceRenovMartiniquePDF = async () => {
+    try {
+      setIsGeneratingPDF(true);
+      
+      // Afficher un message de génération
+      const notification = document.createElement('div');
+      notification.className = 'pdf-notification';
+      notification.innerHTML = '🏢 Génération du PDF France Renov Martinique en cours...';
+      document.body.appendChild(notification);
+      
+      // Appel à l'API pour générer le PDF France Renov Martinique
+      const response = await fetch(`${API}/generate-france-renov-martinique-pdf/${results.client_id}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/pdf',
+        },
+      });
+      
+      if (response.ok) {
+        // Créer un blob et télécharger le fichier
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Nom du fichier avec date
+        const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        link.download = `france_renov_martinique_${today}.pdf`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        // Message de succès
+        notification.innerHTML = '✅ PDF France Renov Martinique téléchargé avec succès !';
+        notification.style.backgroundColor = '#4caf50';
+        
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 3000);
+      } else {
+        throw new Error('Erreur lors de la génération du PDF France Renov Martinique');
+      }
+    } catch (error) {
+      console.error('Erreur génération PDF France Renov Martinique:', error);
+      // Message d'erreur
+      const notification = document.querySelector('.pdf-notification');
+      if (notification) {
+        notification.innerHTML = '❌ Erreur lors de la génération du PDF France Renov Martinique';
+        notification.style.backgroundColor = '#f44336';
+        
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 3000);
+      }
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
   const generateDevis = async () => {
     try {
       setIsGeneratingDevis(true);
