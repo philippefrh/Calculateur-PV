@@ -3111,6 +3111,15 @@ Cordialement`);
           >
             {isGeneratingPDF ? '⏳ Génération...' : '📄 Télécharger le Rapport PDF Complet'}
           </button>
+          
+          <button 
+            className={`pdf-button ${isGeneratingPDF ? 'generating' : ''}`}
+            onClick={generateFranceRenovMartiniquePDF}
+            disabled={isGeneratingPDF}
+            style={{ background: 'linear-gradient(135deg, #4caf50, #45a049)' }}
+          >
+            {isGeneratingPDF ? '🏢 Génération...' : '🏢 PDF France Renov Martinique'}
+          </button>
           <button 
             type="button" 
             onClick={generateDevis} 
