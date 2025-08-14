@@ -1563,10 +1563,10 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         from PIL import Image as PILImage
         import io
         
-        # Create PDF avec marges réduites mais fonctionnelles
+        # Create PDF buffer
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4, 
-                              rightMargin=1*cm, leftMargin=1*cm, 
+                              rightMargin=0, leftMargin=0, 
                               topMargin=0, bottomMargin=0)
         
         # Story (content) list
