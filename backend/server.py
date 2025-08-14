@@ -1696,8 +1696,8 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         
         story.append(combined_boxes)
         
-        # Espacement réduit pour le texte principal
-        story.append(Spacer(1, 2*cm))
+        # Espacement AUGMENTÉ pour redescendre le texte
+        story.append(Spacer(1, 4*cm))
         
         # TEXTE PRINCIPAL avec justification ET police à 13pt (version précédente)
         main_text_style = ParagraphStyle(
