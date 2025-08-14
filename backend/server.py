@@ -1737,7 +1737,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             logging.warning(f"Could not load logo for page 2: {e}")
             page2_content.append(Spacer(1, 2*cm))
         
-        # Informations client
+        # Informations client (MARGE AJUSTÉE pour page 2)
         client_style = ParagraphStyle(
             'ClientP2',
             parent=getSampleStyleSheet()['Normal'],
@@ -1747,11 +1747,20 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             spaceAfter=5
         )
         
-        page2_content.append(Paragraph(f'<b>Nom : {client_name}</b>', client_style))
-        page2_content.append(Paragraph(f'<b>Adresse : {client_address}</b>', client_style))
+        # Container pour centrer le contenu avec marges
+        client_container = Table([
+            [Paragraph(f'<b>Nom : {client_name}</b>', client_style)],
+            [Paragraph(f'<b>Adresse : {client_address}</b>', client_style)]
+        ], colWidths=[15*cm])
+        client_container.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 3*cm),
+        ]))
+        
+        page2_content.append(client_container)
         page2_content.append(Spacer(1, 1*cm))
         
-        # Message principal
+        # Message principal (CONTAINER CENTRÉ)
         main_text_style = ParagraphStyle(
             'MainTextP2',
             parent=getSampleStyleSheet()['Normal'],
@@ -1763,27 +1772,32 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             leading=16
         )
         
-        page2_content.append(Paragraph('<b>Madame / Monsieur</b>', main_text_style))
-        page2_content.append(Spacer(1, 0.5*cm))
-        
-        message_lines = [
-            "Conformément à notre échange, nous avons le plaisir de vous adresser votre",
-            "rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.",
-            "Vous trouverez ci-après les détails de votre installation.",
-            "",
-            "Nous restons à votre entière disposition, si besoin, pour tout complément",
-            "d'information.",
-            "",
-            "<b>Bonne journée</b>"
+        # Conteneur pour le texte principal avec marges
+        text_lines = [
+            [Paragraph('<b>Madame / Monsieur</b>', main_text_style)],
+            [Spacer(1, 0.5*cm)],
+            [Paragraph("Conformément à notre échange, nous avons le plaisir de vous adresser votre", main_text_style)],
+            [Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style)],
+            [Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style)],
+            [Paragraph("", main_text_style)],
+            [Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style)],
+            [Paragraph("d'information.", main_text_style)],
+            [Paragraph("", main_text_style)],
+            [Paragraph("<b>Bonne journée</b>", main_text_style)]
         ]
         
-        for line in message_lines:
-            page2_content.append(Paragraph(line, main_text_style))
+        text_container = Table(text_lines, colWidths=[15*cm])
+        text_container.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 3*cm),
+        ]))
+        
+        page2_content.append(text_container)
         
         # Espace pour footer
         page2_content.append(Spacer(1, 8*cm))
         
-        # Footer coordonnées
+        # Footer coordonnées (CENTRÉ)
         footer_style = ParagraphStyle(
             'FooterP2',
             parent=getSampleStyleSheet()['Normal'],
@@ -1800,7 +1814,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         page2_content.append(Paragraph(footer_line1, footer_style))
         page2_content.append(Paragraph(footer_line2, footer_style))
         
-        # Combiner les deux pages
+        # Combiner toutes les pages
         story.extend(page2_content)
         
         # Build PDF
