@@ -1661,7 +1661,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         ]
         
         # CARRÉ BLANC (taille identique)
-        white_box_table = Table(white_box_content, colWidids=[8*cm], rowHeights=[3*cm])
+        white_box_table = Table(white_box_content, colWidths=[8*cm], rowHeights=[3*cm])
         white_box_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.white),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
