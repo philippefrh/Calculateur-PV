@@ -1647,16 +1647,16 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             ))]
         ]
         
-        # CARRÉ ORANGE - COORDONNÉES CLIENT (même taille exacte)
+        # CARRÉ ORANGE - COORDONNÉES CLIENT (même taille exacte avec police agrandie)
         client_box_content = [
             [Paragraph(f'<b>Nom : {client_name}</b><br/><b>Adresse : {client_address}</b>', ParagraphStyle(
                 'SYRIUSClientInfo',
                 parent=getSampleStyleSheet()['Normal'],
-                fontSize=11,
+                fontSize=13,  # AGRANDIE de 11pt à 13pt
                 textColor=colors.white,
                 fontName='Helvetica-Bold',
                 alignment=0,  # Left align
-                leading=14
+                leading=16    # Ajusté pour la nouvelle taille
             ))]
         ]
         
