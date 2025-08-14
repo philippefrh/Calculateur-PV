@@ -3632,7 +3632,7 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       }, 15000);
 
       // Countdown visuel séparé
-      let currentCount = 7;
+      let currentCount = 15;
       const countdownTimer = setInterval(() => {
         currentCount--;
         setAutoCountdown(currentCount);
