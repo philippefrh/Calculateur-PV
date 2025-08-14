@@ -1699,16 +1699,16 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # Espacement réduit pour le texte principal
         story.append(Spacer(1, 2*cm))
         
-        # TEXTE PRINCIPAL avec tableau (version qui fonctionnait mieux)
+        # TEXTE PRINCIPAL avec police AGRANDIE pour étalement
         main_text_style = ParagraphStyle(
             'SYRIUSMainText',
             parent=getSampleStyleSheet()['Normal'],
-            fontSize=11,
+            fontSize=13,  # AGRANDIE de 11 à 13pt
             textColor=colors.black,
             fontName='Helvetica',
             alignment=0,  # Left align
             spaceAfter=6,
-            leading=14
+            leading=16    # Ajusté pour la nouvelle taille
         )
         
         # Container avec largeur étendue pour le texte
