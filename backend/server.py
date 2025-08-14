@@ -1711,7 +1711,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             leading=14
         )
         
-        # Container pour texte sur TOUTE LA LARGEUR (élargi au maximum)
+        # Container pour texte sur TOUTE LA LARGEUR jusqu'au bord (comme l'original)
         text_container = Table([
             [Paragraph('<b>Madame / Monsieur</b>', main_text_style)],
             [Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style)],
@@ -1720,13 +1720,13 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             [Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style)],
             [Paragraph("d'information.", main_text_style)],
             [Paragraph('<b>Bonne journée</b>', main_text_style)]
-        ], colWidths=[20*cm])
+        ], colWidths=[20.5*cm])
         
         text_container.setStyle(TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 0.5*cm),  # 0.5cm marge gauche (minimum)
-            ('RIGHTPADDING', (0, 0), (-1, -1), 0.5*cm), # 0.5cm marge droite (minimum)
+            ('LEFTPADDING', (0, 0), (-1, -1), 0.5*cm),  # 0.5cm marge gauche seulement
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),       # AUCUNE marge droite (comme l'original)
         ]))
         
         story.append(text_container)
