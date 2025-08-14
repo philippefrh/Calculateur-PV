@@ -1572,7 +1572,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # Story (content) list
         story = []
         
-        # 1. BACKGROUND IMAGE - TOUTE LA PAGE (SANS BORDURES BLANCHES comme SYRIUS)
+        # 1. BACKGROUND IMAGE - JUSQU'EN HAUT DE LA PAGE (comme SYRIUS original)
         try:
             toiture_url = "https://customer-assets.emergentagent.com/job_quote-sun-power/artifacts/vtnmxdi2_Toiture%20martinique.bmp"
             response = requests.get(toiture_url, timeout=10)
@@ -1583,26 +1583,30 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
                 pil_img.save(img_buffer, format='PNG')
                 img_buffer.seek(0)
                 
-                # IMAGE COUVRE SEULEMENT LA PAGE 1 (pas la page entière du document)
-                bg_img = Image(img_buffer, width=21*cm, height=14*cm)
+                # IMAGE JUSQU'EN HAUT - couvre la moitié supérieure de la page
+                bg_img = Image(img_buffer, width=21*cm, height=15*cm)
                 story.append(bg_img)
                 
-                # Retour en arrière pour superposer les éléments (SEULEMENT sur page 1)
-                story.append(Spacer(1, -14*cm))
+                # Retour en arrière pour superposer les éléments
+                story.append(Spacer(1, -15*cm))
                 
         except Exception as e:
             logging.warning(f"Could not load background image: {e}")
             story.append(Spacer(1, 2*cm))
         
-        # 2. LOGO FRH (en haut à droite comme SYRIUS)
+        # Espacement minimal pour positionner le logo
+        story.append(Spacer(1, 0.5*cm))
+        
+        # 2. LOGO FRH AGRANDI (en haut à droite comme SYRIUS)
         try:
             logo_url = "https://customer-assets.emergentagent.com/job_eco-quote-generator/artifacts/e1vs6tn9_LOGO%20FRH.jpg"
             response = requests.get(logo_url, timeout=10)
             if response.status_code == 200:
                 logo_data = io.BytesIO(response.content)
-                logo_img = Image(logo_data, width=4*cm, height=2*cm)
+                # LOGO PLUS GRAND comme l'original SYRIUS
+                logo_img = Image(logo_data, width=5*cm, height=2.5*cm)
                 
-                # Position logo en haut à droite (superposé sur image)
+                # Position logo en haut à droite
                 logo_table = Table([[logo_img]], colWidths=[21*cm])
                 logo_table.setStyle(TableStyle([
                     ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
@@ -1613,8 +1617,8 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         except Exception as e:
             logging.warning(f"Could not load FRH logo: {e}")
         
-        # Espacement vers le centre (page 1)
-        story.append(Spacer(1, 6*cm))
+        # Espacement vers le centre
+        story.append(Spacer(1, 5*cm))
         
         # 3. CARRÉS BLANC ET ORANGE CÔTE À CÔTE (comme SYRIUS original)
         client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
