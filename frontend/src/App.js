@@ -4097,7 +4097,7 @@ function App() {
   const handleCalculationComplete = (results) => {
     setCalculationResults(results);
     // Ne pas rediriger immédiatement - laisser l'écran de succès s'afficher avec son timer
-    console.log('🎯 Résultats de calcul reçus, affichage de l\'écran de succès pendant 7 secondes');
+    console.log('🎯 Résultats de calcul reçus, affichage de l\'écran de succès pendant 15 secondes');
   };
 
   const handleNewCalculation = () => {
