@@ -1699,39 +1699,28 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # Espacement réduit pour le texte principal
         story.append(Spacer(1, 2*cm))
         
-        # TEXTE PRINCIPAL SUR 7 LIGNES EXACTES (comme SYRIUS original)
+        # TEXTE PRINCIPAL DIRECTEMENT (sans tableau pour maximiser largeur)
         main_text_style = ParagraphStyle(
-            'SYRIUSMainText',
+            'SYRIUSMainTextWide',
             parent=getSampleStyleSheet()['Normal'],
             fontSize=11,
             textColor=colors.black,
             fontName='Helvetica',
-            alignment=0,  # Left align comme l'original
+            alignment=0,  # Left align
             spaceAfter=6,
-            leading=14
+            leading=14,
+            leftIndent=0,   # Pas d'indentation à gauche
+            rightIndent=0,  # Pas d'indentation à droite
         )
         
-        # Container pour texte sur TOUTE LA LARGEUR MAXIMALE (comme l'original)
-        text_container = Table([
-            [Paragraph('<b>Madame / Monsieur</b>', main_text_style)],
-            [Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style)],
-            [Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style)],
-            [Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style)],
-            [Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style)],
-            [Paragraph("d'information.", main_text_style)],
-            [Paragraph('<b>Bonne journée</b>', main_text_style)]
-        ], colWidths=[21*cm])
-        
-        text_container.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 0),    # AUCUNE marge gauche
-            ('RIGHTPADDING', (0, 0), (-1, -1), 0),   # AUCUNE marge droite
-            ('TOPPADDING', (0, 0), (-1, -1), 0),     # AUCUNE marge haute
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),  # AUCUNE marge basse  
-        ]))
-        
-        story.append(text_container)
+        # Ajout direct des paragraphes (utilise toute la largeur disponible)
+        story.append(Paragraph('<b>Madame / Monsieur</b>', main_text_style))
+        story.append(Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style))
+        story.append(Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style))
+        story.append(Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style))
+        story.append(Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style))
+        story.append(Paragraph("d'information.", main_text_style))
+        story.append(Paragraph('<b>Bonne journée</b>', main_text_style))
         
         # ESPACEMENT RÉDUIT pour que le footer reste sur page 1
         story.append(Spacer(1, 4*cm))
