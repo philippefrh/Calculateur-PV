@@ -1699,7 +1699,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # Espacement réduit pour le texte principal
         story.append(Spacer(1, 2*cm))
         
-        # TEXTE PRINCIPAL SIMPLE (comme l'original)
+        # TEXTE PRINCIPAL avec tableau (version qui fonctionnait mieux)
         main_text_style = ParagraphStyle(
             'SYRIUSMainText',
             parent=getSampleStyleSheet()['Normal'],
@@ -1711,14 +1711,25 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             leading=14
         )
         
-        # Paragraphes simples (utilise la largeur naturelle du document)
-        story.append(Paragraph('<b>Madame / Monsieur</b>', main_text_style))
-        story.append(Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style))
-        story.append(Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style))
-        story.append(Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style))
-        story.append(Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style))
-        story.append(Paragraph("d'information.", main_text_style))
-        story.append(Paragraph('<b>Bonne journée</b>', main_text_style))
+        # Container avec largeur étendue pour le texte
+        text_container = Table([
+            [Paragraph('<b>Madame / Monsieur</b>', main_text_style)],
+            [Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style)],
+            [Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style)],
+            [Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style)],
+            [Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style)],
+            [Paragraph("d'information.", main_text_style)],
+            [Paragraph('<b>Bonne journée</b>', main_text_style)]
+        ], colWidths=[18*cm])
+        
+        text_container.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 1*cm),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 1*cm),
+        ]))
+        
+        story.append(text_container)
         
         # ESPACEMENT RÉDUIT pour que le footer reste sur page 1
         story.append(Spacer(1, 4*cm))
