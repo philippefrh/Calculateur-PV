@@ -1699,7 +1699,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # Espacement réduit pour le texte principal
         story.append(Spacer(1, 2*cm))
         
-        # TEXTE PRINCIPAL SUR TOUTE LA LARGEUR (comme SYRIUS original)
+        # TEXTE PRINCIPAL SUR 7 LIGNES EXACTES (comme SYRIUS original)
         main_text_style = ParagraphStyle(
             'SYRIUSMainText',
             parent=getSampleStyleSheet()['Normal'],
@@ -1711,25 +1711,22 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             leading=14
         )
         
-        # Container pour texte sur toute la largeur avec marges 2cm
+        # Container pour texte sur presque toute la largeur (comme l'original)
         text_container = Table([
             [Paragraph('<b>Madame / Monsieur</b>', main_text_style)],
-            [Spacer(1, 0.5*cm)],
             [Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style)],
             [Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style)],
             [Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style)],
-            [Spacer(1, 0.3*cm)],
             [Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style)],
             [Paragraph("d'information.", main_text_style)],
-            [Spacer(1, 0.3*cm)],
             [Paragraph('<b>Bonne journée</b>', main_text_style)]
-        ], colWidths=[17*cm])
+        ], colWidths=[18*cm])
         
         text_container.setStyle(TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 2*cm),  # 2cm marge gauche
-            ('RIGHTPADDING', (0, 0), (-1, -1), 2*cm), # 2cm marge droite
+            ('LEFTPADDING', (0, 0), (-1, -1), 1.5*cm),  # 1.5cm marge gauche
+            ('RIGHTPADDING', (0, 0), (-1, -1), 1.5*cm), # 1.5cm marge droite
         ]))
         
         story.append(text_container)
