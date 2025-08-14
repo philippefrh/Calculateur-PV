@@ -1552,7 +1552,7 @@ async def generate_solar_report_pdf(client_id: str, calculation_data: dict) -> b
         raise HTTPException(status_code=500, detail=f"Error generating PDF: {str(e)}")
 
 def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: dict) -> bytes:
-    """Generate PDF EXACTLY matching SYRIUS original format - pixel perfect copy"""
+    """Generate PDF EXACTLY matching SYRIUS original format - image full page without borders"""
     try:
         from reportlab.lib.pagesizes import A4
         from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
@@ -1563,16 +1563,16 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         from PIL import Image as PILImage
         import io
         
-        # Create PDF buffer
+        # Create PDF with NO MARGINS for full page image
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4, 
-                              rightMargin=30, leftMargin=30, 
-                              topMargin=20, bottomMargin=30)
+                              rightMargin=0, leftMargin=0, 
+                              topMargin=0, bottomMargin=0)
         
         # Story (content) list
         story = []
         
-        # 1. BACKGROUND IMAGE - TOITURE MARTINIQUE (MOITIÉ DE LA PAGE comme original)
+        # 1. BACKGROUND IMAGE - TOUTE LA PAGE (SANS BORDURES BLANCHES comme SYRIUS)
         try:
             toiture_url = "https://customer-assets.emergentagent.com/job_quote-sun-power/artifacts/vtnmxdi2_Toiture%20martinique.bmp"
             response = requests.get(toiture_url, timeout=10)
@@ -1583,15 +1583,23 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
                 pil_img.save(img_buffer, format='PNG')
                 img_buffer.seek(0)
                 
-                # IMAGE PLUS LARGE - MOITIÉ DE LA PAGE (comme SYRIUS original)
-                bg_img = Image(img_buffer, width=19*cm, height=14*cm)
+                # IMAGE COUVRE TOUTE LA PAGE A4 - SANS BLANC sur les côtés
+                page_width = A4[0] / cm * cm  # Largeur A4
+                page_height = A4[1] / cm * cm  # Hauteur A4
+                
+                bg_img = Image(img_buffer, width=page_width, height=page_height)
                 story.append(bg_img)
-                story.append(Spacer(1, -10*cm))  # Overlay text on image
+                
+                # Retour en arrière pour superposer les éléments
+                story.append(Spacer(1, -page_height))
+                
         except Exception as e:
             logging.warning(f"Could not load background image: {e}")
-            story.append(Spacer(1, 4*cm))
         
-        # 2. LOGO FRH (position comme SYRIUS)
+        # Espacement pour positionner les éléments superposés
+        story.append(Spacer(1, 2*cm))
+        
+        # 2. LOGO FRH (en haut à droite comme SYRIUS)
         try:
             logo_url = "https://customer-assets.emergentagent.com/job_eco-quote-generator/artifacts/e1vs6tn9_LOGO%20FRH.jpg"
             response = requests.get(logo_url, timeout=10)
@@ -1599,156 +1607,200 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
                 logo_data = io.BytesIO(response.content)
                 logo_img = Image(logo_data, width=4*cm, height=2*cm)
                 
-                # Position logo en haut à droite comme SYRIUS
-                logo_table = Table([[logo_img]], colWidths=[19*cm])
+                # Position logo en haut à droite (superposé sur image)
+                logo_table = Table([[logo_img]], colWidths=[21*cm])
                 logo_table.setStyle(TableStyle([
                     ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
                     ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 1*cm),
                 ]))
                 story.append(logo_table)
-                story.append(Spacer(1, 2*cm))
         except Exception as e:
             logging.warning(f"Could not load FRH logo: {e}")
-            story.append(Spacer(1, 2*cm))
         
-        # 3. CARRÉ BLANC - "VOTRE ÉTUDE PERSONNALISÉE" (EXACTE comme SYRIUS)
+        # Espacement vers le centre
+        story.append(Spacer(1, 8*cm))
+        
+        # 3. CARRÉ BLANC - "VOTRE ÉTUDE PERSONNALISÉE" (superposé sur image)
         white_box_content = [
-            [Paragraph('<b>VOTRE ÉTUDE PERSONNALISÉE</b>', ParagraphStyle(
+            [Paragraph('<b>VOTRE ÉTUDE<br/>PERSONNALISÉE</b>', ParagraphStyle(
                 'SYRIUSTitle',
                 parent=getSampleStyleSheet()['Normal'],
-                fontSize=18,
+                fontSize=20,
                 textColor=colors.black,
-                alignment=1,  # Center
+                alignment=0,  # Left align comme SYRIUS
                 fontName='Helvetica-Bold',
-                spaceAfter=10
+                spaceAfter=10,
+                leading=24
             ))],
-            [Paragraph('Merci de nous solliciter pour votre projet d\'installation solaire en autoconsommation', ParagraphStyle(
+            [Paragraph('Merci de nous solliciter pour<br/>votre projet d\'installation solaire<br/>en autoconsommation', ParagraphStyle(
                 'SYRIUSSubtitle',
                 parent=getSampleStyleSheet()['Normal'],
-                fontSize=11,
-                textColor=colors.black,
-                alignment=1,  # Center
+                fontSize=12,
+                textColor=colors.HexColor('#666666'),
+                alignment=0,  # Left align comme SYRIUS
                 fontName='Helvetica',
-                spaceAfter=5
+                leading=16
             ))]
         ]
         
-        # CARRÉ BLANC avec bordure (même taille que SYRIUS)
-        white_box_table = Table(white_box_content, colWidths=[14*cm])
+        # CARRÉ BLANC (position exacte comme SYRIUS)
+        white_box_table = Table(white_box_content, colWidths=[10*cm])
         white_box_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.white),
-            ('BOX', (0, 0), (-1, -1), 2, colors.black),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
             ('LEFTPADDING', (0, 0), (-1, -1), 20),
             ('RIGHTPADDING', (0, 0), (-1, -1), 20),
-            ('TOPPADDING', (0, 0), (-1, -1), 15),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 15),
+            ('TOPPADDING', (0, 0), (-1, -1), 20),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 20),
         ]))
         
-        # Centrer le carré blanc
-        centered_white_table = Table([[white_box_table]], colWidths=[19*cm])
-        centered_white_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        # Position du carré blanc (côté gauche comme SYRIUS)
+        positioned_white_table = Table([[white_box_table, '']], colWidths=[12*cm, 9*cm])
+        positioned_white_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 2*cm),
         ]))
         
-        story.append(centered_white_table)
-        story.append(Spacer(1, 1*cm))
+        story.append(positioned_white_table)
         
-        # 4. CARRÉ VERT - COORDONNÉES CLIENT (EXACTE comme SYRIUS)
+        # Espacement vers le bas
+        story.append(Spacer(1, 6*cm))
+        
+        # 4. CARRÉ ORANGE/JAUNE - COORDONNÉES CLIENT (en bas à droite comme SYRIUS)
         client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
         client_address = client_data.get('address', '')
         
         client_box_content = [
-            [Paragraph(f'<b>Nom : {client_name}</b><br/><b>Adresse : {client_address}</b>', ParagraphStyle(
+            [Paragraph(f'<b>Nom : {client_name}</b>', ParagraphStyle(
                 'SYRIUSClientInfo',
                 parent=getSampleStyleSheet()['Normal'],
-                fontSize=12,
+                fontSize=14,
                 textColor=colors.white,
                 fontName='Helvetica-Bold',
-                alignment=0  # Left align
+                alignment=0,  # Left align
+                leading=18
             ))]
         ]
         
-        # CARRÉ VERT avec même taille que SYRIUS
-        client_box_table = Table(client_box_content, colWidths=[14*cm])
+        # CARRÉ ORANGE/JAUNE comme SYRIUS
+        client_box_table = Table(client_box_content, colWidths=[8*cm])
         client_box_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#4caf50')),  # Vert
-            ('BOX', (0, 0), (-1, -1), 2, colors.HexColor('#4caf50')),
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FF9800')),  # Orange comme SYRIUS
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('LEFTPADDING', (0, 0), (-1, -1), 15),
             ('RIGHTPADDING', (0, 0), (-1, -1), 15),
-            ('TOPPADDING', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+            ('TOPPADDING', (0, 0), (-1, -1), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
         ]))
         
-        # Centrer le carré vert
-        centered_client_table = Table([[client_box_table]], colWidths=[19*cm])
-        centered_client_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        # Position du carré client (en bas à droite comme SYRIUS)
+        positioned_client_table = Table([['', client_box_table]], colWidths=[12*cm, 9*cm])
+        positioned_client_table.setStyle(TableStyle([
+            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+            ('VALIGN', (0, 0), (-1, -1), 'BOTTOM'),
+            ('RIGHTPADDING', (1, 0), (1, 0), 2*cm),
         ]))
         
-        story.append(centered_client_table)
-        story.append(Spacer(1, 1*cm))
+        story.append(positioned_client_table)
         
-        # 5. TEXTE PRINCIPAL - 7 LIGNES (EXACTEMENT comme SYRIUS original)
+        # Nouvelle page pour le contenu texte (comme SYRIUS a 2 pages)
+        from reportlab.platypus import PageBreak
+        story.append(PageBreak())
+        
+        # PAGE 2 - Fond blanc avec texte (comme SYRIUS page 2)
+        doc2 = SimpleDocTemplate(buffer, pagesize=A4, 
+                               rightMargin=3*cm, leftMargin=3*cm, 
+                               topMargin=2*cm, bottomMargin=2*cm)
+        
+        # Contenu page 2
+        page2_content = []
+        
+        # Logo FRH en haut
+        try:
+            logo_url = "https://customer-assets.emergentagent.com/job_eco-quote-generator/artifacts/e1vs6tn9_LOGO%20FRH.jpg"
+            response = requests.get(logo_url, timeout=10)
+            if response.status_code == 200:
+                logo_data = io.BytesIO(response.content)
+                logo_img = Image(logo_data, width=5*cm, height=2.5*cm)
+                
+                logo_table = Table([[logo_img]], colWidths=[15*cm])
+                logo_table.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ]))
+                page2_content.append(logo_table)
+                page2_content.append(Spacer(1, 1*cm))
+        except Exception as e:
+            logging.warning(f"Could not load logo for page 2: {e}")
+        
+        # Informations client
+        client_style = ParagraphStyle(
+            'ClientP2',
+            parent=getSampleStyleSheet()['Normal'],
+            fontSize=12,
+            textColor=colors.black,
+            fontName='Helvetica-Bold',
+            spaceAfter=5
+        )
+        
+        page2_content.append(Paragraph(f'<b>Nom : {client_name}</b>', client_style))
+        page2_content.append(Paragraph(f'<b>Adresse : {client_address}</b>', client_style))
+        page2_content.append(Spacer(1, 1*cm))
+        
+        # Message principal
         main_text_style = ParagraphStyle(
-            'SYRIUSMainText',
+            'MainTextP2',
             parent=getSampleStyleSheet()['Normal'],
             fontSize=11,
             textColor=colors.black,
             fontName='Helvetica',
             alignment=4,  # Justify
             spaceAfter=8,
-            leading=14  # Espacement entre lignes
+            leading=16
         )
         
-        # TEXTE SUR 7 LIGNES comme l'original SYRIUS
-        story.append(Paragraph('<b>Madame / Monsieur</b>', main_text_style))
-        story.append(Spacer(1, 0.3*cm))
+        page2_content.append(Paragraph('<b>Madame / Monsieur</b>', main_text_style))
+        page2_content.append(Spacer(1, 0.5*cm))
         
-        line1 = "Conformément à notre échange, nous avons le plaisir de vous adresser votre"
-        line2 = "rapport d'étude personnalisée pour votre projet d'autoconsommation solaire."
-        line3 = "Vous trouverez ci-après les détails de votre installation."
-        line4 = ""
-        line5 = "Nous restons à votre entière disposition, si besoin, pour tout complément"
-        line6 = "d'information."
-        line7 = ""
-        line8 = "Bonne journée"
+        message_lines = [
+            "Conformément à notre échange, nous avons le plaisir de vous adresser votre",
+            "rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.",
+            "Vous trouverez ci-après les détails de votre installation.",
+            "",
+            "Nous restons à votre entière disposition, si besoin, pour tout complément",
+            "d'information.",
+            "",
+            "<b>Bonne journée</b>"
+        ]
         
-        story.append(Paragraph(line1, main_text_style))
-        story.append(Paragraph(line2, main_text_style))
-        story.append(Paragraph(line3, main_text_style))
-        story.append(Paragraph(line4, main_text_style))
-        story.append(Paragraph(line5, main_text_style))
-        story.append(Paragraph(line6, main_text_style))
-        story.append(Paragraph(line7, main_text_style))
-        story.append(Paragraph(f'<b>{line8}</b>', main_text_style))
+        for line in message_lines:
+            page2_content.append(Paragraph(line, main_text_style))
         
-        # Espace pour pousser le footer vers le bas
-        story.append(Spacer(1, 8*cm))
+        # Espace pour footer
+        page2_content.append(Spacer(1, 8*cm))
         
-        # 6. FOOTER - COORDONNÉES ENTREPRISE SUR 2 LIGNES (comme SYRIUS original)
+        # Footer coordonnées
         footer_style = ParagraphStyle(
-            'SYRIUSFooter',
+            'FooterP2',
             parent=getSampleStyleSheet()['Normal'],
             fontSize=9,
             textColor=colors.black,
             fontName='Helvetica',
             alignment=1,  # Center
-            leading=11
+            leading=12
         )
         
-        # COORDONNÉES FRH sur 2 lignes comme l'original
         footer_line1 = "<b>F.R.H Environnement SAS</b> - 11 rue des Arts et Métiers, Fort-de-France - Tél. 09 85 60 50 51 - direction@francerenovhabitat.com"
         footer_line2 = "Capital social de 30 000 € - Siret : 890 493 737 00013 - N° TVA Intra : FR52890493737 - Site Web: france-renovhabitat.fr - N° convention: N2024KPV516"
         
-        story.append(Paragraph(footer_line1, footer_style))
-        story.append(Spacer(1, 0.2*cm))
-        story.append(Paragraph(footer_line2, footer_style))
+        page2_content.append(Paragraph(footer_line1, footer_style))
+        page2_content.append(Paragraph(footer_line2, footer_style))
+        
+        # Combiner les deux pages
+        story.extend(page2_content)
         
         # Build PDF
         doc.build(story)
