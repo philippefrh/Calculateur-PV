@@ -7,7 +7,7 @@ import requests
 import json
 
 # Backend URL
-BACKEND_URL = "https://64c71565-dabd-45f6-8c54-c3a1db89a41d.preview.emergentagent.com/api"
+BACKEND_URL = "https://solar-calc-app.preview.emergentagent.com/api"
 
 def test_exact_20880_scenario():
     """Test to get as close as possible to 20880€ financed amount"""

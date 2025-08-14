@@ -7,7 +7,7 @@ import requests
 import json
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://64c71565-dabd-45f6-8c54-c3a1db89a41d.preview.emergentagent.com/api"
+BACKEND_URL = "https://solar-calc-app.preview.emergentagent.com/api"
 
 def test_frh_martinique_pdf():
     """Test complet de l'endpoint PDF FRH Martinique selon les spécifications"""
