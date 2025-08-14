@@ -1648,11 +1648,11 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             [Paragraph(f'<b>Nom : {client_name}</b><br/><b>Adresse : {client_address}</b>', ParagraphStyle(
                 'SYRIUSClientInfo',
                 parent=getSampleStyleSheet()['Normal'],
-                fontSize=12,
+                fontSize=11,
                 textColor=colors.white,
                 fontName='Helvetica-Bold',
                 alignment=0,  # Left align
-                leading=16
+                leading=14
             ))]
         ]
         
