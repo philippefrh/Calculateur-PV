@@ -1694,59 +1694,56 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         
         story.append(combined_boxes)
         
-        # Espacement vers le centre pour le texte principal
-        story.append(Spacer(1, 3*cm))
+        # Espacement réduit pour le texte principal
+        story.append(Spacer(1, 2*cm))
         
-        # TEXTE PRINCIPAL AU CENTRE (comme SYRIUS original)
+        # TEXTE PRINCIPAL AU CENTRE (disposition exacte comme SYRIUS)
         main_text_style = ParagraphStyle(
             'SYRIUSMainText',
             parent=getSampleStyleSheet()['Normal'],
             fontSize=11,
             textColor=colors.black,
             fontName='Helvetica',
-            alignment=1,  # Center align comme SYRIUS
-            spaceAfter=8,
-            leading=16
+            alignment=0,  # Left align comme l'original
+            spaceAfter=6,
+            leading=14
         )
         
-        # Texte centré au milieu de la page comme l'original
-        main_text = """<b>Madame / Monsieur</b><br/><br/>
-        Conformément à notre échange, nous avons le plaisir de vous adresser votre<br/>
-        rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.<br/>
-        Vous trouverez ci-après les détails de votre installation.<br/><br/>
-        Nous restons à votre entière disposition, si besoin, pour tout complément<br/>
-        d'information.<br/><br/>
-        <b>Bonne journée</b>"""
+        # Texte avec disposition exacte comme l'original SYRIUS
+        story.append(Paragraph('<b>Madame / Monsieur</b>', main_text_style))
+        story.append(Spacer(1, 0.5*cm))
         
-        # Container pour centrer le texte
-        text_container = Table([[Paragraph(main_text, main_text_style)]], colWidths=[16*cm])
-        text_container.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ]))
+        story.append(Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style))
+        story.append(Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style))
+        story.append(Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style))
+        story.append(Spacer(1, 0.3*cm))
         
-        story.append(text_container)
+        story.append(Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style))
+        story.append(Paragraph("d'information.", main_text_style))
+        story.append(Spacer(1, 0.3*cm))
         
-        # Espacement pour pousser le footer vers le bas
-        story.append(Spacer(1, 6*cm))
+        story.append(Paragraph('<b>Bonne journée</b>', main_text_style))
         
-        # FOOTER - COORDONNÉES FRH (comme SYRIUS original)
+        # Espacement réduit pour footer (pour rester sur page 1)
+        story.append(Spacer(1, 3*cm))
+        
+        # FOOTER - COORDONNÉES FRH EN BAS DE PAGE 1 (comme SYRIUS)
         footer_style = ParagraphStyle(
             'SYRIUSFooter',
             parent=getSampleStyleSheet()['Normal'],
             fontSize=9,
             textColor=colors.black,
             fontName='Helvetica',
-            alignment=1,  # Center comme l'original
+            alignment=1,  # Center
             leading=11
         )
         
-        # Footer sur 2 lignes comme l'original SYRIUS
+        # Footer sur 2 lignes EN BAS DE LA PAGE 1 (pas page 2)
         footer_line1 = "<b>F.R.H Environnement SAS</b> - 11 rue des Arts et Métiers, Fort-de-France - Tél. 09 85 60 50 51 - direction@francerenovhabitat.com"
         footer_line2 = "Capital social de 30 000 € - Siret : 890 493 737 00013 - N° TVA Intra : FR52890493737 - Site Web: france-renovhabitat.fr - N° convention: N2024KPV516"
         
         story.append(Paragraph(footer_line1, footer_style))
-        story.append(Spacer(1, 0.2*cm))
+        story.append(Spacer(1, 0.1*cm))
         story.append(Paragraph(footer_line2, footer_style))
         
         # Build PDF
