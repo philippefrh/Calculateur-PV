@@ -4781,6 +4781,29 @@ body::after {
   align-items: center;
 }
 
+/* Encart vert compact positionné à DROITE - IDENTIQUE au gauche */
+.green-autonomy-side-box-right {
+  position: fixed;
+  right: 20px;  /* À DROITE au lieu de left: 20px */
+  top: 50%;
+  transform: translateY(-50%);
+  background: #4caf50;
+  color: white;
+  padding: 25px;
+  border-radius: 15px;
+  font-weight: bold;
+  text-align: center;
+  width: 350px;
+  min-height: 200px;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  border: 3px solid #4caf50;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .autonomy-text-compact {
   font-size: 1rem;
   line-height: 1.4;
