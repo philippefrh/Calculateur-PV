@@ -1712,29 +1712,30 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         story.append(PageBreak())
         
         # PAGE 2 - Fond blanc avec texte (comme SYRIUS page 2)
-        doc2 = SimpleDocTemplate(buffer, pagesize=A4, 
-                               rightMargin=3*cm, leftMargin=3*cm, 
-                               topMargin=2*cm, bottomMargin=2*cm)
+        # Note : On continue avec les mêmes marges (0) pour cohérence
         
         # Contenu page 2
         page2_content = []
         
-        # Logo FRH en haut
+        # Logo FRH en haut (TAILLE RÉDUITE pour les marges zéro)
         try:
             logo_url = "https://customer-assets.emergentagent.com/job_eco-quote-generator/artifacts/e1vs6tn9_LOGO%20FRH.jpg"
             response = requests.get(logo_url, timeout=10)
             if response.status_code == 200:
                 logo_data = io.BytesIO(response.content)
-                logo_img = Image(logo_data, width=5*cm, height=2.5*cm)
+                # LOGO PLUS PETIT pour page 2 (compatible marges 0)
+                logo_img = Image(logo_data, width=4*cm, height=2*cm)
                 
-                logo_table = Table([[logo_img]], colWidths=[15*cm])
+                logo_table = Table([[logo_img]], colWidths=[21*cm])
                 logo_table.setStyle(TableStyle([
                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('TOPPADDING', (0, 0), (-1, -1), 1*cm),
                 ]))
                 page2_content.append(logo_table)
                 page2_content.append(Spacer(1, 1*cm))
         except Exception as e:
             logging.warning(f"Could not load logo for page 2: {e}")
+            page2_content.append(Spacer(1, 2*cm))
         
         # Informations client
         client_style = ParagraphStyle(
