@@ -1583,21 +1583,16 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
                 pil_img.save(img_buffer, format='PNG')
                 img_buffer.seek(0)
                 
-                # IMAGE COUVRE TOUTE LA PAGE A4 - SANS BLANC sur les côtés
-                page_width = A4[0] / cm * cm  # Largeur A4
-                page_height = A4[1] / cm * cm  # Hauteur A4
-                
-                bg_img = Image(img_buffer, width=page_width, height=page_height)
+                # IMAGE COUVRE SEULEMENT LA PAGE 1 (pas la page entière du document)
+                bg_img = Image(img_buffer, width=21*cm, height=14*cm)
                 story.append(bg_img)
                 
-                # Retour en arrière pour superposer les éléments
-                story.append(Spacer(1, -page_height))
+                # Retour en arrière pour superposer les éléments (SEULEMENT sur page 1)
+                story.append(Spacer(1, -14*cm))
                 
         except Exception as e:
             logging.warning(f"Could not load background image: {e}")
-        
-        # Espacement pour positionner les éléments superposés
-        story.append(Spacer(1, 2*cm))
+            story.append(Spacer(1, 2*cm))
         
         # 2. LOGO FRH (en haut à droite comme SYRIUS)
         try:
