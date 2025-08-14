@@ -1616,7 +1616,11 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # Espacement vers le centre (page 1)
         story.append(Spacer(1, 6*cm))
         
-        # 3. CARRÉ BLANC - "VOTRE ÉTUDE PERSONNALISÉE" (superposé sur image)
+        # 3. CARRÉS BLANC ET ORANGE CÔTE À CÔTE (comme SYRIUS original)
+        client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
+        client_address = client_data.get('address', '')
+        
+        # CARRÉ BLANC - "VOTRE ÉTUDE PERSONNALISÉE"
         white_box_content = [
             [Paragraph('<b>VOTRE ÉTUDE<br/>PERSONNALISÉE</b>', ParagraphStyle(
                 'SYRIUSTitle',
@@ -1639,35 +1643,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             ))]
         ]
         
-        # CARRÉ BLANC (position exacte comme SYRIUS)
-        white_box_table = Table(white_box_content, colWidths=[10*cm])
-        white_box_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 20),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 20),
-            ('TOPPADDING', (0, 0), (-1, -1), 20),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 20),
-        ]))
-        
-        # Position du carré blanc (côté gauche comme SYRIUS)
-        positioned_white_table = Table([[white_box_table, '']], colWidths=[12*cm, 9*cm])
-        positioned_white_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 2*cm),
-        ]))
-        
-        story.append(positioned_white_table)
-        
-        # Espacement vers le bas (page 1)
-        story.append(Spacer(1, 4*cm))
-        
-        # 4. CARRÉ ORANGE/JAUNE - COORDONNÉES CLIENT (en bas à droite comme SYRIUS)
-        client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
-        client_address = client_data.get('address', '')
-        
+        # CARRÉ ORANGE - COORDONNÉES CLIENT
         client_box_content = [
             [Paragraph(f'<b>Nom : {client_name}</b>', ParagraphStyle(
                 'SYRIUSClientInfo',
@@ -1680,8 +1656,20 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             ))]
         ]
         
-        # CARRÉ ORANGE/JAUNE comme SYRIUS
-        client_box_table = Table(client_box_content, colWidths=[8*cm])
+        # CARRÉ BLANC 
+        white_box_table = Table(white_box_content, colWidths=[8*cm])
+        white_box_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 20),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 20),
+            ('TOPPADDING', (0, 0), (-1, -1), 20),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 20),
+        ]))
+        
+        # CARRÉ ORANGE
+        client_box_table = Table(client_box_content, colWidths=[6*cm])
         client_box_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FF9800')),  # Orange comme SYRIUS
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -1692,15 +1680,19 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
         ]))
         
-        # Position du carré client (en bas à droite comme SYRIUS)
-        positioned_client_table = Table([['', client_box_table]], colWidths=[12*cm, 9*cm])
-        positioned_client_table.setStyle(TableStyle([
-            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
-            ('VALIGN', (0, 0), (-1, -1), 'BOTTOM'),
-            ('RIGHTPADDING', (1, 0), (1, 0), 2*cm),
+        # LES DEUX CARRÉS CÔTE À CÔTE (comme SYRIUS original)
+        combined_boxes = Table([[white_box_table, client_box_table]], colWidths=[8*cm, 6*cm])
+        combined_boxes.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),   # Carré blanc à gauche
+            ('ALIGN', (1, 0), (1, 0), 'LEFT'),   # Carré orange à droite
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 2*cm),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+            ('TOPPADDING', (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
         ]))
         
-        story.append(positioned_client_table)
+        story.append(combined_boxes)
         
         # Nouvelle page pour le contenu texte (comme SYRIUS a 2 pages)
         from reportlab.platypus import PageBreak
