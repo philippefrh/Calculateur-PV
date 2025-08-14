@@ -1668,23 +1668,23 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             ('BOTTOMPADDING', (0, 0), (-1, -1), 20),
         ]))
         
-        # CARRÉ ORANGE
-        client_box_table = Table(client_box_content, colWidths=[6*cm])
+        # CARRÉ ORANGE (AGRANDI pour adresse complète)
+        client_box_table = Table(client_box_content, colWidths=[8*cm])
         client_box_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FF9800')),  # Orange comme SYRIUS
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('LEFTPADDING', (0, 0), (-1, -1), 15),
             ('RIGHTPADDING', (0, 0), (-1, -1), 15),
-            ('TOPPADDING', (0, 0), (-1, -1), 12),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+            ('TOPPADDING', (0, 0), (-1, -1), 15),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 15),
         ]))
         
-        # LES DEUX CARRÉS CÔTE À CÔTE (comme SYRIUS original)
-        combined_boxes = Table([[white_box_table, client_box_table]], colWidths=[8*cm, 6*cm])
+        # LES DEUX CARRÉS CÔTE À CÔTE (carré orange plus large)
+        combined_boxes = Table([[white_box_table, client_box_table]], colWidths=[8*cm, 8*cm])
         combined_boxes.setStyle(TableStyle([
             ('ALIGN', (0, 0), (0, 0), 'LEFT'),   # Carré blanc à gauche
-            ('ALIGN', (1, 0), (1, 0), 'LEFT'),   # Carré orange à droite
+            ('ALIGN', (1, 0), (1, 0), 'LEFT'),   # Carré orange à droite 
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
             ('LEFTPADDING', (0, 0), (-1, -1), 2*cm),
             ('RIGHTPADDING', (0, 0), (-1, -1), 0),
@@ -1694,115 +1694,60 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         
         story.append(combined_boxes)
         
-        # Nouvelle page pour le contenu texte (comme SYRIUS a 2 pages)
-        from reportlab.platypus import PageBreak
-        story.append(PageBreak())
+        # Espacement vers le centre pour le texte principal
+        story.append(Spacer(1, 3*cm))
         
-        # PAGE 2 - Fond blanc avec texte (comme SYRIUS page 2)
-        # Note : On continue avec les mêmes marges (0) pour cohérence
-        
-        # Contenu page 2
-        page2_content = []
-        
-        # Logo FRH en haut (TAILLE RÉDUITE pour les marges zéro)
-        try:
-            logo_url = "https://customer-assets.emergentagent.com/job_eco-quote-generator/artifacts/e1vs6tn9_LOGO%20FRH.jpg"
-            response = requests.get(logo_url, timeout=10)
-            if response.status_code == 200:
-                logo_data = io.BytesIO(response.content)
-                # LOGO PLUS PETIT pour page 2 (compatible marges 0)
-                logo_img = Image(logo_data, width=4*cm, height=2*cm)
-                
-                logo_table = Table([[logo_img]], colWidths=[21*cm])
-                logo_table.setStyle(TableStyle([
-                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                    ('TOPPADDING', (0, 0), (-1, -1), 1*cm),
-                ]))
-                page2_content.append(logo_table)
-                page2_content.append(Spacer(1, 1*cm))
-        except Exception as e:
-            logging.warning(f"Could not load logo for page 2: {e}")
-            page2_content.append(Spacer(1, 2*cm))
-        
-        # Informations client (MARGE AJUSTÉE pour page 2)
-        client_style = ParagraphStyle(
-            'ClientP2',
-            parent=getSampleStyleSheet()['Normal'],
-            fontSize=12,
-            textColor=colors.black,
-            fontName='Helvetica-Bold',
-            spaceAfter=5
-        )
-        
-        # Container pour centrer le contenu avec marges
-        client_container = Table([
-            [Paragraph(f'<b>Nom : {client_name}</b>', client_style)],
-            [Paragraph(f'<b>Adresse : {client_address}</b>', client_style)]
-        ], colWidths=[15*cm])
-        client_container.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 3*cm),
-        ]))
-        
-        page2_content.append(client_container)
-        page2_content.append(Spacer(1, 1*cm))
-        
-        # Message principal (CONTAINER CENTRÉ)
+        # TEXTE PRINCIPAL AU CENTRE (comme SYRIUS original)
         main_text_style = ParagraphStyle(
-            'MainTextP2',
+            'SYRIUSMainText',
             parent=getSampleStyleSheet()['Normal'],
             fontSize=11,
             textColor=colors.black,
             fontName='Helvetica',
-            alignment=4,  # Justify
+            alignment=1,  # Center align comme SYRIUS
             spaceAfter=8,
             leading=16
         )
         
-        # Conteneur pour le texte principal avec marges
-        text_lines = [
-            [Paragraph('<b>Madame / Monsieur</b>', main_text_style)],
-            [Spacer(1, 0.5*cm)],
-            [Paragraph("Conformément à notre échange, nous avons le plaisir de vous adresser votre", main_text_style)],
-            [Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style)],
-            [Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style)],
-            [Paragraph("", main_text_style)],
-            [Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style)],
-            [Paragraph("d'information.", main_text_style)],
-            [Paragraph("", main_text_style)],
-            [Paragraph("<b>Bonne journée</b>", main_text_style)]
-        ]
+        # Texte centré au milieu de la page comme l'original
+        main_text = """<b>Madame / Monsieur</b><br/><br/>
+        Conformément à notre échange, nous avons le plaisir de vous adresser votre<br/>
+        rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.<br/>
+        Vous trouverez ci-après les détails de votre installation.<br/><br/>
+        Nous restons à votre entière disposition, si besoin, pour tout complément<br/>
+        d'information.<br/><br/>
+        <b>Bonne journée</b>"""
         
-        text_container = Table(text_lines, colWidths=[15*cm])
+        # Container pour centrer le texte
+        text_container = Table([[Paragraph(main_text, main_text_style)]], colWidths=[16*cm])
         text_container.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 3*cm),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ]))
         
-        page2_content.append(text_container)
+        story.append(text_container)
         
-        # Espace pour footer
-        page2_content.append(Spacer(1, 8*cm))
+        # Espacement pour pousser le footer vers le bas
+        story.append(Spacer(1, 6*cm))
         
-        # Footer coordonnées (CENTRÉ)
+        # FOOTER - COORDONNÉES FRH (comme SYRIUS original)
         footer_style = ParagraphStyle(
-            'FooterP2',
+            'SYRIUSFooter',
             parent=getSampleStyleSheet()['Normal'],
             fontSize=9,
             textColor=colors.black,
             fontName='Helvetica',
-            alignment=1,  # Center
-            leading=12
+            alignment=1,  # Center comme l'original
+            leading=11
         )
         
+        # Footer sur 2 lignes comme l'original SYRIUS
         footer_line1 = "<b>F.R.H Environnement SAS</b> - 11 rue des Arts et Métiers, Fort-de-France - Tél. 09 85 60 50 51 - direction@francerenovhabitat.com"
         footer_line2 = "Capital social de 30 000 € - Siret : 890 493 737 00013 - N° TVA Intra : FR52890493737 - Site Web: france-renovhabitat.fr - N° convention: N2024KPV516"
         
-        page2_content.append(Paragraph(footer_line1, footer_style))
-        page2_content.append(Paragraph(footer_line2, footer_style))
-        
-        # Combiner toutes les pages
-        story.extend(page2_content)
+        story.append(Paragraph(footer_line1, footer_style))
+        story.append(Spacer(1, 0.2*cm))
+        story.append(Paragraph(footer_line2, footer_style))
         
         # Build PDF
         doc.build(story)
