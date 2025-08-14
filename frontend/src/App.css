@@ -4843,6 +4843,16 @@ body::after {
     max-width: 450px;
     margin: 0 auto 20px auto;
   }
+  
+  .green-autonomy-side-box-right {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto 20px auto;
+  }
 }
 
 /* Layout pour l'écran de succès avec encart vert à gauche */
