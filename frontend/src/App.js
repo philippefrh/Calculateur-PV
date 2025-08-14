@@ -3807,6 +3807,16 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
           </div>
         </div>
 
+        {/* Encart vert IDENTIQUE positionné à droite */}
+        <div className="green-autonomy-side-box-right">
+          <div className="autonomy-text-compact">
+            POURCENTAGE D'AUTONOMIE DE COULEUR VERT TROUVÉ = Permet l'envois de votre dossier en commission
+          </div>
+          <div className="positif-button">
+            POSITIF
+          </div>
+        </div>
+
         {/* Écran de succès original - inchangé */}
         <div className="success-animation">
           <div className="success-circle">✅</div>
