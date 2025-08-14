@@ -1597,21 +1597,28 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # Espacement minimal pour positionner le logo
         story.append(Spacer(1, 0.5*cm))
         
-        # 2. LOGO FRH AGRANDI (en haut à droite comme SYRIUS)
+        # 2. LOGOS FRH - UN À GAUCHE ET UN À DROITE (même hauteur et dimensions)
         try:
             logo_url = "https://customer-assets.emergentagent.com/job_eco-quote-generator/artifacts/e1vs6tn9_LOGO%20FRH.jpg"
             response = requests.get(logo_url, timeout=10)
             if response.status_code == 200:
                 logo_data = io.BytesIO(response.content)
-                # LOGO PLUS GRAND comme l'original SYRIUS
-                logo_img = Image(logo_data, width=5*cm, height=2.5*cm)
+                # LOGO GAUCHE
+                logo_left = Image(logo_data, width=5*cm, height=2.5*cm)
                 
-                # Position logo en haut à droite
-                logo_table = Table([[logo_img]], colWidths=[21*cm])
+                # Réinitialiser le buffer pour le deuxième logo
+                logo_data.seek(0)
+                # LOGO DROITE (même taille exacte)
+                logo_right = Image(logo_data, width=5*cm, height=2.5*cm)
+                
+                # Position des deux logos à la même hauteur
+                logo_table = Table([[logo_left, '', logo_right]], colWidths=[5*cm, 11*cm, 5*cm])
                 logo_table.setStyle(TableStyle([
-                    ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+                    ('ALIGN', (0, 0), (0, 0), 'LEFT'),   # Logo gauche
+                    ('ALIGN', (2, 0), (2, 0), 'RIGHT'),  # Logo droite
                     ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                    ('RIGHTPADDING', (0, 0), (-1, -1), 1*cm),
+                    ('LEFTPADDING', (0, 0), (0, 0), 1*cm),
+                    ('RIGHTPADDING', (2, 0), (2, 0), 1*cm),
                 ]))
                 story.append(logo_table)
         except Exception as e:
