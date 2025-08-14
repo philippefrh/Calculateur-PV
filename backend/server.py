@@ -1734,8 +1734,8 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # ESPACEMENT RÉDUIT pour que le footer reste sur page 1
         story.append(Spacer(1, 4*cm))
         
-        # Espacement réduit pour footer (pour rester sur page 1)
-        story.append(Spacer(1, 2*cm))
+        # Espacement final pour footer (RESTE SUR PAGE 1)
+        story.append(Spacer(1, 1*cm))
         
         # FOOTER - COORDONNÉES FRH EN BAS DE PAGE 1 (comme SYRIUS)
         footer_style = ParagraphStyle(
