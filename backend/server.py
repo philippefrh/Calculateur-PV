@@ -1563,11 +1563,12 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         from PIL import Image as PILImage
         import io
         
-        # Create PDF with NO MARGINS for full page image
+        # Create PDF with VRAIES marges zéro pour largeur maximale
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4, 
                               rightMargin=0, leftMargin=0, 
-                              topMargin=0, bottomMargin=0)
+                              topMargin=0, bottomMargin=0,
+                              title="Etude Solaire FRH")
         
         # Story (content) list
         story = []
