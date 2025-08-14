@@ -1699,35 +1699,26 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # Espacement réduit pour le texte principal
         story.append(Spacer(1, 2*cm))
         
-        # TEXTE PRINCIPAL avec marges négatives pour forcer la largeur maximale
+        # TEXTE PRINCIPAL SIMPLE (comme l'original)
         main_text_style = ParagraphStyle(
-            'SYRIUSMainTextMaxWidth',
+            'SYRIUSMainText',
             parent=getSampleStyleSheet()['Normal'],
             fontSize=11,
             textColor=colors.black,
             fontName='Helvetica',
             alignment=0,  # Left align
             spaceAfter=6,
-            leading=14,
-            leftIndent=-10,   # Marge NÉGATIVE pour pousser vers la gauche
-            rightIndent=-10,  # Marge NÉGATIVE pour pousser vers la droite
+            leading=14
         )
         
-        # Conteneur avec largeur forcée
-        from reportlab.platypus import KeepTogether
-        text_block = [
-            Paragraph('<b>Madame / Monsieur</b>', main_text_style),
-            Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style),
-            Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style),
-            Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style),
-            Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style),
-            Paragraph("d'information.", main_text_style),
-            Paragraph('<b>Bonne journée</b>', main_text_style)
-        ]
-        
-        # Ajouter tous les paragraphes
-        for para in text_block:
-            story.append(para)
+        # Paragraphes simples (utilise la largeur naturelle du document)
+        story.append(Paragraph('<b>Madame / Monsieur</b>', main_text_style))
+        story.append(Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style))
+        story.append(Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style))
+        story.append(Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style))
+        story.append(Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style))
+        story.append(Paragraph("d'information.", main_text_style))
+        story.append(Paragraph('<b>Bonne journée</b>', main_text_style))
         
         # ESPACEMENT RÉDUIT pour que le footer reste sur page 1
         story.append(Spacer(1, 4*cm))
