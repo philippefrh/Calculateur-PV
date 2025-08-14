@@ -1620,11 +1620,11 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # Espacement vers le centre
         story.append(Spacer(1, 5*cm))
         
-        # 3. CARRÉS BLANC ET ORANGE - MÊME TAILLE ET BIEN CENTRÉS (comme SYRIUS)
+        # 3. CARRÉS BLANC ET ORANGE - EXACTEMENT MÊME TAILLE ET PARFAITEMENT CENTRÉS
         client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
         client_address = client_data.get('address', '')
         
-        # CARRÉ BLANC - "VOTRE ÉTUDE PERSONNALISÉE"
+        # CARRÉ BLANC - "VOTRE ÉTUDE PERSONNALISÉE" (taille exacte)
         white_box_content = [
             [Paragraph('<b>VOTRE ÉTUDE<br/>PERSONNALISÉE</b>', ParagraphStyle(
                 'SYRIUSTitle',
@@ -1647,7 +1647,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             ))]
         ]
         
-        # CARRÉ ORANGE - COORDONNÉES CLIENT COMPLÈTES
+        # CARRÉ ORANGE - COORDONNÉES CLIENT (même taille exacte)
         client_box_content = [
             [Paragraph(f'<b>Nom : {client_name}</b><br/><b>Adresse : {client_address}</b>', ParagraphStyle(
                 'SYRIUSClientInfo',
@@ -1660,8 +1660,8 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             ))]
         ]
         
-        # CARRÉ BLANC (même taille que l'orange)
-        white_box_table = Table(white_box_content, colWidths=[7.5*cm])
+        # CARRÉ BLANC (taille identique)
+        white_box_table = Table(white_box_content, colWidids=[8*cm], rowHeights=[3*cm])
         white_box_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.white),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -1672,8 +1672,8 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             ('BOTTOMPADDING', (0, 0), (-1, -1), 20),
         ]))
         
-        # CARRÉ ORANGE (même taille que le blanc)
-        client_box_table = Table(client_box_content, colWidths=[7.5*cm])
+        # CARRÉ ORANGE (taille identique)
+        client_box_table = Table(client_box_content, colWidths=[8*cm], rowHeights=[3*cm])
         client_box_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FF9800')),  # Orange comme SYRIUS
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -1684,16 +1684,14 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             ('BOTTOMPADDING', (0, 0), (-1, -1), 15),
         ]))
         
-        # LES DEUX CARRÉS CÔTE À CÔTE - MÊME TAILLE ET BIEN CENTRÉS
-        combined_boxes = Table([[white_box_table, '', client_box_table]], colWidths=[7.5*cm, 0.5*cm, 7.5*cm])
+        # PARFAITEMENT CENTRÉS avec espace entre les carrés
+        combined_boxes = Table([
+            ['', white_box_table, '', client_box_table, '']
+        ], colWidths=[2.5*cm, 8*cm, 0.5*cm, 8*cm, 2.5*cm])
         combined_boxes.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (0, 0), 'LEFT'),   # Carré blanc à gauche
-            ('ALIGN', (2, 0), (2, 0), 'LEFT'),   # Carré orange à droite
+            ('ALIGN', (1, 0), (1, 0), 'CENTER'),   # Carré blanc centré
+            ('ALIGN', (3, 0), (3, 0), 'CENTER'),   # Carré orange centré
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 2*cm),  # 2cm à gauche
-            ('RIGHTPADDING', (0, 0), (-1, -1), 2*cm), # 2cm à droite
-            ('TOPPADDING', (0, 0), (-1, -1), 0),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
         ]))
         
         story.append(combined_boxes)
