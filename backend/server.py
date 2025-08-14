@@ -1661,8 +1661,8 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         
         story.append(positioned_white_table)
         
-        # Espacement vers le bas
-        story.append(Spacer(1, 6*cm))
+        # Espacement vers le bas (page 1)
+        story.append(Spacer(1, 4*cm))
         
         # 4. CARRÉ ORANGE/JAUNE - COORDONNÉES CLIENT (en bas à droite comme SYRIUS)
         client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
