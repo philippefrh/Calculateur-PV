@@ -1643,16 +1643,16 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             ))]
         ]
         
-        # CARRÉ ORANGE - COORDONNÉES CLIENT
+        # CARRÉ ORANGE - COORDONNÉES CLIENT COMPLÈTES (avec adresse)
         client_box_content = [
-            [Paragraph(f'<b>Nom : {client_name}</b>', ParagraphStyle(
+            [Paragraph(f'<b>Nom : {client_name}</b><br/><b>Adresse : {client_address}</b>', ParagraphStyle(
                 'SYRIUSClientInfo',
                 parent=getSampleStyleSheet()['Normal'],
-                fontSize=14,
+                fontSize=12,
                 textColor=colors.white,
                 fontName='Helvetica-Bold',
                 alignment=0,  # Left align
-                leading=18
+                leading=16
             ))]
         ]
         
