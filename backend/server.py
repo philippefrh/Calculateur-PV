@@ -1711,7 +1711,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             leading=14
         )
         
-        # Container pour texte sur presque toute la largeur (comme l'original)
+        # Container pour texte sur PRESQUE TOUTE LA LARGEUR (élargi encore plus)
         text_container = Table([
             [Paragraph('<b>Madame / Monsieur</b>', main_text_style)],
             [Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style)],
@@ -1720,16 +1720,19 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             [Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style)],
             [Paragraph("d'information.", main_text_style)],
             [Paragraph('<b>Bonne journée</b>', main_text_style)]
-        ], colWidths=[18*cm])
+        ], colWidths=[19*cm])
         
         text_container.setStyle(TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 1.5*cm),  # 1.5cm marge gauche
-            ('RIGHTPADDING', (0, 0), (-1, -1), 1.5*cm), # 1.5cm marge droite
+            ('LEFTPADDING', (0, 0), (-1, -1), 1*cm),  # 1cm marge gauche (réduite)
+            ('RIGHTPADDING', (0, 0), (-1, -1), 1*cm), # 1cm marge droite (réduite)
         ]))
         
         story.append(text_container)
+        
+        # ESPACEMENT IMPORTANT pour pousser le footer EN BAS DE PAGE
+        story.append(Spacer(1, 8*cm))
         
         # Espacement réduit pour footer (pour rester sur page 1)
         story.append(Spacer(1, 3*cm))
