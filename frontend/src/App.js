@@ -3619,17 +3619,17 @@ const CalculationScreen = ({ formData, onComplete, onPrevious, selectedRegion = 
       // Sauvegarder les résultats immédiatement
       onComplete(calculationResults);
       
-      // Réinitialiser le countdown à 7 secondes comme demandé
-      setAutoCountdown(7);
+      // Réinitialiser le countdown à 15 secondes comme demandé
+      setAutoCountdown(15);
       
-      // Timer simple de 7 secondes puis passer directement à l'animation
+      // Timer simple de 15 secondes puis passer directement à l'animation
       const autoTimer = setTimeout(() => {
-        console.log('🎬 Timer de 7 secondes écoulé - tentative de passage à l\'animation');
+        console.log('🎬 Timer de 15 secondes écoulé - tentative de passage à l\'animation');
         console.log('🎬 setCurrentStep disponible:', typeof setCurrentStep);
         console.log('🎬 Avant setCurrentStep(6)');
         setCurrentStep(6);
         console.log('🎬 Après setCurrentStep(6)');
-      }, 7000);
+      }, 15000);
 
       // Countdown visuel séparé
       let currentCount = 7;
