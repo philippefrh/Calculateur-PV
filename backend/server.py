@@ -1661,7 +1661,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         ]
         
         # CARRÉ BLANC (taille identique)
-        white_box_table = Table(white_box_content, colWidths=[8*cm], rowHeights=[3*cm])
+        white_box_table = Table(white_box_content, colWidths=[8*cm])
         white_box_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.white),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -1673,7 +1673,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         ]))
         
         # CARRÉ ORANGE (taille identique)
-        client_box_table = Table(client_box_content, colWidths=[8*cm], rowHeights=[3*cm])
+        client_box_table = Table(client_box_content, colWidths=[8*cm])
         client_box_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FF9800')),  # Orange comme SYRIUS
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
