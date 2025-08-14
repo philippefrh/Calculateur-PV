@@ -1552,7 +1552,7 @@ async def generate_solar_report_pdf(client_id: str, calculation_data: dict) -> b
         raise HTTPException(status_code=500, detail=f"Error generating PDF: {str(e)}")
 
 def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: dict) -> bytes:
-    """Generate PDF EXACTLY matching SYRIUS format for F.R.H Environnement"""
+    """Generate PDF EXACTLY matching SYRIUS original format - pixel perfect copy"""
     try:
         from reportlab.lib.pagesizes import A4
         from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
@@ -1566,248 +1566,189 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         # Create PDF buffer
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4, 
-                              rightMargin=50, leftMargin=50, 
-                              topMargin=50, bottomMargin=50)
-        
-        # Get styles
-        styles = getSampleStyleSheet()
-        
-        # Custom styles to match SYRIUS exactly
-        title_style = ParagraphStyle(
-            'SYRIUSTitle',
-            parent=styles['Normal'],
-            fontSize=24,
-            spaceAfter=20,
-            textColor=colors.HexColor('#2c5530'),
-            alignment=1,  # Center
-            fontName='Helvetica-Bold'
-        )
-        
-        subtitle_style = ParagraphStyle(
-            'SYRIUSSubtitle',
-            parent=styles['Normal'],
-            fontSize=12,
-            spaceAfter=15,
-            textColor=colors.black,
-            alignment=1,  # Center
-            fontName='Helvetica'
-        )
-        
-        client_info_style = ParagraphStyle(
-            'SYRIUSClientInfo',
-            parent=styles['Normal'],
-            fontSize=11,
-            spaceAfter=8,
-            textColor=colors.black,
-            fontName='Helvetica-Bold'
-        )
-        
-        body_style = ParagraphStyle(
-            'SYRIUSBody',
-            parent=styles['Normal'],
-            fontSize=11,
-            spaceAfter=10,
-            textColor=colors.black,
-            fontName='Helvetica',
-            alignment=4  # Justify
-        )
+                              rightMargin=30, leftMargin=30, 
+                              topMargin=20, bottomMargin=30)
         
         # Story (content) list
         story = []
         
-        # Background image - Toiture Martinique
+        # 1. BACKGROUND IMAGE - TOITURE MARTINIQUE (MOITIÉ DE LA PAGE comme original)
         try:
-            # Use the toiture martinique image as background
             toiture_url = "https://customer-assets.emergentagent.com/job_quote-sun-power/artifacts/vtnmxdi2_Toiture%20martinique.bmp"
             response = requests.get(toiture_url, timeout=10)
             if response.status_code == 200:
                 img_data = io.BytesIO(response.content)
-                # Convert BMP to supported format
                 pil_img = PILImage.open(img_data)
                 img_buffer = io.BytesIO()
                 pil_img.save(img_buffer, format='PNG')
                 img_buffer.seek(0)
                 
-                # Add background image (scaled to fit page width)
-                bg_img = Image(img_buffer, width=18*cm, height=8*cm)
+                # IMAGE PLUS LARGE - MOITIÉ DE LA PAGE (comme SYRIUS original)
+                bg_img = Image(img_buffer, width=19*cm, height=14*cm)
                 story.append(bg_img)
-                story.append(Spacer(1, -4*cm))  # Overlay text on image
+                story.append(Spacer(1, -10*cm))  # Overlay text on image
         except Exception as e:
             logging.warning(f"Could not load background image: {e}")
+            story.append(Spacer(1, 4*cm))
         
-        # Logo FRH Environnement
+        # 2. LOGO FRH (position comme SYRIUS)
         try:
             logo_url = "https://customer-assets.emergentagent.com/job_eco-quote-generator/artifacts/e1vs6tn9_LOGO%20FRH.jpg"
             response = requests.get(logo_url, timeout=10)
             if response.status_code == 200:
                 logo_data = io.BytesIO(response.content)
-                logo_img = Image(logo_data, width=6*cm, height=3*cm)
+                logo_img = Image(logo_data, width=4*cm, height=2*cm)
                 
-                # Center the logo
-                logo_table = Table([[logo_img]], colWidths=[18*cm])
+                # Position logo en haut à droite comme SYRIUS
+                logo_table = Table([[logo_img]], colWidths=[19*cm])
                 logo_table.setStyle(TableStyle([
-                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                    ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                 ]))
                 story.append(logo_table)
-                story.append(Spacer(1, 20))
+                story.append(Spacer(1, 2*cm))
         except Exception as e:
             logging.warning(f"Could not load FRH logo: {e}")
-            # Fallback text logo
-            story.append(Paragraph('<b>F.R.H ENVIRONNEMENT</b>', title_style))
-            story.append(Spacer(1, 20))
+            story.append(Spacer(1, 2*cm))
         
-        # Main title - exactly like SYRIUS
-        story.append(Paragraph('<b>VOTRE ÉTUDE PERSONNALISÉE</b>', title_style))
-        story.append(Spacer(1, 10))
+        # 3. CARRÉ BLANC - "VOTRE ÉTUDE PERSONNALISÉE" (EXACTE comme SYRIUS)
+        white_box_content = [
+            [Paragraph('<b>VOTRE ÉTUDE PERSONNALISÉE</b>', ParagraphStyle(
+                'SYRIUSTitle',
+                parent=getSampleStyleSheet()['Normal'],
+                fontSize=18,
+                textColor=colors.black,
+                alignment=1,  # Center
+                fontName='Helvetica-Bold',
+                spaceAfter=10
+            ))],
+            [Paragraph('Merci de nous solliciter pour votre projet d\'installation solaire en autoconsommation', ParagraphStyle(
+                'SYRIUSSubtitle',
+                parent=getSampleStyleSheet()['Normal'],
+                fontSize=11,
+                textColor=colors.black,
+                alignment=1,  # Center
+                fontName='Helvetica',
+                spaceAfter=5
+            ))]
+        ]
         
-        # Subtitle - exactly like SYRIUS
-        story.append(Paragraph('Merci de nous solliciter pour votre projet d\'installation solaire en autoconsommation', subtitle_style))
-        story.append(Spacer(1, 30))
+        # CARRÉ BLANC avec bordure (même taille que SYRIUS)
+        white_box_table = Table(white_box_content, colWidths=[14*cm])
+        white_box_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+            ('BOX', (0, 0), (-1, -1), 2, colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 20),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 20),
+            ('TOPPADDING', (0, 0), (-1, -1), 15),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 15),
+        ]))
         
-        # Client information - exactly like SYRIUS format
+        # Centrer le carré blanc
+        centered_white_table = Table([[white_box_table]], colWidths=[19*cm])
+        centered_white_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
+        
+        story.append(centered_white_table)
+        story.append(Spacer(1, 1*cm))
+        
+        # 4. CARRÉ VERT - COORDONNÉES CLIENT (EXACTE comme SYRIUS)
         client_name = f"{client_data.get('first_name', '')} {client_data.get('last_name', '')}"
         client_address = client_data.get('address', '')
         
-        story.append(Paragraph(f'<b>Nom :</b> {client_name}', client_info_style))
-        story.append(Paragraph(f'<b>Adresse :</b> {client_address}', client_info_style))
-        story.append(Spacer(1, 20))
-        
-        # Formal greeting - exactly like SYRIUS
-        story.append(Paragraph('<b>Madame / Monsieur</b>', body_style))
-        story.append(Spacer(1, 15))
-        
-        # Main message - exactly like SYRIUS
-        main_message = """Conformément à notre échange, nous avons le plaisir de vous adresser votre rapport d'étude personnalisée pour votre projet d'autoconsommation solaire. Vous trouverez ci-après les détails de votre installation."""
-        story.append(Paragraph(main_message, body_style))
-        story.append(Spacer(1, 15))
-        
-        # Closing message - exactly like SYRIUS
-        story.append(Paragraph('Nous restons à votre entière disposition, si besoin, pour tout complément d\'information.', body_style))
-        story.append(Spacer(1, 10))
-        story.append(Paragraph('<b>Bonne journée</b>', body_style))
-        story.append(Spacer(1, 40))
-        
-        # New page for detailed information (like SYRIUS has multiple pages)
-        from reportlab.platypus import PageBreak
-        story.append(PageBreak())
-        
-        # Page 2 - Technical details (like SYRIUS)
-        story.append(Paragraph('<b>DÉTAILS DE VOTRE INSTALLATION</b>', title_style))
-        story.append(Spacer(1, 20))
-        
-        # Technical specifications table
-        kit_power = calculation_data.get('kit_power', 6)
-        panel_count = calculation_data.get('panel_count', 16)
-        estimated_production = calculation_data.get('estimated_production', 8000)
-        monthly_savings = calculation_data.get('monthly_savings', 180)
-        annual_savings = monthly_savings * 12
-        kit_price = calculation_data.get('kit_price', 15900)
-        total_aids = calculation_data.get('total_aids', 6480)
-        autonomy = calculation_data.get('autonomy_percentage', 85)
-        
-        tech_data = [
-            ['Configuration recommandée:', ''],
-            ['Puissance installée:', f'{kit_power} kWc'],
-            ['Nombre de panneaux:', f'{panel_count} panneaux'],
-            ['Production annuelle estimée:', f'{estimated_production:,.0f} kWh'],
-            ['Taux d\'autonomie énergétique:', f'{autonomy:.0f}%'],
-            ['', ''],
-            ['Bénéfices financiers:', ''],
-            ['Économies mensuelles:', f'{monthly_savings:.0f} € / mois'],
-            ['Économies annuelles:', f'{annual_savings:.0f} € / an'],
-            ['', ''],
-            ['Investissement:', ''],
-            ['Prix de l\'installation:', f'{kit_price:,.0f} € TTC'],
-            ['Aides et subventions:', f'{total_aids:,.0f} €'],
-            ['Reste à financer:', f'{kit_price - total_aids:,.0f} €']
+        client_box_content = [
+            [Paragraph(f'<b>Nom : {client_name}</b><br/><b>Adresse : {client_address}</b>', ParagraphStyle(
+                'SYRIUSClientInfo',
+                parent=getSampleStyleSheet()['Normal'],
+                fontSize=12,
+                textColor=colors.white,
+                fontName='Helvetica-Bold',
+                alignment=0  # Left align
+            ))]
         ]
         
-        tech_table = Table(tech_data, colWidths=[10*cm, 6*cm])
-        tech_table.setStyle(TableStyle([
-            # Header rows styling
-            ('BACKGROUND', (0, 0), (1, 0), colors.HexColor('#4caf50')),
-            ('BACKGROUND', (0, 6), (1, 6), colors.HexColor('#4caf50')),
-            ('BACKGROUND', (0, 10), (1, 10), colors.HexColor('#4caf50')),
-            ('TEXTCOLOR', (0, 0), (1, 0), colors.white),
-            ('TEXTCOLOR', (0, 6), (1, 6), colors.white),
-            ('TEXTCOLOR', (0, 10), (1, 10), colors.white),
-            ('FONTNAME', (0, 0), (1, 0), 'Helvetica-Bold'),
-            ('FONTNAME', (0, 6), (1, 6), 'Helvetica-Bold'),
-            ('FONTNAME', (0, 10), (1, 10), 'Helvetica-Bold'),
-            
-            # Regular rows
-            ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),
-            ('FONTNAME', (1, 1), (1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+        # CARRÉ VERT avec même taille que SYRIUS
+        client_box_table = Table(client_box_content, colWidths=[14*cm])
+        client_box_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#4caf50')),  # Vert
+            ('BOX', (0, 0), (-1, -1), 2, colors.HexColor('#4caf50')),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e0e0e0')),
-            ('LEFTPADDING', (0, 0), (-1, -1), 8),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
-            ('TOPPADDING', (0, 0), (-1, -1), 6),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('LEFTPADDING', (0, 0), (-1, -1), 15),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 15),
+            ('TOPPADDING', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
         ]))
         
-        story.append(tech_table)
-        story.append(Spacer(1, 40))
-        
-        # Partner logos section (like SYRIUS)
-        story.append(Paragraph('<b>NOS CERTIFICATIONS ET PARTENAIRES</b>', ParagraphStyle(
-            'CertifTitle',
-            parent=styles['Heading2'],
-            fontSize=14,
-            spaceAfter=15,
-            textColor=colors.HexColor('#2c5530'),
-            alignment=1,
-            fontName='Helvetica-Bold'
-        )))
-        
-        # Add partner logos (RGE QualiPV, FFB, European Commission)
-        partner_info = [
-            ['✓ Entreprise certifiée RGE QualiPV'],
-            ['✓ Membre de la Fédération Française du Bâtiment (FFB)'],
-            ['✓ Respect des normes européennes']
-        ]
-        
-        partner_table = Table(partner_info, colWidths=[16*cm])
-        partner_table.setStyle(TableStyle([
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 11),
+        # Centrer le carré vert
+        centered_client_table = Table([[client_box_table]], colWidths=[19*cm])
+        centered_client_table.setStyle(TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 8),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
-            ('TOPPADDING', (0, 0), (-1, -1), 8),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
         ]))
         
-        story.append(partner_table)
-        story.append(Spacer(1, 30))
+        story.append(centered_client_table)
+        story.append(Spacer(1, 1*cm))
         
-        # Footer with FRH contact info (exactly like SYRIUS footer)
-        footer_style = ParagraphStyle(
-            'SYRIUSFooter',
-            parent=styles['Normal'],
-            fontSize=9,
-            textColor=colors.HexColor('#666666'),
-            alignment=1,  # Center
-            fontName='Helvetica'
+        # 5. TEXTE PRINCIPAL - 7 LIGNES (EXACTEMENT comme SYRIUS original)
+        main_text_style = ParagraphStyle(
+            'SYRIUSMainText',
+            parent=getSampleStyleSheet()['Normal'],
+            fontSize=11,
+            textColor=colors.black,
+            fontName='Helvetica',
+            alignment=4,  # Justify
+            spaceAfter=8,
+            leading=14  # Espacement entre lignes
         )
         
-        # Contact information
-        contact_info = """
-        <b>F.R.H Environnement SAS</b><br/>
-        11 rue des Arts et Métiers, Fort-de-France<br/>
-        Tél. 09 85 60 50 51 - direction@francerenovhabitat.com<br/>
-        Capital social de 30 000 € - Siret : 890 493 737 00013<br/>
-        N° TVA Intra : FR52890493737<br/>
-        Site Web: france-renovhabitat.fr<br/>
-        Numéro de convention: N2024KPV516
-        """
+        # TEXTE SUR 7 LIGNES comme l'original SYRIUS
+        story.append(Paragraph('<b>Madame / Monsieur</b>', main_text_style))
+        story.append(Spacer(1, 0.3*cm))
         
-        story.append(Paragraph(contact_info, footer_style))
+        line1 = "Conformément à notre échange, nous avons le plaisir de vous adresser votre"
+        line2 = "rapport d'étude personnalisée pour votre projet d'autoconsommation solaire."
+        line3 = "Vous trouverez ci-après les détails de votre installation."
+        line4 = ""
+        line5 = "Nous restons à votre entière disposition, si besoin, pour tout complément"
+        line6 = "d'information."
+        line7 = ""
+        line8 = "Bonne journée"
+        
+        story.append(Paragraph(line1, main_text_style))
+        story.append(Paragraph(line2, main_text_style))
+        story.append(Paragraph(line3, main_text_style))
+        story.append(Paragraph(line4, main_text_style))
+        story.append(Paragraph(line5, main_text_style))
+        story.append(Paragraph(line6, main_text_style))
+        story.append(Paragraph(line7, main_text_style))
+        story.append(Paragraph(f'<b>{line8}</b>', main_text_style))
+        
+        # Espace pour pousser le footer vers le bas
+        story.append(Spacer(1, 8*cm))
+        
+        # 6. FOOTER - COORDONNÉES ENTREPRISE SUR 2 LIGNES (comme SYRIUS original)
+        footer_style = ParagraphStyle(
+            'SYRIUSFooter',
+            parent=getSampleStyleSheet()['Normal'],
+            fontSize=9,
+            textColor=colors.black,
+            fontName='Helvetica',
+            alignment=1,  # Center
+            leading=11
+        )
+        
+        # COORDONNÉES FRH sur 2 lignes comme l'original
+        footer_line1 = "<b>F.R.H Environnement SAS</b> - 11 rue des Arts et Métiers, Fort-de-France - Tél. 09 85 60 50 51 - direction@francerenovhabitat.com"
+        footer_line2 = "Capital social de 30 000 € - Siret : 890 493 737 00013 - N° TVA Intra : FR52890493737 - Site Web: france-renovhabitat.fr - N° convention: N2024KPV516"
+        
+        story.append(Paragraph(footer_line1, footer_style))
+        story.append(Spacer(1, 0.2*cm))
+        story.append(Paragraph(footer_line2, footer_style))
         
         # Build PDF
         doc.build(story)
@@ -1820,7 +1761,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         return pdf_bytes
         
     except Exception as e:
-        logging.error(f"Error generating SYRIUS-style PDF: {e}")
+        logging.error(f"Error generating SYRIUS exact copy PDF: {e}")
         raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
 
 @api_router.get("/generate-france-renov-martinique-pdf/{client_id}")
