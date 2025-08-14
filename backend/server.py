@@ -1613,8 +1613,8 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         except Exception as e:
             logging.warning(f"Could not load FRH logo: {e}")
         
-        # Espacement vers le centre
-        story.append(Spacer(1, 8*cm))
+        # Espacement vers le centre (page 1)
+        story.append(Spacer(1, 6*cm))
         
         # 3. CARRÉ BLANC - "VOTRE ÉTUDE PERSONNALISÉE" (superposé sur image)
         white_box_content = [
