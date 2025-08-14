@@ -1717,6 +1717,7 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             [Paragraph('Conformément à notre échange, nous avons le plaisir de vous adresser votre', main_text_style)],
             [Paragraph("rapport d'étude personnalisée pour votre projet d'autoconsommation solaire.", main_text_style)],
             [Paragraph("Vous trouverez ci-après les détails de votre installation.", main_text_style)],
+            [Paragraph("", main_text_style)],  # LIGNE VIDE ajoutée
             [Paragraph("Nous restons à votre entière disposition, si besoin, pour tout complément", main_text_style)],
             [Paragraph("d'information.", main_text_style)],
             [Paragraph('<b>Bonne journée</b>', main_text_style)]
