@@ -4785,7 +4785,7 @@ body::after {
 .green-autonomy-side-box-right {
   position: fixed;
   right: 20px;  /* À DROITE au lieu de left: 20px */
-  top: 50%;
+  top: 48%;     /* Légèrement plus haut pour compenser le décalage */
   transform: translateY(-50%);
   background: #4caf50;
   color: white;
