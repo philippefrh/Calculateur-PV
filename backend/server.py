@@ -1756,10 +1756,146 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
             leading=11
         )
         
-        # Footer sur 2 lignes EN BAS DE LA PAGE 1 (pas page 2)
+        # Footer sur 2 lignes EN BAS DE LA PAGE 1
         footer_line1 = "<b>F.R.H Environnement SAS</b> - 11 rue des Arts et Métiers, Fort-de-France - Tél. 09 85 60 50 51 - direction@francerenovhabitat.com"
         footer_line2 = "Capital social de 30 000 € - Siret : 890 493 737 00013 - N° TVA Intra : FR52890493737 - Site Web: france-renovhabitat.fr - N° convention: N2024KPV516"
         
+        story.append(Paragraph(footer_line1, footer_style))
+        story.append(Spacer(1, 0.1*cm))
+        story.append(Paragraph(footer_line2, footer_style))
+        
+        # Import PageBreak for second page
+        from reportlab.platypus import PageBreak
+        
+        # PAGE 2 - VOTRE PROJET SOLAIRE
+        story.append(PageBreak())
+        
+        # Header styles for page 2
+        title_style = ParagraphStyle(
+            'SYRIUSTitle2',
+            parent=getSampleStyleSheet()['Heading1'],
+            fontSize=18,
+            textColor=colors.HexColor('#FF9800'),
+            fontName='Helvetica-Bold',
+            alignment=1,  # Center
+            spaceAfter=20
+        )
+        
+        heading_style = ParagraphStyle(
+            'SYRIUSHeading2',
+            parent=getSampleStyleSheet()['Heading2'],
+            fontSize=14,
+            textColor=colors.HexColor('#FF9800'),
+            fontName='Helvetica-Bold',
+            spaceAfter=10
+        )
+        
+        normal_style = ParagraphStyle(
+            'SYRIUSNormal2',
+            parent=getSampleStyleSheet()['Normal'],
+            fontSize=11,
+            textColor=colors.black,
+            fontName='Helvetica',
+            spaceAfter=8,
+            leading=14
+        )
+        
+        # Page 2 content
+        story.append(Paragraph("VOTRE PROJET SOLAIRE", title_style))
+        story.append(Spacer(1, 0.5*cm))
+        
+        story.append(Paragraph("Nous avons étudié votre projet d'installation photovoltaïque en tenant compte de vos besoins énergétiques et des spécificités de votre logement en Martinique.", normal_style))
+        story.append(Spacer(1, 0.5*cm))
+        
+        # Données du projet depuis calculation_data
+        if calculation_data:
+            kit_power = calculation_data.get('recommended_kit_power', 6)
+            panels_count = calculation_data.get('panels', 16)
+            annual_production = calculation_data.get('annual_production', 8902)
+            autonomy = calculation_data.get('autonomy_percentage', 100)
+            annual_savings = calculation_data.get('estimated_savings', 2166)
+            
+            project_info = [
+                ["📊 CONFIGURATION RECOMMANDÉE", ""],
+                ["Puissance installée", f"{kit_power} kWc"],
+                ["Nombre de panneaux", f"{panels_count} Panneaux POWERNITY 375W"],
+                ["Micro-onduleurs", "TECH 360"],
+                ["Production annuelle estimée", f"{annual_production:.0f} kWh/an"],
+                ["Taux d'autoconsommation", f"{autonomy}%"],
+                ["Économies annuelles estimées", f"{annual_savings:.0f} €/an"]
+            ]
+            
+            project_table = Table(project_info, colWidths=[10*cm, 8*cm])
+            project_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#FF9800')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 14),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.Color(1, 0.98, 0.9)),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('FONTSIZE', (0, 1), (-1, -1), 12),
+                ('FONTNAME', (0, 1), (0, -1), 'Helvetica-Bold'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 10),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+                ('TOPPADDING', (0, 0), (-1, -1), 8),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ]))
+            story.append(project_table)
+            story.append(Spacer(1, 1*cm))
+        
+        # Avantages
+        story.append(Paragraph("✅ AVANTAGES DE VOTRE INSTALLATION", heading_style))
+        story.append(Spacer(1, 0.3*cm))
+        
+        avantages = [
+            "• Installation certifiée RGE par nos équipes locales",
+            "• Garantie panneaux 25 ans + micro-onduleurs 12 ans",
+            "• Maintenance et SAV local en Martinique",
+            "• Réduction drastique de vos factures EDF",
+            "• Valorisation de votre bien immobilier",
+            "• Geste écologique pour l'environnement"
+        ]
+        
+        for avantage in avantages:
+            story.append(Paragraph(avantage, normal_style))
+        
+        story.append(Spacer(1, 1*cm))
+        
+        # Informations financières simplifiées
+        if calculation_data:
+            kit_price = calculation_data.get('kit_price_final', 15900)
+            total_aids = calculation_data.get('total_aids', 6480)
+            monthly_payment = calculation_data.get('financing_with_aids', {}).get('monthly_payment', 143)
+            
+            story.append(Paragraph("💰 RÉSUMÉ FINANCIER", heading_style))
+            story.append(Spacer(1, 0.3*cm))
+            
+            financial_info = [
+                ["Prix de l'installation", f"{kit_price:.0f} € TTC"],
+                ["Aides et subventions", f"- {total_aids:.0f} €"],
+                ["Reste à financer", f"{kit_price - total_aids:.0f} €"],
+                ["Mensualité avec aides", f"{monthly_payment:.0f} €/mois"],
+            ]
+            
+            financial_table = Table(financial_info, colWidths=[10*cm, 8*cm])
+            financial_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, -1), colors.Color(0.95, 0.95, 1)),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 0), (-1, -1), 11),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('LEFTPADDING', (0, 0), (-1, -1), 10),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+                ('TOPPADDING', (0, 0), (-1, -1), 8),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ]))
+            story.append(financial_table)
+        
+        story.append(Spacer(1, 2*cm))
+        
+        # Footer page 2
         story.append(Paragraph(footer_line1, footer_style))
         story.append(Spacer(1, 0.1*cm))
         story.append(Paragraph(footer_line2, footer_style))
