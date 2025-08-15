@@ -211,8 +211,8 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
         >
           <div className="panel-number">{index + 1}</div>
           
-          {/* kWh flottants produits par ce panneau */}
-          {producingPanels.includes(index + 1) && (
+          {/* kWh flottants produits par ce panneau - Seulement en mode jour */}
+          {producingPanels.includes(index + 1) && !isNightMode && (
             <div className="kwh-production">
               <div className="kwh-floating">kWh</div>
               <div className="kwh-floating" style={{animationDelay: '1s'}}>kWh</div>
