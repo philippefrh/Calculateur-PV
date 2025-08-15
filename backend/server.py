@@ -1870,20 +1870,23 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
             story.append(power_container)
             story.append(Spacer(1, 0.8*cm))
             
-            # Taux d'autoconsommation EXACTEMENT comme SYRIUS (en dessous du rectangle)
+            # Taux d'autoconsommation EXACTEMENT comme SYRIUS (EN GRAS sur 2 lignes)
             auto_style = ParagraphStyle(
                 'SYRIUSAuto',
                 parent=getSampleStyleSheet()['Normal'],
                 fontSize=12,
                 textColor=colors.black,
-                fontName='Helvetica',
+                fontName='Helvetica-Bold',  # EN GRAS comme l'original
                 alignment=1,  # Center
                 spaceAfter=15,
+                leading=16,   # Plus d'espace pour 2 lignes
                 leftIndent=1*cm,
                 rightIndent=1*cm
             )
             
-            story.append(Paragraph(f"Taux d'auto-consommation estimé selon les hypothèses de l'étude : {autonomy} %", auto_style))
+            # Texte sur 2 lignes comme l'original
+            auto_text = f"Taux d'auto-consommation estimé selon<br/>les hypothèses de l'étude : {autonomy} %"
+            story.append(Paragraph(auto_text, auto_style))
             story.append(Spacer(1, 0.5*cm))
             
             # 5. DONNÉES PRINCIPALES - STYLE EXACTEMENT COMME SYRIUS
