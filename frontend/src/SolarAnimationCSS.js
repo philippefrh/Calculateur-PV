@@ -10,6 +10,7 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
   const [moneyBills, setMoneyBills] = useState(0);
   const [batteryChargeLevel, setBatteryChargeLevel] = useState(0); // Nouveau état pour le niveau de charge progressive
   const [batteryCharging, setBatteryCharging] = useState(true); // Nouveau état pour le sens de charge/décharge
+  const [isNightMode, setIsNightMode] = useState(false); // Nouveau état pour le mode jour/nuit
 
   useEffect(() => {
     // Démarrer l'animation automatiquement après 2 secondes
