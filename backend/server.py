@@ -1827,26 +1827,50 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
         story.append(Paragraph(descriptive_text, descriptive_style))
         story.append(Spacer(1, 1*cm))
         
-        # 4. PUISSANCE SOLAIRE PROPOSÉE (DONNÉES DYNAMIQUES)
+        # 4. PUISSANCE SOLAIRE PROPOSÉE DANS RECTANGLE VERT (EXACTEMENT COMME SYRIUS)
         if calculation_data:
             kit_power = calculation_data.get('recommended_kit_power', 6) * 1000  # Convertir en Wc
             autonomy = calculation_data.get('autonomy_percentage', 67)
             
-            # Style pour la puissance (gros titre comme SYRIUS)
-            power_style = ParagraphStyle(
-                'SYRIUSPower',
-                parent=getSampleStyleSheet()['Heading1'],
-                fontSize=16,
-                textColor=colors.HexColor('#FF9800'),
-                fontName='Helvetica-Bold',
-                alignment=1,  # Center
-                spaceAfter=15,
-                spaceBefore=10
-            )
+            # RECTANGLE VERT EXACTEMENT COMME L'ORIGINAL SYRIUS (mais vert au lieu d'orange)
+            power_box_data = [
+                [Paragraph(f"Puissance solaire proposée<br/>{kit_power:,} Wc", ParagraphStyle(
+                    'PowerBoxText',
+                    parent=getSampleStyleSheet()['Normal'],
+                    fontSize=16,
+                    textColor=colors.white,
+                    fontName='Helvetica-Bold',
+                    alignment=1,  # Center
+                    leading=20,
+                    spaceAfter=0,
+                    spaceBefore=0
+                ))]
+            ]
             
-            story.append(Paragraph(f"Puissance solaire proposée {kit_power:,} Wc", power_style))
+            # Créer le tableau pour le rectangle vert - même taille que SYRIUS
+            power_box_table = Table(power_box_data, colWidths=[8*cm], rowHeights=[3*cm])
+            power_box_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#4CAF50')),  # VERT au lieu d'orange
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 10),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+                ('TOPPADDING', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+                ('GRID', (0, 0), (-1, -1), 0, colors.white),  # Pas de bordure visible
+            ]))
             
-            # Taux d'autoconsommation
+            # Centrer le rectangle comme dans SYRIUS
+            power_container = Table([['', power_box_table, '']], colWidths=[6.5*cm, 8*cm, 6.5*cm])
+            power_container.setStyle(TableStyle([
+                ('ALIGN', (1, 0), (1, 0), 'CENTER'),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ]))
+            
+            story.append(power_container)
+            story.append(Spacer(1, 0.8*cm))
+            
+            # Taux d'autoconsommation EXACTEMENT comme SYRIUS (en dessous du rectangle)
             auto_style = ParagraphStyle(
                 'SYRIUSAuto',
                 parent=getSampleStyleSheet()['Normal'],
@@ -1854,7 +1878,9 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
                 textColor=colors.black,
                 fontName='Helvetica',
                 alignment=1,  # Center
-                spaceAfter=15
+                spaceAfter=15,
+                leftIndent=1*cm,
+                rightIndent=1*cm
             )
             
             story.append(Paragraph(f"Taux d'auto-consommation estimé selon les hypothèses de l'étude : {autonomy} %", auto_style))
