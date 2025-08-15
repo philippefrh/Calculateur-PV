@@ -157,7 +157,7 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
   const showEconomyBadge = animationStage === 'savings' || animationStage === 'complete';
 
   return (
-    <div className="solar-animation-container" data-panels={panelCount}>
+    <div className={`solar-animation-container ${isNightMode ? 'night-mode' : 'day-mode'}`} data-panels={panelCount}>
       <h1 className="animation-title">🎬 Installation de {panelCount} Panneaux Solaires</h1>
       <div className="animation-status">{getStatusText()}</div>
       
