@@ -7066,6 +7066,7 @@ class SolarCalculatorTester:
         # NEW: France Renov Martinique PDF tests
         print("\n🏢 TESTING FRANCE RENOV MARTINIQUE PDF ENDPOINT - NEW FEATURE")
         print("-" * 70)
+        self.test_france_renov_martinique_pdf_comprehensive()
         self.test_france_renov_martinique_pdf()
         self.test_france_renov_martinique_pdf_with_martinique_client()
         self.test_no_regressions_other_endpoints()
