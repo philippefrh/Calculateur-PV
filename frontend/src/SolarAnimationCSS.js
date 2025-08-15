@@ -177,16 +177,31 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
       
       <div className="animation-ground"></div>
       
-      {/* Soleil Animé en haut à gauche */}
-      <div className="animated-sun">
-        <div className="sun-core"></div>
-        <div className="sun-rays">
-          {Array.from({ length: 8 }, (_, index) => (
-            <div key={index} className={`sun-ray ray-${index + 1}`}></div>
-          ))}
+      {/* Soleil Animé en haut à gauche - Affiché seulement en mode jour */}
+      {!isNightMode && (
+        <div className="animated-sun">
+          <div className="sun-core"></div>
+          <div className="sun-rays">
+            {Array.from({ length: 8 }, (_, index) => (
+              <div key={index} className={`sun-ray ray-${index + 1}`}></div>
+            ))}
+          </div>
+          <div className="sun-glow"></div>
         </div>
-        <div className="sun-glow"></div>
-      </div>
+      )}
+      
+      {/* Lune Animée en haut à gauche - Affichée seulement en mode nuit */}
+      {isNightMode && (
+        <div className="animated-moon">
+          <div className="moon-core"></div>
+          <div className="moon-craters">
+            <div className="crater crater-1"></div>
+            <div className="crater crater-2"></div>
+            <div className="crater crater-3"></div>
+          </div>
+          <div className="moon-glow"></div>
+        </div>
+      )}
       
       {/* Panneaux Solaires - Nombre variable */}
       {Array.from({ length: panelCount }, (_, index) => (
