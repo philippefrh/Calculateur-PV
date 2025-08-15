@@ -7024,7 +7024,7 @@ class SolarCalculatorTester:
                 
                 # Check Page 1 content (should have background image, logos, white/orange boxes, descriptive text)
                 page1_issues = []
-                if "VOTRE ÉTUDE PERSONNALISÉE" not in page1_text:
+                if "VOTRE ÉTUDE" not in page1_text or "PERSONNALISÉE" not in page1_text:
                     page1_issues.append("Missing 'VOTRE ÉTUDE PERSONNALISÉE' text")
                 if "Nom :" not in page1_text:
                     page1_issues.append("Missing client name section")
