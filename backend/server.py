@@ -1806,16 +1806,16 @@ def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: di
         story.append(Paragraph("VOTRE PROJET SOLAIRE EN DÉTAIL !", title_style_page2))
         story.append(Spacer(1, 0.5*cm))
         
-        # 3. TEXTE DESCRIPTIF IDENTIQUE À SYRIUS
+        # 3. TEXTE DESCRIPTIF IDENTIQUE À SYRIUS - PLUS GROS POUR 6 LIGNES
         descriptive_style = ParagraphStyle(
             'SYRIUSDescriptive',
             parent=getSampleStyleSheet()['Normal'],
-            fontSize=11,
+            fontSize=13,  # Augmenté de 11 à 13 pour faire 6 lignes
             textColor=colors.black,
             fontName='Helvetica',
             alignment=4,  # Justify comme SYRIUS
             spaceAfter=8,
-            leading=14,
+            leading=16,   # Augmenté pour plus d'espace entre lignes
             leftIndent=1*cm,
             rightIndent=1*cm
         )
