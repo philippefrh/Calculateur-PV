@@ -124,6 +124,15 @@ const SolarAnimationCSS = ({ panelCount = 12, onBack, onNext, batterySelected = 
       setBatteryChargeLevel(currentLevel);
       setBatteryCharging(charging);
       
+      // Nouveau : Gérer le mode jour/nuit selon l'état de la batterie
+      if (charging && currentLevel > 0) {
+        // Mode jour pendant la charge
+        setIsNightMode(false);
+      } else if (!charging && currentLevel < 100) {
+        // Mode nuit pendant la décharge
+        setIsNightMode(true);
+      }
+      
     }, 1000); // Changement toutes les 1 seconde
 
     // Nettoyage du timer après l'animation complète
