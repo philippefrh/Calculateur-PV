@@ -7834,6 +7834,14 @@ class SolarCalculatorTester:
         print("=" * 80)
         self.test_france_renov_martinique_pdf_autoconsumption_limit()
         
+        # PRIORITY TEST: France Renov Martinique PDF Auto-consumption Rate Correction (NEW - as requested in review)
+        print("\n🎯 PRIORITY TEST: France Renov Martinique PDF Auto-consumption Rate Correction")
+        print("User requests: Test corrected auto-consumption rate calculation based on real client needs coverage")
+        print("Problem: Client 10,990 kWh/an, autoconsumption 7,566 kWh → PDF showed 100% instead of 68.8%")
+        print("Solution: NEW FORMULA - Rate = (Autoconsumption solaire / Consommation totale client) × 100")
+        print("=" * 80)
+        self.test_france_renov_martinique_pdf_autoconsumption_rate_correction()
+        
         # URGENT TEST: Martinique production data analysis (as requested in review)
         print("\n🚨 URGENT TEST: Martinique Production Data Analysis")
         print("User reports: UI shows 8901 kWh/an but PDF shows 13,351 kWh/an")
