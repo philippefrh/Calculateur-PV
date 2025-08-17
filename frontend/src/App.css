@@ -2106,6 +2106,11 @@ body::after {
   box-shadow: 0 12px 24px rgba(33,150,243,0.4);
 }
 
+.loan-calculator-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(76,175,80,0.4);
+}
+
 .devis-button.generating {
   background: linear-gradient(135deg, #888, #999);
   cursor: not-allowed;
