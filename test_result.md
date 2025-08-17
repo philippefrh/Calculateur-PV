@@ -215,7 +215,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Vérification structure données API calculate Martinique"
+    - "Limitation taux auto-consommation PDF à 100% maximum"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
