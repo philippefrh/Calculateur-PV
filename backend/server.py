@@ -1879,6 +1879,8 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
             display_percentage = real_savings_pct if real_savings_pct else autonomy_pct
             # Arrondir comme dans le frontend
             display_percentage = round(display_percentage) if display_percentage else autonomy_pct
+            # LIMITATION : Le taux d'auto-consommation ne doit jamais dépasser 100%
+            display_percentage = min(display_percentage, 100)
                 
             auto_style = ParagraphStyle(
                 'SYRIUSAuto',
