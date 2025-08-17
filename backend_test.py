@@ -7536,8 +7536,8 @@ class SolarCalculatorTester:
                 "water_heating_system": "Chauffe-eau solaire",
                 "water_heating_capacity": 200,
                 "annual_consumption_kwh": 4000.0,  # Very low consumption to generate >100% rate
-                "monthly_edf_payment": 280.0,
-                "annual_edf_payment": 3360.0
+                "monthly_edf_payment": 120.0,  # Very low EDF bill to generate >100% savings rate
+                "annual_edf_payment": 1440.0
             }
             
             # Create the client
