@@ -1871,6 +1871,11 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
             story.append(Spacer(1, 0.8*cm))
             
             # Taux d'autoconsommation EXACTEMENT comme SYRIUS (EN GRAS sur 2 lignes)
+            # CORRECTION : Utiliser le pourcentage d'économies de l'interface, pas l'autoconsommation
+            savings_percentage = calculation_data.get('savings_percentage', autonomy)  # Pourcentage d'économies
+            if savings_percentage is None:
+                savings_percentage = autonomy  # Fallback sur autonomy si pas trouvé
+                
             auto_style = ParagraphStyle(
                 'SYRIUSAuto',
                 parent=getSampleStyleSheet()['Normal'],
@@ -1884,8 +1889,8 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
                 rightIndent=1*cm
             )
             
-            # Texte sur 2 lignes comme l'original
-            auto_text = f"Taux d'auto-consommation estimé selon<br/>les hypothèses de l'étude : {autonomy} %"
+            # Texte sur 2 lignes avec FORMATAGE PROPRE (pas de décimales parasites)
+            auto_text = f"Taux d'auto-consommation estimé selon<br/>les hypothèses de l'étude : {savings_percentage:.0f} %"
             story.append(Paragraph(auto_text, auto_style))
             story.append(Spacer(1, 0.5*cm))
             
