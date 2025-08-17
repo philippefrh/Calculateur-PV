@@ -1906,22 +1906,10 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
             # CORRECTION : Utiliser la vraie consommation client passée en paramètre
             annual_consumption = client_consumption  # Vraie consommation client (ex: 5890)
             
-            # Récupérer les calculs de production - UTILISER LES MÊMES DONNÉES QUE L'INTERFACE
-            # DEBUG: Afficher toutes les clés disponibles pour identifier le problème
-            import logging
-            logging.warning(f"DEBUG PDF - Clés disponibles dans calculation_data: {list(calculation_data.keys())}")
-            logging.warning(f"DEBUG PDF - estimated_production: {calculation_data.get('estimated_production')}")
-            logging.warning(f"DEBUG PDF - annual_production: {calculation_data.get('annual_production')}")
-            logging.warning(f"DEBUG PDF - kit_power: {calculation_data.get('kit_power')}")
-            
+            # Récupérer les calculs de production - MAINTENANT AVEC LE BON KIT !
             annual_production = calculation_data.get('estimated_production', 8902)  # Même champ que l'interface
             autoconsumption_kwh = calculation_data.get('autoconsumption_kwh', 7567)
             surplus_kwh = calculation_data.get('surplus_kwh', 1335)
-            
-            # DEBUG: Vérifier les valeurs récupérées
-            logging.warning(f"DEBUG PDF - annual_production utilisée: {annual_production}")
-            logging.warning(f"DEBUG PDF - autoconsumption_kwh: {autoconsumption_kwh}")
-            logging.warning(f"DEBUG PDF - surplus_kwh: {surplus_kwh}")
             
             data_style = ParagraphStyle(
                 'SYRIUSData',
