@@ -249,6 +249,18 @@ agent_communication:
     message: "🚨 CRITICAL FINDING: 71% SAVINGS FIELD DOES NOT EXIST IN API: Conducted comprehensive testing with client having 11990 kWh/an consumption and 6kW recommended as requested in review. EXHAUSTIVE SEARCH RESULTS: 1) ❌ NO FIELD CONTAINS 71%: Tested both 'realistic' and 'optimistic' calculation modes, searched all percentage fields (0-100 range), performed deep nested search through all API response data - NO field contains value around 71%. 2) ✅ CONFIRMED EXISTING FIELDS: 'autonomy_percentage' = 74.2% (autoconsumption), 'real_savings_percentage' = 40.1% (actual savings vs annual bill). 3) 🔍 TESTED MULTIPLE SCENARIOS: Different consumption values (10k-14k kWh), both calculation modes, manual 6kW selection - never found 71% value anywhere in API responses. 4) 📊 CALCULATION BREAKDOWN: 11990 kWh consumption, 8902 kWh production (74.2% autonomy), 2166€ annual savings (40.1% of 5400€ bill). 5) 💡 CONCLUSION: The 71% value displayed in interface is NOT coming from the /api/calculate endpoint. It must be calculated in frontend JavaScript or come from a different API endpoint not tested. RECOMMENDATION: Check frontend calculation logic or identify alternative data source for the 71% savings percentage."
 
 backend:
+  - task: "Limitation taux auto-consommation PDF à 100% maximum"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Ajouté la limitation du taux d'auto-consommation à 100% maximum dans la génération du PDF France Renov Martinique. Modification à la ligne 1882 avec 'display_percentage = min(display_percentage, 100)'. Cela garantit que même si les calculs internes donnent 148%, le PDF n'affichera jamais plus de 100% d'auto-consommation. Cette limitation n'affecte que l'affichage du PDF, pas les calculs de base."
+
   - task: "Vérification structure données API calculate Martinique"
     implemented: true
     working: false
