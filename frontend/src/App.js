@@ -3119,13 +3119,6 @@ Cordialement`);
           </button>
           <button 
             type="button" 
-            onClick={toggleLoanCalculator}
-            className="loan-calculator-button"
-          >
-            💳 Calculateur de Prêt
-          </button>
-          <button 
-            type="button" 
             onClick={generatePDF} 
             className={`pdf-button ${isGeneratingPDF ? 'generating' : ''}`}
             disabled={isGeneratingPDF}
