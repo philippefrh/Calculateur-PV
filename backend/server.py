@@ -1954,9 +1954,9 @@ Dont {surplus_kwh:,} kWh sont réinjectés dans le réseau
         pvgis_text = """Cette estimation indicative et non contractuelle a été effectuée à l'aide du logiciel européen PVGIS. Elle repose sur l'orientation et l'inclinaison de la toiture, ainsi que sur les informations fournies par le client, en tenant compte des scénarios statistiques. L'économie estimée prend en considération les modifications de comportement du client."""
         
         story.append(Paragraph(pvgis_text, footer_text_style))
-        story.append(Spacer(1, 2*cm))
+        story.append(Spacer(1, 1*cm))  # Réduit de 2cm à 1cm
         
-        # 7. FOOTER FRH MARTINIQUE (remplace Syrius)
+        # 7. FOOTER FRH MARTINIQUE (remplace Syrius) - RESTE EN BAS DE PAGE 2
         frh_footer_style = ParagraphStyle(
             'FRHFooter',
             parent=getSampleStyleSheet()['Normal'],
