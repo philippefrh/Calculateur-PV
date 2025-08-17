@@ -473,7 +473,7 @@ backend:
         comment: "✅ QUICK VERIFICATION COMPLETED: API root endpoint (GET /api) still working correctly after recent modifications. Response: 'Solar Calculator API with PVGIS Integration'. Backend server operational and accessible."
       - working: true
         agent: "testing"
-        comment: "✅ AMORTIZATION TABLE TESTING: API Root endpoint working perfectly. Backend accessible at https://pdf-solar-quote.preview.emergentagent.com/api with correct response message."
+        comment: "✅ AMORTIZATION TABLE TESTING: API Root endpoint working perfectly. Backend accessible at https://solarquote-fix.preview.emergentagent.com/api with correct response message."
 
   - task: "Solar Kits Endpoint"
     implemented: true

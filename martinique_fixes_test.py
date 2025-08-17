@@ -11,7 +11,7 @@ import time
 from typing import Dict, Any, Optional
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://pdf-solar-quote.preview.emergentagent.com/api"
+BACKEND_URL = "https://solarquote-fix.preview.emergentagent.com/api"
 
 class MartiniqueFixes:
     def __init__(self):

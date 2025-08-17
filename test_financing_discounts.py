@@ -9,7 +9,7 @@ import json
 import time
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://pdf-solar-quote.preview.emergentagent.com/api"
+BACKEND_URL = "https://solarquote-fix.preview.emergentagent.com/api"
 
 def test_api_root():
     """Test 1: GET /api pour s'assurer que le serveur répond"""
