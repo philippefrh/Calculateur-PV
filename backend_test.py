@@ -7574,7 +7574,7 @@ class SolarCalculatorTester:
             
             # Check internal calculation values
             estimated_production = calculation.get("estimated_production", 0)
-            annual_consumption = 5890.0  # Our test consumption
+            annual_consumption = 4000.0  # Our test consumption
             autonomy_percentage = calculation.get("autonomy_percentage", 0)
             real_savings_percentage = calculation.get("real_savings_percentage", 0)
             
