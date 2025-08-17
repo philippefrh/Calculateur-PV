@@ -214,8 +214,7 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus:
-    - "Limitation taux auto-consommation PDF à 100% maximum"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
