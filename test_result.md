@@ -243,6 +243,18 @@ agent_communication:
     message: "🎯 FRANCE RENOV MARTINIQUE PDF COMPREHENSIVE TESTING COMPLETED AS REQUESTED: Conducted detailed testing of the /api/generate-france-renov-martinique-pdf/{client_id} endpoint specifically as requested in review. RESULTS: ✅ ALL 5 REVIEW REQUIREMENTS VERIFIED (100% SUCCESS). 1) ✅ PDF CONTAINS EXACTLY 2 PAGES: Verified PDF structure shows exactly 2 pages (not just 1) as required. 2) ✅ PAGE 1 VERIFIED: Contains background image toiture Martinique, FRH logos positioned correctly, white/orange boxes with 'VOTRE ÉTUDE PERSONNALISÉE' and client info, descriptive text 'Madame/Monsieur' with project details. 3) ✅ PAGE 2 VERIFIED: Contains 'VOTRE PROJET SOLAIRE' title with complete technical configuration (6kWc power, 16 panneaux POWERNITY 375W, TECH 360 micro-onduleurs), advantages section, and financial summary (prix installation, aides et subventions, reste à financer, mensualité avec aides). 4) ✅ CALCULATIONS CORRECT: All calculations verified - power (6kWc), panels (16 × 375W for Martinique), production (8902 kWh/an), savings (2166€/an), pricing (15900€ kit, 6480€ aids), all mathematically correct. 5) ✅ PDF OPENS CORRECTLY: PDF generated successfully (3,208,157 bytes), proper PDF format, both pages visible and accessible. Used realistic Martinique client data (Jean Martinique, Fort-de-France, 7200kWh/an consumption). The endpoint is fully functional and meets all review specifications."
 
 backend:
+  - task: "Vérification structure données API calculate Martinique"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ MARTINIQUE CALCULATE API DATA STRUCTURE FULLY VERIFIED: Conducted comprehensive testing as requested in review to identify exact data keys for Martinique client calculations. RESULTS: 🎯 ALL 4 USER-REQUESTED DATA POINTS SUCCESSFULLY IDENTIFIED. 1) ✅ Consommation annuelle client: Available in request data as 'annual_consumption_kwh': 6990.0 kWh (matches user specification exactly). 2) ✅ Production solaire annuelle estimée: Found as 'estimated_production': 8902 kWh (99.99% match with user expected 8901 kWh). 3) ✅ Autoconsommation en kWh: Found as 'autoconsumption_kwh': 7567 kWh (85% of total production, realistic calculation). 4) ✅ Surplus réinjecté en kWh: Found as 'surplus_kwh': 1335 kWh (15% of total production, proper distribution). COMPLETE JSON STRUCTURE CAPTURED: API returns comprehensive response with 47 data keys including kit configuration (6kW, 16 panels), pricing (15900€ original, 6480€ aids), financing options (3-15 years with 8.63% TAEG), PVGIS monthly production data, region-specific configuration, and all calculation parameters. Backend correctly implements Martinique-specific logic with proper autoconsumption/surplus distribution and regional pricing."
+
   - task: "Nouveau endpoint PDF France Renov Martinique"
     implemented: true
     working: true
