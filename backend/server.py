@@ -1926,12 +1926,12 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
                 leading=16
             )
             
-            # Données formatées avec SEULEMENT LES CHIFFRES EN COULEUR
+            # Données formatées avec CHIFFRES EN COULEUR ET EN GRAS
             data_text = f"""
-Consommation annuelle actuelle : <font color="red">{annual_consumption:,.0f} kWh</font><br/>
-Production solaire annuelle estimée : <font color="green">{annual_production:,.2f} kWh</font><br/>
-Dont <font color="green">{autoconsumption_kwh:,.2f} kWh</font> sont autoconsommés<br/>
-Dont <font color="green">{surplus_kwh:,.2f} kWh</font> sont réinjectés dans le réseau
+Consommation annuelle actuelle : <font color="red"><b>{annual_consumption:,.0f} kWh</b></font><br/>
+Production solaire annuelle estimée : <font color="green"><b>{annual_production:,.2f} kWh</b></font><br/>
+Dont <font color="green"><b>{autoconsumption_kwh:,.2f} kWh</b></font> sont autoconsommés<br/>
+Dont <font color="green"><b>{surplus_kwh:,.2f} kWh</b></font> sont réinjectés dans le réseau
 """
             
             # Remplacer les points par des virgules (format français)
