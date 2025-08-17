@@ -7254,6 +7254,11 @@ class SolarCalculatorTester:
         print("🎯 FOCUS: User-Requested Endpoints with Realistic French Data")
         print("=" * 80)
         
+        # PRIORITY TEST: Martinique data structure verification (as requested in review)
+        print("\n🎯 PRIORITY TEST: Martinique Calculate API Data Structure Verification")
+        print("=" * 80)
+        self.test_martinique_calculate_data_structure()
+        
         # Test rapide demandé dans la review - Martinique 6kW + batterie
         print("\n🔋 TEST RAPIDE DEMANDÉ: Martinique 6kW + Batterie Pricing")
         print("=" * 80)
