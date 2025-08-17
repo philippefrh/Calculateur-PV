@@ -3197,6 +3197,118 @@ Cordialement`);
           </div>
         </div>
       </div>
+      
+      {/* Modal Calculateur de Prêt */}
+      {showLoanCalculator && (
+        <div className="loan-calculator-modal" onClick={toggleLoanCalculator}>
+          <div className="loan-calculator-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>💳 Simulation de Prêt</h2>
+              <button className="close-button" onClick={toggleLoanCalculator}>✕</button>
+            </div>
+            
+            <div className="calculator-form">
+              <label htmlFor="montant">Montant de l'emprunt (€) :</label>
+              <input 
+                type="number" 
+                id="montant" 
+                min="0" 
+                step="100" 
+                required 
+                defaultValue={results.selectedKit?.priceWithAids || results.financial?.investmentWithAids || 0}
+              />
+
+              <label>Date de naissance :</label>
+              <div style={{display: 'flex', gap: '5px'}}>
+                <select id="jour">
+                  {Array.from({length: 31}, (_, i) => (
+                    <option key={i+1} value={i+1}>{i+1}</option>
+                  ))}
+                </select>
+                <select id="mois">
+                  {['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'].map((month, index) => (
+                    <option key={index} value={index}>{month}</option>
+                  ))}
+                </select>
+                <select id="annee">
+                  {Array.from({length: 88}, (_, i) => {
+                    const year = new Date().getFullYear() - 18 - i;
+                    return <option key={year} value={year}>{year}</option>
+                  })}
+                </select>
+              </div>
+
+              <button onClick={() => {
+                const montant = parseFloat(document.getElementById("montant").value);
+                const jour = parseInt(document.getElementById("jour").value);
+                const mois = parseInt(document.getElementById("mois").value);
+                const annee = parseInt(document.getElementById("annee").value);
+                const resultatDiv = document.getElementById("resultat");
+
+                if (isNaN(montant) || isNaN(jour) || isNaN(mois) || isNaN(annee)) {
+                  resultatDiv.innerHTML = "Veuillez entrer des valeurs valides.";
+                  return;
+                }
+
+                const naissance = new Date(annee, mois, jour);
+                const today = new Date();
+                const debutPret = new Date(today.getFullYear(), today.getMonth() + 3, today.getDate());
+                const dateLimite = new Date(naissance.getFullYear() + 81, naissance.getMonth(), naissance.getDate());
+
+                const options = [
+                  { duree: 182, tauxMensuel: 0.00723188 },
+                  { duree: 120, tauxMensuel: 0.007231 },
+                  { duree: 96,  tauxMensuel: 0.007287 },
+                  { duree: 60,  tauxMensuel: 0.007454817 }
+                ];
+
+                let optionsEligibles = [];
+
+                for (let opt of options) {
+                  const finPret = new Date(debutPret.getFullYear(), debutPret.getMonth() + opt.duree, debutPret.getDate());
+                  if (finPret <= dateLimite) {
+                    const mensualite = (montant * (opt.tauxMensuel * Math.pow(1 + opt.tauxMensuel, opt.duree))) /
+                                     (Math.pow(1 + opt.tauxMensuel, opt.duree) - 1);
+                    optionsEligibles.push({
+                      duree: opt.duree,
+                      mensualite: mensualite.toFixed(2)
+                    });
+                  }
+                }
+
+                if (optionsEligibles.length === 0) {
+                  resultatDiv.innerHTML = "Le client dépasse l'âge limite pour un financement.";
+                  return;
+                }
+
+                const meilleureOption = optionsEligibles[0];
+
+                let html = `
+                  <p><strong>Date de début du prêt :</strong> ${debutPret.toLocaleDateString()}</p>
+                  <p><strong>Âge limite atteint le :</strong> ${dateLimite.toLocaleDateString()}</p>
+                  <p><strong>Durée maximale autorisée :</strong> ${meilleureOption.duree} mois</p>
+                  <p><strong>Mensualité correspondante :</strong> ${meilleureOption.mensualite} €</p>
+                  <h3>Autres durées possibles :</h3>
+                  <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                    <tr>
+                      <th style="padding: 10px; border: 1px solid #ccc; text-align: center; background-color: #dee2e6;">Durée (mois)</th>
+                      <th style="padding: 10px; border: 1px solid #ccc; text-align: center; background-color: #dee2e6;">Mensualité (€)</th>
+                    </tr>`;
+
+                for (let opt of optionsEligibles) {
+                  html += `<tr><td style="padding: 10px; border: 1px solid #ccc; text-align: center;">${opt.duree}</td><td style="padding: 10px; border: 1px solid #ccc; text-align: center;">${opt.mensualite}</td></tr>`;
+                }
+
+                html += `</table>`;
+                resultatDiv.innerHTML = html;
+              }}>Calculer</button>
+
+              <div id="resultat" className="resultat"></div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
