@@ -1738,8 +1738,9 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, fo
       notification.innerHTML = '🏢 Génération du PDF France Renov Martinique en cours...';
       document.body.appendChild(notification);
       
-      // Appel à l'API pour générer le PDF France Renov Martinique
-      const response = await fetch(`${API}/generate-france-renov-martinique-pdf/${results.client_id}`, {
+      // Appel à l'API pour générer le PDF France Renov Martinique AVEC LE KIT SÉLECTIONNÉ
+      const kitPower = results.recommended_kit_power || results.kit_power || 6; // Récupérer le kit sélectionné
+      const response = await fetch(`${API}/generate-france-renov-martinique-pdf/${results.client_id}?kit_power=${kitPower}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/pdf',
