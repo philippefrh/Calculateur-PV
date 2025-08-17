@@ -245,15 +245,18 @@ agent_communication:
 backend:
   - task: "Vérification structure données API calculate Martinique"
     implemented: true
-    working: true
+    working: false
     file: "backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
         comment: "✅ MARTINIQUE CALCULATE API DATA STRUCTURE FULLY VERIFIED: Conducted comprehensive testing as requested in review to identify exact data keys for Martinique client calculations. RESULTS: 🎯 ALL 4 USER-REQUESTED DATA POINTS SUCCESSFULLY IDENTIFIED. 1) ✅ Consommation annuelle client: Available in request data as 'annual_consumption_kwh': 6990.0 kWh (matches user specification exactly). 2) ✅ Production solaire annuelle estimée: Found as 'estimated_production': 8902 kWh (99.99% match with user expected 8901 kWh). 3) ✅ Autoconsommation en kWh: Found as 'autoconsumption_kwh': 7567 kWh (85% of total production, realistic calculation). 4) ✅ Surplus réinjecté en kWh: Found as 'surplus_kwh': 1335 kWh (15% of total production, proper distribution). COMPLETE JSON STRUCTURE CAPTURED: API returns comprehensive response with 47 data keys including kit configuration (6kW, 16 panels), pricing (15900€ original, 6480€ aids), financing options (3-15 years with 8.63% TAEG), PVGIS monthly production data, region-specific configuration, and all calculation parameters. Backend correctly implements Martinique-specific logic with proper autoconsumption/surplus distribution and regional pricing."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL DATA STRUCTURE ISSUE IDENTIFIED: Tested specifically with client having 5890 kWh/an consumption in Martinique region as requested. PROBLEM FOUND: The client's annual consumption (5890 kWh) is correctly stored in client data but is NOT returned in the /api/calculate response. ANALYSIS: 1) ✅ Client creation: annual_consumption_kwh = 5890.0 kWh stored correctly. 2) ✅ Direct client retrieval: annual_consumption_kwh = 5890.0 kWh available. 3) ❌ Calculate API response: NO annual_consumption_kwh field present (33 total keys, none contain the original consumption). 4) 🔍 The value 5890 does not appear ANYWHERE in the calculate response JSON. This explains exactly why user's software displays 5890 kWh (from client data) but PDF shows 6990 kWh (likely from a different calculation). SOLUTION NEEDED: Add 'annual_consumption_kwh' field to calculate API response to match client's original consumption data."
 
   - task: "Nouveau endpoint PDF France Renov Martinique"
     implemented: true
