@@ -2009,12 +2009,12 @@ async def generate_france_renov_martinique_devis(client_id: str, kit_power: int 
         if not client:
             raise HTTPException(status_code=404, detail="Client not found")
         
-        # Calculate solar data
+        # Calculate solar data AVEC LE KIT CHOISI PAR L'UTILISATEUR
         calculation_response = await calculate_solar_solution(
             client_id=client_id,
             battery_selected=False,
             discount_amount=0,
-            manual_kit_power=None,
+            manual_kit_power=kit_power,  # UTILISER LE KIT SÉLECTIONNÉ !
             region="martinique"  # Force Martinique region
         )
         
