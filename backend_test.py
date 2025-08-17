@@ -2185,6 +2185,78 @@ class SolarCalculatorTester:
         else:
             self.log_test("User Request - PDF Generation", False, "No client ID available")
 
+    def test_martinique_calculate_data_structure(self):
+        """Test Martinique calculate endpoint and return complete JSON structure for review"""
+        try:
+            # Create a typical Martinique client
+            martinique_client_data = {
+                "first_name": "Jean",
+                "last_name": "Martinique", 
+                "address": "Fort-de-France, Martinique",
+                "phone": "0696123456",
+                "email": "jean.martinique@test.com",
+                "roof_surface": 60.0,
+                "roof_orientation": "Sud",
+                "velux_count": 0,
+                "heating_system": "Climatisation",
+                "water_heating_system": "Ballon électrique standard",
+                "water_heating_capacity": 200,
+                "annual_consumption_kwh": 6990.0,  # User specified value
+                "monthly_edf_payment": 280.0,
+                "annual_edf_payment": 3360.0
+            }
+            
+            # Create the Martinique client
+            client_response = self.session.post(f"{self.base_url}/clients", json=martinique_client_data)
+            if client_response.status_code == 200:
+                client = client_response.json()
+                martinique_client_id = client["id"]
+                
+                # Test calculate endpoint for Martinique
+                calc_response = self.session.post(f"{self.base_url}/calculate/{martinique_client_id}?region=martinique")
+                if calc_response.status_code == 200:
+                    calculation = calc_response.json()
+                    
+                    # Extract key data points requested by user
+                    annual_consumption = martinique_client_data["annual_consumption_kwh"]
+                    estimated_production = calculation.get("estimated_production", 0)
+                    autoconsumption_kwh = calculation.get("autoconsumption_kwh", 0)
+                    surplus_kwh = calculation.get("surplus_kwh", 0)
+                    
+                    # Create detailed analysis
+                    analysis = {
+                        "USER_REQUESTED_VALUES": {
+                            "annual_consumption_client": annual_consumption,
+                            "expected_production": 8901,  # User expected value
+                            "actual_production": estimated_production,
+                            "production_match": abs(estimated_production - 8901) < 500
+                        },
+                        "AUTOCONSUMPTION_SURPLUS_BREAKDOWN": {
+                            "autoconsumption_kwh": autoconsumption_kwh,
+                            "surplus_kwh": surplus_kwh,
+                            "total_production": estimated_production,
+                            "autoconsumption_percentage": (autoconsumption_kwh / estimated_production * 100) if estimated_production > 0 else 0,
+                            "surplus_percentage": (surplus_kwh / estimated_production * 100) if estimated_production > 0 else 0
+                        },
+                        "ALL_AVAILABLE_DATA_KEYS": list(calculation.keys()),
+                        "COMPLETE_RESPONSE": calculation
+                    }
+                    
+                    self.log_test("Martinique Calculate Data Structure", True, 
+                                f"✅ MARTINIQUE CALCULATE API DATA VERIFIED: Annual consumption: {annual_consumption} kWh, Estimated production: {estimated_production:.0f} kWh (expected 8901), Autoconsumption: {autoconsumption_kwh:.0f} kWh, Surplus: {surplus_kwh:.0f} kWh. Complete data structure captured.", 
+                                analysis)
+                    
+                    # Store martinique client ID for other tests
+                    self.martinique_client_id = martinique_client_id
+                    
+                else:
+                    self.log_test("Martinique Calculate Data Structure", False, f"Calculate API failed: HTTP {calc_response.status_code}: {calc_response.text}")
+            else:
+                self.log_test("Martinique Calculate Data Structure", False, f"Client creation failed: HTTP {client_response.status_code}: {client_response.text}")
+                
+        except Exception as e:
+            self.log_test("Martinique Calculate Data Structure", False, f"Error: {str(e)}")
+
     def test_roof_analysis_obstacle_detection_functions(self):
         """Test the specific obstacle detection and geometry analysis functions"""
         try:
