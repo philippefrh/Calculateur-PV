@@ -11,7 +11,7 @@ import io
 from PIL import Image as PILImage, ImageDraw
 
 # Backend URL
-BACKEND_URL = "https://eco-quote-solar.preview.emergentagent.com/api"
+BACKEND_URL = "https://pdf-solar-quote.preview.emergentagent.com/api"
 
 def create_complex_roof_image():
     """Create a complex roof image with multiple obstacles"""

@@ -8,7 +8,7 @@ import requests
 import json
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://eco-quote-solar.preview.emergentagent.com/api"
+BACKEND_URL = "https://pdf-solar-quote.preview.emergentagent.com/api"
 
 def test_martinique_region():
     """Test Martinique region with new pricing and configurations"""
