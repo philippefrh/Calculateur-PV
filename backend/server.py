@@ -1924,16 +1924,16 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
                 leading=16
             )
             
-            # Données formatées avec CHIFFRES EN COULEUR ET EN GRAS
+            # Données formatées avec CHIFFRES EN COULEUR ET EN GRAS - FORMAT FRANÇAIS CORRECT
             data_text = f"""
 Consommation annuelle actuelle : <font color="red"><b>{annual_consumption:,.0f} kWh</b></font><br/>
-Production solaire annuelle estimée : <font color="green"><b>{annual_production:,.2f} kWh</b></font><br/>
-Dont <font color="green"><b>{autoconsumption_kwh:,.2f} kWh</b></font> sont autoconsommés<br/>
-Dont <font color="green"><b>{surplus_kwh:,.2f} kWh</b></font> sont réinjectés dans le réseau
+Production solaire annuelle estimée : <font color="green"><b>{annual_production:,.0f} kWh</b></font><br/>
+Dont <font color="green"><b>{autoconsumption_kwh:,.0f} kWh</b></font> sont autoconsommés<br/>
+Dont <font color="green"><b>{surplus_kwh:,.0f} kWh</b></font> sont réinjectés dans le réseau
 """
             
-            # Remplacer les points par des virgules (format français)
-            data_text = data_text.replace(',', ' ').replace('.', ',')
+            # Remplacer les points par des virgules (format français) - APRÈS formatage
+            data_text = data_text.replace(',', ' ')  # Remplacer seulement les séparateurs de milliers
             
             story.append(Paragraph(data_text, data_style))
             story.append(Spacer(1, 1*cm))
