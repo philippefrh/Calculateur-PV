@@ -1551,7 +1551,7 @@ async def generate_solar_report_pdf(client_id: str, calculation_data: dict) -> b
         logging.error(f"Error generating PDF: {e}")
         raise HTTPException(status_code=500, detail=f"Error generating PDF: {str(e)}")
 
-def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: dict) -> bytes:
+def generate_france_renov_martinique_pdf(client_data: dict, calculation_data: dict, client_consumption: float) -> bytes:
     """Generate PDF EXACTLY matching SYRIUS original format - image full page without borders"""
     try:
         from reportlab.lib.pagesizes import A4
