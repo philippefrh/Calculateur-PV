@@ -7535,7 +7535,7 @@ class SolarCalculatorTester:
                 "heating_system": "Climatisation",
                 "water_heating_system": "Chauffe-eau solaire",
                 "water_heating_capacity": 200,
-                "annual_consumption_kwh": 5890.0,  # Low consumption to generate >100% rate
+                "annual_consumption_kwh": 4000.0,  # Very low consumption to generate >100% rate
                 "monthly_edf_payment": 280.0,
                 "annual_edf_payment": 3360.0
             }
