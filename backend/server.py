@@ -1870,17 +1870,24 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
             story.append(power_container)
             story.append(Spacer(1, 0.8*cm))
             
-            # CORRECTION : Utiliser EXACTEMENT la même logique que le frontend
-            # Frontend: Math.round(results.real_savings_percentage || results.autonomy_percentage)
-            real_savings_pct = calculation_data.get('real_savings_percentage')
-            autonomy_pct = calculation_data.get('autonomy_percentage', 67)
+            # CORRECTION : Calculer le VRAI taux d'auto-consommation basé sur la couverture des besoins du client
+            # Taux = (Autoconsommation solaire / Consommation totale client) × 100
+            autoconsumption_kwh = calculation_data.get('autoconsumption_kwh', 0)
             
-            # Même logique JavaScript : real_savings_percentage OU autonomy_percentage 
-            display_percentage = real_savings_pct if real_savings_pct else autonomy_pct
-            # Arrondir comme dans le frontend
-            display_percentage = round(display_percentage) if display_percentage else autonomy_pct
-            # LIMITATION : Le taux d'auto-consommation ne doit jamais dépasser 100%
-            display_percentage = min(display_percentage, 100)
+            # CORRECTION : Utiliser la vraie consommation client 
+            if client_consumption > 0 and autoconsumption_kwh > 0:
+                # Calcul du taux réel de couverture des besoins par le solaire
+                real_coverage_percentage = (autoconsumption_kwh / client_consumption) * 100
+                display_percentage = round(real_coverage_percentage)
+                # LIMITATION : Le taux ne doit jamais dépasser 100%
+                display_percentage = min(display_percentage, 100)
+            else:
+                # Fallback sur l'ancienne logique si pas de données
+                real_savings_pct = calculation_data.get('real_savings_percentage')
+                autonomy_pct = calculation_data.get('autonomy_percentage', 67)
+                display_percentage = real_savings_pct if real_savings_pct else autonomy_pct
+                display_percentage = round(display_percentage) if display_percentage else autonomy_pct
+                display_percentage = min(display_percentage, 100)
                 
             auto_style = ParagraphStyle(
                 'SYRIUSAuto',
