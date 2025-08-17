@@ -2271,6 +2271,13 @@ Cordialement`);
             >
               {showFinancing ? '📊 Masquer' : '📊 Voir toutes les options'} de financement
             </button>
+            
+            <button 
+              className="loan-calculator-btn"
+              onClick={toggleLoanCalculator}
+            >
+              💳 Calculateur de Prêt
+            </button>
 
             {showFinancing && (
               <div className="all-financing-options">
