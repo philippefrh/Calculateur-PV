@@ -7348,6 +7348,177 @@ class SolarCalculatorTester:
         except Exception:
             return None
 
+    def test_martinique_production_data_analysis(self):
+        """
+        URGENT TEST: Analyze Martinique 6kW production data discrepancy
+        User reports: UI shows 8901 kWh/an but PDF shows 13,351 kWh/an
+        Need to identify all production fields and find the correct one
+        """
+        try:
+            # Create a specific Martinique client with 6kW consumption profile
+            martinique_client_data = {
+                "first_name": "Jean",
+                "last_name": "Martinique",
+                "address": "Fort-de-France, Martinique",
+                "phone": "0696123456",
+                "email": "jean.martinique@test.com",
+                "roof_surface": 60.0,
+                "roof_orientation": "Sud",
+                "velux_count": 0,
+                "heating_system": "Climatisation",
+                "water_heating_system": "Ballon électrique",
+                "water_heating_capacity": 200,
+                "annual_consumption_kwh": 6990.0,  # Typical for 6kW recommendation
+                "monthly_edf_payment": 280.0,
+                "annual_edf_payment": 3360.0
+            }
+            
+            # Create Martinique client
+            client_response = self.session.post(f"{self.base_url}/clients", json=martinique_client_data)
+            if client_response.status_code != 200:
+                # Try to use existing client if creation fails
+                clients_response = self.session.get(f"{self.base_url}/clients")
+                if clients_response.status_code == 200:
+                    clients = clients_response.json()
+                    if clients:
+                        self.martinique_client_id = clients[0]["id"]
+                    else:
+                        self.log_test("Martinique Production Analysis", False, "No clients available and cannot create new one")
+                        return
+                else:
+                    self.log_test("Martinique Production Analysis", False, f"Failed to create or get client: {client_response.status_code}")
+                    return
+            else:
+                client = client_response.json()
+                self.martinique_client_id = client["id"]
+            
+            # Test calculation with 6kW manual kit selection for Martinique
+            calc_response = self.session.post(
+                f"{self.base_url}/calculate/{self.martinique_client_id}",
+                params={
+                    "region": "martinique",
+                    "manual_kit_power": 6
+                }
+            )
+            
+            if calc_response.status_code != 200:
+                self.log_test("Martinique Production Analysis", False, f"Calculation failed: {calc_response.status_code}: {calc_response.text}")
+                return
+            
+            calculation = calc_response.json()
+            
+            # ANALYZE ALL PRODUCTION-RELATED FIELDS
+            production_fields = {}
+            
+            # Extract all fields that might contain production data
+            for key, value in calculation.items():
+                if isinstance(value, (int, float)) and value > 0:
+                    # Look for fields that might be production-related
+                    key_lower = key.lower()
+                    if any(keyword in key_lower for keyword in ['production', 'kwh', 'energy', 'generate', 'output', 'yield']):
+                        production_fields[key] = value
+                    # Also check for values in the range we're looking for (8000-14000)
+                    elif 7000 <= value <= 15000:
+                        production_fields[key] = value
+            
+            # Check nested data structures
+            if 'pvgis_monthly_data' in calculation and calculation['pvgis_monthly_data']:
+                monthly_data = calculation['pvgis_monthly_data']
+                if isinstance(monthly_data, list) and monthly_data:
+                    # Calculate annual from monthly data
+                    annual_from_monthly = sum(month.get('E_m', 0) for month in monthly_data if isinstance(month, dict))
+                    if annual_from_monthly > 0:
+                        production_fields['calculated_from_monthly_data'] = annual_from_monthly
+            
+            # Check PVGIS raw data
+            if 'pvgis_data' in calculation and calculation['pvgis_data']:
+                pvgis_data = calculation['pvgis_data']
+                if isinstance(pvgis_data, dict):
+                    for key, value in pvgis_data.items():
+                        if isinstance(value, (int, float)) and 7000 <= value <= 15000:
+                            production_fields[f'pvgis_data.{key}'] = value
+            
+            # Check if client's original consumption is returned
+            client_consumption_in_response = calculation.get('annual_consumption_kwh')
+            
+            # Get client data directly to compare
+            client_direct_response = self.session.get(f"{self.base_url}/clients/{self.martinique_client_id}")
+            client_direct_data = None
+            if client_direct_response.status_code == 200:
+                client_direct_data = client_direct_response.json()
+            
+            # DETAILED ANALYSIS
+            analysis_results = {
+                "all_production_fields": production_fields,
+                "client_consumption_in_calculate_response": client_consumption_in_response,
+                "client_consumption_from_direct_query": client_direct_data.get('annual_consumption_kwh') if client_direct_data else None,
+                "target_ui_value": 8901,
+                "target_pdf_value": 13351,
+                "kit_power": calculation.get('kit_power'),
+                "region": calculation.get('region'),
+                "panel_count": calculation.get('panel_count')
+            }
+            
+            # Find closest matches to target values
+            closest_to_8901 = None
+            closest_to_13351 = None
+            min_diff_8901 = float('inf')
+            min_diff_13351 = float('inf')
+            
+            for field, value in production_fields.items():
+                diff_8901 = abs(value - 8901)
+                diff_13351 = abs(value - 13351)
+                
+                if diff_8901 < min_diff_8901:
+                    min_diff_8901 = diff_8901
+                    closest_to_8901 = (field, value, diff_8901)
+                
+                if diff_13351 < min_diff_13351:
+                    min_diff_13351 = diff_13351
+                    closest_to_13351 = (field, value, diff_13351)
+            
+            # Check for the specific issue mentioned in test_result.md
+            consumption_issue = client_consumption_in_response is None
+            
+            # Prepare detailed report
+            issues = []
+            findings = []
+            
+            if consumption_issue:
+                issues.append("CRITICAL: Client's annual consumption NOT returned in calculate API response")
+            
+            if not production_fields:
+                issues.append("No production-related fields found in response")
+            else:
+                findings.append(f"Found {len(production_fields)} production-related fields")
+            
+            if closest_to_8901:
+                field, value, diff = closest_to_8901
+                if diff <= 10:  # Very close match
+                    findings.append(f"MATCH FOR UI (8901 kWh): '{field}' = {value} kWh (diff: {diff})")
+                else:
+                    findings.append(f"Closest to UI value: '{field}' = {value} kWh (diff: {diff})")
+            
+            if closest_to_13351:
+                field, value, diff = closest_to_13351
+                if diff <= 10:  # Very close match
+                    findings.append(f"MATCH FOR PDF (13351 kWh): '{field}' = {value} kWh (diff: {diff})")
+                else:
+                    findings.append(f"Closest to PDF value: '{field}' = {value} kWh (diff: {diff})")
+            
+            # Determine test result
+            if issues:
+                self.log_test("Martinique Production Analysis", False, 
+                            f"❌ CRITICAL ISSUES FOUND: {'; '.join(issues)}. FINDINGS: {'; '.join(findings)}", 
+                            analysis_results)
+            else:
+                self.log_test("Martinique Production Analysis", True, 
+                            f"✅ PRODUCTION DATA ANALYSIS COMPLETE: {'; '.join(findings)}", 
+                            analysis_results)
+                
+        except Exception as e:
+            self.log_test("Martinique Production Analysis", False, f"Error during analysis: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests with focus on user-requested endpoints"""
         print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
