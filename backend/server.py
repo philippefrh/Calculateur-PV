@@ -1903,10 +1903,8 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
             
             story.append(Paragraph("Principales données pour le calcul de votre centrale solaire :", data_title_style))
             
-            # Calculs des données depuis calculation_data - VRAIES DONNÉES DU LOGICIEL
-            # Récupérer depuis les données client
-            client_data_from_api = calculation_data.get('client', {})
-            annual_consumption = client_data_from_api.get('annual_consumption_kwh', 6990)
+            # CORRECTION : Utiliser la vraie consommation client passée en paramètre
+            annual_consumption = client_consumption  # Vraie consommation client (ex: 5890)
             
             # Récupérer les calculs de production
             annual_production = calculation_data.get('estimated_production', 8902) 
