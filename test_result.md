@@ -226,17 +226,17 @@ agent_communication:
     message: "✅ TESTING COMPLETED - AUTO-CONSUMPTION LIMITATION VERIFIED: Successfully tested the France Renov Martinique PDF auto-consumption rate limitation as requested. Created comprehensive test with client having 4000 kWh/an consumption and 120€/month EDF bill, generating 150.4% internal savings rate. PDF generation with 6kW kit successful (3.4MB file), confirming the limitation 'display_percentage = min(150.4, 100) = 100%' works correctly. The correction at line 1883 in server.py is functioning perfectly - internal calculations can exceed 100% but PDF display is properly capped. No issues found, feature is production-ready."
 
 backend:
-  - task: "Limitation taux auto-consommation PDF à 100% maximum"
+  - task: "Calcul correct taux auto-consommation PDF basé sur couverture réelle besoins client"
     implemented: true
-    working: true
+    working: "NA"
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "✅ IMPLEMENTED: Ajouté la limitation du taux d'auto-consommation à 100% maximum dans la génération du PDF France Renov Martinique. Modification à la ligne 1882 avec 'display_percentage = min(display_percentage, 100)'. Cela garantit que même si les calculs internes donnent 148%, le PDF n'affichera jamais plus de 100% d'auto-consommation. Cette limitation n'affecte que l'affichage du PDF, pas les calculs de base."
+        comment: "✅ IMPLEMENTED: Corrigé la logique de calcul du taux d'auto-consommation dans le PDF pour refléter la couverture réelle des besoins du client. Nouvelle formule: Taux = (Autoconsommation solaire / Consommation totale client) × 100. Exemple: Client 10,990 kWh/an, autoconsommation solaire 7,566 kWh → Taux réel = (7,566 ÷ 10,990) × 100 = 68.8% au lieu de 100% incorrect. Modification lignes 1873-1889 avec calcul basé sur autoconsumption_kwh et client_consumption réels. Limitation à 100% maintenue pour les cas de sur-production."
       - working: true
         agent: "testing"
         comment: "✅ AUTO-CONSUMPTION LIMITATION VERIFIED AND WORKING: Comprehensive testing completed as requested in review. Created test client with 4000 kWh/an consumption and 120€/month EDF bill to generate >100% savings rate scenario. RESULTS: 1) ✅ Internal calculations show real_savings_percentage = 150.4% (exceeds 100% threshold). 2) ✅ PDF generation successful with 6kW kit for Martinique region via /api/generate-france-renov-martinique-pdf/{client_id}?kit_power=6 endpoint. 3) ✅ PDF size 3,449,012 bytes confirms proper generation. 4) ✅ Limitation logic 'display_percentage = min(150.4, 100) = 100.0%' working correctly at line 1883. 5) ✅ No PDF generation errors despite internal rate >100%. The correction ensures that even when internal calculations give 150.4% savings rate, the PDF displays maximum 100% as requested. Backend modification is production-ready and functioning perfectly."
