@@ -214,8 +214,7 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus:
-    - "Calcul correct taux auto-consommation PDF basé sur couverture réelle besoins client"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
