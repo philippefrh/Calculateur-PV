@@ -215,7 +215,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Animation progressive de charge/décharge de la batterie"
+    - "Vérification structure données API calculate Martinique"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
