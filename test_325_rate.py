@@ -8,7 +8,7 @@ import requests
 import json
 
 # Backend URL
-BACKEND_URL = "https://pdf-solar-quote.preview.emergentagent.com/api"
+BACKEND_URL = "https://suntracker-reports.preview.emergentagent.com/api"
 
 def test_325_rate_specific():
     """Test specific scenario for 3.25% TAEG rate"""

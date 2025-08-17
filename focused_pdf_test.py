@@ -7,7 +7,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://pdf-solar-quote.preview.emergentagent.com/api"
+BACKEND_URL = "https://suntracker-reports.preview.emergentagent.com/api"
 
 def test_pdf_financing_tables():
     """Test PDF generation focusing on financing tables structure"""
