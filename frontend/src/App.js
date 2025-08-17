@@ -1668,6 +1668,11 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, fo
     );
   }
 
+  // Fonction pour ouvrir/fermer le calculateur de prêt
+  const toggleLoanCalculator = () => {
+    setShowLoanCalculator(!showLoanCalculator);
+  };
+
   const generatePDF = async () => {
     try {
       setIsGeneratingPDF(true);
