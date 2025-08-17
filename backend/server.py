@@ -2008,8 +2008,12 @@ async def generate_france_renov_martinique_devis(client_id: str):
             region="martinique"  # Force Martinique region
         )
         
-        # Generate France Renov Martinique PDF
-        pdf_bytes = generate_france_renov_martinique_pdf(client, calculation_response)
+        # CORRECTION : Récupérer la consommation DIRECTEMENT depuis les données client
+        # car elle n'est pas incluse dans la réponse calculate
+        client_consumption = client.get('annual_consumption_kwh', 0)
+        
+        # Generate France Renov Martinique PDF avec la vraie consommation client
+        pdf_bytes = generate_france_renov_martinique_pdf(client, calculation_response, client_consumption)
         
         # Create filename
         client_name = f"{client['first_name']}_{client['last_name']}"
