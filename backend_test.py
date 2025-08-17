@@ -7681,6 +7681,12 @@ class SolarCalculatorTester:
         print("🎯 URGENT: Martinique Production Data Analysis - UI vs PDF Discrepancy")
         print("=" * 80)
         
+        # URGENT TEST: France Renov Martinique PDF Auto-consumption Limitation (as requested in review)
+        print("\n🚨 URGENT TEST: France Renov Martinique PDF Auto-consumption Rate Limitation")
+        print("User requests: Test that auto-consumption rate in PDF is limited to 100% maximum")
+        print("=" * 80)
+        self.test_france_renov_martinique_pdf_autoconsumption_limit()
+        
         # URGENT TEST: Martinique production data analysis (as requested in review)
         print("\n🚨 URGENT TEST: Martinique Production Data Analysis")
         print("User reports: UI shows 8901 kWh/an but PDF shows 13,351 kWh/an")
