@@ -2001,8 +2001,8 @@ Capital social de 30 000 € - Siret : 890 493 737 00013 - N° TVA Intra : FR528
         raise HTTPException(status_code=500, detail=f"PDF generation failed: {str(e)}")
 
 @api_router.get("/generate-france-renov-martinique-pdf/{client_id}")
-async def generate_france_renov_martinique_devis(client_id: str):
-    """Generate France Renov Martinique PDF for client (SYRIUS format)"""
+async def generate_france_renov_martinique_devis(client_id: str, kit_power: int = Query(6, description="Kit power manually selected by user")):
+    """Generate France Renov Martinique PDF for client (SYRIUS format) with user's selected kit power"""
     try:
         # Get client data
         client = await db.clients.find_one({"id": client_id})
