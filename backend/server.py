@@ -1903,11 +1903,15 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
             
             story.append(Paragraph("Principales données pour le calcul de votre centrale solaire :", data_title_style))
             
-            # Calculs des données depuis calculation_data
-            annual_consumption = calculation_data.get('annual_consumption', 11716)
-            annual_production = calculation_data.get('annual_production', 9356) 
-            autoconsumption_kwh = calculation_data.get('autoconsumption_kwh', 6274)
-            surplus_kwh = calculation_data.get('surplus_kwh', 3083)
+            # Calculs des données depuis calculation_data - VRAIES DONNÉES DU LOGICIEL
+            # Récupérer depuis les données client
+            client_data_from_api = calculation_data.get('client', {})
+            annual_consumption = client_data_from_api.get('annual_consumption_kwh', 6990)
+            
+            # Récupérer les calculs de production
+            annual_production = calculation_data.get('estimated_production', 8902) 
+            autoconsumption_kwh = calculation_data.get('autoconsumption_kwh', 7567)
+            surplus_kwh = calculation_data.get('surplus_kwh', 1335)
             
             data_style = ParagraphStyle(
                 'SYRIUSData',
