@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "L'utilisateur demande maintenant une animation progressive de charge/décharge de la batterie dans l'animation CSS : 1) Quand les panneaux commencent à produire des kWh, la batterie commence à se charger progressivement jusqu'à 100% avec le logo vert qui monte au même rythme. 2) Le chiffre passe de 0%, 5%, 10%, 15%, 20% etc. jusqu'à 100%. 3) Une fois à 100%, faire le processus inverse (décharge) puis recharge etc. en boucle. 4) Remonter le logo vert de recharge car il est encore masqué par le Linky. 5) Agrandir encore la batterie pour qu'elle ait la même taille que le Linky."
+user_problem_statement: "L'utilisateur demande que le taux d'auto-consommation affiché dans le PDF France Renov Martinique soit limité à maximum 100%, même si les calculs internes donnent un pourcentage supérieur (comme 148% dans la capture d'écran fournie). Cette limitation doit être appliquée uniquement à l'affichage du PDF, sans modifier les calculs de base."
 
 frontend:
 frontend:
