@@ -2185,6 +2185,106 @@ class SolarCalculatorTester:
         else:
             self.log_test("User Request - PDF Generation", False, "No client ID available")
 
+    def test_martinique_5890_kwh_consumption_data_structure(self):
+        """Test specifically with 5890 kWh/an consumption in Martinique to identify exact data structure"""
+        try:
+            # Create a specific client with 5890 kWh/an consumption in Martinique
+            client_data = {
+                "first_name": "Jean",
+                "last_name": "Martinique",
+                "address": "Fort-de-France, Martinique",
+                "phone": "0696123456",
+                "email": "jean.martinique@test.com",
+                "roof_surface": 60.0,
+                "roof_orientation": "Sud",
+                "velux_count": 0,
+                "heating_system": "Climatisation",
+                "water_heating_system": "Ballon électrique",
+                "water_heating_capacity": 200,
+                "annual_consumption_kwh": 5890.0,  # EXACT consumption as requested
+                "monthly_edf_payment": 220.0,
+                "annual_edf_payment": 2640.0
+            }
+            
+            # Create the client
+            response = self.session.post(f"{self.base_url}/clients", json=client_data)
+            if response.status_code == 200:
+                client = response.json()
+                martinique_client_id = client["id"]
+                
+                # Now test the calculate endpoint with Martinique region
+                calc_response = self.session.post(f"{self.base_url}/calculate/{martinique_client_id}?region=martinique")
+                if calc_response.status_code == 200:
+                    calculation = calc_response.json()
+                    
+                    # ANALYZE THE EXACT DATA STRUCTURE
+                    consumption_locations = {}
+                    
+                    # Check all possible locations where consumption might be stored
+                    if "annual_consumption_kwh" in calculation:
+                        consumption_locations["calculation_data['annual_consumption_kwh']"] = calculation["annual_consumption_kwh"]
+                    
+                    if "client_data" in calculation and isinstance(calculation["client_data"], dict):
+                        if "annual_consumption_kwh" in calculation["client_data"]:
+                            consumption_locations["calculation_data['client_data']['annual_consumption_kwh']"] = calculation["client_data"]["annual_consumption_kwh"]
+                    
+                    # Check if there's a nested client object
+                    if "client" in calculation and isinstance(calculation["client"], dict):
+                        if "annual_consumption_kwh" in calculation["client"]:
+                            consumption_locations["calculation_data['client']['annual_consumption_kwh']"] = calculation["client"]["annual_consumption_kwh"]
+                    
+                    # Check if consumption is in the root level with different key names
+                    possible_keys = ["consumption", "annual_consumption", "client_consumption", "consumption_kwh"]
+                    for key in possible_keys:
+                        if key in calculation:
+                            consumption_locations[f"calculation_data['{key}']"] = calculation[key]
+                    
+                    # Get the original client data to compare
+                    client_response = self.session.get(f"{self.base_url}/clients/{martinique_client_id}")
+                    original_client = client_response.json() if client_response.status_code == 200 else {}
+                    
+                    # Prepare detailed analysis
+                    analysis = {
+                        "requested_consumption": 5890.0,
+                        "client_creation_consumption": original_client.get("annual_consumption_kwh", "NOT_FOUND"),
+                        "consumption_locations_in_calculate_response": consumption_locations,
+                        "total_response_keys": len(calculation.keys()),
+                        "all_response_keys": list(calculation.keys()),
+                        "kit_recommended": calculation.get("kit_power", "NOT_FOUND"),
+                        "estimated_production": calculation.get("estimated_production", "NOT_FOUND"),
+                        "region": calculation.get("region", "NOT_FOUND")
+                    }
+                    
+                    # Verify the consumption value matches what was requested
+                    found_correct_consumption = False
+                    correct_location = None
+                    
+                    for location, value in consumption_locations.items():
+                        if value == 5890.0:
+                            found_correct_consumption = True
+                            correct_location = location
+                            break
+                    
+                    if found_correct_consumption:
+                        self.log_test("Martinique 5890 kWh Consumption Data Structure", True, 
+                                    f"✅ CONSUMPTION DATA STRUCTURE IDENTIFIED: Client consumption 5890 kWh/an found at: {correct_location} = {consumption_locations[correct_location]} kWh. Original client data: {original_client.get('annual_consumption_kwh')} kWh. Kit recommended: {calculation.get('kit_power')}kW, Production: {calculation.get('estimated_production', 0):.0f} kWh/an", 
+                                    analysis)
+                    else:
+                        self.log_test("Martinique 5890 kWh Consumption Data Structure", False, 
+                                    f"❌ CONSUMPTION DATA NOT FOUND: Requested 5890 kWh/an but not found in calculate response. Found locations: {consumption_locations}. This explains why user's software shows 5890 kWh but PDF shows different value.", 
+                                    analysis)
+                    
+                    # Store the client ID for cleanup
+                    self.martinique_client_id = martinique_client_id
+                    
+                else:
+                    self.log_test("Martinique 5890 kWh Consumption Data Structure", False, f"Calculate API failed: HTTP {calc_response.status_code}: {calc_response.text}")
+            else:
+                self.log_test("Martinique 5890 kWh Consumption Data Structure", False, f"Client creation failed: HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_test("Martinique 5890 kWh Consumption Data Structure", False, f"Error: {str(e)}")
+
     def test_martinique_calculate_data_structure(self):
         """Test Martinique calculate endpoint and return complete JSON structure for review"""
         try:
