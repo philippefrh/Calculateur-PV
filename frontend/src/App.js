@@ -1653,6 +1653,7 @@ const ResultsScreen = ({ results, onPrevious, selectedRegion, setCurrentStep, fo
   const [showFinancing, setShowFinancing] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isGeneratingDevis, setIsGeneratingDevis] = useState(false);
+  const [showLoanCalculator, setShowLoanCalculator] = useState(false);
 
   // Protection contre les résultats null/undefined
   if (!results) {
