@@ -1870,11 +1870,15 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
             story.append(power_container)
             story.append(Spacer(1, 0.8*cm))
             
-            # Taux d'autoconsommation EXACTEMENT comme SYRIUS (EN GRAS sur 2 lignes)
-            # CORRECTION : Utiliser le pourcentage d'économies de l'interface, pas l'autoconsommation
-            savings_percentage = calculation_data.get('savings_percentage', autonomy)  # Pourcentage d'économies
-            if savings_percentage is None:
-                savings_percentage = autonomy  # Fallback sur autonomy si pas trouvé
+            # CORRECTION : Utiliser EXACTEMENT la même logique que le frontend
+            # Frontend: Math.round(results.real_savings_percentage || results.autonomy_percentage)
+            real_savings_pct = calculation_data.get('real_savings_percentage')
+            autonomy_pct = calculation_data.get('autonomy_percentage', 67)
+            
+            # Même logique JavaScript : real_savings_percentage OU autonomy_percentage 
+            display_percentage = real_savings_pct if real_savings_pct else autonomy_pct
+            # Arrondir comme dans le frontend
+            display_percentage = round(display_percentage) if display_percentage else autonomy_pct
                 
             auto_style = ParagraphStyle(
                 'SYRIUSAuto',
@@ -1890,7 +1894,7 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
             )
             
             # Texte sur 2 lignes avec FORMATAGE PROPRE (pas de décimales parasites)
-            auto_text = f"Taux d'auto-consommation estimé selon<br/>les hypothèses de l'étude : {savings_percentage:.0f} %"
+            auto_text = f"Taux d'auto-consommation estimé selon<br/>les hypothèses de l'étude : {display_percentage:.0f} %"
             story.append(Paragraph(auto_text, auto_style))
             story.append(Spacer(1, 0.5*cm))
             
