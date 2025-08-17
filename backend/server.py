@@ -1926,12 +1926,12 @@ Grâce à ce projet, vous allez pouvoir capitaliser en devenant propriétaire de
                 leading=16
             )
             
-            # Données formatées exactement comme SYRIUS avec COULEURS et FORMAT FRANÇAIS
+            # Données formatées avec SEULEMENT LES CHIFFRES EN COULEUR
             data_text = f"""
-<font color="red">Consommation annuelle actuelle : {annual_consumption:,.0f} kWh</font><br/>
-<font color="green">Production solaire annuelle estimée : {annual_production:,.2f} kWh</font><br/>
-<font color="green">Dont {autoconsumption_kwh:,.2f} kWh sont autoconsommés</font><br/>
-<font color="green">Dont {surplus_kwh:,.2f} kWh sont réinjectés dans le réseau</font>
+Consommation annuelle actuelle : <font color="red">{annual_consumption:,.0f} kWh</font><br/>
+Production solaire annuelle estimée : <font color="green">{annual_production:,.2f} kWh</font><br/>
+Dont <font color="green">{autoconsumption_kwh:,.2f} kWh</font> sont autoconsommés<br/>
+Dont <font color="green">{surplus_kwh:,.2f} kWh</font> sont réinjectés dans le réseau
 """
             
             # Remplacer les points par des virgules (format français)
