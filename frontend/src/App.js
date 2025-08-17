@@ -466,64 +466,26 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
             </select>
           </div>
           
-          {/* Systèmes d'appoint */}
-          <div className="heating-system-additional">
-            <label className="system-label">Système(s) d'appoint :</label>
+          {/* Nombre de climatiseurs */}
+          <div className="air-conditioning-section">
+            <label className="system-label">Nombre de climatiseur dans la maison :</label>
             <select
-              value=""
-              onChange={(e) => {
-                if (e.target.value) {
-                  const additionalSystems = formData.additionalHeatingSystems || [];
-                  if (!additionalSystems.includes(e.target.value)) {
-                    setFormData({
-                      ...formData, 
-                      additionalHeatingSystems: [...additionalSystems, e.target.value]
-                    });
-                  }
-                  e.target.value = '';
-                }
-              }}
+              value={formData.airConditioningCount || ''}
+              onChange={(e) => setFormData({
+                ...formData, 
+                airConditioningCount: e.target.value
+              })}
             >
-              <option value="">+ Ajouter un système d'appoint</option>
-              <option value="Radiateurs électriques">⚡ Radiateurs électriques</option>
-              <option value="Chauffage électrique avec plancher chauffant">⚡ Plancher chauffant électrique</option>
-              <option value="Chaudière Gaz">🔥 Chaudière Gaz</option>
-              <option value="Chaudière Fuel">🛢️ Chaudière Fuel</option>
-              <option value="Chaudière électrique">⚡ Chaudière électrique</option>
-              <option value="Pompe à chaleur Air-Air réversible">❄️🔥 Pompe à chaleur Air-Air (réversible)</option>
-              <option value="Pompe à chaleur Air-Eau">💧🔥 Pompe à chaleur Air-Eau</option>
-              <option value="Cheminée">🔥 Cheminée</option>
-              <option value="Poêle à bois">🪵 Poêle à bois</option>
-              <option value="Poêle à granulé">🌾 Poêle à granulé</option>
+              <option value="">Sélectionnez le nombre</option>
+              <option value="1">1 climatiseur</option>
+              <option value="2">2 climatiseurs</option>
+              <option value="3">3 climatiseurs</option>
+              <option value="4">4 climatiseurs</option>
+              <option value="5">5 climatiseurs</option>
+              <option value="6">6 climatiseurs</option>
+              <option value="7">7 climatiseurs</option>
             </select>
           </div>
-          
-          {/* Affichage des systèmes d'appoint sélectionnés */}
-          {formData.additionalHeatingSystems && formData.additionalHeatingSystems.length > 0 && (
-            <div className="selected-additional-systems">
-              <p className="additional-systems-label">Systèmes d'appoint sélectionnés :</p>
-              <div className="additional-systems-list">
-                {formData.additionalHeatingSystems.map((system, index) => (
-                  <div key={index} className="additional-system-item">
-                    <span>{system}</span>
-                    <button
-                      type="button"
-                      className="remove-system-btn"
-                      onClick={() => {
-                        const updatedSystems = formData.additionalHeatingSystems.filter((_, i) => i !== index);
-                        setFormData({
-                          ...formData,
-                          additionalHeatingSystems: updatedSystems
-                        });
-                      }}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
           
           {errors.heatingSystem && <span className="error-message">{errors.heatingSystem}</span>}
           {formData.heatingSystem && (
