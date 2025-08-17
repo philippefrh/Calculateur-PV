@@ -7522,8 +7522,14 @@ class SolarCalculatorTester:
     def run_all_tests(self):
         """Run all backend tests with focus on user-requested endpoints"""
         print("🚀 Starting Comprehensive Backend Testing for FRH ENVIRONNEMENT Solar Calculator")
-        print("🎯 FOCUS: User-Requested Endpoints with Realistic French Data")
+        print("🎯 URGENT: Martinique Production Data Analysis - UI vs PDF Discrepancy")
         print("=" * 80)
+        
+        # URGENT TEST: Martinique production data analysis (as requested in review)
+        print("\n🚨 URGENT TEST: Martinique Production Data Analysis")
+        print("User reports: UI shows 8901 kWh/an but PDF shows 13,351 kWh/an")
+        print("=" * 80)
+        self.test_martinique_production_data_analysis()
         
         # PRIORITY TEST: Martinique data structure verification (as requested in review)
         print("\n🎯 PRIORITY TEST: Martinique Calculate API Data Structure Verification")
