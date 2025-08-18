@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Solar Calculator with PVGIS Integration
-Tests all endpoints with realistic French solar installation data
+Backend Testing for Solar Calculator - Focus on Product Images Integration
+Tests /api/calculate endpoint with battery_selected functionality and PDF generation
+Specifically for Martinique region (97200) as requested in review
 """
 
 import requests
