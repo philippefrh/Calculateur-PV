@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://solarquote-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://solar-quote-genius.preview.emergentagent.com/api"
 
 class MartiniqueComprehensiveTest:
     def __init__(self):
