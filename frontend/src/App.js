@@ -511,16 +511,17 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
         
         {formData.waterHeatingSystem && (
           <div className="form-group">
-            <label>📏 Capacité du ballon (litres)</label>
-            <input
-              type="number"
-              value={formData.waterHeatingCapacity}
-              onChange={(e) => setFormData({...formData, waterHeatingCapacity: e.target.value})}
-              placeholder="ex: 200"
-              min="50"
-              max="500"
-            />
-            <small>💡 Information optionnelle - Capacité standard : 150-300L</small>
+            <label>🏠 Nombre de Ballon sur la toiture</label>
+            <select
+              value={formData.solarBalloonCount || ''}
+              onChange={(e) => setFormData({...formData, solarBalloonCount: e.target.value})}
+            >
+              <option value="">Sélectionnez le nombre</option>
+              <option value="1">1 ballon</option>
+              <option value="2">2 ballons</option>
+              <option value="3">3 ballons</option>
+              <option value="4">4 ballons</option>
+            </select>
           </div>
         )}
         
