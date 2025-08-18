@@ -612,15 +612,39 @@ const HeatingSystemForm = ({ formData, setFormData, onNext, onPrevious }) => {
         </div>
         
         <div className="form-group">
-          <label>🌀 VMC (Ventilation Mécanique Contrôlée)</label>
+          <label>🏊 PISCINE</label>
           <select
-            value={formData.vmc || ''}
-            onChange={(e) => setFormData({...formData, vmc: e.target.value})}
+            value={formData.pool || ''}
+            onChange={(e) => setFormData({...formData, pool: e.target.value})}
           >
-            <option value="">Sélectionnez le type de VMC</option>
-            <option value="simple_flux">🌀 Simple flux</option>
-            <option value="double_flux">🌀🌀 Double flux</option>
+            <option value="">Avez-vous une piscine ?</option>
+            <option value="oui">Oui</option>
             <option value="non">Non</option>
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label>🧖 Sauna</label>
+          <select
+            value={formData.sauna || ''}
+            onChange={(e) => setFormData({...formData, sauna: e.target.value})}
+          >
+            <option value="">Avez-vous un sauna ?</option>
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label>🚗 Voiture électrique</label>
+          <select
+            value={formData.electricCar || ''}
+            onChange={(e) => setFormData({...formData, electricCar: e.target.value})}
+          >
+            <option value="">Nombre de voitures électriques</option>
+            <option value="0">0 voiture électrique</option>
+            <option value="1">1 voiture électrique</option>
+            <option value="2">2 voitures électriques</option>
           </select>
         </div>
         
