@@ -2138,7 +2138,7 @@ Cordialement`);
                 </div>
 
                 {/* Photo de la batterie - seulement si kit avec batterie */}
-                {(results.battery_selected || batterySelected) && (
+                {(results.battery_selected || Object.values(batterySelected).some(selected => selected)) && (
                   <div className="product-image-item">
                     <img 
                       src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/nwf904a0_Batterie%20FOX%20EP5.png" 
