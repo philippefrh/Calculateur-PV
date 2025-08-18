@@ -18,8 +18,532 @@ class SolarCalculatorTester:
         self.base_url = BACKEND_URL
         self.session = requests.Session()
         self.test_results = []
-        self.client_id = None
         self.martinique_client_id = None
+        
+    def log_test(self, test_name: str, success: bool, details: str, response_data: Any = None):
+        """Log test results"""
+        result = {
+            "test": test_name,
+            "success": success,
+            "details": details,
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "response_data": response_data
+        }
+        self.test_results.append(result)
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}: {details}")
+        
+    def test_api_root(self):
+        """Test basic API connectivity"""
+        try:
+            response = self.session.get(f"{self.base_url}/")
+            if response.status_code == 200:
+                data = response.json()
+                if "message" in data and "Solar Calculator" in data["message"]:
+                    self.log_test("API Root", True, f"API accessible, message: {data['message']}", data)
+                else:
+                    self.log_test("API Root", False, f"Unexpected response format: {data}", data)
+            else:
+                self.log_test("API Root", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("API Root", False, f"Connection error: {str(e)}")
+    
+    def test_create_martinique_client(self):
+        """Test client creation with realistic Martinique data (97200)"""
+        try:
+            client_data = {
+                "first_name": "Jean",
+                "last_name": "Martinique",
+                "address": "97200 Fort-de-France, Martinique",
+                "phone": "0696123456",
+                "email": "jean.martinique@test.com",
+                "roof_surface": 60.0,
+                "roof_orientation": "Sud",
+                "velux_count": 0,
+                "heating_system": "Climatisation",
+                "water_heating_system": "Ballon solaire",
+                "water_heating_capacity": 200,
+                "annual_consumption_kwh": 7200.0,
+                "monthly_edf_payment": 280.0,
+                "annual_edf_payment": 3360.0
+            }
+            
+            response = self.session.post(f"{self.base_url}/clients", json=client_data)
+            if response.status_code == 200:
+                client = response.json()
+                
+                # Check if geocoding worked for Martinique
+                if "latitude" in client and "longitude" in client and "id" in client:
+                    lat, lon = client["latitude"], client["longitude"]
+                    self.martinique_client_id = client["id"]  # Store for next tests
+                    
+                    # Martinique coordinates should be around 14.6415, -61.0242
+                    if 14.0 <= lat <= 15.0 and -62.0 <= lon <= -60.0:
+                        self.log_test("Create Martinique Client", True, 
+                                    f"Martinique client created successfully. ID: {self.martinique_client_id}, Coords: {lat:.4f}, {lon:.4f}", 
+                                    client)
+                    else:
+                        self.log_test("Create Martinique Client", False, 
+                                    f"Geocoding seems incorrect for Martinique. Coords: {lat}, {lon} (expected Martinique area)", 
+                                    client)
+                else:
+                    self.log_test("Create Martinique Client", False, "Missing latitude, longitude, or id in response", client)
+            else:
+                self.log_test("Create Martinique Client", False, f"HTTP {response.status_code}: {response.text}")
+                # Try to use existing client as fallback
+                self.use_existing_martinique_client()
+        except Exception as e:
+            self.log_test("Create Martinique Client", False, f"Error: {str(e)}")
+            # Try to use existing client as fallback
+            self.use_existing_martinique_client()
+    
+    def use_existing_martinique_client(self):
+        """Use an existing Martinique client from the database as fallback"""
+        try:
+            response = self.session.get(f"{self.base_url}/clients")
+            if response.status_code == 200:
+                clients = response.json()
+                if isinstance(clients, list) and len(clients) > 0:
+                    # Look for a Martinique client (address contains martinique or 972xx)
+                    martinique_client = None
+                    for client in clients:
+                        address = client.get("address", "").lower()
+                        if "martinique" in address or "972" in address or "fort-de-france" in address:
+                            martinique_client = client
+                            break
+                    
+                    if martinique_client:
+                        self.martinique_client_id = martinique_client.get("id")
+                        if self.martinique_client_id:
+                            self.log_test("Use Existing Martinique Client", True, 
+                                        f"Using existing Martinique client: {martinique_client.get('first_name')} {martinique_client.get('last_name')} (ID: {self.martinique_client_id})", 
+                                        martinique_client)
+                        else:
+                            self.log_test("Use Existing Martinique Client", False, "No ID found in existing Martinique client")
+                    else:
+                        # Use first client as fallback
+                        client = clients[0]
+                        self.martinique_client_id = client.get("id")
+                        if self.martinique_client_id:
+                            self.log_test("Use Existing Martinique Client", True, 
+                                        f"Using existing client as fallback: {client.get('first_name')} {client.get('last_name')} (ID: {self.martinique_client_id})", 
+                                        client)
+                        else:
+                            self.log_test("Use Existing Martinique Client", False, "No ID found in existing client")
+                else:
+                    self.log_test("Use Existing Martinique Client", False, "No existing clients found")
+            else:
+                self.log_test("Use Existing Martinique Client", False, f"Failed to get existing clients: {response.status_code}")
+        except Exception as e:
+            self.log_test("Use Existing Martinique Client", False, f"Error getting existing client: {str(e)}")
+    
+    def test_calculate_endpoint_basic(self):
+        """Test /api/calculate endpoint basic functionality for Martinique"""
+        if not self.martinique_client_id:
+            self.log_test("Calculate Endpoint Basic", False, "No Martinique client ID available")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.martinique_client_id}?region=martinique")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check key calculation results
+                required_fields = [
+                    "kit_power", "panel_count", "estimated_production", 
+                    "estimated_savings", "autonomy_percentage", "monthly_savings",
+                    "financing_options", "kit_price", "region"
+                ]
+                
+                missing_fields = [field for field in required_fields if field not in calculation]
+                if missing_fields:
+                    self.log_test("Calculate Endpoint Basic", False, f"Missing fields: {missing_fields}", calculation)
+                    return
+                
+                # Validate Martinique-specific results
+                region = calculation.get("region")
+                kit_power = calculation.get("kit_power", 0)
+                estimated_production = calculation.get("estimated_production", 0)
+                kit_price = calculation.get("kit_price", 0)
+                
+                issues = []
+                
+                # Check region is Martinique
+                if region != "martinique":
+                    issues.append(f"Expected region 'martinique', got '{region}'")
+                
+                # Check kit power is valid for Martinique (3, 6, 9, 12, 15, 18, 21, 24, 27)
+                valid_powers = [3, 6, 9, 12, 15, 18, 21, 24, 27]
+                if kit_power not in valid_powers:
+                    issues.append(f"Kit power {kit_power} not in Martinique range {valid_powers}")
+                
+                # Check production is reasonable for Martinique (higher than France due to better sun)
+                if estimated_production < 4000:  # Should be at least 4000 kWh for smallest kit
+                    issues.append(f"Production {estimated_production} kWh seems too low for Martinique")
+                
+                # Check kit price matches Martinique pricing
+                expected_prices = {3: 10900, 6: 15900, 9: 18900, 12: 22900, 15: 25900, 18: 28900, 21: 30900, 24: 32900, 27: 34900}
+                expected_price = expected_prices.get(kit_power, 0)
+                if kit_price != expected_price:
+                    issues.append(f"Kit price {kit_price}€ doesn't match expected {expected_price}€ for {kit_power}kW")
+                
+                if issues:
+                    self.log_test("Calculate Endpoint Basic", False, f"Calculation issues: {'; '.join(issues)}", calculation)
+                else:
+                    self.log_test("Calculate Endpoint Basic", True, 
+                                f"✅ /api/calculate working for Martinique: {kit_power}kW kit, {estimated_production:.0f} kWh/year, {kit_price}€", 
+                                {"region": region, "kit_power": kit_power, "production": estimated_production, "price": kit_price})
+            else:
+                self.log_test("Calculate Endpoint Basic", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Calculate Endpoint Basic", False, f"Error: {str(e)}")
+    
+    def test_battery_selected_functionality(self):
+        """Test battery_selected parameter functionality - KEY TEST FOR REVIEW"""
+        if not self.martinique_client_id:
+            self.log_test("Battery Selected Functionality", False, "No Martinique client ID available")
+            return
+            
+        try:
+            # Test 1: Without battery
+            response_no_battery = self.session.post(f"{self.base_url}/calculate/{self.martinique_client_id}?region=martinique&battery_selected=false")
+            if response_no_battery.status_code != 200:
+                self.log_test("Battery Selected Functionality", False, f"Failed to get calculation without battery: {response_no_battery.status_code}")
+                return
+            
+            calc_no_battery = response_no_battery.json()
+            
+            # Test 2: With battery
+            response_with_battery = self.session.post(f"{self.base_url}/calculate/{self.martinique_client_id}?region=martinique&battery_selected=true")
+            if response_with_battery.status_code != 200:
+                self.log_test("Battery Selected Functionality", False, f"Failed to get calculation with battery: {response_with_battery.status_code}")
+                return
+            
+            calc_with_battery = response_with_battery.json()
+            
+            # Check required battery fields are present
+            battery_fields = ["battery_selected", "battery_cost", "kit_price_final"]
+            missing_battery_fields = [field for field in battery_fields if field not in calc_with_battery]
+            if missing_battery_fields:
+                self.log_test("Battery Selected Functionality", False, f"Missing battery fields: {missing_battery_fields}", calc_with_battery)
+                return
+            
+            # Validate battery functionality
+            issues = []
+            
+            # Check battery_selected values
+            if calc_no_battery.get("battery_selected") != False:
+                issues.append(f"Without battery: battery_selected should be False, got {calc_no_battery.get('battery_selected')}")
+            
+            if calc_with_battery.get("battery_selected") != True:
+                issues.append(f"With battery: battery_selected should be True, got {calc_with_battery.get('battery_selected')}")
+            
+            # Check battery_cost values
+            if calc_no_battery.get("battery_cost", 0) != 0:
+                issues.append(f"Without battery: battery_cost should be 0, got {calc_no_battery.get('battery_cost')}")
+            
+            if calc_with_battery.get("battery_cost", 0) != 5000:
+                issues.append(f"With battery: battery_cost should be 5000, got {calc_with_battery.get('battery_cost')}")
+            
+            # Check kit_price_final calculation
+            kit_price_original = calc_with_battery.get("kit_price_original", 0)
+            kit_price_final_no_battery = calc_no_battery.get("kit_price_final", 0)
+            kit_price_final_with_battery = calc_with_battery.get("kit_price_final", 0)
+            
+            if kit_price_final_no_battery != kit_price_original:
+                issues.append(f"Without battery: kit_price_final {kit_price_final_no_battery} should equal kit_price_original {kit_price_original}")
+            
+            expected_price_with_battery = kit_price_original + 5000
+            if kit_price_final_with_battery != expected_price_with_battery:
+                issues.append(f"With battery: kit_price_final {kit_price_final_with_battery} should be {expected_price_with_battery} (original + 5000)")
+            
+            # Check financing impact
+            financing_no_battery = calc_no_battery.get("financing_with_aids", {})
+            financing_with_battery = calc_with_battery.get("financing_with_aids", {})
+            
+            if financing_no_battery and financing_with_battery:
+                payment_no_battery = financing_no_battery.get("monthly_payment", 0)
+                payment_with_battery = financing_with_battery.get("monthly_payment", 0)
+                
+                if payment_with_battery <= payment_no_battery:
+                    issues.append(f"With battery payment {payment_with_battery}€ should be higher than without battery {payment_no_battery}€")
+                
+                # Battery should add approximately 39-50€/month to payment
+                payment_increase = payment_with_battery - payment_no_battery
+                if payment_increase < 30 or payment_increase > 60:
+                    issues.append(f"Battery payment increase {payment_increase:.2f}€/month seems incorrect (expected 30-60€)")
+            
+            if issues:
+                self.log_test("Battery Selected Functionality", False, f"Battery functionality issues: {'; '.join(issues)}", {
+                    "calc_no_battery": calc_no_battery,
+                    "calc_with_battery": calc_with_battery
+                })
+            else:
+                payment_no_battery = financing_no_battery.get("monthly_payment", 0) if financing_no_battery else 0
+                payment_with_battery = financing_with_battery.get("monthly_payment", 0) if financing_with_battery else 0
+                payment_increase = payment_with_battery - payment_no_battery
+                
+                self.log_test("Battery Selected Functionality", True, 
+                            f"✅ BATTERY FUNCTIONALITY WORKING: Without battery: {kit_price_final_no_battery}€, {payment_no_battery:.2f}€/month. With battery: {kit_price_final_with_battery}€ (+5000€), {payment_with_battery:.2f}€/month (+{payment_increase:.2f}€). Battery fields correctly returned.", 
+                            {
+                                "price_increase": 5000,
+                                "payment_increase": payment_increase,
+                                "battery_cost": calc_with_battery.get("battery_cost"),
+                                "battery_selected": calc_with_battery.get("battery_selected")
+                            })
+                
+        except Exception as e:
+            self.log_test("Battery Selected Functionality", False, f"Error: {str(e)}")
+    
+    def test_calculate_endpoint_data_completeness(self):
+        """Test that /api/calculate returns all necessary data for frontend"""
+        if not self.martinique_client_id:
+            self.log_test("Calculate Data Completeness", False, "No Martinique client ID available")
+            return
+            
+        try:
+            response = self.session.post(f"{self.base_url}/calculate/{self.martinique_client_id}?region=martinique&battery_selected=true")
+            if response.status_code == 200:
+                calculation = response.json()
+                
+                # Check all required fields for "Votre Solution Solaire Personnalisée" section
+                required_fields = [
+                    # Basic calculation data
+                    "kit_power", "panel_count", "estimated_production", "estimated_savings",
+                    "autonomy_percentage", "monthly_savings", "kit_price",
+                    
+                    # Battery-related fields (for product images)
+                    "battery_selected", "battery_cost", "kit_price_final", "kit_price_original",
+                    
+                    # Financing data
+                    "financing_options", "financing_with_aids", "all_financing_with_aids",
+                    
+                    # Technical data
+                    "autoconsumption_kwh", "surplus_kwh", "total_aids",
+                    
+                    # Region and configuration
+                    "region", "region_config",
+                    
+                    # PVGIS data
+                    "pvgis_annual_production", "pvgis_monthly_data"
+                ]
+                
+                missing_fields = [field for field in required_fields if field not in calculation]
+                if missing_fields:
+                    self.log_test("Calculate Data Completeness", False, f"Missing required fields: {missing_fields}", calculation)
+                    return
+                
+                # Validate data types and ranges
+                issues = []
+                
+                # Check numeric fields are positive
+                numeric_fields = ["kit_power", "panel_count", "estimated_production", "estimated_savings", 
+                                "monthly_savings", "kit_price", "battery_cost", "kit_price_final"]
+                for field in numeric_fields:
+                    value = calculation.get(field, 0)
+                    if not isinstance(value, (int, float)) or value < 0:
+                        issues.append(f"{field} should be positive number, got {value}")
+                
+                # Check percentage fields are in valid range
+                autonomy = calculation.get("autonomy_percentage", 0)
+                if not (0 <= autonomy <= 100):
+                    issues.append(f"autonomy_percentage {autonomy} should be 0-100%")
+                
+                # Check battery_selected is boolean
+                battery_selected = calculation.get("battery_selected")
+                if not isinstance(battery_selected, bool):
+                    issues.append(f"battery_selected should be boolean, got {type(battery_selected)}")
+                
+                # Check financing_options is list with correct structure
+                financing_options = calculation.get("financing_options", [])
+                if not isinstance(financing_options, list) or len(financing_options) == 0:
+                    issues.append("financing_options should be non-empty list")
+                else:
+                    first_option = financing_options[0]
+                    required_option_fields = ["duration_years", "monthly_payment", "taeg"]
+                    missing_option_fields = [field for field in required_option_fields if field not in first_option]
+                    if missing_option_fields:
+                        issues.append(f"financing_options missing fields: {missing_option_fields}")
+                
+                # Check region_config structure
+                region_config = calculation.get("region_config", {})
+                if not isinstance(region_config, dict):
+                    issues.append("region_config should be dict")
+                else:
+                    required_config_fields = ["name", "company_info", "interest_rates"]
+                    missing_config_fields = [field for field in required_config_fields if field not in region_config]
+                    if missing_config_fields:
+                        issues.append(f"region_config missing fields: {missing_config_fields}")
+                
+                if issues:
+                    self.log_test("Calculate Data Completeness", False, f"Data validation issues: {'; '.join(issues)}", calculation)
+                else:
+                    # Count total fields returned
+                    total_fields = len(calculation.keys())
+                    self.log_test("Calculate Data Completeness", True, 
+                                f"✅ ALL REQUIRED DATA PRESENT: {total_fields} fields returned including battery_selected={battery_selected}, kit_price_final={calculation.get('kit_price_final')}€, autonomy={autonomy:.1f}%, {len(financing_options)} financing options", 
+                                {
+                                    "total_fields": total_fields,
+                                    "battery_selected": battery_selected,
+                                    "kit_price_final": calculation.get("kit_price_final"),
+                                    "autonomy_percentage": autonomy,
+                                    "financing_options_count": len(financing_options)
+                                })
+                
+        except Exception as e:
+            self.log_test("Calculate Data Completeness", False, f"Error: {str(e)}")
+    
+    def test_pdf_generation_martinique(self):
+        """Test PDF generation for Martinique with battery functionality"""
+        if not self.martinique_client_id:
+            self.log_test("PDF Generation Martinique", False, "No Martinique client ID available")
+            return
+            
+        try:
+            # Test PDF generation with battery
+            pdf_response = self.session.get(f"{self.base_url}/generate-france-renov-martinique-pdf/{self.martinique_client_id}?kit_power=6")
+            
+            if pdf_response.status_code == 200:
+                # Check if response is actually a PDF
+                content_type = pdf_response.headers.get('content-type', '')
+                if not content_type.startswith('application/pdf'):
+                    self.log_test("PDF Generation Martinique", False, f"Response is not a PDF. Content-Type: {content_type}")
+                    return
+                
+                # Check PDF size (should be reasonable)
+                pdf_size = len(pdf_response.content)
+                if pdf_size < 10000:  # Less than 10KB seems too small
+                    self.log_test("PDF Generation Martinique", False, f"PDF size {pdf_size} bytes seems too small")
+                    return
+                elif pdf_size > 10000000:  # More than 10MB seems too large
+                    self.log_test("PDF Generation Martinique", False, f"PDF size {pdf_size} bytes seems too large")
+                    return
+                
+                # Check filename format
+                content_disposition = pdf_response.headers.get('content-disposition', '')
+                if 'filename=' not in content_disposition:
+                    self.log_test("PDF Generation Martinique", False, "PDF response missing filename in Content-Disposition header")
+                    return
+                
+                # Verify PDF starts with PDF header
+                pdf_content = pdf_response.content
+                if not pdf_content.startswith(b'%PDF'):
+                    self.log_test("PDF Generation Martinique", False, "Response doesn't start with PDF header")
+                    return
+                
+                self.log_test("PDF Generation Martinique", True, 
+                            f"✅ PDF GENERATION WORKING: France Renov Martinique PDF generated successfully ({pdf_size:,} bytes). Filename: {content_disposition}", 
+                            {
+                                "pdf_size": pdf_size,
+                                "content_type": content_type,
+                                "content_disposition": content_disposition
+                            })
+                
+            elif pdf_response.status_code == 404:
+                self.log_test("PDF Generation Martinique", False, "PDF endpoint not found (404) - may not be implemented yet")
+            else:
+                self.log_test("PDF Generation Martinique", False, f"PDF generation failed: HTTP {pdf_response.status_code}: {pdf_response.text}")
+                
+        except Exception as e:
+            self.log_test("PDF Generation Martinique", False, f"Error: {str(e)}")
+    
+    def test_no_calculation_errors(self):
+        """Test that calculations don't cause backend errors"""
+        if not self.martinique_client_id:
+            self.log_test("No Calculation Errors", False, "No Martinique client ID available")
+            return
+            
+        try:
+            # Test various parameter combinations
+            test_scenarios = [
+                {"region": "martinique"},
+                {"region": "martinique", "battery_selected": "true"},
+                {"region": "martinique", "battery_selected": "false"},
+                {"region": "martinique", "manual_kit_power": "6"},
+                {"region": "martinique", "manual_kit_power": "6", "battery_selected": "true"},
+                {"region": "martinique", "manual_kit_power": "9", "battery_selected": "false"},
+                {"region": "martinique", "calculation_mode": "realistic"},
+                {"region": "martinique", "calculation_mode": "optimistic"},
+            ]
+            
+            errors = []
+            successful_scenarios = 0
+            
+            for i, params in enumerate(test_scenarios):
+                try:
+                    # Build URL with parameters
+                    param_string = "&".join([f"{k}={v}" for k, v in params.items()])
+                    url = f"{self.base_url}/calculate/{self.martinique_client_id}?{param_string}"
+                    
+                    response = self.session.post(url)
+                    if response.status_code == 200:
+                        calculation = response.json()
+                        # Basic validation - should have key fields
+                        if "kit_power" in calculation and "estimated_production" in calculation:
+                            successful_scenarios += 1
+                        else:
+                            errors.append(f"Scenario {i+1} ({params}): Missing key fields in response")
+                    else:
+                        errors.append(f"Scenario {i+1} ({params}): HTTP {response.status_code}")
+                        
+                except Exception as e:
+                    errors.append(f"Scenario {i+1} ({params}): Exception {str(e)}")
+            
+            if errors:
+                self.log_test("No Calculation Errors", False, f"Errors in {len(errors)}/{len(test_scenarios)} scenarios: {'; '.join(errors[:3])}", {"errors": errors})
+            else:
+                self.log_test("No Calculation Errors", True, 
+                            f"✅ ALL CALCULATION SCENARIOS WORKING: {successful_scenarios}/{len(test_scenarios)} scenarios completed without errors", 
+                            {"successful_scenarios": successful_scenarios, "total_scenarios": len(test_scenarios)})
+                
+        except Exception as e:
+            self.log_test("No Calculation Errors", False, f"Error: {str(e)}")
+    
+    def run_all_tests(self):
+        """Run all tests in sequence"""
+        print("🔍 BACKEND TESTING - PRODUCT IMAGES INTEGRATION VERIFICATION")
+        print("=" * 70)
+        print("Testing /api/calculate endpoint with battery_selected functionality")
+        print("Focus: Martinique region (97200) with realistic data")
+        print("=" * 70)
+        
+        # Run tests in order
+        self.test_api_root()
+        self.test_create_martinique_client()
+        self.test_calculate_endpoint_basic()
+        self.test_battery_selected_functionality()  # KEY TEST
+        self.test_calculate_endpoint_data_completeness()
+        self.test_pdf_generation_martinique()
+        self.test_no_calculation_errors()
+        
+        # Summary
+        print("\n" + "=" * 70)
+        print("📊 TEST SUMMARY")
+        print("=" * 70)
+        
+        passed = sum(1 for result in self.test_results if result["success"])
+        total = len(self.test_results)
+        
+        print(f"Total Tests: {total}")
+        print(f"Passed: {passed}")
+        print(f"Failed: {total - passed}")
+        print(f"Success Rate: {(passed/total)*100:.1f}%")
+        
+        # Show failed tests
+        failed_tests = [result for result in self.test_results if not result["success"]]
+        if failed_tests:
+            print(f"\n❌ FAILED TESTS ({len(failed_tests)}):")
+            for result in failed_tests:
+                print(f"  - {result['test']}: {result['details']}")
+        else:
+            print(f"\n✅ ALL TESTS PASSED!")
+        
+        return passed == total
+
+if __name__ == "__main__":
+    tester = SolarCalculatorTester()
+    success = tester.run_all_tests()
+    exit(0 if success else 1)
         
     def log_test(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test results"""
