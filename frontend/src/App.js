@@ -2123,6 +2123,53 @@ Cordialement`);
               </div>
             </div>
 
+            {/* Photos des produits */}
+            <div className="product-images">
+              <h3>📸 Nos produits</h3>
+              <div className="product-images-grid">
+                {/* Photo des panneaux solaires - toujours affichée */}
+                <div className="product-image-item">
+                  <img 
+                    src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/snns9ij3_design-sans-titre-26.webp" 
+                    alt="Panneaux solaires"
+                    className="product-image"
+                  />
+                  <div className="image-caption">Panneaux solaires haute performance</div>
+                </div>
+
+                {/* Photo de la batterie - seulement si kit avec batterie */}
+                {(results.battery_selected || batterySelected) && (
+                  <div className="product-image-item">
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/nwf904a0_Batterie%20FOX%20EP5.png" 
+                      alt="Batterie FOX EP5"
+                      className="product-image"
+                    />
+                    <div className="image-caption">Batterie de stockage FOX EP5</div>
+                  </div>
+                )}
+
+                {/* Photos des téléphones pour le suivi de production */}
+                <div className="product-image-item">
+                  <img 
+                    src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/wshvexci_Capture%20d%27%C3%A9cran%202025-08-17%20225536.jpg" 
+                    alt="Suivi de production mobile"
+                    className="product-image"
+                  />
+                  <div className="image-caption">Application de suivi - Vue d'ensemble</div>
+                </div>
+
+                <div className="product-image-item">
+                  <img 
+                    src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/ejxa6r8t_Capture%20d%27%C3%A9cran%202025-08-17%20230216.jpg" 
+                    alt="Détails de consommation"
+                    className="product-image"
+                  />
+                  <div className="image-caption">Application de suivi - Détails consommation</div>
+                </div>
+              </div>
+            </div>
+
             <div className="coordinates-info">
               <h3>🌍 Données géographiques</h3>
               <p><strong>Coordonnées:</strong> {results.coordinates?.lat.toFixed(4)}°N, {results.coordinates?.lon.toFixed(4)}°E</p>
