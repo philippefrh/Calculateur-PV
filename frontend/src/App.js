@@ -2149,6 +2149,26 @@ Cordialement`);
                   </div>
                 )}
 
+                {/* Photo de l'onduleur */}
+                <div className="product-image-item">
+                  <img 
+                    src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/k47tasu3_Onduleur%20AC1%20.jpg" 
+                    alt="Onduleur H1&AC1"
+                    className="product-image"
+                  />
+                  <div className="image-caption">Onduleur monophasé hybride/AC 4.6kW</div>
+                </div>
+
+                {/* Photo du contrôle WiFi */}
+                <div className="product-image-item">
+                  <img 
+                    src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/xcpaj44c_Control%20wifi%20a%20distance.jpg" 
+                    alt="Contrôle WiFi à distance"
+                    className="product-image"
+                  />
+                  <div className="image-caption">Contrôle à distance Wi-Fi</div>
+                </div>
+
                 {/* Photo du téléphone pour le suivi de production */}
                 <div className="product-image-item">
                   <img 
