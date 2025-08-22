@@ -5192,10 +5192,15 @@ body::after {
 @media (max-width: 768px) {
   .product-images-grid {
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 20px;
   }
   
   .product-image {
-    height: 150px;
+    height: 220px;
+    max-width: 100%;
+  }
+  
+  .product-image-item {
+    padding: 20px;
   }
 }
