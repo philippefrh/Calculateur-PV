@@ -5196,12 +5196,23 @@ body::after {
 @media (max-width: 768px) {
   .product-images-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 25px;
+    padding: 0 10px;
   }
   
   .product-image {
-    height: 220px;
+    height: 320px;
     max-width: 100%;
+  }
+  
+  .product-image-item {
+    padding: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-image {
+    height: 280px;
   }
   
   .product-image-item {
