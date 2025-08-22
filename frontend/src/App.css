@@ -5186,9 +5186,10 @@ body::after {
 
 .image-caption {
   color: #2c5530;
-  font-weight: 500;
-  font-size: 1rem;
-  margin-top: 10px;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-top: 15px;
+  text-align: center;
 }
 
 /* Responsive pour les images de produits */
