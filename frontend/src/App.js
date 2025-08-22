@@ -2149,23 +2149,14 @@ Cordialement`);
                   </div>
                 )}
 
-                {/* Photos des téléphones pour le suivi de production */}
-                <div className="product-image-item">
-                  <img 
-                    src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/wshvexci_Capture%20d%27%C3%A9cran%202025-08-17%20225536.jpg" 
-                    alt="Suivi de production mobile"
-                    className="product-image"
-                  />
-                  <div className="image-caption">Application de suivi - Vue d'ensemble</div>
-                </div>
-
+                {/* Photo du téléphone pour le suivi de production */}
                 <div className="product-image-item">
                   <img 
                     src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/ejxa6r8t_Capture%20d%27%C3%A9cran%202025-08-17%20230216.jpg" 
                     alt="Détails de consommation"
                     className="product-image"
                   />
-                  <div className="image-caption">Application de suivi - Détails consommation</div>
+                  <div className="image-caption">Application de suivi de production</div>
                 </div>
               </div>
             </div>
