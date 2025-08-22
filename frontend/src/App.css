@@ -5150,35 +5150,38 @@ body::after {
 
 .product-images-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  margin-top: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 40px;
+  margin-top: 30px;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .product-image-item {
   background: white;
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 20px;
+  padding: 35px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
   border: 2px solid #e0e0e0;
   transition: all 0.3s ease;
 }
 
 .product-image-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
   border-color: #ff6b35;
 }
 
 .product-image {
   width: 100%;
-  max-width: 400px;
-  height: 280px;
+  max-width: 500px;
+  height: 400px;
   object-fit: contain;
-  border-radius: 10px;
-  margin-bottom: 15px;
+  border-radius: 15px;
+  margin-bottom: 20px;
   background: #f8f9fa;
-  padding: 15px;
+  padding: 20px;
 }
 
 .image-caption {
