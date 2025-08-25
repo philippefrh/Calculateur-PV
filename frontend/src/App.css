@@ -5321,9 +5321,17 @@ body::after {
 }
 
 /* Responsive pour les images de produits */
+@media (max-width: 1024px) {
+  .product-images-grid {
+    grid-template-columns: 1fr 1fr; /* Garde 2 colonnes sur tablette */
+    gap: 25px;
+    padding: 15px;
+  }
+}
+
 @media (max-width: 768px) {
   .product-images-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* 1 seule colonne sur mobile */
     gap: 20px;
     padding: 10px;
   }
@@ -5333,7 +5341,8 @@ body::after {
   }
   
   .large-phone-image {
-    grid-column: span 1; /* Sur mobile, prend seulement 1 colonne */
+    grid-column: 1; /* Sur mobile, prend seulement 1 colonne */
+    max-width: 100%;
   }
   
   .large-image {
