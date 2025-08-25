@@ -2193,14 +2193,14 @@ Cordialement`);
                   <div className="image-caption">Contrôle à distance Wi-Fi</div>
                 </div>
 
-                {/* Photo du téléphone pour le suivi de production */}
-                <div className="product-image-item">
+                {/* Photo du téléphone pour le suivi de production - GRANDE TAILLE */}
+                <div className="product-image-item large-phone-image">
                   <img 
                     src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/ejxa6r8t_Capture%20d%27%C3%A9cran%202025-08-17%20230216.jpg" 
-                    alt="Détails de consommation"
-                    className="product-image"
+                    alt="Application de suivi détaillée"
+                    className="product-image large-image"
                   />
-                  <div className="image-caption">Application de suivi de production</div>
+                  <div className="image-caption">Application de suivi de production - Détails consommation</div>
                 </div>
               </div>
             </div>
