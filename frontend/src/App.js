@@ -2134,20 +2134,40 @@ Cordialement`);
                     alt="Panneaux solaires"
                     className="product-image"
                   />
-                  <div className="image-caption">Panneaux solaires haute performance</div>
+                  <div className="image-caption">Panneaux marque THOMSON</div>
                 </div>
 
                 {/* Photo de la batterie - seulement si kit avec batterie */}
                 {results.battery_selected && (
                   <div className="product-image-item">
                     <img 
-                      src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/nwf904a0_Batterie%20FOX%20EP5.png" 
+                      src="https://customer-assets.emergentagent.com/job_f9831016-0be4-4976-8467-884e184bdcdf/artifacts/njmblm3s_Batterie%20FOX%20EP5.png" 
                       alt="Batterie FOX EP5"
                       className="product-image"
                     />
-                    <div className="image-caption">Batterie de stockage FOX EP5</div>
+                    <div className="image-caption">Batterie FOX EP5</div>
                   </div>
                 )}
+
+                {/* Photo du micro onduleur - nouvelle */}
+                <div className="product-image-item">
+                  <img 
+                    src="https://customer-assets.emergentagent.com/job_f9831016-0be4-4976-8467-884e184bdcdf/artifacts/gjnzh1w0_Micros%20Onduleur%20.jpg" 
+                    alt="Micro onduleur"
+                    className="product-image"
+                  />
+                  <div className="image-caption">Micro onduleur haute performance</div>
+                </div>
+
+                {/* Photo des panneaux Powernity - nouvelle */}
+                <div className="product-image-item">
+                  <img 
+                    src="https://customer-assets.emergentagent.com/job_f9831016-0be4-4976-8467-884e184bdcdf/artifacts/rlklum40_Panneaux%20%20POWERNITY%202.png" 
+                    alt="Panneaux Powernity"
+                    className="product-image"
+                  />
+                  <div className="image-caption">Panneaux POWERNITY haute efficacité</div>
+                </div>
 
                 {/* Photo de l'onduleur */}
                 <div className="product-image-item">
