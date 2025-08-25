@@ -246,6 +246,18 @@ frontend:
         agent: "main"
         comment: "✅ IMPLEMENTED: Ajusté la taille de la batterie pour qu'elle soit identique au Linky et téléphone (200px x 400px). Repositionné la batterie (right: 540px), Linky (right: 280px), et téléphone (right: 40px) pour un alignement parfait des 3 éléments avec espacement régulier."
 
+  - task: "Ajout nouvelles images produits dans galerie technique"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Ajouté 3 nouvelles images dans la galerie de produits section 'Spécifications techniques': 1) Image 'Batterie FOX EP5' avec URL mise à jour vers nouveau asset, 2) Nouvelle image 'Micro onduleur haute performance' ajoutée, 3) Nouvelle image 'Panneaux POWERNITY haute efficacité' ajoutée. Modifié le caption de la première image des panneaux de 'Panneaux solaires haute performance' vers 'Panneaux marque THOMSON'. La galerie contient maintenant 6 images : panneaux THOMSON, batterie FOX EP5 (conditionnelle si battery_selected), micro onduleur, panneaux POWERNITY, onduleur H1&AC1, contrôle WiFi, et application de suivi. Toutes les nouvelles images utilisent les URLs des assets fournis par l'utilisateur du job f9831016-0be4-4976-8467-884e184bdcdf."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
