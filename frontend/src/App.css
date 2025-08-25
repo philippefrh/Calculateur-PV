@@ -2488,7 +2488,11 @@ body::after {
 
   .yearly-chart {
     height: 250px;
-    padding: 15px 5px 50px 5px;
+    padding: 30px 5px 50px 5px;
+  }
+
+  .month-column {
+    height: 200px;
   }
 
   .production-bar {
@@ -2497,12 +2501,12 @@ body::after {
 
   .month-label-new {
     font-size: 0.7rem;
-    bottom: -20px;
+    bottom: -30px;
   }
 
   .kwh-value {
     font-size: 0.65rem;
-    top: -20px;
+    top: -25px;
   }
 
   .monthly-chart {
