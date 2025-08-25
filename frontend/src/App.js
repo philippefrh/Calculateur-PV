@@ -2112,6 +2112,7 @@ Cordialement`);
               <div className="yearly-chart">
                 {results.pvgis_monthly_data?.map((month) => (
                   <div key={month.month} className="month-column">
+                    <div className="kwh-value">{Math.round(month.E_m)} kWh</div>
                     <div 
                       className="production-bar" 
                       style={{
