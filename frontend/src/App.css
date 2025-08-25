@@ -1608,12 +1608,13 @@ body::after {
   display: flex;
   justify-content: space-between;
   align-items: end;
-  height: 300px;
-  padding: 20px 10px 40px 10px;
+  height: 350px;
+  padding: 20px 10px 60px 10px;
   background: white;
   border-radius: 15px;
   border: 2px solid #e0e0e0;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  position: relative;
 }
 
 .month-column {
@@ -1623,6 +1624,17 @@ body::after {
   flex: 1;
   margin: 0 2px;
   height: 100%;
+  position: relative;
+}
+
+.kwh-value {
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 8px;
+  position: absolute;
+  top: -25px;
+  white-space: nowrap;
 }
 
 .production-bar {
@@ -1634,6 +1646,7 @@ body::after {
   margin-bottom: 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
+  align-self: flex-end;
 }
 
 .production-bar:hover {
@@ -1646,6 +1659,8 @@ body::after {
   color: #666;
   font-weight: 500;
   margin-top: auto;
+  position: absolute;
+  bottom: -25px;
 }
 
 /* Ancien graphique mensuel - conservé pour compatibilité */
