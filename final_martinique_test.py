@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://solar-quote-genius.preview.emergentagent.com/api"
+BACKEND_URL = "https://solar-config-hub.preview.emergentagent.com/api"
 
 def test_martinique_fixes():
     session = requests.Session()
