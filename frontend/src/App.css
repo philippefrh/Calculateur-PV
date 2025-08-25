@@ -5320,17 +5320,25 @@ body::after {
 @media (max-width: 768px) {
   .product-images-grid {
     grid-template-columns: 1fr;
-    gap: 25px;
-    padding: 0 10px;
+    gap: 20px;
+    padding: 10px;
   }
   
   .product-image {
-    height: 320px;
-    max-width: 100%;
+    height: 300px;
   }
   
-  .product-image-item {
-    padding: 25px;
+  .large-phone-image {
+    grid-column: span 1; /* Sur mobile, prend seulement 1 colonne */
+  }
+  
+  .large-image {
+    height: 450px; /* Plus petit sur mobile mais toujours plus grand que les autres */
+  }
+  
+  .large-phone-image .image-caption {
+    font-size: 1.1rem;
+    padding: 20px;
   }
 }
 
