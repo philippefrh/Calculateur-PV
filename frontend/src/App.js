@@ -2107,17 +2107,20 @@ Cordialement`);
               </div>
             </div>
 
-            <div className="monthly-production">
-              <h3>📊 Production mensuelle détaillée</h3>
-              <div className="monthly-chart">
+            <div className="monthly-production-new">
+              <h3>📊 Production par mois sur 1 an</h3>
+              <div className="yearly-chart">
                 {results.pvgis_monthly_data?.map((month) => (
-                  <div key={month.month} className="month-bar">
+                  <div key={month.month} className="month-column">
                     <div 
-                      className="bar" 
-                      style={{height: `${(month.E_m / Math.max(...results.pvgis_monthly_data.map(m => m.E_m))) * 100}%`}}
+                      className="production-bar" 
+                      style={{
+                        height: `${(month.E_m / Math.max(...results.pvgis_monthly_data.map(m => m.E_m))) * 100}%`
+                      }}
                     ></div>
-                    <span className="month-label">{['J','F','M','A','M','J','J','A','S','O','N','D'][month.month-1]}</span>
-                    <span className="month-value">{Math.round(month.E_m)} kWh</span>
+                    <div className="month-label-new">
+                      {['Janv.','Févr.','Mars','Avr.','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'][month.month-1]}
+                    </div>
                   </div>
                 ))}
               </div>
