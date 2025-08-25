@@ -5234,60 +5234,86 @@ body::after {
   }
 }
 
-/* Styles pour les images de produits */
+/* Images produits */
 .product-images {
-  margin: 40px 0;
-  text-align: center;
+  margin-top: 40px;
 }
 
 .product-images h3 {
   color: #2c5530;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
   font-size: 1.6rem;
+  text-align: center;
 }
 
 .product-images-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 40px;
-  margin-top: 30px;
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  padding: 20px;
 }
 
 .product-image-item {
   background: white;
-  border-radius: 20px;
-  padding: 35px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-  border: 2px solid #e0e0e0;
-  transition: all 0.3s ease;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
 }
 
 .product-image-item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-  border-color: #ff6b35;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
 }
 
 .product-image {
   width: 100%;
-  max-width: 500px;
   height: 400px;
-  object-fit: contain;
-  border-radius: 15px;
-  margin-bottom: 20px;
-  background: #f8f9fa;
-  padding: 20px;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* IMAGE TÉLÉPHONES GRANDE TAILLE - TRÈS IMPORTANTE */
+.large-phone-image {
+  grid-column: span 2; /* Prend la place de 2 colonnes */
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+  border: 3px solid #4CAF50; /* Bordure verte pour l'importance */
+}
+
+.large-phone-image:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.2);
+}
+
+.large-image {
+  width: 100%;
+  height: 600px; /* Plus grand que les autres images */
+  object-fit: cover;
+  object-position: center;
+}
+
+.large-phone-image .image-caption {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2c5530;
+  padding: 25px;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-top: 2px solid #4CAF50;
 }
 
 .image-caption {
-  color: #2c5530;
+  padding: 20px;
+  font-size: 1rem;
   font-weight: 600;
-  font-size: 1.2rem;
-  margin-top: 15px;
-  text-align: center;
+  color: #333;
+  background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
 }
 
 /* Responsive pour les images de produits */
