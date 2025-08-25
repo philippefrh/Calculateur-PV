@@ -5278,7 +5278,7 @@ body::after {
 
 /* IMAGE TÉLÉPHONES GRANDE TAILLE - TRÈS IMPORTANTE */
 .large-phone-image {
-  grid-column: span 2; /* Prend la place de 2 colonnes */
+  grid-column: 1 / -1; /* Prend TOUTES les colonnes disponibles (les 2) */
   background: white;
   border-radius: 20px;
   box-shadow: 0 12px 24px rgba(0,0,0,0.15);
@@ -5286,6 +5286,8 @@ body::after {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-align: center;
   border: 3px solid #4CAF50; /* Bordure verte pour l'importance */
+  max-width: 800px; /* Largeur maximale pour ne pas être trop large */
+  margin: 0 auto; /* Centrage horizontal */
 }
 
 .large-phone-image:hover {
