@@ -2041,6 +2041,17 @@ body::after {
   box-shadow: 0 12px 24px rgba(76,175,80,0.4);
 }
 
+.produits-pdf-button {
+  background: linear-gradient(135deg, #4caf50, #45a049) !important;
+  border: 2px solid #388e3c;
+}
+
+.produits-pdf-button:hover {
+  background: linear-gradient(135deg, #45a049, #388e3c) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(76, 175, 80, 0.3);
+}
+
 /* Mode démo */
 .demo-toggle {
   background: linear-gradient(135deg, #9c27b0, #673ab7);
