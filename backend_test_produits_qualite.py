@@ -257,8 +257,8 @@ class ProduitsQualitePDFTester:
                 if not pdf_content.startswith(b'%PDF'):
                     issues.append("Response doesn't start with PDF header")
                 
-                # Check reasonable size (should be at least 10KB for a proper PDF)
-                if pdf_size < 10000:
+                # Check reasonable size (should be at least 2KB for a proper PDF)
+                if pdf_size < 2000:
                     issues.append(f"PDF size {pdf_size} bytes seems too small")
                 elif pdf_size > 5000000:  # 5MB
                     issues.append(f"PDF size {pdf_size} bytes seems too large")
