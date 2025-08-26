@@ -3196,7 +3196,7 @@ Cordialement`);
           </button>
           
           <button 
-            onClick={() => window.open(`${API}/generate-produits-qualite-pdf/${clientId}`, '_blank')}
+            onClick={() => window.open(`${API}/generate-produits-qualite-pdf/${results.client_id}`, '_blank')}
             className="pdf-button produits-pdf-button"
           >
             📄 Télécharger PDF Produits de Qualité
