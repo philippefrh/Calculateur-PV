@@ -2503,7 +2503,7 @@ def generate_produits_qualite_pdf(client_data: dict, calculation_data: dict, reg
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/generate-produits-qualite-pdf/{client_id}")
-async def generate_produits_qualite_pdf_endpoint(client_id: str):
+async def generate_produits_qualite_pdf_endpoint(client_id: str, kit_power: Optional[int] = None, battery_selected: Optional[bool] = None):
     """Generate 'DES PRODUITS DE QUALITÉ SOIGNEUSEMENT SÉLECTIONNÉS' PDF page with exact same visual"""
     try:
         # Get client data
@@ -2511,16 +2511,25 @@ async def generate_produits_qualite_pdf_endpoint(client_id: str):
         if not client:
             raise HTTPException(status_code=404, detail="Client not found")
         
-        # Get latest calculation data
-        calculation = await db.calculations.find_one(
-            {"client_id": client_id}, 
-            sort=[("calculation_date", -1)]
+        # Detect region from client data
+        region = client.get("region", "martinique")  # Default to martinique for this feature
+        
+        # Get fresh calculation data by calling the calculate function
+        # Use provided parameters or defaults for 6kW monophasic
+        calculation_data = await calculate_solar_solution(
+            client_id=client_id,
+            region=region,
+            calculation_mode="realistic",
+            manual_kit_power=kit_power or 6,  # Default to 6kW as requested in review
+            battery_selected=battery_selected or False  # Default to no battery
         )
-        if not calculation:
-            raise HTTPException(status_code=404, detail="No calculation found for client")
+        
+        # Add phase_type if not present (default to Monophasé for kits <= 9kW)
+        if "phase_type" not in calculation_data:
+            calculation_data["phase_type"] = "Monophasé" if calculation_data.get("kit_power", 6) <= 9 else "Triphasé"
         
         # Generate PDF
-        pdf_data = generate_produits_qualite_pdf(client, calculation, client.get("region", "france"))
+        pdf_data = generate_produits_qualite_pdf(client, calculation_data, region)
         
         # Return PDF response
         return Response(
