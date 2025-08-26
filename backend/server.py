@@ -2321,6 +2321,220 @@ Garantie constructeur Micro Onduleur : 15 ans"""
         logging.error(f"Error generating devis PDF: {e}")
         raise HTTPException(status_code=500, detail=f"Error generating devis PDF: {str(e)}")
 
+def generate_produits_qualite_pdf(client_data: dict, calculation_data: dict, region: str = "france"):
+    """Generate PDF page 'DES PRODUITS DE QUALITÉ SOIGNEUSEMENT SÉLECTIONNÉS' with exact same visual as reference"""
+    try:
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=40, bottomMargin=40)
+        
+        # Styles
+        styles = getSampleStyleSheet()
+        
+        # Style pour le titre principal - exactement comme dans le PDF de référence
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=18,
+            textColor=colors.black,
+            alignment=1,  # Centré
+            spaceAfter=30,
+            fontName='Helvetica-Bold',
+            leading=22
+        )
+        
+        # Style pour le pack (carré orange)
+        pack_style = ParagraphStyle(
+            'PackStyle',
+            parent=styles['Normal'],
+            fontSize=16,
+            textColor=colors.white,
+            alignment=1,  # Centré
+            fontName='Helvetica-Bold',
+            leading=20,
+            backColor=colors.Color(1, 0.5, 0),  # Orange
+            borderPadding=15
+        )
+        
+        # Style pour les détails techniques (grand carré orange)
+        tech_details_style = ParagraphStyle(
+            'TechDetailsStyle',
+            parent=styles['Normal'],
+            fontSize=11,
+            textColor=colors.white,
+            alignment=0,  # Aligné à gauche
+            fontName='Helvetica',
+            leading=14,
+            backColor=colors.Color(1, 0.5, 0),  # Orange
+            leftIndent=20,
+            rightIndent=20,
+            spaceBefore=10,
+            spaceAfter=10
+        )
+        
+        # Style pour les sections (onduleur, système de fixation)
+        section_style = ParagraphStyle(
+            'SectionStyle',
+            parent=styles['Normal'],
+            fontSize=14,
+            textColor=colors.black,
+            alignment=0,
+            fontName='Helvetica-Bold',
+            leading=16,
+            spaceBefore=20,
+            spaceAfter=10
+        )
+        
+        # Style pour les détails produits
+        details_style = ParagraphStyle(
+            'DetailsStyle',
+            parent=styles['Normal'],
+            fontSize=10,
+            textColor=colors.black,
+            alignment=0,
+            fontName='Helvetica',
+            leading=12,
+            leftIndent=10,
+            spaceBefore=5
+        )
+        
+        # Récupérer les données du calcul
+        kit_power = calculation_data.get('kit_power', 6)
+        phase_type = calculation_data.get('phase_type', 'Monophasé')
+        
+        # Calculer le nombre de panneaux basé sur la puissance du kit
+        # 375 Wc par panneau Thomson
+        panels_count = int((kit_power * 1000) / 375)
+        
+        # Construction du contenu
+        content = []
+        
+        # Titre principal
+        title = Paragraph("DES PRODUITS DE QUALITÉ SOIGNEUSEMENT SÉLECTIONNÉS", title_style)
+        content.append(title)
+        content.append(Spacer(1, 20))
+        
+        # Sous-titre
+        subtitle = Paragraph("Vous avez choisi l'offre suivante :", styles['Normal'])
+        content.append(subtitle)
+        content.append(Spacer(1, 20))
+        
+        # Pack (carré orange) - avec données dynamiques
+        pack_text = f"Pack {kit_power} kWc - {panels_count} Panneaux - {phase_type}"
+        pack_para = Paragraph(pack_text, pack_style)
+        content.append(pack_para)
+        content.append(Spacer(1, 30))
+        
+        # Détails techniques des panneaux (grand carré orange)
+        tech_details = f"""
+        Panneaux photovoltaïques de la marque Thomson représentant une puissance totale de {kit_power * 1000} Watt Crètes pour de l'autoconsommation<br/>
+        <br/>
+        - modèle du panneau : ECOSUN 375<br/>
+        - Puissance unitaire : 375 WC<br/>
+        - Module photovoltaïque monocristallin 166 x 83 mm haute performance<br/>
+        - Certification : ISO 9001 : 2015 Quality Management System ISO 14001 : 2015<br/>
+        - La technologie SE améliore efficacement l'efficacité de la conversion cellulaire.<br/>
+        - Film antireflet optimisé, matériau d'encapsulation pour obtenir d'excellentes performances anti-PID.<br/>
+        - Conception MBB et demi-cellule pour réduire les effets d'ombre,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;améliorer la fiabilité du module et réduire les pertes.<br/>
+        - Dimensions (L*W*H) 1 755 x 1 038 x 30 mm par panneau<br/>
+        - Poids (kg) : 18.5 par panneau
+        """
+        
+        tech_para = Paragraph(tech_details, tech_details_style)
+        content.append(tech_para)
+        content.append(Spacer(1, 30))
+        
+        # Section Onduleur
+        if calculation_data.get('battery_selected', False):
+            onduleur_title = Paragraph("Onduleur + Batterie", section_style)
+            content.append(onduleur_title)
+            
+            onduleur_ref = Paragraph(f"Référence : FOX H1 {kit_power}kW + Batterie FOX EP5", section_style)
+            content.append(onduleur_ref)
+            
+            onduleur_details = f"""
+            Onduleur hybride FOX H1 {kit_power}kW avec batterie lithium FOX EP5
+            Capacité de stockage : 5.12 kWh
+            Garantie : 10 ans onduleur, 10 ans batterie
+            Compatibilité réseau {phase_type.lower()}
+            """
+        else:
+            onduleur_title = Paragraph("Onduleur", section_style)
+            content.append(onduleur_title)
+            
+            onduleur_ref = Paragraph(f"Référence : FOX H1 {kit_power}kW", section_style)
+            content.append(onduleur_ref)
+            
+            onduleur_details = f"""
+            Onduleur hybride FOX H1 {kit_power}kW
+            Rendement européen : 97.6%
+            Garantie : 10 ans
+            Compatibilité réseau {phase_type.lower()}
+            """
+        
+        onduleur_para = Paragraph(onduleur_details, details_style)
+        content.append(onduleur_para)
+        content.append(Spacer(1, 20))
+        
+        # Section Système de fixation
+        fixation_title = Paragraph("Système de fixation", section_style)
+        content.append(fixation_title)
+        
+        fixation_ref = Paragraph("Référence : Fixations K2 sur toiture", section_style)
+        content.append(fixation_ref)
+        
+        fixation_details = """
+        Système de montage K2 pour toiture tôle
+        Garantie : 20 ans
+        Rails et crochets en aluminium anodisé
+        Résistance au vent : 200 km/h
+        """
+        
+        fixation_para = Paragraph(fixation_details, details_style)
+        content.append(fixation_para)
+        
+        # Générer le PDF
+        doc.build(content)
+        buffer.seek(0)
+        return buffer.getvalue()
+        
+    except Exception as e:
+        logging.error(f"Error generating produits qualité PDF: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/generate-produits-qualite-pdf/{client_id}")
+async def generate_produits_qualite_pdf_endpoint(client_id: str):
+    """Generate 'DES PRODUITS DE QUALITÉ SOIGNEUSEMENT SÉLECTIONNÉS' PDF page with exact same visual"""
+    try:
+        # Get client data
+        client = await db.clients.find_one({"id": client_id})
+        if not client:
+            raise HTTPException(status_code=404, detail="Client not found")
+        
+        # Get latest calculation data
+        calculation = await db.calculations.find_one(
+            {"client_id": client_id}, 
+            sort=[("calculation_date", -1)]
+        )
+        if not calculation:
+            raise HTTPException(status_code=404, detail="No calculation found for client")
+        
+        # Generate PDF
+        pdf_data = generate_produits_qualite_pdf(client, calculation, client.get("region", "france"))
+        
+        # Return PDF response
+        return Response(
+            content=pdf_data,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=produits_qualite_{client_id}.pdf"
+            }
+        )
+        
+    except Exception as e:
+        logging.error(f"Error generating produits qualité PDF: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur génération PDF: {str(e)}")
+
 def generate_devis_number():
     """Generate unique devis number"""
     return f"{datetime.now().strftime('%Y%m%d')}-{datetime.now().strftime('%H%M%S')}"
