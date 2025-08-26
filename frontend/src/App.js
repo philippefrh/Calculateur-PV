@@ -3196,12 +3196,10 @@ Cordialement`);
           </button>
           
           <button 
-            className={`pdf-button ${isGeneratingPDF ? 'generating' : ''}`}
-            onClick={generateFranceRenovMartiniquePDF}
-            disabled={isGeneratingPDF}
-            style={{ background: 'linear-gradient(135deg, #4caf50, #45a049)' }}
+            onClick={() => window.open(`${API}/generate-produits-qualite-pdf/${clientId}`, '_blank')}
+            className="pdf-button produits-pdf-button"
           >
-            {isGeneratingPDF ? '🏢 Génération...' : '🏢 PDF France Renov Martinique'}
+            📄 Télécharger PDF Produits de Qualité
           </button>
           <button 
             type="button" 
