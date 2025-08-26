@@ -3196,6 +3196,13 @@ Cordialement`);
           </button>
           
           <button 
+            onClick={() => window.open(`${API}/generate-france-renov-martinique-pdf/${results.client_id}?kit_power=${results.kit_power}`, '_blank')}
+            className="pdf-button"
+          >
+            📄 Télécharger PDF France Renov (SYRIUS)
+          </button>
+          
+          <button 
             onClick={() => window.open(`${API}/generate-produits-qualite-pdf/${results.client_id}`, '_blank')}
             className="pdf-button produits-pdf-button"
           >
