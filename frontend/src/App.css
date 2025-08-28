@@ -2301,6 +2301,43 @@ body::after {
   padding: 25px !important;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
   border: 1px solid #e0e0e0 !important;
+  transition: all 0.4s ease !important; /* Animation fluide */
+  cursor: pointer !important;
+  position: relative !important;
+}
+
+/* Effets visuels au survol - TRÈS SYMPAS ! */
+.document-category:hover {
+  transform: translateY(-10px) scale(1.02) !important; /* Lévitation + léger zoom */
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25) !important; /* Ombre plus grande */
+  border: 2px solid #4caf50 !important; /* Bordure verte qui apparaît */
+  background: linear-gradient(135deg, #ffffff, #f8fff8) !important; /* Légère teinte verte */
+}
+
+/* Animation de la bordure du titre au survol */
+.document-category:hover h5 {
+  color: #2c5530 !important;
+  border-bottom: 3px solid #4caf50 !important; /* Bordure plus épaisse */
+  transform: scale(1.05) !important; /* Léger zoom sur le titre */
+  transition: all 0.3s ease !important;
+}
+
+/* Animation des éléments de liste au survol */
+.document-category:hover li {
+  transform: translateX(5px) !important; /* Décalage vers la droite */
+  color: #2c5530 !important; /* Couleur plus foncée */
+  transition: all 0.2s ease !important;
+}
+
+/* Effet de pulsation sur l'emoji du titre */
+.document-category:hover h5::before {
+  content: attr(data-emoji) !important;
+  animation: pulse 1s infinite !important;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
 }
 
 .document-category h5 {
