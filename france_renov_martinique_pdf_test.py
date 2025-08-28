@@ -16,7 +16,7 @@ from typing import Dict, Any, Optional
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://solar-quote-builder.preview.emergentagent.com/api"
+BACKEND_URL = "https://solar-calculator-ui.preview.emergentagent.com/api"
 
 class FranceRenovMartiniquePDFTester:
     def __init__(self):

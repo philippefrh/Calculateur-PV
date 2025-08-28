@@ -15,7 +15,7 @@ import json
 import time
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://solar-quote-builder.preview.emergentagent.com/api"
+BACKEND_URL = "https://solar-calculator-ui.preview.emergentagent.com/api"
 
 def test_review_request():
     """Test the specific scenario requested in the review"""
