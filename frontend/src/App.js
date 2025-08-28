@@ -4273,6 +4273,64 @@ function App() {
     fetchCalculationModes();
   }, []);
 
+  // Gestion des animations hover pour les documents
+  useEffect(() => {
+    const documentImages = {
+      'tax-notice': 'https://customer-assets.emergentagent.com/job_solar-calculator-ui/artifacts/64qwtpkb_Avis%20taxe%20fonciere%202025.jpg',
+      'meter-photo': 'https://customer-assets.emergentagent.com/job_solar-calculator-ui/artifacts/rv7nzpxc_Photo%20compteur.jpg',
+      'roof-photo': 'https://customer-assets.emergentagent.com/job_solar-calculator-ui/artifacts/w9890js7_Photo%20toiture.jpg'
+    };
+
+    const documentCaptions = {
+      'tax-notice': 'Exemple d\'avis d\'imposition/taxe foncière',
+      'meter-photo': 'Exemple de photo du compteur électrique',
+      'roof-photo': 'Exemple de photos de toiture'
+    };
+
+    const hoverItems = document.querySelectorAll('.hover-document-item');
+    const vignette = document.getElementById('document-hover-vignette');
+    const vignetteImage = document.getElementById('document-hover-image');
+    const vignetteCaption = document.querySelector('.document-hover-caption');
+
+    hoverItems.forEach(item => {
+      item.addEventListener('mouseenter', (e) => {
+        const imageKey = e.target.getAttribute('data-image');
+        if (documentImages[imageKey]) {
+          vignetteImage.src = documentImages[imageKey];
+          vignetteCaption.textContent = documentCaptions[imageKey];
+          vignette.style.opacity = '1';
+          vignette.style.transform = 'translateY(0) scale(1)';
+          vignette.style.visibility = 'visible';
+        }
+      });
+
+      item.addEventListener('mouseleave', () => {
+        vignette.style.opacity = '0';
+        vignette.style.transform = 'translateY(-20px) scale(0.95)';
+        setTimeout(() => {
+          vignette.style.visibility = 'hidden';
+        }, 300);
+      });
+
+      item.addEventListener('mousemove', (e) => {
+        const rect = e.target.getBoundingClientRect();
+        const x = e.clientX - rect.left + 20; // Décalage pour éviter que la vignette cache le texte
+        const y = e.clientY - rect.top - 10;
+        vignette.style.left = `${rect.left + x}px`;
+        vignette.style.top = `${rect.top + y}px`;
+      });
+    });
+
+    // Cleanup function
+    return () => {
+      hoverItems.forEach(item => {
+        item.removeEventListener('mouseenter', () => {});
+        item.removeEventListener('mouseleave', () => {});
+        item.removeEventListener('mousemove', () => {});
+      });
+    };
+  }, []);
+
   const handleRegionChange = (region) => {
     setSelectedRegion(region);
     // Réinitialiser les résultats de calcul si on change de région
