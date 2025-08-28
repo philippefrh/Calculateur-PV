@@ -1245,7 +1245,7 @@ const ConsumptionForm = ({
                                   )}
                                 </>
                               ) : (
-                                <span>{kit.priceTTC.toLocaleString()}€</span>
+                                <span>{(kit.priceTTC || 0).toLocaleString()}€</span>
                               )}
                             </span>
                           </div>
