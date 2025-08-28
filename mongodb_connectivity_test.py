@@ -9,7 +9,7 @@ import json
 import time
 
 # Backend URL from frontend environment
-BACKEND_URL = "https://solar-config-hub.preview.emergentagent.com/api"
+BACKEND_URL = "https://solar-quote-builder.preview.emergentagent.com/api"
 
 def test_mongodb_connectivity():
     """Test the specific MongoDB connectivity issue mentioned in the request"""
