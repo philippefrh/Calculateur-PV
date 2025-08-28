@@ -3221,53 +3221,59 @@ Cordialement`);
           </button>
         </div>
         
-        <div className="contact-cta">
+        <div className="contact-cta documents-section">
           <h4>📋 Création du dossier - Pièces à fournir</h4>
-          <p>Pour finaliser votre installation solaire, nous aurons besoin des documents suivants :</p>
+          <p className="documents-intro">Pour finaliser votre installation solaire, nous aurons besoin des documents suivants :</p>
           
-          <div className="documents-list">
-            <div className="document-category">
-              <h5>💡 Énergie & Consommation</h5>
-              <ul>
-                <li>• Votre dernière facture d'énergie (de moins de 3 mois)</li>
-                <li>• EDF - Total Energie - Engie etc...</li>
-                <li>• Factures box internet, téléphone portable, eau</li>
-              </ul>
+          <div className="documents-grid">
+            {/* Colonne 1 */}
+            <div className="documents-column">
+              <div className="document-category">
+                <h5>💡 Énergie & Consommation</h5>
+                <ul>
+                  <li>• Votre dernière facture d'énergie (de moins de 3 mois)</li>
+                  <li>• EDF - Total Energie - Engie etc...</li>
+                  <li>• Factures box internet, téléphone portable, eau</li>
+                </ul>
+              </div>
+
+              <div className="document-category">
+                <h5>🆔 Identité & Situation</h5>
+                <ul>
+                  <li>• Justificatif d'identité (CNI recto verso, Passeport, Carte de séjour)</li>
+                  <li>• Votre dernier avis d'imposition (les 4 volets)</li>
+                  <li>• Taxe foncière (les 2 volets)</li>
+                </ul>
+              </div>
             </div>
 
-            <div className="document-category">
-              <h5>🆔 Identité & Situation</h5>
-              <ul>
-                <li>• Justificatif d'identité (CNI recto verso, Passeport, Carte de séjour)</li>
-                <li>• Votre dernier avis d'imposition (les 4 volets)</li>
-                <li>• Taxe foncière (les 2 volets)</li>
-              </ul>
-            </div>
+            {/* Colonne 2 */}
+            <div className="documents-column">
+              <div className="document-category">
+                <h5>💰 Revenus & Finances</h5>
+                <ul>
+                  <li>• Vos 2 dernières fiches de paye</li>
+                  <li>• Un RIB</li>
+                </ul>
+              </div>
 
-            <div className="document-category">
-              <h5>💰 Revenus & Finances</h5>
-              <ul>
-                <li>• Vos 2 dernières fiches de paye</li>
-                <li>• Un RIB</li>
-              </ul>
-            </div>
-
-            <div className="document-category">
-              <h5>🏠 Propriété</h5>
-              <ul>
-                <li>• Votre acte notarié (2 premières feuilles seulement)</li>
-                <li>• Requis si propriétaire de moins d'un an</li>
-              </ul>
+              <div className="document-category">
+                <h5>🏠 Propriété</h5>
+                <ul>
+                  <li>• Votre acte notarié (2 premières feuilles seulement)</li>
+                  <li>• Requis si propriétaire de moins d'un an</li>
+                </ul>
+              </div>
             </div>
           </div>
           
           <div className="next-steps-note">
-            <p><strong>📞 Nos experts vous contacteront</strong> dans les 24h pour :</p>
-            <ul>
-              <li>✓ Valider votre étude personnalisée</li>
-              <li>✓ Planifier la visite technique</li>
-              <li>✓ Finaliser votre dossier de financement</li>
-            </ul>
+            <p><strong>📞 Nos experts vous contacteront dans les 24h pour :</strong></p>
+            <div className="next-steps-grid">
+              <div>✓ Valider votre étude personnalisée</div>
+              <div>✓ Planifier la visite technique</div>
+              <div>✓ Finaliser votre dossier de financement</div>
+            </div>
           </div>
         </div>
       </div>
