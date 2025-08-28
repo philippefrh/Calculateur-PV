@@ -2292,7 +2292,7 @@ body::after {
 .documents-column {
   display: flex !important;
   flex-direction: column !important;
-  gap: 25px !important; /* Espace entre les catégories */
+  gap: 20px !important; /* Espace réduit entre les catégories pour 3 vignettes */
 }
 
 .document-category {
