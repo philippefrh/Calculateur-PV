@@ -293,7 +293,7 @@ test_plan:
   test_priority: "high_first"
 
 frontend:
-  - task: "Agrandissement image téléphones pour largeur complète de la colonne"
+  - task: "Agrandissement maximal image téléphones et correction répétition texte"
     implemented: true
     working: "NA"
     file: "frontend/src/App.js, frontend/src/App.css"
@@ -303,7 +303,7 @@ frontend:
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "✅ IMPLEMENTED: Remplacé l'ancienne image des téléphones par la nouvelle '2 Telephonnes production pixels.jpg' et agrandi considérablement l'image pour qu'elle prenne toute la largeur disponible dans la colonne blanche. Modifications CSS : 1) Supprimé la max-width de 800px et mis max-width: 100% + width: 100% pour forcer la largeur complète. 2) Augmenté la hauteur de 600px à 700px pour desktop. 3) Augmenté la hauteur mobile de 450px à 500px. 4) L'image maintient ses proportions avec object-fit: cover tout en remplissant complètement la largeur de son conteneur. L'image prend maintenant toute la largeur de la colonne blanche comme demandé par l'utilisateur."
+        comment: "✅ CORRECTIONS MAJEURES IMPLÉMENTÉES: 1) AGRANDISSEMENT MAXIMAL: Supprimé toutes les limites de largeur (max-width: none), hauteur augmentée à 900px (desktop) et 600px (mobile), supprimé les marges pour utiliser 100% de l'espace. 2) RÉPÉTITION TEXTE CORRIGÉE: Modifié le caption de 'Application de suivi de production - Détails consommation' vers '📱 Suivez votre production solaire en temps réel' pour éviter la répétition avec le texte dans l'image. 3) CONTENEUR PARENT OPTIMISÉ: Supprimé la max-width: 1200px du .product-images-grid pour permettre l'expansion complète. L'image prend maintenant toute la largeur et hauteur possible dans la colonne blanche."
 
 agent_communication:
   - agent: "main"
