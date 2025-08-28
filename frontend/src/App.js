@@ -2196,8 +2196,8 @@ Cordialement`);
                 {/* Photo du téléphone pour le suivi de production - GRANDE TAILLE */}
                 <div className="product-image-item large-phone-image">
                   <img 
-                    src="https://customer-assets.emergentagent.com/job_solar-quote-genius/artifacts/ejxa6r8t_Capture%20d%27%C3%A9cran%202025-08-17%20230216.jpg" 
-                    alt="Application de suivi détaillée"
+                    src="https://customer-assets.emergentagent.com/job_solar-quote-builder/artifacts/nq1hmof8_2%20Telephonnes%20production%20pixels.jpg" 
+                    alt="Application de suivi détaillée des téléphones"
                     className="product-image large-image"
                   />
                   <div className="image-caption">Application de suivi de production - Détails consommation</div>
