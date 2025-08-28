@@ -3249,9 +3249,9 @@ Cordialement`);
               <div className="document-category">
                 <h5>📸 Photos Techniques</h5>
                 <ul>
-                  <li>• 5 Photos de la toiture</li>
-                  <li>• Photo de votre compteur EDF boitier fermé et boitier ouvert</li>
-                  <li>• Photo de votre colonne électrique avec vos disjoncteurs</li>
+                  <li className="document-item hover-document-item" data-image="roof-photo">• 5 Photos de la toiture</li>
+                  <li className="document-item hover-document-item" data-image="meter-photo">• Photo de votre compteur EDF boitier fermé et boitier ouvert</li>
+                  <li className="document-item">• Photo de votre colonne électrique avec vos disjoncteurs</li>
                 </ul>
               </div>
             </div>
