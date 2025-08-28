@@ -4275,6 +4275,12 @@ function App() {
 
   // Gestion des animations hover pour les documents
   useEffect(() => {
+    // Ne s'exécuter que sur la page des résultats
+    if (currentStep !== 5) {
+      console.log(`⏭️ Étape actuelle: ${currentStep}, animations hover non nécessaires`);
+      return;
+    }
+
     console.log('🔍 Initialisation des animations hover des documents...');
     
     const documentImages = {
@@ -4303,7 +4309,8 @@ function App() {
           const imageKey = item.getAttribute('data-image');
           console.log(`📝 Élément ${index}: ${item.textContent.trim()} -> ${imageKey}`);
 
-          item.addEventListener('mouseenter', (e) => {
+          // Supprimer les anciens listeners s'ils existent
+          const newMouseEnter = (e) => {
             console.log(`🎯 Hover ENTER sur: ${imageKey}`);
             const key = e.target.getAttribute('data-image');
             if (documentImages[key]) {
@@ -4314,33 +4321,38 @@ function App() {
               vignette.style.visibility = 'visible';
               console.log(`✅ Vignette affichée pour: ${key}`);
             }
-          });
+          };
 
-          item.addEventListener('mouseleave', () => {
+          const newMouseLeave = () => {
             console.log(`🎯 Hover LEAVE sur: ${imageKey}`);
             vignette.style.opacity = '0';
             vignette.style.transform = 'translateY(-20px) scale(0.95)';
             setTimeout(() => {
               vignette.style.visibility = 'hidden';
             }, 300);
-          });
+          };
 
-          item.addEventListener('mousemove', (e) => {
+          const newMouseMove = (e) => {
             const rect = e.target.getBoundingClientRect();
             const x = e.clientX - rect.left + 20;
             const y = e.clientY - rect.top - 10;
             vignette.style.left = `${rect.left + x}px`;
             vignette.style.top = `${rect.top + y}px`;
-          });
+          };
+
+          item.addEventListener('mouseenter', newMouseEnter);
+          item.addEventListener('mouseleave', newMouseLeave);
+          item.addEventListener('mousemove', newMouseMove);
         });
+        
+        console.log(`🎉 Animations hover configurées pour ${hoverItems.length} éléments`);
+      } else {
+        console.log(`⚠️ Éléments manquants - hover: ${hoverItems.length}, vignette: ${vignette ? 'Oui' : 'Non'}`);
       }
     };
 
-    // Essayer immédiatement
-    setupHoverEvents();
-    
-    // Réessayer après un délai pour s'assurer que les éléments sont présents
-    const timeoutId = setTimeout(setupHoverEvents, 1000);
+    // Délai pour s'assurer que le DOM est prêt
+    const timeoutId = setTimeout(setupHoverEvents, 500);
     
     return () => {
       clearTimeout(timeoutId);
