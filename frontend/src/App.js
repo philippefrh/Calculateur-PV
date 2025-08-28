@@ -3261,8 +3261,8 @@ Cordialement`);
               <div className="document-category">
                 <h5>💰 Revenus & Finances</h5>
                 <ul>
-                  <li>• Vos 2 dernières fiches de paye</li>
-                  <li>• Un RIB</li>
+                  <li className="document-item">• Vos 2 dernières fiches de paye</li>
+                  <li className="document-item">• Un RIB</li>
                 </ul>
               </div>
 
