@@ -3245,6 +3245,15 @@ Cordialement`);
                   <li>• Taxe foncière (les 2 volets)</li>
                 </ul>
               </div>
+
+              <div className="document-category">
+                <h5>📸 Photos Techniques</h5>
+                <ul>
+                  <li>• 5 Photos de la toiture</li>
+                  <li>• Photo de votre compteur EDF boitier fermé et boitier ouvert</li>
+                  <li>• Photo de votre colonne électrique avec vos disjoncteurs</li>
+                </ul>
+              </div>
             </div>
 
             {/* Colonne 2 */}
