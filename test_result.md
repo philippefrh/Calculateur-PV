@@ -305,6 +305,18 @@ frontend:
         agent: "main"
         comment: "✅ CORRECTIONS MAJEURES IMPLÉMENTÉES: 1) AGRANDISSEMENT MAXIMAL: Supprimé toutes les limites de largeur (max-width: none), hauteur augmentée à 900px (desktop) et 600px (mobile), supprimé les marges pour utiliser 100% de l'espace. 2) RÉPÉTITION TEXTE CORRIGÉE: Modifié le caption de 'Application de suivi de production - Détails consommation' vers '📱 Suivez votre production solaire en temps réel' pour éviter la répétition avec le texte dans l'image. 3) CONTENEUR PARENT OPTIMISÉ: Supprimé la max-width: 1200px du .product-images-grid pour permettre l'expansion complète. L'image prend maintenant toute la largeur et hauteur possible dans la colonne blanche."
 
+  - task: "Ajout vignette Photos Techniques + effets visuels hover sur toutes les vignettes"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js, frontend/src/App.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ AMÉLIORATION VISUELLE MAJEURE IMPLÉMENTÉE: 1) NOUVELLE VIGNETTE AJOUTÉE: '📸 Photos Techniques' avec le texte demandé (5 Photos de la toiture + Photo compteur EDF boitier fermé/ouvert + Photo colonne électrique avec disjoncteurs). 2) EFFETS VISUELS AU SURVOL: transform: translateY(-10px) scale(1.02) pour lévitation + zoom, box-shadow: 0 20px 40px pour ombre dramatique, border: 2px solid #4caf50 pour bordure verte, background gradient blanc-vert. 3) ANIMATIONS AVANCÉES: Titre scale(1.05), liste translateX(5px), transition 0.4s ease fluide, animation pulse sur emojis. 4) DISPOSITION OPTIMISÉE: 3 vignettes colonne 1 (Énergie, Identité, Photos) + 2 vignettes colonne 2 (Revenus, Propriété), gap réduit à 20px pour équilibrage. Les 5 vignettes ont maintenant des effets hover spectaculaires comme demandé."
+
   - task: "Correction erreur JavaScript toLocaleString() undefined"
     implemented: true
     working: "NA"
