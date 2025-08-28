@@ -3240,9 +3240,9 @@ Cordialement`);
               <div className="document-category">
                 <h5>🆔 Identité & Situation</h5>
                 <ul>
-                  <li>• Justificatif d'identité (CNI recto verso, Passeport, Carte de séjour)</li>
-                  <li>• Votre dernier avis d'imposition (les 4 volets)</li>
-                  <li>• Taxe foncière (les 2 volets)</li>
+                  <li className="document-item">• Justificatif d'identité (CNI recto verso, Passeport, Carte de séjour)</li>
+                  <li className="document-item hover-document-item" data-image="tax-notice">• Votre dernier avis d'imposition (les 4 volets)</li>
+                  <li className="document-item hover-document-item" data-image="tax-notice">• Taxe foncière (les 2 volets)</li>
                 </ul>
               </div>
 
