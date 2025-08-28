@@ -305,6 +305,18 @@ frontend:
         agent: "main"
         comment: "✅ CORRECTIONS MAJEURES IMPLÉMENTÉES: 1) AGRANDISSEMENT MAXIMAL: Supprimé toutes les limites de largeur (max-width: none), hauteur augmentée à 900px (desktop) et 600px (mobile), supprimé les marges pour utiliser 100% de l'espace. 2) RÉPÉTITION TEXTE CORRIGÉE: Modifié le caption de 'Application de suivi de production - Détails consommation' vers '📱 Suivez votre production solaire en temps réel' pour éviter la répétition avec le texte dans l'image. 3) CONTENEUR PARENT OPTIMISÉ: Supprimé la max-width: 1200px du .product-images-grid pour permettre l'expansion complète. L'image prend maintenant toute la largeur et hauteur possible dans la colonne blanche."
 
+  - task: "Amélioration section Documents - Disposition 2 colonnes et police agrandie"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js, frontend/src/App.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ AMÉLIORATION MAJEURE IMPLÉMENTÉE: Restructuré la section 'Création du dossier - Pièces à fournir' pour une meilleure lisibilité. MODIFICATIONS: 1) DISPOSITION 2 COLONNES: Séparé les 4 catégories en 2 colonnes (Énergie&Consommation + Identité&Situation dans colonne 1, Revenus&Finances + Propriété dans colonne 2). 2) POLICE AGRANDIE: Titre h4: 1.8rem, intro: 1.3rem, sous-titres h5: 1.4rem, texte li: 1.1rem. 3) ESPACEMENT AMÉLIORÉ: Gap 40px entre colonnes, 25px entre catégories, 12px entre lignes, line-height 1.6. 4) DESIGN MODERNE: Cartes blanches avec ombres, bordures vertes, fond dégradé. 5) RESPONSIVE: 1 colonne sur mobile. La section est maintenant beaucoup plus claire et facile à lire comme demandé par l'utilisateur."
+
 agent_communication:
   - agent: "main"
     message: "✅ NOUVEAU GRAPHIQUE PRODUCTION MENSUELLE IMPLÉMENTÉ : J'ai remplacé le graphique 'Production mensuelle détaillée' existant par le nouveau design 'Production par mois sur 1 an' avec barres jaunes/orange comme demandé dans les images fournies. Modifications effectuées : 1) Nouveau titre 'Production par mois sur 1 an', 2) Barres avec gradient jaune-orange (linear-gradient #FFA500 to #FFD700), 3) Noms de mois en français complets (Janv., Févr., Mars, Avr., Mai, Juin, Juil., Août, Sept., Oct., Nov., Déc.), 4) Design épuré avec fond blanc et ombres, 5) Hauteur augmentée à 300px, 6) Effets hover pour interaction, 7) Version responsive pour mobile. Les données PVGIS mensuelles (pvgis_monthly_data) sont correctement mappées avec les valeurs E_m de chaque mois selon les calculs de production de votre logiciel. Le backend a été testé et confirme la compatibilité parfaite avec le nouveau graphique."
