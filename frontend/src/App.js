@@ -4275,6 +4275,8 @@ function App() {
 
   // Gestion des animations hover pour les documents
   useEffect(() => {
+    console.log('🔍 Initialisation des animations hover des documents...');
+    
     const documentImages = {
       'tax-notice': 'https://customer-assets.emergentagent.com/job_solar-calculator-ui/artifacts/64qwtpkb_Avis%20taxe%20fonciere%202025.jpg',
       'meter-photo': 'https://customer-assets.emergentagent.com/job_solar-calculator-ui/artifacts/rv7nzpxc_Photo%20compteur.jpg',
@@ -4287,49 +4289,63 @@ function App() {
       'roof-photo': 'Exemple de photos de toiture'
     };
 
-    const hoverItems = document.querySelectorAll('.hover-document-item');
-    const vignette = document.getElementById('document-hover-vignette');
-    const vignetteImage = document.getElementById('document-hover-image');
-    const vignetteCaption = document.querySelector('.document-hover-caption');
+    const setupHoverEvents = () => {
+      const hoverItems = document.querySelectorAll('.hover-document-item');
+      const vignette = document.getElementById('document-hover-vignette');
+      const vignetteImage = document.getElementById('document-hover-image');
+      const vignetteCaption = document.querySelector('.document-hover-caption');
 
-    hoverItems.forEach(item => {
-      item.addEventListener('mouseenter', (e) => {
-        const imageKey = e.target.getAttribute('data-image');
-        if (documentImages[imageKey]) {
-          vignetteImage.src = documentImages[imageKey];
-          vignetteCaption.textContent = documentCaptions[imageKey];
-          vignette.style.opacity = '1';
-          vignette.style.transform = 'translateY(0) scale(1)';
-          vignette.style.visibility = 'visible';
-        }
-      });
+      console.log(`✅ Éléments hover trouvés: ${hoverItems.length}`);
+      console.log(`✅ Vignette trouvée: ${vignette ? 'Oui' : 'Non'}`);
 
-      item.addEventListener('mouseleave', () => {
-        vignette.style.opacity = '0';
-        vignette.style.transform = 'translateY(-20px) scale(0.95)';
-        setTimeout(() => {
-          vignette.style.visibility = 'hidden';
-        }, 300);
-      });
+      if (hoverItems.length > 0 && vignette) {
+        hoverItems.forEach((item, index) => {
+          const imageKey = item.getAttribute('data-image');
+          console.log(`📝 Élément ${index}: ${item.textContent.trim()} -> ${imageKey}`);
 
-      item.addEventListener('mousemove', (e) => {
-        const rect = e.target.getBoundingClientRect();
-        const x = e.clientX - rect.left + 20; // Décalage pour éviter que la vignette cache le texte
-        const y = e.clientY - rect.top - 10;
-        vignette.style.left = `${rect.left + x}px`;
-        vignette.style.top = `${rect.top + y}px`;
-      });
-    });
+          item.addEventListener('mouseenter', (e) => {
+            console.log(`🎯 Hover ENTER sur: ${imageKey}`);
+            const key = e.target.getAttribute('data-image');
+            if (documentImages[key]) {
+              vignetteImage.src = documentImages[key];
+              vignetteCaption.textContent = documentCaptions[key];
+              vignette.style.opacity = '1';
+              vignette.style.transform = 'translateY(0) scale(1)';
+              vignette.style.visibility = 'visible';
+              console.log(`✅ Vignette affichée pour: ${key}`);
+            }
+          });
 
-    // Cleanup function
-    return () => {
-      hoverItems.forEach(item => {
-        item.removeEventListener('mouseenter', () => {});
-        item.removeEventListener('mouseleave', () => {});
-        item.removeEventListener('mousemove', () => {});
-      });
+          item.addEventListener('mouseleave', () => {
+            console.log(`🎯 Hover LEAVE sur: ${imageKey}`);
+            vignette.style.opacity = '0';
+            vignette.style.transform = 'translateY(-20px) scale(0.95)';
+            setTimeout(() => {
+              vignette.style.visibility = 'hidden';
+            }, 300);
+          });
+
+          item.addEventListener('mousemove', (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left + 20;
+            const y = e.clientY - rect.top - 10;
+            vignette.style.left = `${rect.left + x}px`;
+            vignette.style.top = `${rect.top + y}px`;
+          });
+        });
+      }
     };
-  }, []);
+
+    // Essayer immédiatement
+    setupHoverEvents();
+    
+    // Réessayer après un délai pour s'assurer que les éléments sont présents
+    const timeoutId = setTimeout(setupHoverEvents, 1000);
+    
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [currentStep]);
 
   const handleRegionChange = (region) => {
     setSelectedRegion(region);
