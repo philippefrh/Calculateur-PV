@@ -3276,6 +3276,12 @@ Cordialement`);
             </div>
           </div>
           
+          {/* Vignette d'image hover pour les documents */}
+          <div id="document-hover-vignette" className="document-hover-vignette">
+            <img id="document-hover-image" src="" alt="Document exemple" />
+            <div className="document-hover-caption"></div>
+          </div>
+          
           <div className="next-steps-note">
             <p><strong>📞 Nos experts vous contacteront dans les 24h pour :</strong></p>
             <div className="next-steps-grid">
