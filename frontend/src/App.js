@@ -1270,8 +1270,8 @@ const ConsumptionForm = ({
                                         default: discountAmount = 0;
                                       }
                                       const batteryPrice = hasBattery ? 5000 : 0;
-                                      const finalPrice = kit.originalPriceWithAids - discountAmount + batteryPrice;
-                                      return finalPrice.toLocaleString() + '€';
+                                      const finalPrice = (kit.originalPriceWithAids || 0) - discountAmount + batteryPrice;
+                                      return (finalPrice || 0).toLocaleString() + '€';
                                     })()}
                                   </span>
                                   {batterySelected[kit.power] && (
