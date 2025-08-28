@@ -3269,8 +3269,8 @@ Cordialement`);
               <div className="document-category">
                 <h5>🏠 Propriété</h5>
                 <ul>
-                  <li>• Votre acte notarié (2 premières feuilles seulement)</li>
-                  <li>• Requis si propriétaire de moins d'un an</li>
+                  <li className="document-item">• Votre acte notarié (2 premières feuilles seulement)</li>
+                  <li className="document-item">• Requis si propriétaire de moins d'un an</li>
                 </ul>
               </div>
             </div>
