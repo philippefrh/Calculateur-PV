@@ -2257,7 +2257,141 @@ body::after {
   box-shadow: 0 12px 24px rgba(33,150,243,0.4);
 }
 
-/* Contact amélioré */
+/* Section Documents améliorée - 2 colonnes avec police plus grande */
+.documents-section {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef) !important;
+  border: 2px solid #ff6b35 !important;
+  border-radius: 20px !important;
+  padding: 35px !important;
+  margin-top: 30px !important;
+}
+
+.documents-section h4 {
+  color: #2c5530 !important;
+  margin-bottom: 20px !important;
+  font-size: 1.8rem !important; /* Police agrandie */
+  text-align: center !important;
+  font-weight: bold !important;
+}
+
+.documents-intro {
+  color: #666 !important;
+  margin-bottom: 30px !important;
+  font-size: 1.3rem !important; /* Police agrandie */
+  text-align: center !important;
+  line-height: 1.5 !important;
+}
+
+.documents-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important; /* 2 colonnes égales */
+  gap: 40px !important; /* Espace entre les colonnes */
+  margin-bottom: 30px !important;
+}
+
+.documents-column {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 25px !important; /* Espace entre les catégories */
+}
+
+.document-category {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.document-category h5 {
+  color: #2c5530 !important;
+  margin-bottom: 15px !important;
+  font-size: 1.4rem !important; /* Police agrandie */
+  font-weight: bold !important;
+  border-bottom: 2px solid #4caf50 !important;
+  padding-bottom: 8px !important;
+}
+
+.document-category ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.document-category li {
+  color: #555 !important;
+  margin: 12px 0 !important; /* Plus d'espacement */
+  font-size: 1.1rem !important; /* Police agrandie */
+  line-height: 1.6 !important; /* Meilleur espacement des lignes */
+  padding-left: 0 !important;
+}
+
+.next-steps-note {
+  background: #e8f5e8 !important;
+  border: 2px solid #4caf50 !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  text-align: center !important;
+}
+
+.next-steps-note p {
+  margin-bottom: 20px !important;
+  font-size: 1.3rem !important; /* Police agrandie */
+  color: #2c5530 !important;
+}
+
+.next-steps-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important; /* 3 colonnes pour les étapes */
+  gap: 15px !important;
+  margin-top: 15px !important;
+}
+
+.next-steps-grid div {
+  background: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  font-size: 1.1rem !important; /* Police agrandie */
+  font-weight: 500 !important;
+  color: #4caf50 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+  .documents-grid {
+    grid-template-columns: 1fr !important; /* 1 seule colonne sur mobile */
+    gap: 25px !important;
+  }
+  
+  .documents-section {
+    padding: 25px !important;
+  }
+  
+  .documents-section h4 {
+    font-size: 1.5rem !important;
+  }
+  
+  .documents-intro {
+    font-size: 1.1rem !important;
+  }
+  
+  .document-category h5 {
+    font-size: 1.2rem !important;
+  }
+  
+  .document-category li {
+    font-size: 1rem !important;
+  }
+  
+  .next-steps-grid {
+    grid-template-columns: 1fr !important; /* 1 colonne sur mobile */
+  }
+  
+  .next-steps-note p {
+    font-size: 1.1rem !important;
+  }
+}
 .contact-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
