@@ -5354,12 +5354,13 @@ body::after {
   
   .large-phone-image {
     grid-column: 1; /* Sur mobile, prend seulement 1 colonne */
-    max-width: 100%; /* PREND TOUJOURS TOUTE LA LARGEUR */
+    max-width: none; /* SUPPRIME TOUTE LIMITE sur mobile aussi */
     width: 100%; /* Force la largeur à 100% même sur mobile */
+    margin: 0; /* Pas de marge */
   }
   
   .large-image {
-    height: 500px; /* AGRANDI aussi sur mobile (était 450px) */
+    height: 600px; /* TRÈS GRANDE aussi sur mobile (était 500px) */
   }
   
   .large-phone-image .image-caption {
