@@ -1332,7 +1332,7 @@ const ConsumptionForm = ({
                   <h5>🎯 Kit sélectionné manuellement</h5>
                   <div className="selected-kit-details">
                     <span>Kit {formData.manualKit.power}kW ({formData.manualKit.panels} panneaux)</span>
-                    <span>Prix avec aides: {formData.manualKit.priceWithAids.toLocaleString()}€</span>
+                    <span>Prix avec aides: {(formData.manualKit?.priceWithAids || 0).toLocaleString()}€</span>
                   </div>
                   <button 
                     type="button" 
