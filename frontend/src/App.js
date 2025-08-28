@@ -1255,7 +1255,7 @@ const ConsumptionForm = ({
                               {kitDiscounts[kit.power] || batterySelected[kit.power] ? (
                                 <>
                                   <span style={{textDecoration: 'line-through', color: '#999', fontSize: '0.9em'}}>
-                                    {kit.originalPriceWithAids.toLocaleString()}€
+                                    {(kit.originalPriceWithAids || 0).toLocaleString()}€
                                   </span>
                                   {' '}
                                   <span style={{color: '#27ae60', fontWeight: 'bold'}}>
