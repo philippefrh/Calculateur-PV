@@ -1281,7 +1281,7 @@ const ConsumptionForm = ({
                                   )}
                                 </>
                               ) : (
-                                <span>{kit.priceWithAids.toLocaleString()}€</span>
+                                <span>{(kit.priceWithAids || 0).toLocaleString()}€</span>
                               )}
                             </span>
                           </div>
