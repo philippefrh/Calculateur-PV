@@ -4275,8 +4275,8 @@ function App() {
 
   // Gestion des animations hover pour les documents
   useEffect(() => {
-    // Ne s'exécuter que sur la page des résultats
-    if (currentStep !== 5) {
+    // Ne s'exécuter que sur la page des résultats (étape 6)
+    if (currentStep !== 6) {
       console.log(`⏭️ Étape actuelle: ${currentStep}, animations hover non nécessaires`);
       return;
     }
