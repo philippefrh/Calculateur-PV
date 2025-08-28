@@ -305,6 +305,21 @@ frontend:
         agent: "main"
         comment: "✅ CORRECTIONS MAJEURES IMPLÉMENTÉES: 1) AGRANDISSEMENT MAXIMAL: Supprimé toutes les limites de largeur (max-width: none), hauteur augmentée à 900px (desktop) et 600px (mobile), supprimé les marges pour utiliser 100% de l'espace. 2) RÉPÉTITION TEXTE CORRIGÉE: Modifié le caption de 'Application de suivi de production - Détails consommation' vers '📱 Suivez votre production solaire en temps réel' pour éviter la répétition avec le texte dans l'image. 3) CONTENEUR PARENT OPTIMISÉ: Supprimé la max-width: 1200px du .product-images-grid pour permettre l'expansion complète. L'image prend maintenant toute la largeur et hauteur possible dans la colonne blanche."
 
+  - task: "Correction erreur JavaScript toLocaleString() undefined"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "❌ ERREUR CRITIQUE DÉTECTÉE: Erreur JavaScript 'Cannot read properties of undefined (reading toLocaleString)' causée par des propriétés de kit undefined (originalPriceTTC, originalPriceWithAids, priceTTC, priceWithAids). Erreur exposée après les modifications CSS de la section documents."
+      - working: "NA"
+        agent: "main"
+        comment: "✅ CORRECTION IMPLÉMENTÉE: Ajouté protection contre les valeurs undefined pour tous les appels toLocaleString() critiques. CORRECTIONS: 1) kit.originalPriceTTC.toLocaleString() → (kit.originalPriceTTC || 0).toLocaleString(), 2) kit.priceTTC.toLocaleString() → (kit.priceTTC || 0).toLocaleString(), 3) kit.originalPriceWithAids.toLocaleString() → (kit.originalPriceWithAids || 0).toLocaleString(), 4) kit.priceWithAids.toLocaleString() → (kit.priceWithAids || 0).toLocaleString(), 5) formData.manualKit.priceWithAids → formData.manualKit?.priceWithAids, 6) Corrections dans les fonctions de calcul finalPrice. Application redémarrée, nécessite retesting pour confirmer la résolution."
+
   - task: "Amélioration section Documents - Disposition 2 colonnes et police agrandie"
     implemented: true
     working: "NA"
