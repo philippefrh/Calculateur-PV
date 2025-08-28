@@ -5287,7 +5287,7 @@ body::after {
   object-position: center;
 }
 
-/* IMAGE TÉLÉPHONES GRANDE TAILLE - TRÈS IMPORTANTE - AGRANDI POUR LARGEUR COMPLÈTE */
+/* IMAGE TÉLÉPHONES GRANDE TAILLE - MAXIMALE - PREND TOUTE LA LARGEUR */
 .large-phone-image {
   grid-column: 1 / -1; /* Prend TOUTES les colonnes disponibles (les 2) */
   background: white;
@@ -5297,9 +5297,9 @@ body::after {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-align: center;
   border: 3px solid #4CAF50; /* Bordure verte pour l'importance */
-  max-width: 100%; /* PREND TOUTE LA LARGEUR DISPONIBLE */
+  max-width: none; /* SUPPRIME TOUTE LIMITE DE LARGEUR */
   width: 100%; /* Force la largeur à 100% de son conteneur */
-  margin: 0 auto; /* Centrage horizontal */
+  margin: 0; /* Supprime les marges pour maximiser l'espace */
 }
 
 .large-phone-image:hover {
@@ -5309,7 +5309,7 @@ body::after {
 
 .large-image {
   width: 100%; /* Prend toute la largeur du conteneur */
-  height: 700px; /* ENCORE PLUS GRANDE qu'avant (était 600px) */
+  height: 900px; /* TRÈS GRANDE HAUTEUR (était 700px) */
   object-fit: cover; /* Maintient les proportions tout en remplissant */
   object-position: center;
 }
