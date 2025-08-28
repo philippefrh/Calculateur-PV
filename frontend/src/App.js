@@ -3231,9 +3231,9 @@ Cordialement`);
               <div className="document-category">
                 <h5>💡 Énergie & Consommation</h5>
                 <ul>
-                  <li>• Votre dernière facture d'énergie (de moins de 3 mois)</li>
-                  <li>• EDF - Total Energie - Engie etc...</li>
-                  <li>• Factures box internet, téléphone portable, eau</li>
+                  <li className="document-item">• Votre dernière facture d'énergie (de moins de 3 mois)</li>
+                  <li className="document-item">• EDF - Total Energie - Engie etc...</li>
+                  <li className="document-item">• Factures box internet, téléphone portable, eau</li>
                 </ul>
               </div>
 
