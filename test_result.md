@@ -287,7 +287,9 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Animations hover interactives pour documents avec vignettes d'images"
+    - "Correction erreur JavaScript toLocaleString() undefined"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
