@@ -2347,6 +2347,15 @@ body::after {
   font-weight: bold !important;
   border-bottom: 2px solid #4caf50 !important;
   padding-bottom: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Effet spécial pour la vignette Photos Techniques */
+.document-category h5:contains('📸') {
+  background: linear-gradient(135deg, #ff6b35, #ffa500) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
 }
 
 .document-category ul {
