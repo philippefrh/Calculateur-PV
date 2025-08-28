@@ -292,6 +292,19 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+frontend:
+  - task: "Agrandissement image téléphones pour largeur complète de la colonne"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/App.js, frontend/src/App.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ IMPLEMENTED: Remplacé l'ancienne image des téléphones par la nouvelle '2 Telephonnes production pixels.jpg' et agrandi considérablement l'image pour qu'elle prenne toute la largeur disponible dans la colonne blanche. Modifications CSS : 1) Supprimé la max-width de 800px et mis max-width: 100% + width: 100% pour forcer la largeur complète. 2) Augmenté la hauteur de 600px à 700px pour desktop. 3) Augmenté la hauteur mobile de 450px à 500px. 4) L'image maintient ses proportions avec object-fit: cover tout en remplissant complètement la largeur de son conteneur. L'image prend maintenant toute la largeur de la colonne blanche comme demandé par l'utilisateur."
+
 agent_communication:
   - agent: "main"
     message: "✅ NOUVEAU GRAPHIQUE PRODUCTION MENSUELLE IMPLÉMENTÉ : J'ai remplacé le graphique 'Production mensuelle détaillée' existant par le nouveau design 'Production par mois sur 1 an' avec barres jaunes/orange comme demandé dans les images fournies. Modifications effectuées : 1) Nouveau titre 'Production par mois sur 1 an', 2) Barres avec gradient jaune-orange (linear-gradient #FFA500 to #FFD700), 3) Noms de mois en français complets (Janv., Févr., Mars, Avr., Mai, Juin, Juil., Août, Sept., Oct., Nov., Déc.), 4) Design épuré avec fond blanc et ombres, 5) Hauteur augmentée à 300px, 6) Effets hover pour interaction, 7) Version responsive pour mobile. Les données PVGIS mensuelles (pvgis_monthly_data) sont correctement mappées avec les valeurs E_m de chaque mois selon les calculs de production de votre logiciel. Le backend a été testé et confirme la compatibilité parfaite avec le nouveau graphique."
